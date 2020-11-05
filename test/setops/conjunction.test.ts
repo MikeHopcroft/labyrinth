@@ -1,12 +1,8 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import DRange from 'drange';
 import 'mocha';
 
-import {
-  Conjunction,
-  Dimension,
-  DimensionedRange
-} from '../../src/setops';
+import {Conjunction, Dimension, DimensionedRange} from '../../src/setops';
 
 const dimension0: Dimension = Dimension.create(1, 100);
 const dimension1: Dimension = Dimension.create(1, 100);
@@ -32,7 +28,6 @@ const universeRange = new DimensionedRange(dimension2, dimension2.domain);
 const universeRange3 = new DimensionedRange(dimension3, dimension3.domain);
 
 describe('Conjunction', () => {
-
   describe('create()', () => {
     // Dimension order check
     it('parameter validation', () => {
@@ -109,14 +104,6 @@ describe('Conjunction', () => {
     assert.equal(r2.dimensions[2].range.toString(), '[ 240-260 ]');
     assert.equal(r2.dimensions[3].range.toString(), '[ 1240-1250 ]');
     assert.equal(r2.dimensions[4].range.toString(), '[ 10-20 ]');
-
-
-    // console.log(JSON.stringify(result, null, 4));
-    // console.log(c1.toString());
-    // console.log();
-    // console.log(c3.toString());
-    // console.log();
-    // console.log(r2.toString());
   });
 
   // complement()
@@ -144,5 +131,4 @@ describe('Conjunction', () => {
       '[ 1000-1239, 1261-2000 ]'
     );
   });
-
 });

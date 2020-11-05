@@ -1,6 +1,6 @@
-import { DimensionedRange } from './dimensioned_range';
-import { Disjunction } from './disjunction';
-import { Dimension } from './dimension';
+import {DimensionedRange} from './dimensioned_range';
+import {Disjunction} from './disjunction';
+import {Dimension} from './dimension';
 
 export class Conjunction {
   dimensions: DimensionedRange[];
@@ -8,8 +8,8 @@ export class Conjunction {
   static create(dimensions: DimensionedRange[]) {
     // Verify dimensions are in increaing order, no duplicates
     for (let i = 0; i < dimensions.length - 1; ++i) {
-      if (dimensions[i].dimension.id >= dimensions[i+1].dimension.id) {
-        const message = "Dimensions must be sorted from smallest to largest.";
+      if (dimensions[i].dimension.id >= dimensions[i + 1].dimension.id) {
+        const message = 'Dimensions must be sorted from smallest to largest.';
         throw new TypeError(message);
       }
     }
@@ -37,7 +37,7 @@ export class Conjunction {
   }
 
   isEmpty(): boolean {
-    return this.dimensions.length === 1 && this.dimensions[0].isEmpty(); 
+    return this.dimensions.length === 1 && this.dimensions[0].isEmpty();
   }
 
   isUniverse(): boolean {
@@ -47,7 +47,7 @@ export class Conjunction {
   intersect(other: Conjunction): Conjunction {
     let i1 = 0;
     let i2 = 0;
-    let dimensions: DimensionedRange[] = [];
+    const dimensions: DimensionedRange[] = [];
     while (i1 < this.dimensions.length && i2 < other.dimensions.length) {
       const d1 = this.dimensions[i1];
       const d2 = other.dimensions[i2];
@@ -55,29 +55,22 @@ export class Conjunction {
       let d: DimensionedRange;
       if (d1.dimension.id < d2.dimension.id) {
         // Copy d1.
-        // console.log(`Copy left ${d1.toString()}`);
         d = d1;
         i1++;
       } else if (d1.dimension.id > d2.dimension.id) {
         // Copy d2.
-        // console.log(`Copy right ${d2.toString()}`);
         d = d2;
         i2++;
       } else {
         // d1 and d2 are  the same dimension, so perform the intersection.
-        // console.log(`Intersect ${d1.toString()} with ${d2.toString()}`);
         d = d1.intersect(d2);
-        // console.log(`  => ${d.toString()}`);
         i1++;
         i2++;
       }
 
       if (d.isEmpty()) {
-        // If any dimension is empty, trim all of the other dimensions and
-        // exit loop.
+        // If any dimension is empty, return the empty set.
         return new Conjunction([d]);
-        // dimensions = [d];
-        // break;
       } else if (d.isUniverse()) {
         // Filter out universe dimensions.
         continue;
@@ -86,15 +79,13 @@ export class Conjunction {
       }
     }
 
-    // if (dimensions.length !== 1 || !dimensions[0].isEmpty()) {
-      while (i1 < this.dimensions.length) {
-        dimensions.push(this.dimensions[i1++]);
-      }
-
-      while (i2 < other.dimensions.length) {
-        dimensions.push(other.dimensions[i2++]);
-      }
-    // }
+    // Copy over any remaining dimensions.
+    while (i1 < this.dimensions.length) {
+      dimensions.push(this.dimensions[i1++]);
+    }
+    while (i2 < other.dimensions.length) {
+      dimensions.push(other.dimensions[i2++]);
+    }
 
     return new Conjunction(dimensions);
   }
@@ -108,7 +99,7 @@ export class Conjunction {
       return Disjunction.create([new Conjunction([])]);
     } else {
       // Apply De Morgan's Law
-      const terms = this.dimensions.map((d) => {
+      const terms = this.dimensions.map(d => {
         return new Conjunction([d.complement()]);
       });
       return Disjunction.create(terms);
@@ -125,6 +116,12 @@ export class Conjunction {
   }
 
   toString(): string {
-    return this.dimensions.map(d => {return d.toString()}).join('\n') + '\n';
+    return (
+      this.dimensions
+        .map(d => {
+          return d.toString();
+        })
+        .join('\n') + '\n'
+    );
   }
 }

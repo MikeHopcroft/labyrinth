@@ -1,4 +1,4 @@
-import { Conjunction } from './conjunction';
+import {Conjunction} from './conjunction';
 
 export class Disjunction {
   conjunctions: Conjunction[];

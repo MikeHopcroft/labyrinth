@@ -1,10 +1,9 @@
-import DRange from "drange";
-import { DimensionedRange } from "./dimensioned_range";
+import DRange from 'drange';
 
 export class Dimension {
   private static reservedId = 0;
   static reserved: Dimension = new Dimension();
-  private static nextId: number = 100;
+  private static nextId = 100;
 
   readonly id: number;
   readonly domain: DRange;
@@ -24,10 +23,10 @@ export class Dimension {
       this.domain = new DRange();
     } else {
       if (end !== undefined && start > end) {
-        const message = "Start of domain cannot be greater than end of domain.";
+        const message = 'Start of domain cannot be greater than end of domain.';
         throw new TypeError(message);
       }
-  
+
       this.id = Dimension.nextId++;
       this.domain = new DRange(start, end);
     }

@@ -1,10 +1,10 @@
-import { Dimension } from "./dimension";
-import { Conjunction } from "./conjunction";
-import { Disjunction } from "./disjunction";
+import {Dimension} from './dimension';
+import {Conjunction} from './conjunction';
+import {Disjunction} from './disjunction';
 
 export function disjunctionValues(
   dimensions: Dimension[],
-  disjunction: Disjunction,
+  disjunction: Disjunction
 ): Set<string> {
   const values = new Set<string>();
   for (const c of disjunction.conjunctions) {
@@ -28,7 +28,7 @@ export function* crossProduct(
   index = 0
 ): IterableIterator<number[]> {
   if (index === values.length) {
-    yield []
+    yield [];
   } else {
     for (const suffix of crossProduct(values, index + 1)) {
       for (const v of values[index]) {

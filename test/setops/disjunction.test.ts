@@ -1,4 +1,4 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import DRange from 'drange';
 import 'mocha';
 
@@ -7,21 +7,14 @@ import {
   Dimension,
   DimensionedRange,
   Disjunction,
-  disjunctionValues
+  disjunctionValues,
 } from '../../src/setops';
-import { resourceLimits } from 'worker_threads';
 
 const dimension1: Dimension = Dimension.create(1, 100);
-// const dimension2: Dimension = Dimension.create(200, 300);
-// const dimension3: Dimension = Dimension.create(1000, 2000);
 
 const range1 = new DimensionedRange(dimension1, new DRange(10, 20));
 const universeRange1 = new DimensionedRange(dimension1, dimension1.domain);
 const emptyRange1 = new DimensionedRange(dimension1, new DRange());
-// const range2 = new DimensionedRange(dimension2, new DRange(240, 260));
-// const range3 = new DimensionedRange(dimension3, new DRange(1240, 1260));
-// const universeRange3 = new DimensionedRange(dimension3, dimension3.domain);
-
 
 describe('Disjunction', () => {
   describe('create()', () => {
@@ -52,52 +45,6 @@ describe('Disjunction', () => {
     });
   });
 
-  // Set A:
-  //   x: 1-2
-  //   y: 1-2
-  //
-  //   or
-  //
-  //   x: 1-2
-  //   y: 4-5
-  //
-  // x x x x x 
-  // x 1 1 x x 
-  // x 1 1 x x 
-  // x x x x x 
-  // x 2 2 x x 
-  // x 2 2 x x 
-  // x x x x x 
-  //
-  //
-  // Set B:
-  //   x: 2
-  //   y: 0-6
-  //
-  //   or
-  //
-  //   x: 0-4
-  //   y: 5
-  //
-  // x x 3 x x 
-  // x x 3 x x 
-  // x x 3 x x 
-  // x x 3 x x 
-  // x x 3 x x 
-  // 4 4 3 4 4 
-  // x x 3 x x 
-  //
-  // Set S = A & B:
-  //
-  // x x x x x 
-  // x x S x x 
-  // x x S x x 
-  // x x x x x 
-  // x x S x x 
-  // x S S x x 
-  // x x x x x 
-  //
-
   describe('intersect()', () => {
     it('intersect(): X & Y', () => {
       const x = Dimension.create(0, 4);
@@ -121,8 +68,6 @@ describe('Disjunction', () => {
           new DimensionedRange(y, new DRange(4, 5)),
         ]),
       ]);
-      // const va = [...disjunctionValues([x,y], a).values()];
-      // console.log(va);
 
       // Set B:
       //   . . b . .
@@ -142,8 +87,6 @@ describe('Disjunction', () => {
           new DimensionedRange(y, new DRange(5)),
         ]),
       ]);
-      // const vb = [...disjunctionValues([x,y], b).values()];
-      // console.log(vb);
 
       // Set C = A & B:
       //   . . . . .
@@ -156,16 +99,6 @@ describe('Disjunction', () => {
       const c = a.intersect(b);
       const values = [...disjunctionValues([x, y], c).values()];
       assert.deepEqual(values, ['[2,1]', '[2,2]', '[2,4]', '[2,5]', '[1,5]']);
-      // console.log(values);
-
-      // console.log('terms:');
-      // for (const foo of c.conjunctions) {
-      //   const d = Disjunction.create([foo]);
-      //   const values = [...disjunctionValues([x,y], d).values()];
-      //   console.log(values);
-      // }
-
-      // assert.isTrue(false);
     });
 
     it('intersect(): X & 0', () => {
@@ -205,21 +138,22 @@ describe('Disjunction', () => {
         ]),
       ]);
 
-      const b = Disjunction.create([
-        Conjunction.create([])
-      ]);
+      const b = Disjunction.create([Conjunction.create([])]);
 
       const c = a.intersect(b);
       const values = [...disjunctionValues([x, y], c).values()];
       assert.deepEqual(values, [
-        '[1,1]', '[2,1]',
-        '[1,2]', '[2,2]',
-        '[1,4]', '[2,4]',
-        '[1,5]', '[2,5]'
+        '[1,1]',
+        '[2,1]',
+        '[1,2]',
+        '[2,2]',
+        '[1,4]',
+        '[2,4]',
+        '[1,5]',
+        '[2,5]',
       ]);
     });
   });
-
 
   describe('predicates', () => {
     it('isEmpty()', () => {

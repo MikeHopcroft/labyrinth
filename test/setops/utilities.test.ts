@@ -1,11 +1,15 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import 'mocha';
 
-import { crossProduct } from '../../src/setops';
+import {crossProduct} from '../../src/setops';
 
 describe('Utilities', () => {
   it('crossProduct()', () => {
-    const values = [[1, 2], [3, 4, 5], [6, 7]];
+    const values = [
+      [1, 2],
+      [3, 4, 5],
+      [6, 7],
+    ];
 
     const expected = [
       [1, 3, 6],

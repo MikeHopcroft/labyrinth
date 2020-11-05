@@ -1,5 +1,6 @@
 import DRange from 'drange';
-import { Dimension } from './dimension';
+
+import {Dimension} from './dimension';
 
 export class DimensionedRange {
   readonly dimension: Dimension;
@@ -9,7 +10,7 @@ export class DimensionedRange {
     // TODO: move this to factory for better performance.
     const outOfDomain = range.clone().subtract(dimension.domain);
     if (outOfDomain.length > 0) {
-      const message = "Range must be a subset of domain.";
+      const message = 'Range must be a subset of domain.';
       throw new TypeError(message);
     }
 
@@ -28,7 +29,8 @@ export class DimensionedRange {
 
   intersect(other: DimensionedRange): DimensionedRange {
     if (this.dimension !== other.dimension) {
-      const message = "RangeSets with different dimensions cannot be intersected.";
+      const message =
+        'RangeSets with different dimensions cannot be intersected.';
       throw new TypeError(message);
     }
 
