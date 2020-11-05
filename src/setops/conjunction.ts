@@ -1,5 +1,6 @@
 import { DimensionedRange } from './dimensioned_range';
 import { Disjunction } from './disjunction';
+import { Dimension } from './dimension';
 
 export class Conjunction {
   dimensions: DimensionedRange[];
@@ -74,8 +75,9 @@ export class Conjunction {
       if (d.isEmpty()) {
         // If any dimension is empty, trim all of the other dimensions and
         // exit loop.
-        dimensions = [d];
-        break;
+        return new Conjunction([d]);
+        // dimensions = [d];
+        // break;
       } else if (d.isUniverse()) {
         // Filter out universe dimensions.
         continue;
@@ -83,23 +85,43 @@ export class Conjunction {
         dimensions.push(d);
       }
     }
+
+    // if (dimensions.length !== 1 || !dimensions[0].isEmpty()) {
+      while (i1 < this.dimensions.length) {
+        dimensions.push(this.dimensions[i1++]);
+      }
+
+      while (i2 < other.dimensions.length) {
+        dimensions.push(other.dimensions[i2++]);
+      }
+    // }
+
     return new Conjunction(dimensions);
   }
 
   complement(): Disjunction {
     if (this.isUniverse()) {
       // Complement is the empty disjunction.
-      return new Disjunction([]);
+      return Disjunction.create([]);
     } else if (this.isEmpty()) {
       // Complement is a disjunction with one universal conjunction.
-      return new Disjunction([new Conjunction([])]);
+      return Disjunction.create([new Conjunction([])]);
     } else {
       // Apply De Morgan's Law
       const terms = this.dimensions.map((d) => {
         return new Conjunction([d.complement()]);
       });
-      return new Disjunction(terms);
+      return Disjunction.create(terms);
     }
+  }
+
+  numbers(dimension: Dimension): number[] {
+    for (const factor of this.dimensions) {
+      if (factor.dimension === dimension) {
+        return factor.range.numbers();
+      }
+    }
+    return dimension.domain.numbers();
   }
 
   toString(): string {

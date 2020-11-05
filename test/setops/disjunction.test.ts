@@ -6,8 +6,10 @@ import {
   Conjunction,
   Dimension,
   DimensionedRange,
-  Disjunction
+  Disjunction,
+  disjunctionValues
 } from '../../src/setops';
+import { resourceLimits } from 'worker_threads';
 
 const dimension1: Dimension = Dimension.create(1, 100);
 // const dimension2: Dimension = Dimension.create(200, 300);
@@ -22,27 +24,32 @@ const emptyRange1 = new DimensionedRange(dimension1, new DRange());
 
 
 describe('Disjunction', () => {
-  it('isEmpty()', () => {
-    // Actually empty
-    const d1 = Disjunction.create([]);
-    assert.isTrue(d1.isEmpty());
+  describe('create()', () => {
+    it('X + 1 = 1', () => {
+      const c = Conjunction.create([range1]);
+      const u = Conjunction.create([universeRange1]);
 
-    // Not empty
-    const c1 = Conjunction.create([range1]);
-    const d2 = Disjunction.create([c1]);
-    assert.isFalse(d2.isEmpty());
-  });
+      const d1 = Disjunction.create([u, c]);
+      assert.equal(d1.conjunctions.length, 1);
+      assert.isTrue(d1.isUniverse());
 
-  it('isUniverse()', () => {
-    // Actually universe
-    const u = Conjunction.create([universeRange1]);
-    const d1 = Disjunction.create([u]);
-    assert.isTrue(d1.isUniverse());
+      const d2 = Disjunction.create([c, u]);
+      assert.equal(d2.conjunctions.length, 1);
+      assert.isTrue(d2.isUniverse());
+    });
 
-    // Actually universe
-    const c1 = Conjunction.create([range1]);
-    const d2 = Disjunction.create([c1]);
-    assert.isFalse(d2.isUniverse());
+    it('X + 0 = X', () => {
+      const c = Conjunction.create([range1]);
+      const e = Conjunction.create([emptyRange1]);
+
+      const d1 = Disjunction.create([e, c]);
+      assert.equal(d1.conjunctions.length, 1);
+      assert.equal(d1.conjunctions[0], c);
+
+      const d2 = Disjunction.create([c, e]);
+      assert.equal(d2.conjunctions.length, 1);
+      assert.equal(d2.conjunctions[0], c);
+    });
   });
 
   // Set A:
@@ -91,41 +98,151 @@ describe('Disjunction', () => {
   // x x x x x 
   //
 
-  it('intersect(): X & Y', () => {
-    assert.isTrue(false);
+  describe('intersect()', () => {
+    it('intersect(): X & Y', () => {
+      const x = Dimension.create(0, 4);
+      const y = Dimension.create(0, 6);
+
+      // Set A:
+      //   . . . . .
+      //   . a a . .
+      //   . a a . .
+      //   . . . . .
+      //   . a a . .
+      //   . a a . .
+      //   . . . . .
+      const a = Disjunction.create([
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(1, 2)),
+          new DimensionedRange(y, new DRange(1, 2)),
+        ]),
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(1, 2)),
+          new DimensionedRange(y, new DRange(4, 5)),
+        ]),
+      ]);
+      // const va = [...disjunctionValues([x,y], a).values()];
+      // console.log(va);
+
+      // Set B:
+      //   . . b . .
+      //   . . b . .
+      //   . . b . .
+      //   . . b . .
+      //   . . b . .
+      //   b b b b b
+      //   . . b . .
+      const b = Disjunction.create([
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(2)),
+          new DimensionedRange(y, new DRange(0, 6)),
+        ]),
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(0, 4)),
+          new DimensionedRange(y, new DRange(5)),
+        ]),
+      ]);
+      // const vb = [...disjunctionValues([x,y], b).values()];
+      // console.log(vb);
+
+      // Set C = A & B:
+      //   . . . . .
+      //   . . c . .
+      //   . . c . .
+      //   . . . . .
+      //   . . c . .
+      //   . c c . .
+      //   . . . . .
+      const c = a.intersect(b);
+      const values = [...disjunctionValues([x, y], c).values()];
+      assert.deepEqual(values, ['[2,1]', '[2,2]', '[2,4]', '[2,5]', '[1,5]']);
+      // console.log(values);
+
+      // console.log('terms:');
+      // for (const foo of c.conjunctions) {
+      //   const d = Disjunction.create([foo]);
+      //   const values = [...disjunctionValues([x,y], d).values()];
+      //   console.log(values);
+      // }
+
+      // assert.isTrue(false);
+    });
+
+    it('intersect(): X & 0', () => {
+      const x = Dimension.create(0, 4);
+      const y = Dimension.create(0, 6);
+
+      const a = Disjunction.create([
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(1, 2)),
+          new DimensionedRange(y, new DRange(1, 2)),
+        ]),
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(1, 2)),
+          new DimensionedRange(y, new DRange(4, 5)),
+        ]),
+      ]);
+
+      const b = Disjunction.create([]);
+
+      const c = a.intersect(b);
+      const values = [...disjunctionValues([x, y], c).values()];
+      assert.deepEqual(values, []);
+    });
+
+    it('intersect(): X & 1', () => {
+      const x = Dimension.create(0, 4);
+      const y = Dimension.create(0, 6);
+
+      const a = Disjunction.create([
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(1, 2)),
+          new DimensionedRange(y, new DRange(1, 2)),
+        ]),
+        Conjunction.create([
+          new DimensionedRange(x, new DRange(1, 2)),
+          new DimensionedRange(y, new DRange(4, 5)),
+        ]),
+      ]);
+
+      const b = Disjunction.create([
+        Conjunction.create([])
+      ]);
+
+      const c = a.intersect(b);
+      const values = [...disjunctionValues([x, y], c).values()];
+      assert.deepEqual(values, [
+        '[1,1]', '[2,1]',
+        '[1,2]', '[2,2]',
+        '[1,4]', '[2,4]',
+        '[1,5]', '[2,5]'
+      ]);
+    });
   });
 
-  it('intersect(): X & 0', () => {
-    assert.isTrue(false);
-  });
 
-  it('intersect(): X & 1', () => {
-    assert.isTrue(false);
-  });
+  describe('predicates', () => {
+    it('isEmpty()', () => {
+      // Actually empty
+      const d1 = Disjunction.create([]);
+      assert.isTrue(d1.isEmpty());
 
-  it('X + 1 = 1', () => {
-    const c = Conjunction.create([range1]);
-    const u = Conjunction.create([universeRange1]);
+      // Not empty
+      const c1 = Conjunction.create([range1]);
+      const d2 = Disjunction.create([c1]);
+      assert.isFalse(d2.isEmpty());
+    });
 
-    const d1 = Disjunction.create([u, c]);
-    assert.equal(d1.conjunctions.length, 1);
-    assert.isTrue(d1.isUniverse());
+    it('isUniverse()', () => {
+      // Actually universe
+      const u = Conjunction.create([universeRange1]);
+      const d1 = Disjunction.create([u]);
+      assert.isTrue(d1.isUniverse());
 
-    const d2 = Disjunction.create([c, u]);
-    assert.equal(d2.conjunctions.length, 1);
-    assert.isTrue(d2.isUniverse());
-  });
-
-  it('X + 0 = X', () => {
-    const c = Conjunction.create([range1]);
-    const e = Conjunction.create([emptyRange1]);
-
-    const d1 = Disjunction.create([e, c]);
-    assert.equal(d1.conjunctions.length, 1);
-    assert.equal(d1.conjunctions[0], c);
-
-    const d2 = Disjunction.create([c, e]);
-    assert.equal(d2.conjunctions.length, 1);
-    assert.equal(d2.conjunctions[0], c);
+      // Actually universe
+      const c1 = Conjunction.create([range1]);
+      const d2 = Disjunction.create([c1]);
+      assert.isFalse(d2.isUniverse());
+    });
   });
 });

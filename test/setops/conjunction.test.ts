@@ -32,59 +32,64 @@ const universeRange = new DimensionedRange(dimension2, dimension2.domain);
 const universeRange3 = new DimensionedRange(dimension3, dimension3.domain);
 
 describe('Conjunction', () => {
-  // Dimension order check
-  it('constructor validation', () => {
-    assert.throws(() => {
-      Conjunction.create([range2, range1]);
+
+  describe('create()', () => {
+    // Dimension order check
+    it('parameter validation', () => {
+      assert.throws(() => {
+        Conjunction.create([range2, range1]);
+      });
+
+      assert.doesNotThrow(() => {
+        Conjunction.create([range1, range2]);
+      });
     });
 
-    assert.doesNotThrow(() => {
-      Conjunction.create([range1, range2]);
+    // Trim on encountering empty dimension
+    it('X & 0 = 0', () => {
+      const c = Conjunction.create([range1, emptyRange, range3]);
+      assert.equal(c.dimensions.length, 1);
+      assert.equal(c.dimensions[0], emptyRange);
+    });
+
+    // Filter out universe dimensions
+    it('X & 1 = X', () => {
+      const c1 = Conjunction.create([range1, universeRange, range3]);
+      assert.equal(c1.dimensions.length, 2);
+      assert.equal(c1.dimensions[0], range1);
+      assert.equal(c1.dimensions[1], range3);
+
+      const c2 = Conjunction.create([universeRange]);
+      assert.equal(c2.dimensions.length, 0);
     });
   });
 
-  // Trim on encountering empty dimension
-  it('X & 0 = 0', () => {
-    const c = Conjunction.create([range1, emptyRange, range3]);
-    assert.equal(c.dimensions.length, 1);
-    assert.equal(c.dimensions[0], emptyRange);
-  });
+  describe('predicates', () => {
+    // isEmpty()
+    it('isEmpty()', () => {
+      // Actually empty
+      const c1 = Conjunction.create([range1, emptyRange, range3]);
+      assert.isTrue(c1.isEmpty());
 
-  // Filter out universe dimensions
-  it('X & 1 = X', () => {
-    const c1 = Conjunction.create([range1, universeRange, range3]);
-    assert.equal(c1.dimensions.length, 2);
-    assert.equal(c1.dimensions[0], range1);
-    assert.equal(c1.dimensions[1], range3);
+      // Not empty
+      const c2 = Conjunction.create([range1, range3]);
+      assert.isFalse(c2.isEmpty());
+    });
 
-    const c2 = Conjunction.create([universeRange]);
-    assert.equal(c2.dimensions.length, 0);
-  });
+    // isUniverse()
+    it('isUniverse()', () => {
+      // Actually universe
+      const c1 = Conjunction.create([universeRange]);
+      assert.isTrue(c1.isUniverse());
 
-  // isEmpty()
-  it('isEmpty()', () => {
-    // Actually empty
-    const c1 = Conjunction.create([range1, emptyRange, range3]);
-    assert.isTrue(c1.isEmpty());
+      // Actually universe
+      const c2 = Conjunction.create([universeRange, universeRange3]);
+      assert.isTrue(c2.isUniverse());
 
-    // Not empty
-    const c2 = Conjunction.create([range1, range3]);
-    assert.isFalse(c2.isEmpty());
-  });
-
-  // isUniverse()
-  it('isUniverse()', () => {
-    // Actually universe
-    const c1 = Conjunction.create([universeRange]);
-    assert.isTrue(c1.isUniverse());
-
-    // Actually universe
-    const c2 = Conjunction.create([universeRange, universeRange3]);
-    assert.isTrue(c2.isUniverse());
-
-    // Not empty
-    const c3 = Conjunction.create([range1, range3]);
-    assert.isFalse(c3.isUniverse());
+      // Not empty
+      const c3 = Conjunction.create([range1, range3]);
+      assert.isFalse(c3.isUniverse());
+    });
   });
 
   it('intersect()', () => {
@@ -98,11 +103,12 @@ describe('Conjunction', () => {
 
     const c3 = Conjunction.create([range1b, range3b, range4]);
     const r2 = c1.intersect(c3);
-    assert.equal(r2.dimensions.length, 4);
+    assert.equal(r2.dimensions.length, 5);
     assert.equal(r2.dimensions[0].range.toString(), '[ 10-20 ]');
     assert.equal(r2.dimensions[1].range.toString(), '[ 15-20 ]');
     assert.equal(r2.dimensions[2].range.toString(), '[ 240-260 ]');
     assert.equal(r2.dimensions[3].range.toString(), '[ 1240-1250 ]');
+    assert.equal(r2.dimensions[4].range.toString(), '[ 10-20 ]');
 
 
     // console.log(JSON.stringify(result, null, 4));
