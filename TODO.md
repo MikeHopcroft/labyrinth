@@ -1,0 +1,18 @@
+# TODO
+
+* Consider replacing drange with something more functional. Currently methods like subtract create side effects.
+* Need better handling for empty dimension in conjunction. Issue comes up in complement. The complement of the empty set needs to produce a disjunction of a conjunction that allows any.
+* Built in emptyConjunction and universeConjunction constants
+* Built in emptyDimension constant
+* How do you complement the empty range?
+* Conjunction factory: filter out universe terms
+* Consider having conjunction constructor or factory sort dimensions by id.
+* Strategies to simplify intersection of two disjunctions
+  * Common factors?
+  * Identical terms?
+  * (evens, B) + (odds, B) = (all, B)
+  * (X, B) + (Y, B) = (X + Y, B)
+* X & 1 = X
+* X & 0 = 0
+* X | 1 = 1
+* X | 0 = X
