@@ -1,6 +1,23 @@
 # TODO
 
-* Consider replacing drange with something more functional. Currently methods like subtract create side effects.
+* Dimensions
+  * Include dimension name
+  * Include dimension type name
+* IP addresses
+  * Single IP
+  * IP start-end range
+  * IP CIDR range
+  * Symbol for IP set
+  * REVIEW: do we want to use cidr.lastAddress or cidr.firstAddress + cidr.length - 1
+  * Disallow IPv6
+
+* DRange
+  * Consider replacing drange with something more functional. Currently methods like subtract create side effects.
+  * Domain contains check
+  * First method
+  * Last method
+  * Access numbers without copying
+* Pretty printing Conjunctions
 * Need better handling for empty dimension in conjunction. Issue comes up in complement. The complement of the empty set needs to produce a disjunction of a conjunction that allows any.
 * Built in emptyConjunction and universeConjunction constants
 * Built in emptyDimension constant
