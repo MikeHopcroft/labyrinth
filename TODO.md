@@ -16,3 +16,13 @@
 * X & 0 = 0
 * X | 1 = 1
 * X | 0 = X
+* Rules
+  * soure ip
+  * source port
+  * destination ip
+  * destination port
+  * protocol
+  * action: allow/deny
+  * priority
+  * pretty printing
+  * 
