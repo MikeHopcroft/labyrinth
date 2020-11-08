@@ -1,33 +1,13 @@
 import DRange from 'drange';
 
-import { ianaData } from './iaia_data';
-
-function createIanaProtocolLookup() {
-  const nameToNumber = new Map<string, number>();
-  for (const p of ianaData) {
-    const number = Number(p.Decimal);
-    const keyword = p.Keyword;
-    if (number !== NaN && keyword) {
-      nameToNumber.set(keyword, number);
-    }
-  }
-
-  return (name: string) => {
-    const number = nameToNumber.get(name);
-    if (number === undefined) {
-      const message = `Unknown protocol "${name}".`;
-      throw new TypeError(message);
-    }
-    return number;
-  }
-}
+import {ianaData} from './iaia_data';
 
 function createProtocolMap() {
   const nameToRange = new Map<string, DRange>();
   for (const p of ianaData) {
     const number = Number(p.Decimal);
     const keyword = p.Keyword;
-    if (number !== NaN && keyword) {
+    if (!Number.isNaN(number) && keyword) {
       nameToRange.set(keyword, new DRange(number));
     }
   }
@@ -35,6 +15,4 @@ function createProtocolMap() {
   return nameToRange;
 }
 
-export const lookupProtocol = createIanaProtocolLookup();
 export const protocolMap = createProtocolMap();
-

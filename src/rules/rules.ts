@@ -1,14 +1,13 @@
 import DRange from 'drange';
 import * as ip from 'ip';
 
-import { Disjunction, Conjunction, DimensionedRange, Dimension } from '../setops';
-import { Rule, RuleDimensions } from './types';
-import { lookupProtocol, protocolMap } from './lookup_protocol';
-import { number } from 'io-ts';
+import {protocolMap} from './lookup_protocol';
+import {Conjunction, Dimension, DimensionedRange} from '../setops';
+import {Rule} from './types';
 
 interface RuleGroup {
-  allow: Rule[],
-  deny: Rule[]
+  allow: Rule[];
+  deny: Rule[];
 }
 
 // function build(dimensions: RuleDimensions, rules: Rule[]): Disjunction {
@@ -68,7 +67,7 @@ export function parseSet(
     const match = s.match(/^\s*([^-\s]+)(?:-([^-\s]+))?\s*$/);
 
     if (match) {
-      if (match[1]==='any' || match[1]==='*') {
+      if (match[1] === 'any' || match[1] === '*') {
         const message = `"*" and "any" may not be used with any other ${name}.`;
         throw new TypeError(message);
       }
@@ -77,7 +76,7 @@ export function parseSet(
       if (match[2] === undefined) {
         range.add(start);
       } else {
-        if (match[2]==='any' || match[2]==='*') {
+        if (match[2] === 'any' || match[2] === '*') {
           const message = `"*" and "any" may not be used with any other ${name}.`;
           throw new TypeError(message);
         }
@@ -95,11 +94,7 @@ export function parseSet(
         const startValue = start.numbers()[0];
         const endValue = end.numbers()[0];
         if (endValue <= startValue) {
-          const message = `Start ${name} ${
-            match[1]
-            } must be less than end ${name} ${
-            match[2]
-            }.`;
+          const message = `Start ${name} ${match[1]} must be less than end ${name} ${match[2]}.`;
           throw new TypeError(message);
         }
         range.add(startValue, endValue);
@@ -123,17 +118,15 @@ export function parseIpSet(dimension: Dimension, text: string): Conjunction {
   //     text
   //   );
   // };
-  return parseSet('protocol', dimension, parseIp, text);
+  return parseSet('ip address', dimension, parseIp, text);
 }
 
-export function parseProtocolSet(dimension: Dimension, text: string): Conjunction {
+export function parseProtocolSet(
+  dimension: Dimension,
+  text: string
+): Conjunction {
   const parser = (name: string, dimension: Dimension, text: string) => {
-    return parseNumberOrSymbol(
-      name,
-      dimension,
-      protocolMap,
-      text
-    );
+    return parseNumberOrSymbol(name, dimension, protocolMap, text);
   };
   return parseSet('protocol', dimension, parser, text);
 }
@@ -143,7 +136,7 @@ export function parsePortSet(dimension: Dimension, text: string): Conjunction {
 }
 
 export function parseNumberOrSymbol(
-  name: string,  // TODO: get name from dimension
+  name: string, // TODO: get name from dimension
   dimension: Dimension,
   lookup: Map<string, DRange>,
   text: string
@@ -156,7 +149,7 @@ export function parseNumberOrSymbol(
 }
 
 export function parseIp(
-  name: string,  // TODO: get name from dimension
+  name: string, // TODO: get name from dimension
   dimension: Dimension,
   text: string
 ): DRange {
@@ -196,7 +189,7 @@ export function parseIp(
 }
 
 export function parseNumber(
-  name: string,  // TODO: get name from dimension
+  name: string, // TODO: get name from dimension
   dimension: Dimension,
   text: string
 ): DRange {
@@ -222,7 +215,7 @@ export function parseNumber(
 }
 
 export function parseSymbol(
-  name: string,  // TODO: get name from dimension
+  name: string, // TODO: get name from dimension
   dimension: Dimension,
   lookup: Map<string, DRange>,
   text: string
@@ -239,11 +232,9 @@ export function parseSymbol(
   const vStart = value.index(0);
   const vEnd = value.index(value.length - 1);
   if (vStart < dStart || vStart > dEnd || vEnd < dStart || vEnd > dEnd) {
-    const message = `${
-      capitalize(name)
-      } "${
-      text.trim()
-      }" out of range [${dStart},${dEnd}].`;
+    const message = `${capitalize(
+      name
+    )} "${text.trim()}" out of range [${dStart},${dEnd}].`;
     throw new TypeError(message);
   }
 
