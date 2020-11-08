@@ -116,7 +116,7 @@ describe('Parser', () => {
       // Out of range
       assert.throws(
         () => parsePortSet(ports, '-1'),
-        'Invalid port number -1 out of range [0,65535].'
+        'Invalid port "-1".'
       );
       assert.throws(
         () => parsePortSet(ports, '65536'),
@@ -132,7 +132,7 @@ describe('Parser', () => {
       // Too many dashes
       assert.throws(
         () => parsePortSet(ports, '1-2-3'),
-        'Expected port number but found \"1-2-3\".'
+        'Invalid port "1-2-3".'
       );
 
       // * or any comingled
@@ -190,17 +190,14 @@ describe('Parser', () => {
         () => parseProtocolSet(protocols, 'abc'),
         'Unknown protocol "abc".'
       );
-      assert.throws(
-        // TODO: Consider adding support for symbolic ranges.
-        () => parseProtocolSet(protocols, 'TCP-UDP'),
-        'Unknown protocol "TCP-UDP".'
-      );
 
       // Out of range
       assert.throws(
         () => parseProtocolSet(protocols, '-1'),
-        'Invalid protocol number -1 out of range [0,255].'
+        'Invalid protocol "-1".'
       );
+
+      // Out of range
       assert.throws(
         () => parseProtocolSet(protocols, '256'),
         'Invalid protocol number 256 out of range [0,255].'
@@ -215,7 +212,7 @@ describe('Parser', () => {
       // Too many dashes
       assert.throws(
         () => parseProtocolSet(protocols, '1-2-3'),
-        'Unknown protocol "1-2-3".'
+        'Invalid protocol "1-2-3".'
       );
 
       // * or any comingled
@@ -237,13 +234,6 @@ describe('Parser', () => {
         () => parseProtocolSet(protocols, '3-3'),
         'Start protocol 3 must be less than end protocol 3.'
       );
-    });
-
-    it('TODO: fix dimension', () => {
-      // TODO: protocol tests need their own dimension
-      // TODO: test for symbolic ranges used in range expressions.
-      //       start and end of range must resolve to singletons.
-      assert.fail();
     });
 
     it('any', () => {
@@ -268,6 +258,12 @@ describe('Parser', () => {
 
     it('numeric protocol range', () => {
       const r1 = parseProtocolSet(protocols, '6-17');
+      assert.equal(r1.dimensions.length, 1);
+      assert.equal(r1.dimensions[0].toString(), `${protocols.id}: [ 6-17 ]`);
+    });
+
+    it('symbolic protocol range', () => {
+      const r1 = parseProtocolSet(protocols, 'TCP-UDP');
       assert.equal(r1.dimensions.length, 1);
       assert.equal(r1.dimensions[0].toString(), `${protocols.id}: [ 6-17 ]`);
     });

@@ -1,12 +1,15 @@
 # TODO
 
+* Parser
+  * Clean up
+  * Handle any and * correctly now that regex for ranges has changed
 * Dimensions
   * Include dimension name
   * Include dimension type name
 * IP addresses
   * Single IP
   * IP start-end range
-  * IP CIDR range
+  * IP CIDR blocks
   * Symbol for IP set
   * REVIEW: do we want to use cidr.lastAddress or cidr.firstAddress + cidr.length - 1
   * Disallow IPv6
