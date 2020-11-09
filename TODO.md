@@ -1,25 +1,44 @@
 # TODO
 
+* x formatter.ts should probably be in rules, not setops.
+* Pretty printing
+  * IP formatter
+    * x Single ip address
+    * x CIDR detection
+    * Named range detection
+  * Protcol formatter
+    * Deal with protocol names with dashes, e.g. unit test expects 'ICMP, TCP, UDP, NETBLT-IL, ESP, IPv6-Opts-VISA'
+  * x Port forwarder
+
+* Rules file loading
+* Data table configuration
+  * IANA
+  * IP
 * Parser
+  * Check for "Unassigned" protocol. Are there other special cases?
   * Clean up
-  * Handle any and * correctly now that regex for ranges has changed
+  * Rules parsing
+  * x Handle any and * correctly now that regex for ranges has changed
 * Dimensions
-  * Include dimension name
-  * Include dimension type name
+  * Revaluate the idea of a reserved dimension
+  * x Include dimension name
+  * x Include dimension type name
 * IP addresses
-  * Single IP
-  * IP start-end range
-  * IP CIDR blocks
   * Symbol for IP set
-  * REVIEW: do we want to use cidr.lastAddress or cidr.firstAddress + cidr.length - 1
   * Disallow IPv6
+  * REVIEW: do we want to use cidr.lastAddress or cidr.firstAddress + cidr.length - 1?
+  * x Single IP
+  * x IP start-end range
+  * x IP CIDR blocks
 
 * DRange
   * Consider replacing drange with something more functional. Currently methods like subtract create side effects.
+  * Subranges first class citizens
   * Domain contains check
   * First method
   * Last method
   * Access numbers without copying
+  * Access subranges for formatters
 * Pretty printing Conjunctions
 * Need better handling for empty dimension in conjunction. Issue comes up in complement. The complement of the empty set needs to produce a disjunction of a conjunction that allows any.
 * Built in emptyConjunction and universeConjunction constants

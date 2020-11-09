@@ -1,7 +1,7 @@
 import DRange from 'drange';
 import * as ip from 'ip';
 
-import {protocolMap} from './lookup_protocol';
+import {protocolToDRange} from './lookup_protocol';
 import {Conjunction, Dimension, DimensionedRange} from '../setops';
 import {Rule} from './types';
 
@@ -126,7 +126,7 @@ export function parseProtocolSet(
   text: string
 ): Conjunction {
   const parser = (name: string, dimension: Dimension, text: string) => {
-    return parseNumberOrSymbol(name, dimension, protocolMap, text);
+    return parseNumberOrSymbol(name, dimension, protocolToDRange, text);
   };
   return parseSet('protocol', dimension, parser, text);
 }

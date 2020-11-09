@@ -4,11 +4,12 @@ import 'mocha';
 
 import {Conjunction, Dimension, DimensionedRange} from '../../src/setops';
 
-const dimension0: Dimension = Dimension.create(1, 100);
-const dimension1: Dimension = Dimension.create(1, 100);
-const dimension2: Dimension = Dimension.create(200, 300);
-const dimension3: Dimension = Dimension.create(1000, 2000);
-const dimension4: Dimension = Dimension.create(1, 100);
+const formatter = (r: DRange) => '';
+const dimension0: Dimension = Dimension.create('test0', 'test0', formatter, 1, 100);
+const dimension1: Dimension = Dimension.create('test1', 'test1', formatter, 1, 100);
+const dimension2: Dimension = Dimension.create('test2', 'test2', formatter, 200, 300);
+const dimension3: Dimension = Dimension.create('test3', 'test3', formatter, 1000, 2000);
+const dimension4: Dimension = Dimension.create('test4', 'test4', formatter, 1, 100);
 
 const range0 = new DimensionedRange(dimension0, new DRange(10, 20));
 

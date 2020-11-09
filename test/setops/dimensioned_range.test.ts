@@ -3,8 +3,9 @@ import DRange from 'drange';
 import 'mocha';
 import {Dimension, DimensionedRange} from '../../src/setops';
 
-const dimension1: Dimension = Dimension.create(1, 10);
-const dimension2: Dimension = Dimension.create(5, 15);
+const formatter = (r: DRange) => '';
+const dimension1: Dimension = Dimension.create('test1', 'test1', formatter, 1, 10);
+const dimension2: Dimension = Dimension.create('test2', 'test2', formatter, 5, 15);
 
 describe('DimensionedRange', () => {
   it('constructor validates range', () => {
