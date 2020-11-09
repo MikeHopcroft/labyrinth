@@ -4,10 +4,15 @@ import 'mocha';
 import {parseIpSet, parsePortSet, parseProtocolSet} from '../../src/rules';
 
 import {Dimension} from '../../src/setops';
-import DRange from 'drange/types';
 
-const formatter = (r: DRange) => '';
-const ips = Dimension.create('source ip', 'ip address', formatter, 0, 4294967295);
+const formatter = () => '';
+const ips = Dimension.create(
+  'source ip',
+  'ip address',
+  formatter,
+  0,
+  4294967295
+);
 const ports = Dimension.create('source port', 'port', formatter, 0, 65535);
 const protocols = Dimension.create('protcol', 'protocol', formatter, 0, 255);
 

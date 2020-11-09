@@ -1,8 +1,8 @@
-import { isLeft } from 'fp-ts/lib/Either';
-import { ArrayType, Decoder, Errors, IntersectionType, UnionType } from 'io-ts';
+import {isLeft} from 'fp-ts/lib/Either';
+import {ArrayType, Decoder, Errors, IntersectionType, UnionType} from 'io-ts';
 import * as t from 'io-ts';
 
-import { ValidationError } from './errors';
+import {ValidationError} from './errors';
 
 export function validate<A, I>(decoder: Decoder<I, A>, data: I): A {
   const x = decoder.decode(data);

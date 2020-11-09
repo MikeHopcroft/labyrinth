@@ -6,7 +6,7 @@ export class Dimension {
   private static reservedId = 0;
   private static reservedName = 'empty';
   private static reservedTypeName = 'empty type';
-  private static reservedFormatter = (r: DRange) => 'none';
+  private static reservedFormatter = () => 'none';
   static reserved: Dimension = new Dimension();
   private static nextId = 100;
 

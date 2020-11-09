@@ -1,26 +1,26 @@
 import DRange from 'drange';
 import * as ip from 'ip';
 
-import {
-  numberToProtocol,
-  protocolToDRange
-} from '../rules/lookup_protocol';
+import {numberToProtocol} from '../rules/lookup_protocol';
 
 export function ipFormatter(r: DRange): string {
-  return r.toString().replace(
-    /(\d+)(?:-(\d+))/g,
-    (text: string, start: string, end?: string) => {
-      if (end) {
-        return formatIpRange(Number(start), Number(end));
-      } else {
-        return ip.fromLong(Number(start));
+  return r
+    .toString()
+    .replace(
+      /(\d+)(?:-(\d+))/g,
+      (text: string, start: string, end?: string) => {
+        if (end) {
+          return formatIpRange(Number(start), Number(end));
+        } else {
+          return ip.fromLong(Number(start));
+        }
       }
-    }
-  ).slice(2,-2);  // Trim off "[ " and " ]"
+    )
+    .slice(2, -2); // Trim off "[ " and " ]"
 }
 
-  // TODO: Lookup ip names
-  export function formatIpRange(s: number, e: number) {
+// TODO: Lookup ip names
+export function formatIpRange(s: number, e: number) {
   if (s === e) {
     return ip.fromLong(s);
   }
@@ -45,12 +45,12 @@ export function ipFormatter(r: DRange): string {
 }
 
 export function protocolFormatter(r: DRange): string {
-  return r.toString().replace(
-    /(\d+)/g,
-    (text: string, protocol: string) => {
+  return r
+    .toString()
+    .replace(/(\d+)/g, (text: string, protocol: string) => {
       return formatProtocol(Number(protocol));
-    }
-  ).slice(2,-2);  // Trim off "[ " and " ]"
+    })
+    .slice(2, -2); // Trim off "[ " and " ]"
 }
 
 export function formatProtocol(n: number): string {
@@ -63,5 +63,5 @@ export function formatProtocol(n: number): string {
 }
 
 export function portFormatter(r: DRange): string {
-  return r.toString().slice(2,-2);  // Trim off "[ " and " ]"
+  return r.toString().slice(2, -2); // Trim off "[ " and " ]"
 }

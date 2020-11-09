@@ -10,8 +10,14 @@ import {
   disjunctionValues,
 } from '../../src/setops';
 
-const formatter = (r: DRange) => '';
-const dimension1: Dimension = Dimension.create('test1', 'test1', formatter, 1, 100);
+const formatter = () => '';
+const dimension1: Dimension = Dimension.create(
+  'test1',
+  'test1',
+  formatter,
+  1,
+  100
+);
 
 const range1 = new DimensionedRange(dimension1, new DRange(10, 20));
 const universeRange1 = new DimensionedRange(dimension1, dimension1.domain);
@@ -48,7 +54,6 @@ describe('Disjunction', () => {
 
   describe('intersect()', () => {
     it('intersect(): X & Y', () => {
-      const formatter = (r: DRange) => '';
       const x = Dimension.create('x', 'x', formatter, 0, 4);
       const y = Dimension.create('y', 'y', formatter, 0, 6);
 
@@ -104,7 +109,6 @@ describe('Disjunction', () => {
     });
 
     it('intersect(): X & 0', () => {
-      const formatter = (r: DRange) => '';
       const x = Dimension.create('x', 'x', formatter, 0, 4);
       const y = Dimension.create('y', 'y', formatter, 0, 6);
 
@@ -127,7 +131,6 @@ describe('Disjunction', () => {
     });
 
     it('intersect(): X & 1', () => {
-      const formatter = (r: DRange) => '';
       const x = Dimension.create('x', 'x', formatter, 0, 4);
       const y = Dimension.create('y', 'y', formatter, 0, 6);
 
