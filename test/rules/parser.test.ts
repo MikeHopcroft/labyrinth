@@ -14,7 +14,7 @@ const ips = Dimension.create(
   4294967295
 );
 const ports = Dimension.create('source port', 'port', formatter, 0, 65535);
-const protocols = Dimension.create('protcol', 'protocol', formatter, 0, 255);
+const protocols = Dimension.create('protocol', 'protocol', formatter, 0, 255);
 
 describe('Parser', () => {
   describe('parseIpSet', () => {

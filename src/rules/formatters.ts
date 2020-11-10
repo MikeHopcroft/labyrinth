@@ -7,7 +7,7 @@ export function ipFormatter(r: DRange): string {
   return r
     .toString()
     .replace(
-      /(\d+)(?:-(\d+))/g,
+      /(\d+)(?:-(\d+))?/g,
       (text: string, start: string, end?: string) => {
         if (end) {
           return formatIpRange(Number(start), Number(end));

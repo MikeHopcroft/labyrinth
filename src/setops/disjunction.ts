@@ -68,4 +68,9 @@ export class Disjunction {
 
     return new Disjunction(terms);
   }
+
+  format() {
+    const lines = this.conjunctions.map(c => c.format());
+    return lines.join('\n\n');
+  }
 }

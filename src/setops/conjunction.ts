@@ -124,4 +124,8 @@ export class Conjunction {
         .join('\n') + '\n'
     );
   }
+
+  format(): string {
+    return this.dimensions.map(d => d.format()).join('\n');
+  }
 }
