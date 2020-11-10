@@ -1,2 +1,2 @@
 export * from './formatters';
-export * from './rules';
+export * from './parser';

@@ -2,6 +2,9 @@
 
 * x formatter.ts should probably be in rules, not setops.
 * Pretty printing
+  * Disjunction formatter
+  * Conjunction formatter
+  * Dimension formatter
   * IP formatter
     * x Single ip address
     * x CIDR detection
@@ -26,6 +29,7 @@
 * IP addresses
   * Symbol for IP set
   * Disallow IPv6
+  * Disallow 500.500.500.500
   * REVIEW: do we want to use cidr.lastAddress or cidr.firstAddress + cidr.length - 1?
   * x Single IP
   * x IP start-end range

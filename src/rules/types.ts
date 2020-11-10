@@ -1,6 +1,6 @@
 import * as t from 'io-ts';
-import DRange from 'drange/types';
-import {Dimension} from '../setops';
+
+import {Conjunction, Dimension} from '../setops';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -34,7 +34,7 @@ const ruleSpecType = t.intersection([
   }),
   t.partial({
     sourceIp: t.string,
-    sourePort: t.string,
+    sourcePort: t.string,
     destIp: t.string,
     destPort: t.string,
     protocol: t.string,
@@ -52,11 +52,7 @@ export type RuleSpecSet = t.TypeOf<typeof ruleSpecSetType>;
 export interface Rule {
   action: ActionType;
   priority: number;
-  sourceIp?: DRange;
-  sourcePort?: DRange;
-  destIp?: DRange;
-  destPort?: DRange;
-  protocol?: DRange;
+  conjunction: Conjunction;
 }
 
 export interface RuleDimensions {

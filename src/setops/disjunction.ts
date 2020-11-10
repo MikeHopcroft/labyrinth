@@ -45,4 +45,27 @@ export class Disjunction {
 
     return new Disjunction(terms);
   }
+
+  union(other: Disjunction): Disjunction {
+    let terms = [...this.conjunctions];
+    for (const t of other.conjunctions) {
+      if (t.isEmpty()) {
+        // X + 0 = X
+        continue;
+      }
+
+      if (t.isUniverse()) {
+        // X + 1 = 1
+        terms = [t];
+        break;
+      }
+
+      terms.push(t);
+
+      // TODO: consider other simplification strategies here.
+      //   Remove duplicates
+    }
+
+    return new Disjunction(terms);
+  }
 }
