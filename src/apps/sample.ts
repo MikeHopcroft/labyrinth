@@ -67,7 +67,7 @@ function go() {
     },
     {
       action: ActionType.DENY,
-      priority: 1,
+      priority: 10,
       destIp: '10.10.10.0/24',
       destPort: '81',
       sourcePort: '80-83'
@@ -88,7 +88,7 @@ function go() {
     },
     {
       action: ActionType.DENY,
-      priority: 1,
+      priority: 10,
       destIp: '10.10.10.0/24',
       destPort: '81',
       sourcePort: '80'
@@ -98,13 +98,37 @@ function go() {
   const rules2 = ruleSpecs2.map(r => parseRuleSpec(dimensions, r));
   const r1 = evaluate(rules1);
   const r2 = evaluate(rules2);
-  // const result = r1.intersect(r2.)
-  const result = r1;
+  // const result = r2.subtract(r1);
+  // const result = r1;
   // TODO: need disjunction subtract, complement
   // TODO: need conjunction complement
 
-  console.log('Allowed routes:');
-  console.log(result.format());
+  console.log('Allowed routes in r1:');
+  console.log(r1.format());
+  console.log();
+
+  const r1SubR2 = r1.subtract(r2);
+  const r2SubR1 = r2.subtract(r1);
+
+  if (r1SubR2.isEmpty() && r2SubR1.isEmpty()) {
+    console.log('Rule sets r1 and r2 are equivalent');
+  } else {
+    if (r1SubR2.isEmpty()) {
+      console.log('All routes in r1 are also in r2.');
+    } else {
+      console.log('Routes in r1 that are not in r2:');
+      console.log(r1SubR2.format());
+    }
+    console.log();
+
+    if (r2SubR1.isEmpty()) {
+      console.log('All routes in r2 are also in r1.');
+    } else {
+      console.log('Routes in r2 that are not in r1:');
+      console.log(r2SubR1.format());
+    }
+  }
+  console.log();
 }
 
 go();

@@ -33,10 +33,18 @@ export class Disjunction {
   }
 
   intersect(other: Disjunction): Disjunction {
-    const terms: Conjunction[] = [];
+    let terms: Conjunction[] = [];
     for (const t1 of this.conjunctions) {
       for (const t2 of other.conjunctions) {
-        terms.push(t1.intersect(t2));
+        const t = t1.intersect(t2);
+        if (t.isUniverse()) {
+          terms = [t];
+          break;
+        }
+
+        if (!t.isEmpty()) {
+          terms.push(t1.intersect(t2));
+        }
       }
     }
 
@@ -67,6 +75,18 @@ export class Disjunction {
     }
 
     return new Disjunction(terms);
+  }
+
+  subtract(other: Disjunction): Disjunction {
+    const factors = other.conjunctions.map(x => x.complement());
+
+    // TODO: use reduce
+    let result: Disjunction = this;
+    for (const f of factors) {
+      result = result.intersect(f);
+    }
+
+    return result;
   }
 
   format() {

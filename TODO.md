@@ -1,10 +1,35 @@
 # TODO
 
+* Indented printing
+* Named IP ranges - parsing and formatting
+* Common factor simplification
+* Print diagnostic information
+  * Number of conjunctions
+  * Number of DRanges
+  * Size of unreduced cross product
+* Log diagnostic information
+  * High water mark of disjunction sizes
+* Formatting utilities for React App
+  * Don't want full string - want parts and types
+* React App
+  * Left Monaco
+  * Right Monaco
+  * Error pane
+  * Update button (with enabled/disabled)
+  * Delta pane (tabs for left, right, l-r, and r-l)
+
+* Disjunction
+  * x subtract
+  * complement
+* Conjunction
+  * subtract
+  * x complement
 * x formatter.ts should probably be in rules, not setops.
 * Pretty printing
-  * Disjunction formatter
-  * Conjunction formatter
-  * Dimension formatter
+  * Indented printing
+  * x Disjunction formatter
+  * x Conjunction formatter
+  * x Dimension formatter
   * IP formatter
     * x Single ip address
     * x CIDR detection
@@ -18,6 +43,7 @@
   * IANA
   * IP
 * Parser
+  * Parse 'allow' and 'deny'
   * Check for "Unassigned" protocol. Are there other special cases?
   * Clean up
   * Rules parsing
