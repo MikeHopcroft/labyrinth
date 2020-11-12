@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "drange": "^2.0.1",
+    "fastpriorityqueue": "^0.6.3",
     "fp-ts": "^2.8.5",
     "io-ts": "^2.2.12",
     "ip": "^1.1.5",

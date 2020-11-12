@@ -30,11 +30,22 @@ export class DimensionedRange {
   intersect(other: DimensionedRange): DimensionedRange {
     if (this.dimension !== other.dimension) {
       const message =
-        'RangeSets with different dimensions cannot be intersected.';
+        'DimensionedRanges with different dimensions cannot be intersected.';
       throw new TypeError(message);
     }
 
     const range = this.range.clone().intersect(other.range);
+    return new DimensionedRange(this.dimension, range);
+  }
+
+  union(other: DimensionedRange): DimensionedRange {
+    if (this.dimension !== other.dimension) {
+      const message =
+        'DimensionedRanges with different dimensions cannot be unioned.';
+      throw new TypeError(message);
+    }
+
+    const range = this.range.clone().add(other.range);
     return new DimensionedRange(this.dimension, range);
   }
 

@@ -66,6 +66,24 @@ describe('DimensionedRange', () => {
     assert.equal(result.range.toString(), '[ 6-7 ]');
   });
 
+  it('union()', () => {
+    assert.fail('Not implemented');
+    // const r1 = new DRange(5, 7);
+    // const r2 = new DRange(6, 10);
+
+    // // Case: dimensions don't match
+    // const dr1 = new DimensionedRange(dimension1, r1);
+    // const dr2 = new DimensionedRange(dimension2, r2);
+    // assert.throws(() => {
+    //   dr1.intersect(dr2);
+    // });
+
+    // // Case: pass throug to DRange intersect
+    // const dr3 = new DimensionedRange(dimension1, r2);
+    // const result = dr1.intersect(dr3);
+    // assert.equal(result.range.toString(), '[ 6-7 ]');
+  });
+
   it('complement()', () => {
     const r1 = new DRange(5, 7);
 

@@ -1,5 +1,6 @@
 # TODO
 
+* Figure out ipFormatter unit test regression.
 * Indented printing
 * Named IP ranges - parsing and formatting
 * Common factor simplification
