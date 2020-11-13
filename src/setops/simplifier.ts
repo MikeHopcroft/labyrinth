@@ -1,23 +1,22 @@
-import DRange from 'drange/types';
+import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
-import PriorityQueue from 'priorityqueuejs';
 import { Conjunction } from "./conjunction";
 import { Dimension } from "./dimension";
 import { DimensionedRange } from './dimensioned_range';
 import { Disjunction } from "./disjunction";
 
-interface ConjunctionInfo {
+export interface ConjunctionInfo {
   conjunction: Conjunction;
   factors: FactorInfo[];
 }
 
-interface FactorInfo {
+export interface FactorInfo {
   key: string;
   dimension: Dimension;
   conjunction: ConjunctionInfo;
 }
 
-interface FactorEntry {
+export interface FactorEntry {
   key: string;
   dimension: Dimension;
   conjunctions: Set<FactorInfo>;
@@ -26,17 +25,21 @@ interface FactorEntry {
 // https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
 class KeyToFactorEntry extends Map<string, FactorEntry> {};
 
-
-export function simplify(d: Disjunction): void { //Disjunction {
+export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   const index = new KeyToFactorEntry();
-  const queue = new FastPriorityQueue<FactorEntry>();
+  const queue = new FastPriorityQueue<FactorEntry>((a,b)=>{
+    return a.conjunctions.size > b.conjunctions.size;
+  });
+  const terms = new Set<ConjunctionInfo>();
 
-  const conjunctions = new Set<ConjunctionInfo>(
-    d.conjunctions.map(createConjunctionInfo)
-  );
-
-  for (const c of conjunctions.values()) {
-    addConjunction(index, queue, c);
+  // let prev: ConjunctionInfo | undefined = undefined;
+  for (const c of d.conjunctions) {
+    const info = createConjunctionInfo(dimensions, c);
+    // const info2 = createConjunctionInfo(c);
+    // console.log(`info === info2: ${info === info2}`);
+    // console.log(`prev === info: ${prev === info}`);
+    // prev = info;
+    addConjunction(index, queue, terms, info);
   }
 
   while (true) {
@@ -44,8 +47,12 @@ export function simplify(d: Disjunction): void { //Disjunction {
     if (entry === undefined || entry.conjunctions.size < 2) {
       break;
     }
-    combine(index, queue, entry);
+
+    console.log(`Processing entry \n${entry.key}\n`);
+    combine(dimensions, index, queue, terms, entry);
   }
+
+  return Disjunction.create([...terms.values()].map(x => x.conjunction));
   // Index all of the all-but-one factors - use balanced tree
   // Maintain set of conjunctions
   // While at least two conjunctions share all-but-one factors
@@ -54,19 +61,62 @@ export function simplify(d: Disjunction): void { //Disjunction {
   //   Add new item to index
 }
 
-function createConjunctionInfo(conjunction: Conjunction): ConjunctionInfo {
+export function createConjunctionInfoOld(conjunction: Conjunction): ConjunctionInfo {
   const factors: FactorInfo[] = [];
   const info: ConjunctionInfo = { conjunction, factors };
 
   const lines = conjunction.dimensions.map(d => d.format());
 
-  for (const [i, dimension] of conjunction.dimensions.entries()) {
+  for (const [i, dr] of conjunction.dimensions.entries()) {
     const save = lines[i];
     lines[i]='';
     const key = lines.join('\n');
     factors.push({
       key,
-      dimension: dimension.dimension,
+      dimension: dr.dimension,
+      conjunction: info
+    });
+    lines[i] = save;
+  }
+
+  return info;
+}
+
+export function createConjunctionInfo(
+  // TODO: replace Dimension[] with DimensionSet object that enforces
+  // monotonic ids.
+  dimensions: Dimension[],
+  conjunction: Conjunction
+): ConjunctionInfo {
+  const factors: FactorInfo[] = [];
+  const info: ConjunctionInfo = { conjunction, factors };
+
+  let i = 0;
+  const lines: string[] = [];
+  for (const d of dimensions) {
+    if (
+      i < conjunction.dimensions.length && 
+      conjunction.dimensions[i].dimension.id === d.id
+    ) {
+      lines.push(conjunction.dimensions[i++].format());
+    } else {
+      // TODO: this is britter because it may format different than
+      // d.formatter(). Perhaps the DRange parameter to d.formatter()
+      // should be optional.
+      lines.push(`${d.name}: *`);
+      // lines.push(d.formatter(d.domain));
+    }
+  }  
+  // const lines = conjunction.dimensions.map(d => d.format());
+
+  // for (const [i, dr] of conjunction.dimensions.entries()) {
+  for (const [i, dimension] of dimensions.entries()) {
+    const save = lines[i];
+    lines[i]='';
+    const key = lines.join('\n');
+    factors.push({
+      key,
+      dimension: dimension,
       conjunction: info
     });
     lines[i] = save;
@@ -76,10 +126,14 @@ function createConjunctionInfo(conjunction: Conjunction): ConjunctionInfo {
 }
 
 function combine(
+  dimensions: Dimension[],
   index: KeyToFactorEntry,
   queue: FastPriorityQueue<FactorEntry>,
+  terms: Set<ConjunctionInfo>,
   entry: FactorEntry
 ) {
+  console.log(`Combining ${entry.conjunctions.size} terms.`);
+
   //
   // Make new, combined conjunction
   //
@@ -101,8 +155,11 @@ function combine(
       }
     }
     if (!found) {
-      const message = `Did not find dimension ${dimension.id}.`;
-      throw new TypeError(message);
+      // TODO: DimensionedRange contruction could have optional second parameter
+      // to specify domain.
+      combinedRange = combinedRange.union(new DimensionedRange(dimension, dimension.domain));
+      // const message = `Did not find dimension ${dimension.id}.`;
+      // throw new TypeError(message);
     }
   }
   if (!firstConjunction) {
@@ -110,7 +167,7 @@ function combine(
     throw new TypeError(message);
   }
 
-  // The prepare new list of dimensioned ranges.
+  // Then prepare new list of dimensioned ranges.
   const ranges: DimensionedRange[] = [];
   for (const d of firstConjunction.dimensions) {
     if (d.dimension === entry.dimension) {
@@ -119,7 +176,10 @@ function combine(
       ranges.push(d);
     }
   }
-  const combined = createConjunctionInfo(Conjunction.create(ranges));
+  const combined = createConjunctionInfo(
+    dimensions,
+    Conjunction.create(ranges)
+  );
 
   //
   // Then update the index.
@@ -127,18 +187,26 @@ function combine(
 
   // Remove conjunctions from index
   for (const c of entry.conjunctions) {
-    removeConjunction(index, queue, c.conjunction);
+    removeConjunction(index, queue, terms, c.conjunction);
   }
 
   // Add new conjunction to index
-  addConjunction(index, queue, combined)
+  addConjunction(index, queue, terms, combined)
 }
 
 function addConjunction(
   index: KeyToFactorEntry,
   queue: FastPriorityQueue<FactorEntry>,
+  terms: Set<ConjunctionInfo>,
   conjunction: ConjunctionInfo
 ) {
+  console.log('addConjunction');
+  if (terms.has(conjunction)) {
+    const message = 'Duplicate conjunction';
+    throw new TypeError(message);
+  }
+  terms.add(conjunction);
+
   for (const f of conjunction.factors) {
     const entry = index.get(f.key);
     if (entry) {
@@ -163,19 +231,29 @@ function addConjunction(
 function removeConjunction(
   index: KeyToFactorEntry,
   queue: FastPriorityQueue<FactorEntry>,
+  terms: Set<ConjunctionInfo>,
   conjunction: ConjunctionInfo
 ) {
+  console.log('removeConjunction');
+
+  if (!terms.has(conjunction)) {
+    const message = 'Conjunction not found in terms';
+    throw new TypeError(message);
+  }
+  terms.delete(conjunction);
+
   for (const f of conjunction.factors) {
     const entry = index.get(f.key);
     if (!entry) {
-      const message = 'Entry not in index';
+      const message = `Entry not in index:\n${f.key}`;
       throw new TypeError(message);
     }
 
-    if (!queue.remove(entry)) {
-      const message = `Entry not in priority queue`;
-      throw new TypeError(message);
-    }
+    // Entry may have been removed from queue in main loop.
+    // if (!queue.remove(entry)) {
+    //   const message = `Entry not in priority queue:\n${f.key}`;
+    //   throw new TypeError(message);
+    // }
     entry.conjunctions.delete(f);
     queue.add(entry);
   }

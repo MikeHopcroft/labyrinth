@@ -56,32 +56,37 @@ describe('DimensionedRange', () => {
     // Case: dimensions don't match
     const dr1 = new DimensionedRange(dimension1, r1);
     const dr2 = new DimensionedRange(dimension2, r2);
-    assert.throws(() => {
-      dr1.intersect(dr2);
-    });
+    assert.throws(
+      () => {
+        dr1.intersect(dr2);
+      },
+      'DimensionedRanges with different dimensions cannot be intersected.'
+    );
 
-    // Case: pass throug to DRange intersect
+    // Case: pass through to DRange intersect
     const dr3 = new DimensionedRange(dimension1, r2);
     const result = dr1.intersect(dr3);
     assert.equal(result.range.toString(), '[ 6-7 ]');
   });
 
   it('union()', () => {
-    assert.fail('Not implemented');
-    // const r1 = new DRange(5, 7);
-    // const r2 = new DRange(6, 10);
+    const r1 = new DRange(5, 7);
+    const r2 = new DRange(6, 10);
 
-    // // Case: dimensions don't match
-    // const dr1 = new DimensionedRange(dimension1, r1);
-    // const dr2 = new DimensionedRange(dimension2, r2);
-    // assert.throws(() => {
-    //   dr1.intersect(dr2);
-    // });
+    // Case: dimensions don't match
+    const dr1 = new DimensionedRange(dimension1, r1);
+    const dr2 = new DimensionedRange(dimension2, r2);
+    assert.throws(
+      () => {
+        dr1.union(dr2);
+      },
+      'DimensionedRanges with different dimensions cannot be unioned.'
+    );
 
-    // // Case: pass throug to DRange intersect
-    // const dr3 = new DimensionedRange(dimension1, r2);
-    // const result = dr1.intersect(dr3);
-    // assert.equal(result.range.toString(), '[ 6-7 ]');
+    // Case: pass through to DRange union
+    const dr3 = new DimensionedRange(dimension1, r2);
+    const result = dr1.union(dr3);
+    assert.equal(result.range.toString(), '[ 5-10 ]');
   });
 
   it('complement()', () => {

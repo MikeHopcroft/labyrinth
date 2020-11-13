@@ -3,4 +3,5 @@ export * from './dimension';
 export * from './dimensioned_range';
 export * from './disjunction';
 // export * from './ops';
+export * from './simplifier';
 export * from './utilities';

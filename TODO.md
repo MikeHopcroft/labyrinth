@@ -1,6 +1,12 @@
 # TODO
 
+* TODOs in simplifier.ts
+* Better naming scheme in simplifier.ts
+* It is easy to add a bogus field like destinationPort instead of destPort
+  * System fails silently
+  * Is validation in place?
 * Figure out ipFormatter unit test regression.
+  * Investigate why 0.0.0.1 sometimes formats as "1" and other times as "0.0.0.1"
 * Indented printing
 * Named IP ranges - parsing and formatting
 * Common factor simplification

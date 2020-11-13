@@ -1,7 +1,7 @@
 import {Dimension} from '../setops';
 
 import {ipFormatter, parseRuleSpec, portFormatter, protocolFormatter} from '../rules'
-import { ActionType, RuleDimensions, RuleSpec, RuleSpecSet } from '../rules/types';
+import { ActionType, RuleDimensions, RuleSpec } from '../rules/types';
 import { evaluate } from '../rules/rules';
 
 const sourceIp = Dimension.create(
