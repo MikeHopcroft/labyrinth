@@ -58,14 +58,14 @@ export class DimensionedRange {
     return `${this.dimension.id}: ${this.range.toString()}`;
   }
 
-  format(): string {
+  format(prefix: string = ''): string {
     const name = this.dimension.name;
     const value = this.dimension.formatter(this.range);
     const complement = this.dimension.formatter(this.complement().range);
     if (value.length < complement.length) {
-      return `${name}: ${value}`;
+      return `${prefix}${name}: ${value}`;
     } else {
-      return `${name}: except ${complement}`;
+      return `${prefix}${name}: except ${complement}`;
     }
   }
 }

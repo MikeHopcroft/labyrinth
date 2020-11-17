@@ -273,5 +273,63 @@ describe('Simplifier', () => {
       const observed = simplified.format();
       assert.equal(observed, expected);
     });
+
+    it('chain', () => {
+      // These rules should trigger a chain of simplifications:
+      //   1. Merge source ports of first two rules, yielding 1-2
+      //   2. Merge dest ports of this result with third rule, yielding 100-101
+      //   3. Merge protocol of this result with fourth rule, yielding TCP, UDP
+      const ruleSpecs = [
+        {
+          action: ActionType.ALLOW,
+          priority: 1,
+          sourcePort: '1',
+          destPort: '100',
+          protocol: 'TCP'
+        },
+        {
+          action: ActionType.ALLOW,
+          priority: 1,
+          sourcePort: '2',
+          destPort: '100',
+          protocol: 'TCP'
+        },
+        {
+          action: ActionType.ALLOW,
+          priority: 1,
+          sourcePort: '1-2',
+          destPort: '101',
+          protocol: 'TCP'
+        },
+        {
+          action: ActionType.ALLOW,
+          priority: 1,
+          sourcePort: '1-2',
+          destPort: '100-101',
+          protocol: 'UDP'
+        }
+      ];
+
+      const rules = ruleSpecs.map(r => parseRuleSpec(dimensions, r));
+      const expression = evaluate(rules);
+
+      console.log('Before simplification:');
+      console.log(expression.format());
+      console.log();
+
+      const simplified = simplify(dimensionList, expression);
+
+      console.log('After simplification:');
+      console.log(simplified.format());
+      console.log();
+
+      // TODO: this test is brittle because the algorithm could get the right
+      // answer in a different order.
+      const expected = 'source port: 1-2\ndestination port: 100-101\nprotocol: TCP, UDP';
+      const observed = simplified.format();
+      assert.equal(observed, expected);
+
+    });
+
   });  
 });

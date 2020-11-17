@@ -125,7 +125,7 @@ export class Conjunction {
     );
   }
 
-  format(): string {
-    return this.dimensions.map(d => d.format()).join('\n');
+  format(prefix: string = ''): string {
+    return this.dimensions.map(d => d.format(prefix)).join('\n');
   }
 }

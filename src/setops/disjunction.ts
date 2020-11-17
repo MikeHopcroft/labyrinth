@@ -89,8 +89,8 @@ export class Disjunction {
     return result;
   }
 
-  format() {
-    const lines = this.conjunctions.map(c => c.format());
+  format(prefix: string = '') {
+    const lines = this.conjunctions.map(c => c.format(prefix));
     return lines.join('\n\n');
   }
 }

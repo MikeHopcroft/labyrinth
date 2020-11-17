@@ -48,7 +48,7 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
       break;
     }
 
-    console.log(`Processing entry \n${entry.key}\n`);
+    // console.log(`Processing entry \n${entry.key}\n`);
     combine(dimensions, index, queue, terms, entry);
   }
 
@@ -132,7 +132,7 @@ function combine(
   terms: Set<ConjunctionInfo>,
   entry: FactorEntry
 ) {
-  console.log(`Combining ${entry.conjunctions.size} terms.`);
+  // console.log(`Combining ${entry.conjunctions.size} terms.`);
 
   //
   // Make new, combined conjunction
@@ -200,7 +200,7 @@ function addConjunction(
   terms: Set<ConjunctionInfo>,
   conjunction: ConjunctionInfo
 ) {
-  console.log('addConjunction');
+  // console.log('addConjunction');
   if (terms.has(conjunction)) {
     const message = 'Duplicate conjunction';
     throw new TypeError(message);
@@ -234,7 +234,7 @@ function removeConjunction(
   terms: Set<ConjunctionInfo>,
   conjunction: ConjunctionInfo
 ) {
-  console.log('removeConjunction');
+  // console.log('removeConjunction');
 
   if (!terms.has(conjunction)) {
     const message = 'Conjunction not found in terms';

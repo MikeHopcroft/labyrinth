@@ -1,15 +1,23 @@
 # TODO
 
+* README.md
+* Try on more realistic example from paper
+* Command line utility
+* Simplifier should use DimensionSet object that enforces dimension ordering
+  * Instead of Dimension[]
+  * Might be base class for RulesDimensions
+  * Consider renaming RulesDimensions to something like FireWallDimensions
 * TODOs in simplifier.ts
 * Better naming scheme in simplifier.ts
 * It is easy to add a bogus field like destinationPort instead of destPort
   * System fails silently
   * Is validation in place?
+  * https://github.com/gcanti/io-ts/issues/322
 * Figure out ipFormatter unit test regression.
   * Investigate why 0.0.0.1 sometimes formats as "1" and other times as "0.0.0.1"
-* Indented printing
+* x Indented printing
 * Named IP ranges - parsing and formatting
-* Common factor simplification
+* x Common factor simplification
 * Print diagnostic information
   * Number of conjunctions
   * Number of DRanges
@@ -22,6 +30,7 @@
   * Left Monaco
   * Right Monaco
   * Error pane
+  * Diagnostic pane - counts of expressions
   * Update button (with enabled/disabled)
   * Delta pane (tabs for left, right, l-r, and r-l)
 

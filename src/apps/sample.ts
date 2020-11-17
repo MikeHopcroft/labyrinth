@@ -1,8 +1,15 @@
-import {Dimension} from '../setops';
+import {Dimension, simplify} from '../setops';
 
-import {ipFormatter, parseRuleSpec, portFormatter, protocolFormatter} from '../rules'
-import { ActionType, RuleDimensions, RuleSpec } from '../rules/types';
-import { evaluate } from '../rules/rules';
+import {
+  ActionType,
+  evaluate,
+  ipFormatter,
+  parseRuleSpec,
+  portFormatter,
+  protocolFormatter,
+  RuleDimensions,
+  RuleSpec
+} from '../rules'
 
 const sourceIp = Dimension.create(
   'source ip',
@@ -57,6 +64,14 @@ const dimensions: RuleDimensions = {
   protocol
 };
 
+const dimensionList: Dimension[] = [
+  sourceIp,
+  sourcePort,
+  destIp,
+  destPort,
+  protocol
+];
+
 function go() {
   const ruleSpecs1: RuleSpec[] = [
     {
@@ -73,6 +88,7 @@ function go() {
       sourcePort: '80-83'
     }
   ];
+
   const ruleSpecs2: RuleSpec[] = [
     {
       action: ActionType.ALLOW,
@@ -104,11 +120,11 @@ function go() {
   // TODO: need conjunction complement
 
   console.log('Allowed routes in r1:');
-  console.log(r1.format());
+  console.log(r1.format('  '));
   console.log();
 
-  const r1SubR2 = r1.subtract(r2);
-  const r2SubR1 = r2.subtract(r1);
+  const r1SubR2 = simplify(dimensionList, r1.subtract(r2));
+  const r2SubR1 = simplify(dimensionList, r2.subtract(r1));
 
   if (r1SubR2.isEmpty() && r2SubR1.isEmpty()) {
     console.log('Rule sets r1 and r2 are equivalent');
@@ -117,7 +133,7 @@ function go() {
       console.log('All routes in r1 are also in r2.');
     } else {
       console.log('Routes in r1 that are not in r2:');
-      console.log(r1SubR2.format());
+      console.log(r1SubR2.format('  '));
     }
     console.log();
 
@@ -125,7 +141,7 @@ function go() {
       console.log('All routes in r2 are also in r1.');
     } else {
       console.log('Routes in r2 that are not in r1:');
-      console.log(r2SubR1.format());
+      console.log(r2SubR1.format('  '));
     }
   }
   console.log();
