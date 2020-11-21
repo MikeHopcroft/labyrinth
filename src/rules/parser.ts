@@ -1,10 +1,20 @@
 import DRange from 'drange';
 import * as ip from 'ip';
+import { isIPv4 } from 'net';
 
 import {Conjunction, Dimension, DimensionedRange} from '../setops';
 
 import {protocolToDRange} from './lookup_protocol';
 import {Rule, RuleDimensions, RuleSpec} from './types';
+
+type BaseParser = (
+  dimension: Dimension,
+  lookup: Map<string, DRange>,
+  text: string
+) => DRange;
+
+type Lookup = Map<string, DRange>;
+const emptyLookup = new Map<string, DRange>();
 
 export function parseRuleSpec(
   dimensions: RuleDimensions,
@@ -48,11 +58,12 @@ export function parseRuleSpec(
 }
 
 function parseSet(
-  name: string,
   dimension: Dimension,
-  parse: (name: string, dimension: Dimension, text: string) => DRange,
+  parse: (dimension: Dimension, text: string) => DRange,
   text: string
 ): Conjunction {
+  const name = dimension.typeName;
+
   const sections = text.split(',');
   if (sections.length === 1) {
     const s = sections[0].trim();
@@ -71,7 +82,7 @@ function parseSet(
         throw new TypeError(message);
       }
 
-      const start = parse(name, dimension, match[1]);
+      const start = parse(dimension, match[1]);
       if (match[2] === undefined) {
         range.add(start);
       } else {
@@ -80,7 +91,7 @@ function parseSet(
           throw new TypeError(message);
         }
 
-        const end = parse(name, dimension, match[2]);
+        const end = parse(dimension, match[2]);
         if (start.length !== 1) {
           const message = `Start of range "${match[1]}" must resolve to a single ${name}.`;
           throw new TypeError(message);
@@ -107,48 +118,97 @@ function parseSet(
   return Conjunction.create([new DimensionedRange(dimension, range)]);
 }
 
-export function parseIpSet(dimension: Dimension, text: string): Conjunction {
-  // TODO: add symbolic IPs
-  // const parser = (name: string, dimension: Dimension, text: string) => {
-  //   return parseNumberOrSymbol(
-  //     name,
-  //     dimension,
-  //     protocolMap,
-  //     text
-  //   );
-  // };
-  return parseSet('ip address', dimension, parseIp, text);
-}
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
 
-export function parseProtocolSet(
-  dimension: Dimension,
-  text: string
-): Conjunction {
-  const parser = (name: string, dimension: Dimension, text: string) => {
-    return parseNumberOrSymbol(name, dimension, protocolToDRange, text);
+export const parseIpSet = createParser(parseIpOrSymbol, emptyLookup);
+// export function parseIpSet(dimension: Dimension, text: string): Conjunction {
+//   // TODO: add symbolic IPs
+//   // const parser = (name: string, dimension: Dimension, text: string) => {
+//   //   return parseNumberOrSymbol(
+//   //     name,
+//   //     dimension,
+//   //     protocolMap,
+//   //     text
+//   //   );
+//   // };
+//   return parseSet(dimension, parseIp, text);
+// }
+
+export const parseProtocolSet = createParser(parseNumberOrSymbol, protocolToDRange);
+// export function parseProtocolSet(
+//   dimension: Dimension,
+//   text: string
+// ): Conjunction {
+//   const parser = (dimension: Dimension, text: string) => {
+//     return parseNumberOrSymbol(dimension, protocolToDRange, text);
+//   };
+//   return parseSet(dimension, parser, text);
+// }
+
+export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
+// export function parsePortSet(dimension: Dimension, text: string): Conjunction {
+//   return parseSet(dimension, parseNumber, text);
+// }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
+
+function createParser(baseParser: BaseParser, lookup: Lookup) {
+  const parser = (dimension: Dimension, text: string) => {
+    return baseParser(dimension, protocolToDRange, text);
   };
-  return parseSet('protocol', dimension, parser, text);
+
+  return (dimension: Dimension, text: string) =>
+    parseSet(dimension, parser, text);
 }
 
-export function parsePortSet(dimension: Dimension, text: string): Conjunction {
-  return parseSet('port', dimension, parseNumber, text);
-}
-
-export function parseNumberOrSymbol(
-  name: string, // TODO: get name from dimension
+function parseIpOrSymbol(
   dimension: Dimension,
   lookup: Map<string, DRange>,
   text: string
-) {
-  if (!Number.isNaN(Number(text))) {
-    return parseNumber(name, dimension, text);
+): DRange {
+  text = text.trim();
+  if (text[0] !== undefined && text[0] >= '0' && text[0] <= '9') {
+  // if (isIPv4OrCIDR(text)) {
+    return parseIp(dimension, text);
   } else {
-    return parseSymbol(name, dimension, lookup, text);
+    return parseSymbol(dimension, lookup, text);
+  }
+}
+
+// function isIPv4OrCIDR(text: string) {
+//   const parts = text.trim().split('/');
+//   if (!isIPv4(parts[0])) {
+//     return false;
+//   }
+
+//   if (parts[1] !== undefined) {
+//     return !isNaN(Number(parts[1]));
+//   }
+
+//   return true;
+// }
+
+export function parseNumberOrSymbol(
+  dimension: Dimension,
+  lookup: Map<string, DRange>,
+  text: string
+): DRange {
+  if (!Number.isNaN(Number(text))) {
+    return parseNumber(dimension, text);
+  } else {
+    return parseSymbol(dimension, lookup, text);
   }
 }
 
 export function parseIp(
-  name: string, // TODO: get name from dimension
   dimension: Dimension,
   text: string
 ): DRange {
@@ -188,10 +248,10 @@ export function parseIp(
 }
 
 export function parseNumber(
-  name: string, // TODO: get name from dimension
   dimension: Dimension,
   text: string
 ): DRange {
+  const name = dimension.typeName;
   const value = Number(text);
   if (Number.isNaN(value)) {
     const message = `Expected ${name} number but found "${text}".`;
@@ -214,11 +274,11 @@ export function parseNumber(
 }
 
 export function parseSymbol(
-  name: string, // TODO: get name from dimension
   dimension: Dimension,
   lookup: Map<string, DRange>,
   text: string
 ): DRange {
+  const name = dimension.typeName;
   const value = lookup.get(text.trim());
   if (value === undefined) {
     const message = `Unknown ${name} "${text}".`;

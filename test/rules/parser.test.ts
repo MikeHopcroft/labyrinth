@@ -19,10 +19,10 @@ const protocols = Dimension.create('protocol', 'protocol', formatter, 0, 255);
 describe('Parser', () => {
   describe('parseIpSet', () => {
     it('invalid', () => {
-      // Random word
+      // Random identifier not in predefined symbols
       assert.throws(
         () => parseIpSet(ips, 'abc'),
-        'Invalid IPv4 address: "abc".'
+        'Unknown ip address "abc".'
       );
 
       // Incomplete
@@ -110,9 +110,10 @@ describe('Parser', () => {
   describe('parsePortSet', () => {
     it('invalid', () => {
       // Non-numeric
+      // Random identifier not in predefined symbols
       assert.throws(
         () => parsePortSet(ports, 'abc'),
-        'Expected port number but found "abc".'
+        'Unknown port "abc".'
       );
 
       // Out of range

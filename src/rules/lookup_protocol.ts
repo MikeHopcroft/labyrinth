@@ -17,3 +17,21 @@ function initializeProtocolMaps() {
 }
 
 initializeProtocolMaps();
+
+// Code used to generate IANA protocol table in data/dimensions.yaml.
+// import * as yaml from 'js-yaml';
+
+// function generateYAML() {
+//   const table: Array<{name: string, range: string}> = [];
+//   for (const p of ianaData) {
+//     const number = Number(p.Decimal);
+//     const keyword = p.Keyword;
+//     if (!Number.isNaN(number) && keyword && !keyword.includes(' ')) {
+//       const name = keyword.trim().replace(/-/g,'_');
+//       table.push({name, range: number.toString()})
+//     }
+//   }
+//   console.log(yaml.safeDump(table));
+// }
+
+// generateYAML();

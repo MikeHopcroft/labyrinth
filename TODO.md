@@ -1,9 +1,22 @@
 # TODO
 
+* Universe
+  * Universe class
+  * Concept of keys vs names
+  * Disallow keys 'action' and 'priority' in rules.
+  * Schema check rules.
+  * IdGenerator class
+  * UniverseSpec
+  * DimensionTypeSpec
+  * DimensionSpec
+  * Simplifier should use DimensionSet/Universe object that enforces dimension ordering
+* Data-driven formatters
+  * Use reverse lookup tables
 * README.md
+* Parser support for 'except'
+* Perhaps don't hard-code all and *. Put them into lookups?
 * Try on more realistic example from paper
 * Command line utility
-* Simplifier should use DimensionSet object that enforces dimension ordering
   * Instead of Dimension[]
   * Might be base class for RulesDimensions
   * Consider renaming RulesDimensions to something like FireWallDimensions

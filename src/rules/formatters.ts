@@ -38,8 +38,10 @@ export function formatIpRange(s: number, e: number) {
     e1 >>= 1;
   }
   if (bits > 0) {
+    // CIDR block
     return `${ip.fromLong(s)}/${32 - bits}`;
   } else {
+    // Other ip address range
     return `${ip.fromLong(s)}-${ip.fromLong(e)}`;
   }
 }

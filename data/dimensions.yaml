@@ -1,0 +1,42 @@
+types:
+  - name: ip address
+    parser: ip
+    formatter: ip
+    domain: 0.0.0.0-255.255.255.255
+    values:
+      - name: internet
+        range: 0.0.0.0-255.255.255.255
+      - name: localnet
+        range: 10.0.0.0/8
+      - name: localhost
+        range: 127.0.0.1
+      - name: loopback
+        range: 127.0.0.0/8
+  - name: port
+    parser: general
+    formatter: general
+    domain: 0-0xffff
+    values: []
+  - name: protocol
+    parser: general
+    formatter: general
+    domain: 0-0xff
+    values:
+      - name: ICMP
+        range: 1
+      - name: TCP
+        range: 6
+      - name: UDP
+        range: 17
+dimensions:
+  - name: source ip
+    type: ip address
+  - name: source port
+    type: port
+  - name: dest ip
+    type: ip address
+  - name: dest port
+    type: port
+  - name: protocol
+    type: protocol
+
