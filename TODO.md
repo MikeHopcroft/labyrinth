@@ -1,10 +1,14 @@
 # TODO
 
+* Refactor parseRuleSpec(), parseIpSet, parsePortSet, parseProtocolSet
 * Universe
   * Universe class
   * Concept of keys vs names
-  * Disallow keys 'action' and 'priority' in rules.
+  * Disallow keys 'action' and 'priority' in rules and dimensions.
   * Schema check rules.
+    * Correct keys, as defined by universe
+    * Accepted types are string or number
+    * No superfluous keys
   * IdGenerator class
   * UniverseSpec
   * DimensionTypeSpec

@@ -3,11 +3,14 @@ import 'mocha';
 
 import {
   ActionType,
+  createFormatter,
+  createGenericFormatter,
+  createIpFormatter,
   evaluate,
-  ipFormatter,
+  // ipFormatter,
   parseRuleSpec,
-  portFormatter,
-  protocolFormatter,
+  // portFormatter,
+  // protocolFormatter,
   Rule,
   RuleDimensions,
   RuleSpec
@@ -18,6 +21,21 @@ import {
   Dimension,
   simplify,
 } from '../../src/setops';
+
+const ipFormatter = createFormatter(
+  createIpFormatter(new Map<string, string>())
+);
+
+const portFormatter = createFormatter(
+  createGenericFormatter(new Map<string, string>())
+);
+
+const protocolFormatter = createFormatter(
+  createGenericFormatter(new Map<string, string>([
+    ['6', 'TCP'],
+    ['17', 'UDP']
+  ]))
+);
 
 const sourceIp = Dimension.create(
   'source ip',

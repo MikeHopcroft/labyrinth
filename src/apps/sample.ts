@@ -2,14 +2,34 @@ import {Dimension, simplify} from '../setops';
 
 import {
   ActionType,
+  createFormatter,
+  createGenericFormatter,
+  createIpFormatter,
   evaluate,
-  ipFormatter,
+  // ipFormatter,
   parseRuleSpec,
-  portFormatter,
-  protocolFormatter,
+  // portFormatter,
+  // protocolFormatter,
   RuleDimensions,
   RuleSpec
 } from '../rules'
+
+const ipFormatter = createFormatter(
+  createIpFormatter(new Map<string, string>())
+);
+
+const portFormatter = createFormatter(
+  createGenericFormatter(new Map<string, string>())
+);
+
+const protocolFormatter = createFormatter(
+  createGenericFormatter(new Map<string, string>([
+    ['1', 'ICMPxx'],
+    ['6', 'TCPxx'],
+    ['17', 'UDPxx'],
+  ]))
+);
+
 
 const sourceIp = Dimension.create(
   'source ip',

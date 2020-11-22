@@ -14,7 +14,7 @@ type BaseParser = (
 ) => DRange;
 
 type Lookup = Map<string, DRange>;
-const emptyLookup = new Map<string, DRange>();
+export const emptyLookup = new Map<string, DRange>();
 
 export function parseRuleSpec(
   dimensions: RuleDimensions,
@@ -160,7 +160,7 @@ export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-function createParser(baseParser: BaseParser, lookup: Lookup) {
+export function createParser(baseParser: BaseParser, lookup: Lookup) {
   const parser = (dimension: Dimension, text: string) => {
     return baseParser(dimension, protocolToDRange, text);
   };
