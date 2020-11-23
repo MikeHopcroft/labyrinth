@@ -1,9 +1,8 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import * as ip from 'ip';
 import 'mocha';
 
 import {
-  createFormatter,
   createGenericFormatter,
   createIpFormatter,
   createParser,
@@ -20,7 +19,7 @@ import {
   // protocolFormatter,
 } from '../../src/rules';
 
-import { Dimension } from '../../src/setops';
+import {Dimension} from '../../src/setops';
 
 const formatter = () => '';
 const ips = Dimension.create(
@@ -31,7 +30,7 @@ const ips = Dimension.create(
   4294967295
 );
 const ports = Dimension.create('source port', 'port', formatter, 0, 65535);
-const protocols = Dimension.create('protcol', 'protocol', formatter, 0, 255);
+// const protocols = Dimension.create('protcol', 'protocol', formatter, 0, 255);
 
 describe('Formatters', () => {
   describe('ip', () => {
@@ -40,17 +39,29 @@ describe('Formatters', () => {
         const formatter = createIpFormatter(new Map<string, string>());
 
         assert.equal(
-          formatter('', ip.toLong('1.1.1.0').toString(), ip.toLong('1.1.1.1').toString()),
+          formatter(
+            '',
+            ip.toLong('1.1.1.0').toString(),
+            ip.toLong('1.1.1.1').toString()
+          ),
           // formatIpRange(ip.toLong('1.1.1.0'), ip.toLong('1.1.1.1')),
           '1.1.1.0/31'
         );
         assert.equal(
-          formatter('', ip.toLong('1.1.1.0').toString(), ip.toLong('1.1.1.3').toString()),
+          formatter(
+            '',
+            ip.toLong('1.1.1.0').toString(),
+            ip.toLong('1.1.1.3').toString()
+          ),
           // formatIpRange(ip.toLong('1.1.1.0'), ip.toLong('1.1.1.3')),
           '1.1.1.0/30'
         );
         assert.equal(
-          formatter('', ip.toLong('1.1.1.0').toString(), ip.toLong('1.1.1.255').toString()),
+          formatter(
+            '',
+            ip.toLong('1.1.1.0').toString(),
+            ip.toLong('1.1.1.255').toString()
+          ),
           // formatIpRange(ip.toLong('1.1.1.0'), ip.toLong('1.1.1.255')),
           '1.1.1.0/24'
         );
@@ -59,7 +70,11 @@ describe('Formatters', () => {
       it('Range (not CIDR block)', () => {
         const formatter = createIpFormatter(new Map<string, string>());
         assert.equal(
-          formatter('', ip.toLong('1.1.1.0').toString(), ip.toLong('1.1.1.8').toString()),
+          formatter(
+            '',
+            ip.toLong('1.1.1.0').toString(),
+            ip.toLong('1.1.1.8').toString()
+          ),
           // formatIpRange(ip.toLong('1.1.1.0'), ip.toLong('1.1.1.8')),
           '1.1.1.0-1.1.1.8'
         );
@@ -68,7 +83,10 @@ describe('Formatters', () => {
       it('Single ip address', () => {
         const formatter = createIpFormatter(new Map<string, string>());
         assert.equal(
-          formatter(ip.toLong('1.1.1.0').toString(), ip.toLong('1.1.1.0').toString()),
+          formatter(
+            ip.toLong('1.1.1.0').toString(),
+            ip.toLong('1.1.1.0').toString()
+          ),
           // formatIpRange(ip.toLong('1.1.1.0'), ip.toLong('1.1.1.0')),
           '1.1.1.0'
         );
@@ -90,7 +108,10 @@ describe('Formatters', () => {
         const expected = '0.0.0.1, 1.1.1.0/24, 2.0.0.0/30, 5.5.5.1-6.6.6.1';
         const r1 = parseIpSet(ips, input);
         const formatter = createIpFormatter(new Map<string, string>());
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
 
       it('Symbols for indivdual ips', () => {
@@ -99,14 +120,17 @@ describe('Formatters', () => {
         const r1 = parseIpSet(ips, input);
 
         const lookup = new Map<string, string>([
-          [ 0x00000001.toString(), 'abc' ],
-          [ 0x05050501.toString(), 'def' ],
-          [ 0x06060601.toString(), 'ghi' ],
-          [ 0x01010100.toString(), 'xyz']
+          [(0x00000001).toString(), 'abc'],
+          [(0x05050501).toString(), 'def'],
+          [(0x06060601).toString(), 'ghi'],
+          [(0x01010100).toString(), 'xyz'],
         ]);
         const formatter = createIpFormatter(lookup);
 
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
 
       it('Symbol for ip range', () => {
@@ -115,12 +139,15 @@ describe('Formatters', () => {
         const r1 = parseIpSet(ips, input);
 
         const lookup = new Map<string, string>([
-          [ 0x01010100.toString() + '-' + 0x010101ff.toString(), 'abc' ],
-          [ 0x05050501.toString() + '-' + 0x06060601.toString(), 'def' ],
+          [(0x01010100).toString() + '-' + (0x010101ff).toString(), 'abc'],
+          [(0x05050501).toString() + '-' + (0x06060601).toString(), 'def'],
         ]);
         const formatter = createIpFormatter(lookup);
 
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
 
       it('Symbol for entire range', () => {
@@ -130,16 +157,28 @@ describe('Formatters', () => {
 
         const lookup = new Map<string, string>([
           [
-            0x00000001.toString() + ', ' +
-            0x01010100.toString() + '-' + 0x010101ff.toString() + ', ' +
-            0x02000000.toString() + '-' + 0x02000003.toString() + ', ' +
-            0x05050501.toString() + '-' + 0x06060601.toString(),
-            'abc'
-          ]
+            (0x00000001).toString() +
+              ', ' +
+              (0x01010100).toString() +
+              '-' +
+              (0x010101ff).toString() +
+              ', ' +
+              (0x02000000).toString() +
+              '-' +
+              (0x02000003).toString() +
+              ', ' +
+              (0x05050501).toString() +
+              '-' +
+              (0x06060601).toString(),
+            'abc',
+          ],
         ]);
         const formatter = createIpFormatter(lookup);
 
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
     });
   });
@@ -151,7 +190,10 @@ describe('Formatters', () => {
         const expected = input;
         const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
         const formatter = createGenericFormatter(new Map<string, string>());
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
 
       it('Symbol for indivdual number', () => {
@@ -170,7 +212,10 @@ describe('Formatters', () => {
         ]);
         const formatter = createGenericFormatter(lookup);
 
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
 
       it('Symbol for numeric range', () => {
@@ -184,7 +229,10 @@ describe('Formatters', () => {
         ]);
         const formatter = createGenericFormatter(lookup);
 
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
 
       it('Symbol for entire range', () => {
@@ -192,12 +240,13 @@ describe('Formatters', () => {
         const expected = 'a';
         const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
 
-        const lookup = new Map<string, string>([
-          ['1, 3, 5-6, 8-9, 11', 'a'],
-        ]);
+        const lookup = new Map<string, string>([['1, 3, 5-6, 8-9, 11', 'a']]);
         const formatter = createGenericFormatter(lookup);
 
-        assert.equal(generalFormatter(formatter, r1.dimensions[0].range), expected);
+        assert.equal(
+          generalFormatter(formatter, r1.dimensions[0].range),
+          expected
+        );
       });
     });
   });

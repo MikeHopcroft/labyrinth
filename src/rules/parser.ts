@@ -1,6 +1,5 @@
 import DRange from 'drange';
 import * as ip from 'ip';
-import { isIPv4 } from 'net';
 
 import {Conjunction, Dimension, DimensionedRange} from '../setops';
 
@@ -138,7 +137,10 @@ export const parseIpSet = createParser(parseIpOrSymbol, emptyLookup);
 //   return parseSet(dimension, parseIp, text);
 // }
 
-export const parseProtocolSet = createParser(parseNumberOrSymbol, protocolToDRange);
+export const parseProtocolSet = createParser(
+  parseNumberOrSymbol,
+  protocolToDRange
+);
 // export function parseProtocolSet(
 //   dimension: Dimension,
 //   text: string
@@ -162,7 +164,7 @@ export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
 
 export function createParser(baseParser: BaseParser, lookup: Lookup) {
   const parser = (dimension: Dimension, text: string) => {
-    return baseParser(dimension, protocolToDRange, text);
+    return baseParser(dimension, lookup, text);
   };
 
   return (dimension: Dimension, text: string) =>
@@ -176,7 +178,7 @@ function parseIpOrSymbol(
 ): DRange {
   text = text.trim();
   if (text[0] !== undefined && text[0] >= '0' && text[0] <= '9') {
-  // if (isIPv4OrCIDR(text)) {
+    // if (isIPv4OrCIDR(text)) {
     return parseIp(dimension, text);
   } else {
     return parseSymbol(dimension, lookup, text);
@@ -208,10 +210,7 @@ export function parseNumberOrSymbol(
   }
 }
 
-export function parseIp(
-  dimension: Dimension,
-  text: string
-): DRange {
+export function parseIp(dimension: Dimension, text: string): DRange {
   const trimmed = text.trim();
   const parts = trimmed.split('/');
 
@@ -247,10 +246,7 @@ export function parseIp(
   }
 }
 
-export function parseNumber(
-  dimension: Dimension,
-  text: string
-): DRange {
+export function parseNumber(dimension: Dimension, text: string): DRange {
   const name = dimension.typeName;
   const value = Number(text);
   if (Number.isNaN(value)) {

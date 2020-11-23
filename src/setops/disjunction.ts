@@ -81,6 +81,7 @@ export class Disjunction {
     const factors = other.conjunctions.map(x => x.complement());
 
     // TODO: use reduce
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let result: Disjunction = this;
     for (const f of factors) {
       result = result.intersect(f);
@@ -89,7 +90,7 @@ export class Disjunction {
     return result;
   }
 
-  format(prefix: string = '') {
+  format(prefix = '') {
     const lines = this.conjunctions.map(c => c.format(prefix));
     return lines.join('\n\n');
   }

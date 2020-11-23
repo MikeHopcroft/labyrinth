@@ -9,11 +9,8 @@ export function createFormatter(formatter: Formatter) {
   return (r: DRange) => generalFormatter(formatter, r);
 }
 
-export function generalFormatter(
-  formatter: Formatter,
-  r: DRange
-): string {
-  const text = r.toString().slice(2,-2);  // Trim off "[ " and " ]"
+export function generalFormatter(formatter: Formatter, r: DRange): string {
+  const text = r.toString().slice(2, -2); // Trim off "[ " and " ]"
   const symbol = formatter(text);
   if (symbol !== text) {
     return symbol;
@@ -23,7 +20,7 @@ export function generalFormatter(
 }
 
 export function createGenericFormatter(
-  rangeToSymbol: Map<string, string>,
+  rangeToSymbol: Map<string, string>
 ): Formatter {
   return (text: string, start?: string, end?: string) => {
     const symbol = rangeToSymbol.get(text);
@@ -46,7 +43,7 @@ export function createGenericFormatter(
 }
 
 export function createIpFormatter(
-  rangeToSymbol: Map<string, string>,
+  rangeToSymbol: Map<string, string>
 ): Formatter {
   return (text: string, start?: string, end?: string) => {
     // if (start === undefined) {

@@ -11,8 +11,8 @@ import {
   // portFormatter,
   // protocolFormatter,
   RuleDimensions,
-  RuleSpec
-} from '../rules'
+  RuleSpec,
+} from '../rules';
 
 const ipFormatter = createFormatter(
   createIpFormatter(new Map<string, string>())
@@ -23,13 +23,14 @@ const portFormatter = createFormatter(
 );
 
 const protocolFormatter = createFormatter(
-  createGenericFormatter(new Map<string, string>([
-    ['1', 'ICMPxx'],
-    ['6', 'TCPxx'],
-    ['17', 'UDPxx'],
-  ]))
+  createGenericFormatter(
+    new Map<string, string>([
+      ['1', 'ICMPxx'],
+      ['6', 'TCPxx'],
+      ['17', 'UDPxx'],
+    ])
+  )
 );
-
 
 const sourceIp = Dimension.create(
   'source ip',
@@ -81,7 +82,7 @@ const dimensions: RuleDimensions = {
   sourcePort,
   destIp,
   destPort,
-  protocol
+  protocol,
 };
 
 const dimensionList: Dimension[] = [
@@ -89,7 +90,7 @@ const dimensionList: Dimension[] = [
   sourcePort,
   destIp,
   destPort,
-  protocol
+  protocol,
 ];
 
 function go() {
@@ -98,15 +99,15 @@ function go() {
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
-      protocol: 'TCP,UDP'
+      protocol: 'TCP,UDP',
     },
     {
       action: ActionType.DENY,
       priority: 10,
       destIp: '10.10.10.0/24',
       destPort: '81',
-      sourcePort: '80-83'
-    }
+      sourcePort: '80-83',
+    },
   ];
 
   const ruleSpecs2: RuleSpec[] = [
@@ -114,21 +115,21 @@ function go() {
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
-      protocol: 'TCP'
+      protocol: 'TCP',
     },
     {
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
-      protocol: 'UDP'
+      protocol: 'UDP',
     },
     {
       action: ActionType.DENY,
       priority: 10,
       destIp: '10.10.10.0/24',
       destPort: '81',
-      sourcePort: '80'
-    }
+      sourcePort: '80',
+    },
   ];
   const rules1 = ruleSpecs1.map(r => parseRuleSpec(dimensions, r));
   const rules2 = ruleSpecs2.map(r => parseRuleSpec(dimensions, r));

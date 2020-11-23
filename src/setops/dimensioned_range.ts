@@ -58,7 +58,7 @@ export class DimensionedRange {
     return `${this.dimension.id}: ${this.range.toString()}`;
   }
 
-  format(prefix: string = ''): string {
+  format(prefix = ''): string {
     const name = this.dimension.name;
     const value = this.dimension.formatter(this.range);
     const complement = this.dimension.formatter(this.complement().range);

@@ -20,10 +20,7 @@ describe('Parser', () => {
   describe('parseIpSet', () => {
     it('invalid', () => {
       // Random identifier not in predefined symbols
-      assert.throws(
-        () => parseIpSet(ips, 'abc'),
-        'Unknown ip address "abc".'
-      );
+      assert.throws(() => parseIpSet(ips, 'abc'), 'Unknown ip address "abc".');
 
       // Incomplete
       assert.throws(
@@ -111,10 +108,7 @@ describe('Parser', () => {
     it('invalid', () => {
       // Non-numeric
       // Random identifier not in predefined symbols
-      assert.throws(
-        () => parsePortSet(ports, 'abc'),
-        'Unknown port "abc".'
-      );
+      assert.throws(() => parsePortSet(ports, 'abc'), 'Unknown port "abc".');
 
       // Out of range
       assert.throws(() => parsePortSet(ports, '-1'), 'Invalid port "-1".');

@@ -1,5 +1,6 @@
 # TODO
 
+* Replace tslint suppressions with eslint suppressions
 * Refactor parseRuleSpec(), parseIpSet, parsePortSet, parseProtocolSet
 * Universe
   * Universe class

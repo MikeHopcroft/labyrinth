@@ -13,14 +13,10 @@ import {
   // protocolFormatter,
   Rule,
   RuleDimensions,
-  RuleSpec
+  // RuleSpec
 } from '../../src/rules';
 
-import {
-  createConjunctionInfo,
-  Dimension,
-  simplify,
-} from '../../src/setops';
+import {createConjunctionInfo, Dimension, simplify} from '../../src/setops';
 
 const ipFormatter = createFormatter(
   createIpFormatter(new Map<string, string>())
@@ -31,10 +27,12 @@ const portFormatter = createFormatter(
 );
 
 const protocolFormatter = createFormatter(
-  createGenericFormatter(new Map<string, string>([
-    ['6', 'TCP'],
-    ['17', 'UDP']
-  ]))
+  createGenericFormatter(
+    new Map<string, string>([
+      ['6', 'TCP'],
+      ['17', 'UDP'],
+    ])
+  )
 );
 
 const sourceIp = Dimension.create(
@@ -82,34 +80,25 @@ const protocol = Dimension.create(
   // 255
 );
 
-const dimensionList = [
-  sourceIp,
-  sourcePort,
-  destIp,
-  destPort,
-  protocol
-];
+const dimensionList = [sourceIp, sourcePort, destIp, destPort, protocol];
 
 const dimensions: RuleDimensions = {
   sourceIp,
   sourcePort,
   destIp,
   destPort,
-  protocol
+  protocol,
 };
 
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
-    const rule1: Rule = parseRuleSpec(
-      dimensions,
-      {
-        action: ActionType.ALLOW,
-        priority: 1,
-        sourceIp: '127.0.0.1',
-        protocol: 'TCP,UDP',
-        sourcePort: '80'
-      }
-    );
+    const rule1: Rule = parseRuleSpec(dimensions, {
+      action: ActionType.ALLOW,
+      priority: 1,
+      sourceIp: '127.0.0.1',
+      protocol: 'TCP,UDP',
+      sourcePort: '80',
+    });
 
     const info = createConjunctionInfo(dimensionList, rule1.conjunction);
     assert.equal(info.factors.length, dimensionList.length);
@@ -134,20 +123,20 @@ describe('Simplifier', () => {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
-          destPort: '100'
+          destPort: '100',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
-          destPort: '100'
+          destPort: '100',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '3',
-          destPort: '200'
-        }
+          destPort: '200',
+        },
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(dimensions, r));
@@ -165,10 +154,10 @@ describe('Simplifier', () => {
 
       // TODO: this test is brittle because the algorithm could get the right
       // answer in a different order.
-      const expected = 'source port: 3\ndestination port: 200\n\nsource port: 1-2\ndestination port: 100';
+      const expected =
+        'source port: 3\ndestination port: 200\n\nsource port: 1-2\ndestination port: 100';
       const observed = simplified.format();
       assert.equal(observed, expected);
-
     });
 
     it('(a+b)(c+d)', () => {
@@ -181,20 +170,20 @@ describe('Simplifier', () => {
         {
           action: ActionType.ALLOW,
           priority: 1,
-          destPort: '101'
-        }
+          destPort: '101',
+        },
       ];
 
       const ruleSpecs2 = [
         {
           action: ActionType.ALLOW,
           priority: 1,
-          destPort: '101'
+          destPort: '101',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '2'
+          sourcePort: '2',
         },
       ];
 
@@ -229,7 +218,6 @@ describe('Simplifier', () => {
       const expected = 'destination port: 101';
       const observed = simplified.format();
       assert.equal(observed, expected);
-
     });
 
     it('(a+b)(a+b)', () => {
@@ -242,8 +230,8 @@ describe('Simplifier', () => {
         {
           action: ActionType.ALLOW,
           priority: 1,
-          destPort: '101'
-        }
+          destPort: '101',
+        },
       ];
 
       // const ruleSpecs2 = [
@@ -303,29 +291,29 @@ describe('Simplifier', () => {
           priority: 1,
           sourcePort: '1',
           destPort: '100',
-          protocol: 'TCP'
+          protocol: 'TCP',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
           destPort: '100',
-          protocol: 'TCP'
+          protocol: 'TCP',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',
           destPort: '101',
-          protocol: 'TCP'
+          protocol: 'TCP',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',
           destPort: '100-101',
-          protocol: 'UDP'
-        }
+          protocol: 'UDP',
+        },
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(dimensions, r));
@@ -343,11 +331,10 @@ describe('Simplifier', () => {
 
       // TODO: this test is brittle because the algorithm could get the right
       // answer in a different order.
-      const expected = 'source port: 1-2\ndestination port: 100-101\nprotocol: TCP, UDP';
+      const expected =
+        'source port: 1-2\ndestination port: 100-101\nprotocol: TCP, UDP';
       const observed = simplified.format();
       assert.equal(observed, expected);
-
     });
-
-  });  
+  });
 });

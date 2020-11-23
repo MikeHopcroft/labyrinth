@@ -1,9 +1,9 @@
 import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
-import { Conjunction } from "./conjunction";
-import { Dimension } from "./dimension";
-import { DimensionedRange } from './dimensioned_range';
-import { Disjunction } from "./disjunction";
+import {Conjunction} from './conjunction';
+import {Dimension} from './dimension';
+import {DimensionedRange} from './dimensioned_range';
+import {Disjunction} from './disjunction';
 
 export interface ConjunctionInfo {
   conjunction: Conjunction;
@@ -23,11 +23,11 @@ export interface FactorEntry {
 }
 
 // https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
-class KeyToFactorEntry extends Map<string, FactorEntry> {};
+class KeyToFactorEntry extends Map<string, FactorEntry> {}
 
 export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   const index = new KeyToFactorEntry();
-  const queue = new FastPriorityQueue<FactorEntry>((a,b)=>{
+  const queue = new FastPriorityQueue<FactorEntry>((a, b) => {
     return a.conjunctions.size > b.conjunctions.size;
   });
   const terms = new Set<ConjunctionInfo>();
@@ -42,6 +42,7 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
     addConjunction(index, queue, terms, info);
   }
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const entry = queue.poll();
     if (entry === undefined || entry.conjunctions.size < 2) {
@@ -61,20 +62,22 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   //   Add new item to index
 }
 
-export function createConjunctionInfoOld(conjunction: Conjunction): ConjunctionInfo {
+export function createConjunctionInfoOld(
+  conjunction: Conjunction
+): ConjunctionInfo {
   const factors: FactorInfo[] = [];
-  const info: ConjunctionInfo = { conjunction, factors };
+  const info: ConjunctionInfo = {conjunction, factors};
 
   const lines = conjunction.dimensions.map(d => d.format());
 
   for (const [i, dr] of conjunction.dimensions.entries()) {
     const save = lines[i];
-    lines[i]='';
+    lines[i] = '';
     const key = lines.join('\n');
     factors.push({
       key,
       dimension: dr.dimension,
-      conjunction: info
+      conjunction: info,
     });
     lines[i] = save;
   }
@@ -89,13 +92,13 @@ export function createConjunctionInfo(
   conjunction: Conjunction
 ): ConjunctionInfo {
   const factors: FactorInfo[] = [];
-  const info: ConjunctionInfo = { conjunction, factors };
+  const info: ConjunctionInfo = {conjunction, factors};
 
   let i = 0;
   const lines: string[] = [];
   for (const d of dimensions) {
     if (
-      i < conjunction.dimensions.length && 
+      i < conjunction.dimensions.length &&
       conjunction.dimensions[i].dimension.id === d.id
     ) {
       lines.push(conjunction.dimensions[i++].format());
@@ -106,18 +109,18 @@ export function createConjunctionInfo(
       lines.push(`${d.name}: *`);
       // lines.push(d.formatter(d.domain));
     }
-  }  
+  }
   // const lines = conjunction.dimensions.map(d => d.format());
 
   // for (const [i, dr] of conjunction.dimensions.entries()) {
   for (const [i, dimension] of dimensions.entries()) {
     const save = lines[i];
-    lines[i]='';
+    lines[i] = '';
     const key = lines.join('\n');
     factors.push({
       key,
       dimension: dimension,
-      conjunction: info
+      conjunction: info,
     });
     lines[i] = save;
   }
@@ -157,7 +160,9 @@ function combine(
     if (!found) {
       // TODO: DimensionedRange contruction could have optional second parameter
       // to specify domain.
-      combinedRange = combinedRange.union(new DimensionedRange(dimension, dimension.domain));
+      combinedRange = combinedRange.union(
+        new DimensionedRange(dimension, dimension.domain)
+      );
       // const message = `Did not find dimension ${dimension.id}.`;
       // throw new TypeError(message);
     }
@@ -191,7 +196,7 @@ function combine(
   }
 
   // Add new conjunction to index
-  addConjunction(index, queue, terms, combined)
+  addConjunction(index, queue, terms, combined);
 }
 
 function addConjunction(
@@ -211,7 +216,7 @@ function addConjunction(
     const entry = index.get(f.key);
     if (entry) {
       if (!queue.remove(entry)) {
-        const message = `Entry not in priority queue`;
+        const message = 'Entry not in priority queue';
         throw new TypeError(message);
       }
       entry.conjunctions.add(f);
@@ -220,7 +225,7 @@ function addConjunction(
       const entry: FactorEntry = {
         key: f.key,
         dimension: f.dimension,
-        conjunctions: new Set<FactorInfo>([f])
+        conjunctions: new Set<FactorInfo>([f]),
       };
       index.set(f.key, entry);
       queue.add(entry);
@@ -258,4 +263,3 @@ function removeConjunction(
     queue.add(entry);
   }
 }
-
