@@ -3,13 +3,10 @@ import {Dimension, simplify} from '../setops';
 import {
   ActionType,
   createFormatter,
-  createGenericFormatter,
+  createNumberSymbolFormatter,
   createIpFormatter,
   evaluate,
-  // ipFormatter,
   parseRuleSpec,
-  // portFormatter,
-  // protocolFormatter,
   RuleDimensions,
   RuleSpec,
 } from '../rules';
@@ -19,11 +16,11 @@ const ipFormatter = createFormatter(
 );
 
 const portFormatter = createFormatter(
-  createGenericFormatter(new Map<string, string>())
+  createNumberSymbolFormatter(new Map<string, string>())
 );
 
 const protocolFormatter = createFormatter(
-  createGenericFormatter(
+  createNumberSymbolFormatter(
     new Map<string, string>([
       ['1', 'ICMPxx'],
       ['6', 'TCPxx'],
@@ -38,7 +35,6 @@ const sourceIp = Dimension.create(
   ipFormatter,
   0,
   0xffffffff
-  // 4294967295
 );
 
 const sourcePort = Dimension.create(
@@ -47,7 +43,6 @@ const sourcePort = Dimension.create(
   portFormatter,
   0,
   0xffff
-  // 65535
 );
 
 const destIp = Dimension.create(
@@ -56,7 +51,6 @@ const destIp = Dimension.create(
   ipFormatter,
   0,
   0xffffffff
-  // 4294967295
 );
 
 const destPort = Dimension.create(
@@ -65,7 +59,6 @@ const destPort = Dimension.create(
   portFormatter,
   0,
   0xffff
-  // 65535
 );
 
 const protocol = Dimension.create(
@@ -74,7 +67,6 @@ const protocol = Dimension.create(
   protocolFormatter,
   0,
   0xff
-  // 255
 );
 
 const dimensions: RuleDimensions = {
@@ -135,10 +127,6 @@ function go() {
   const rules2 = ruleSpecs2.map(r => parseRuleSpec(dimensions, r));
   const r1 = evaluate(rules1);
   const r2 = evaluate(rules2);
-  // const result = r2.subtract(r1);
-  // const result = r1;
-  // TODO: need disjunction subtract, complement
-  // TODO: need conjunction complement
 
   console.log('Allowed routes in r1:');
   console.log(r1.format('  '));

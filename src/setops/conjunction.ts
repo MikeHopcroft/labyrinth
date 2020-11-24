@@ -2,6 +2,7 @@ import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
 import {Dimension} from './dimension';
 
+// Represents a Conjunction of DRanges associated with Dimensions.
 export class Conjunction {
   dimensions: DimensionedRange[];
 
@@ -32,6 +33,8 @@ export class Conjunction {
     return new Conjunction(simplified);
   }
 
+  // TODO: REVIEW: what is use case for constructor other than call from Factory?
+  // Can the two be combined?
   private constructor(dimensions: DimensionedRange[]) {
     this.dimensions = dimensions;
   }

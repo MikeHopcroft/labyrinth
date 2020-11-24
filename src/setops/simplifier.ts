@@ -5,6 +5,9 @@ import {Dimension} from './dimension';
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
 
+// See also this article on boolean expression simplification.
+//   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
+
 export interface ConjunctionInfo {
   conjunction: Conjunction;
   factors: FactorInfo[];
@@ -22,7 +25,8 @@ export interface FactorEntry {
   conjunctions: Set<FactorInfo>;
 }
 
-// https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
+// Can't define a type alias here because we want to be able to use new.
+//   https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
 class KeyToFactorEntry extends Map<string, FactorEntry> {}
 
 export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
@@ -32,13 +36,8 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   });
   const terms = new Set<ConjunctionInfo>();
 
-  // let prev: ConjunctionInfo | undefined = undefined;
   for (const c of d.conjunctions) {
     const info = createConjunctionInfo(dimensions, c);
-    // const info2 = createConjunctionInfo(c);
-    // console.log(`info === info2: ${info === info2}`);
-    // console.log(`prev === info: ${prev === info}`);
-    // prev = info;
     addConjunction(index, queue, terms, info);
   }
 
@@ -49,40 +48,10 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
       break;
     }
 
-    // console.log(`Processing entry \n${entry.key}\n`);
     combine(dimensions, index, queue, terms, entry);
   }
 
   return Disjunction.create([...terms.values()].map(x => x.conjunction));
-  // Index all of the all-but-one factors - use balanced tree
-  // Maintain set of conjunctions
-  // While at least two conjunctions share all-but-one factors
-  //   Remove the entry for the factor shared amongst the most conjunctions
-  //   Merge the dimension
-  //   Add new item to index
-}
-
-export function createConjunctionInfoOld(
-  conjunction: Conjunction
-): ConjunctionInfo {
-  const factors: FactorInfo[] = [];
-  const info: ConjunctionInfo = {conjunction, factors};
-
-  const lines = conjunction.dimensions.map(d => d.format());
-
-  for (const [i, dr] of conjunction.dimensions.entries()) {
-    const save = lines[i];
-    lines[i] = '';
-    const key = lines.join('\n');
-    factors.push({
-      key,
-      dimension: dr.dimension,
-      conjunction: info,
-    });
-    lines[i] = save;
-  }
-
-  return info;
 }
 
 export function createConjunctionInfo(
@@ -103,16 +72,13 @@ export function createConjunctionInfo(
     ) {
       lines.push(conjunction.dimensions[i++].format());
     } else {
-      // TODO: this is britter because it may format different than
+      // TODO: this is brittle because it may format different than
       // d.formatter(). Perhaps the DRange parameter to d.formatter()
       // should be optional.
       lines.push(`${d.name}: *`);
-      // lines.push(d.formatter(d.domain));
     }
   }
-  // const lines = conjunction.dimensions.map(d => d.format());
 
-  // for (const [i, dr] of conjunction.dimensions.entries()) {
   for (const [i, dimension] of dimensions.entries()) {
     const save = lines[i];
     lines[i] = '';
@@ -135,8 +101,6 @@ function combine(
   terms: Set<ConjunctionInfo>,
   entry: FactorEntry
 ) {
-  // console.log(`Combining ${entry.conjunctions.size} terms.`);
-
   //
   // Make new, combined conjunction
   //
@@ -239,8 +203,6 @@ function removeConjunction(
   terms: Set<ConjunctionInfo>,
   conjunction: ConjunctionInfo
 ) {
-  // console.log('removeConjunction');
-
   if (!terms.has(conjunction)) {
     const message = 'Conjunction not found in terms';
     throw new TypeError(message);

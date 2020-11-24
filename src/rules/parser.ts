@@ -124,37 +124,13 @@ function parseSet(
 ///////////////////////////////////////////////////////////////////////////////
 
 export const parseIpSet = createParser(parseIpOrSymbol, emptyLookup);
-// export function parseIpSet(dimension: Dimension, text: string): Conjunction {
-//   // TODO: add symbolic IPs
-//   // const parser = (name: string, dimension: Dimension, text: string) => {
-//   //   return parseNumberOrSymbol(
-//   //     name,
-//   //     dimension,
-//   //     protocolMap,
-//   //     text
-//   //   );
-//   // };
-//   return parseSet(dimension, parseIp, text);
-// }
 
 export const parseProtocolSet = createParser(
   parseNumberOrSymbol,
   protocolToDRange
 );
-// export function parseProtocolSet(
-//   dimension: Dimension,
-//   text: string
-// ): Conjunction {
-//   const parser = (dimension: Dimension, text: string) => {
-//     return parseNumberOrSymbol(dimension, protocolToDRange, text);
-//   };
-//   return parseSet(dimension, parser, text);
-// }
 
 export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
-// export function parsePortSet(dimension: Dimension, text: string): Conjunction {
-//   return parseSet(dimension, parseNumber, text);
-// }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -178,25 +154,11 @@ function parseIpOrSymbol(
 ): DRange {
   text = text.trim();
   if (text[0] !== undefined && text[0] >= '0' && text[0] <= '9') {
-    // if (isIPv4OrCIDR(text)) {
     return parseIp(dimension, text);
   } else {
     return parseSymbol(dimension, lookup, text);
   }
 }
-
-// function isIPv4OrCIDR(text: string) {
-//   const parts = text.trim().split('/');
-//   if (!isIPv4(parts[0])) {
-//     return false;
-//   }
-
-//   if (parts[1] !== undefined) {
-//     return !isNaN(Number(parts[1]));
-//   }
-
-//   return true;
-// }
 
 export function parseNumberOrSymbol(
   dimension: Dimension,

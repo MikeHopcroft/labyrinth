@@ -164,6 +164,12 @@ describe('Parser', () => {
       assert.equal(r1.dimensions[0].toString(), `${ports.id}: [ 1234 ]`);
     });
 
+    it('single port - hexidecimal', () => {
+      const r1 = parsePortSet(ports, '0x1234');
+      assert.equal(r1.dimensions.length, 1);
+      assert.equal(r1.dimensions[0].toString(), `${ports.id}: [ ${0x1234} ]`);
+    });
+
     it('port range', () => {
       const r1 = parsePortSet(ports, '567-789');
       assert.equal(r1.dimensions.length, 1);
@@ -245,6 +251,12 @@ describe('Parser', () => {
       const r1 = parseProtocolSet(protocols, '17');
       assert.equal(r1.dimensions.length, 1);
       assert.equal(r1.dimensions[0].toString(), `${protocols.id}: [ 17 ]`);
+    });
+
+    it('single numeric protocol - hexidecimal', () => {
+      const r1 = parseProtocolSet(protocols, '0x17');
+      assert.equal(r1.dimensions.length, 1);
+      assert.equal(r1.dimensions[0].toString(), `${protocols.id}: [ ${0x17} ]`);
     });
 
     it('single symbolic protocol', () => {

@@ -1,5 +1,5 @@
-import {Dimension} from './dimension';
 import {Conjunction} from './conjunction';
+import {Dimension} from './dimension';
 import {Disjunction} from './disjunction';
 
 export function disjunctionValues(

@@ -4,7 +4,7 @@ import 'mocha';
 import {
   ActionType,
   createFormatter,
-  createGenericFormatter,
+  createNumberSymbolFormatter,
   createIpFormatter,
   evaluate,
   // ipFormatter,
@@ -23,11 +23,11 @@ const ipFormatter = createFormatter(
 );
 
 const portFormatter = createFormatter(
-  createGenericFormatter(new Map<string, string>())
+  createNumberSymbolFormatter(new Map<string, string>())
 );
 
 const protocolFormatter = createFormatter(
-  createGenericFormatter(
+  createNumberSymbolFormatter(
     new Map<string, string>([
       ['6', 'TCP'],
       ['17', 'UDP'],

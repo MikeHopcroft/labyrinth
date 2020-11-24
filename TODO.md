@@ -1,7 +1,16 @@
 # TODO
 
+* Consider renaming rules.ts to evaluate.ts
+* Use or remove errors.ts
+* Rewrite parseRuleSpec() to be data-driven
+  * Refactor parseRuleSpec(), parseIpSet, parsePortSet, parseProtocolSet
+  * Rewrite parser unit tests to support data-driven version
+* x Single step through unit test "Symbol for numeric range"
+* x formatter.ts:   if (symbol !== text) {  // TODO: this seems wrong. Why return text?
+* x Unit test parsing with hex literals
+* Formatters should display `*` or `any`
+  * // TODO: this is brittle because it may format different than
 * Replace tslint suppressions with eslint suppressions
-* Refactor parseRuleSpec(), parseIpSet, parsePortSet, parseProtocolSet
 * Universe
   * Universe class
   * Concept of keys vs names
