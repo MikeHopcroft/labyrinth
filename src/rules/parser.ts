@@ -1,18 +1,32 @@
 import DRange from 'drange';
 import * as ip from 'ip';
 
-import {Conjunction, Dimension, DimensionedRange} from '../setops';
+import {Conjunction, ConjunctionInfo, Dimension, DimensionedRange} from '../setops';
 
 import {protocolToDRange} from './lookup_protocol';
 import {Rule, RuleDimensions, RuleSpec} from './types';
 
-type BaseParser = (
+// export type DimensionParser = (dimension: Dimension, text: string) => DRange;
+
+type Parser = (dimension: Dimension, text: string) => Conjunction;
+export type Parser2 = (dimension: Dimension, text: string) => DRange;
+
+type SymbolToDRange = (symbol: string) => DRange | undefined;
+export type BaseParser2 = (
+  dimension: Dimension,
+  lookup: SymbolToDRange,
+  text: string
+) => DRange;
+function symbolToUndefined(symbol: string) {
+  return undefined;
+}
+
+type Lookup = Map<string, DRange>;
+export type BaseParser = (
   dimension: Dimension,
   lookup: Map<string, DRange>,
   text: string
 ) => DRange;
-
-type Lookup = Map<string, DRange>;
 export const emptyLookup = new Map<string, DRange>();
 
 export function parseRuleSpec(
@@ -61,13 +75,22 @@ function parseSet(
   parse: (dimension: Dimension, text: string) => DRange,
   text: string
 ): Conjunction {
+  const range = parseDRange(dimension, parse, text);
+  return Conjunction.create([new DimensionedRange(dimension, range)]);
+}
+
+function parseDRange(
+  dimension: Dimension,
+  parse: (dimension: Dimension, text: string) => DRange,
+  text: string
+): DRange {
   const name = dimension.typeName;
 
   const sections = text.split(',');
   if (sections.length === 1) {
     const s = sections[0].trim();
     if (s === '*' || s === 'any') {
-      return Conjunction.create([]);
+      return dimension.domain;
     }
   }
 
@@ -114,7 +137,7 @@ function parseSet(
     }
   }
 
-  return Conjunction.create([new DimensionedRange(dimension, range)]);
+  return range;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,14 +146,29 @@ function parseSet(
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export const parseIpSet = createParser(parseIpOrSymbol, emptyLookup);
-
-export const parseProtocolSet = createParser(
-  parseNumberOrSymbol,
-  protocolToDRange
+export const parseIpSet = createParser2(
+  parseIpOrSymbol2,
+  symbolToUndefined
 );
 
-export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
+export const parseProtocolSet = createParser2(
+  parseNumberOrSymbol2,
+  (text: string) => protocolToDRange.get(text)
+);
+
+export const parsePortSet = createParser2(
+  parseNumberOrSymbol2,
+  symbolToUndefined
+);
+
+// export const parseIpSet = createParser(parseIpOrSymbol, emptyLookup);
+
+// export const parseProtocolSet = createParser(
+//   parseNumberOrSymbol,
+//   protocolToDRange
+// );
+
+// export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -138,7 +176,23 @@ export const parsePortSet = createParser(parseNumberOrSymbol, emptyLookup);
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export function createParser(baseParser: BaseParser, lookup: Lookup) {
+// export function createParser(
+//   baseParser: BaseParser,
+//   lookup: Lookup
+// ): Conjunction {
+//   const parser = (dimension: Dimension, text: string) => {
+//     return parseSet(dimension, baseParser, text);
+//     // return baseParser(dimension, lookup, text);
+//   };
+
+//   return (dimension: Dimension, text: string) =>
+//     parseSet(dimension, parser, text);
+// }
+
+export function createParser(
+  baseParser: BaseParser,
+  lookup: Lookup
+): Parser {
   const parser = (dimension: Dimension, text: string) => {
     return baseParser(dimension, lookup, text);
   };
@@ -147,7 +201,19 @@ export function createParser(baseParser: BaseParser, lookup: Lookup) {
     parseSet(dimension, parser, text);
 }
 
-function parseIpOrSymbol(
+export function createParser2(
+  baseParser: BaseParser2,
+  lookup: SymbolToDRange
+): Parser {
+  const parser = (dimension: Dimension, text: string) => {
+    return baseParser(dimension, lookup, text);
+  };
+
+  return (dimension: Dimension, text: string) =>
+    parseSet(dimension, parser, text);
+}
+
+export function parseIpOrSymbol(
   dimension: Dimension,
   lookup: Map<string, DRange>,
   text: string
@@ -160,6 +226,19 @@ function parseIpOrSymbol(
   }
 }
 
+export function parseIpOrSymbol2(
+  dimension: Dimension,
+  lookup: SymbolToDRange,
+  text: string
+): DRange {
+  text = text.trim();
+  if (text[0] !== undefined && text[0] >= '0' && text[0] <= '9') {
+    return parseIp(dimension, text);
+  } else {
+    return parseSymbol2(dimension, lookup, text);
+  }
+}
+
 export function parseNumberOrSymbol(
   dimension: Dimension,
   lookup: Map<string, DRange>,
@@ -169,6 +248,18 @@ export function parseNumberOrSymbol(
     return parseNumber(dimension, text);
   } else {
     return parseSymbol(dimension, lookup, text);
+  }
+}
+
+export function parseNumberOrSymbol2(
+  dimension: Dimension,
+  lookup: SymbolToDRange,
+  text: string
+): DRange {
+  if (!Number.isNaN(Number(text))) {
+    return parseNumber(dimension, text);
+  } else {
+    return parseSymbol2(dimension, lookup, text);
   }
 }
 
@@ -238,6 +329,33 @@ export function parseSymbol(
 ): DRange {
   const name = dimension.typeName;
   const value = lookup.get(text.trim());
+  if (value === undefined) {
+    const message = `Unknown ${name} "${text}".`;
+    throw new TypeError(message);
+  }
+
+  const domain = dimension.domain;
+  const dStart = domain.index(0);
+  const dEnd = domain.index(domain.length - 1);
+  const vStart = value.index(0);
+  const vEnd = value.index(value.length - 1);
+  if (vStart < dStart || vStart > dEnd || vEnd < dStart || vEnd > dEnd) {
+    const message = `${capitalize(
+      name
+    )} "${text.trim()}" out of range [${dStart},${dEnd}].`;
+    throw new TypeError(message);
+  }
+
+  return value;
+}
+
+export function parseSymbol2(
+  dimension: Dimension,
+  lookup: SymbolToDRange,
+  text: string
+): DRange {
+  const name = dimension.typeName;
+  const value = lookup(text.trim());
   if (value === undefined) {
     const message = `Unknown ${name} "${text}".`;
     throw new TypeError(message);

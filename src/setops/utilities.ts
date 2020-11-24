@@ -39,3 +39,16 @@ export function* crossProduct(
     }
   }
 }
+
+export class IdGenerator {
+  nextId = 1;
+
+  constructor(startId = 1) {
+    this.nextId = startId;
+  }
+
+  next() {
+    return this.nextId++;
+  }
+}
+

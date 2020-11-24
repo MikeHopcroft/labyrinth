@@ -13,13 +13,13 @@ types:
       - name: loopback
         range: 127.0.0.0/8
   - name: port
-    parser: general
-    formatter: general
+    parser: default
+    formatter: default
     domain: 0-0xffff
     values: []
   - name: protocol
-    parser: general
-    formatter: general
+    parser: default
+    formatter: default
     domain: 0-0xff
     values:
       - name: ICMP
