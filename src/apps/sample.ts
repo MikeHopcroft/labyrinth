@@ -51,7 +51,7 @@ const portType = new DimensionType({
 
 const sourcePort = Dimension.create('source port', portType);
 
-const destIp = Dimension.create('dest ip', ipType);
+const destIp = Dimension.create('destination ip', ipType);
 
 const destPort = Dimension.create('destination port', portType);
 

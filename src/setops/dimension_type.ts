@@ -74,16 +74,41 @@ export class DimensionType {
       throw new TypeError(message);
     }
 
-    // TODO: insert real code
-    // this.domain = new DRange(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
     this.domain = new DRange(0, 0xffffffff);
     this.domain = this.parser(spec.domain);
 
-    //////////////////////////////////////////////////////////////////////
+    for (const {symbol, range} of spec.values) {
+      ///////////////////////////////////////////////////////////////////
+      // TODO: Disallow `*`, `any`
+      // What about numbers and ip addresses?
+      // Should at least unit test behavior.
+      // Also unit test cycle detection and symbol chain.
+      ///////////////////////////////////////////////////////////////////
+      if (this.symbolToDefinition.has(symbol)) {
+        const message = `Dimension "${
+          this.name
+        }": Attempt to redefine symbol "${
+          symbol
+        }".`;
+        throw new TypeError(message);
+      }
+      this.symbolToDefinition.set(
+        symbol,
+        {
+          value: range,
+          open: false,
+        }
+      )
+    }
 
-    // // TODO: replace simple initialization with one that
-    // // allows forward references.
-    // for (const {symbol, range} of spec.values) {
+    for (const symbol of this.symbolToDefinition.keys()) {
+      const range = this.lookup(symbol);
+      this.symbolToRange.set(symbol, range);
+
+      // TODO: what if multiple symbols define the same range?
+      const rangeText = range.toString().slice(2, -2); // Trim off "[ " and " ]"
+      this.rangeToSymbol.set(rangeText, symbol);
+    }
 
     //   // Disallow `*`, `any`
 
@@ -105,7 +130,7 @@ export class DimensionType {
     // }
   }
 
-  lookup(symbol: string): DRange | undefined {
+  lookup(symbol: string): DRange {
     const existingRange = this.symbolToRange.get(symbol);
     if (existingRange !== undefined) {
       return existingRange;
@@ -126,7 +151,7 @@ export class DimensionType {
     // openSymbols.add(symbol);
     // TODO: parser needs to take DimensionType, not Dimension.
     // TODO: insert real code.
-    const newRange = new DRange(); // this.parser(this, definition.value);
+    const newRange = this.parser(definition.value);
     // openSymbols.delete(symbol);
     definition.open = false;
 
