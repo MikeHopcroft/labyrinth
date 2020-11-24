@@ -115,7 +115,7 @@ export class Conjunction {
         return factor.range.numbers();
       }
     }
-    return dimension.domain.numbers();
+    return dimension.type.domain.numbers();
   }
 
   toString(): string {

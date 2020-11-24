@@ -2,44 +2,97 @@ import {assert} from 'chai';
 import DRange from 'drange';
 import 'mocha';
 
-import {Conjunction, Dimension, DimensionedRange} from '../../src/setops';
+import {Conjunction, Dimension, DimensionedRange, DimensionType, DimensionTypeSpecType} from '../../src/setops';
 
-const formatter = () => '';
-const dimension0: Dimension = Dimension.create(
-  'test0',
-  'test0',
-  formatter,
-  1,
-  100
-);
-const dimension1: Dimension = Dimension.create(
-  'test1',
-  'test1',
-  formatter,
-  1,
-  100
-);
-const dimension2: Dimension = Dimension.create(
-  'test2',
-  'test2',
-  formatter,
-  200,
-  300
-);
-const dimension3: Dimension = Dimension.create(
-  'test3',
-  'test3',
-  formatter,
-  1000,
-  2000
-);
-const dimension4: Dimension = Dimension.create(
-  'test4',
-  'test4',
-  formatter,
-  1,
-  100
-);
+// const formatter = () => '';
+const dimension0Type = new DimensionType({
+  name: 'test0',
+  key: 'test0',
+  parser: 'default',
+  formatter: 'default',
+  domain: '1-100',
+  values: []
+});
+const dimension0 = Dimension.create('test0', dimension0Type);
+// const dimension0: Dimension = Dimension.create(
+//   'test0',
+//   'test0',
+//   formatter,
+//   1,
+//   100
+// );
+
+const dimension1Type = new DimensionType({
+  name: 'test1',
+  key: 'test1',
+  parser: 'default',
+  formatter: 'default',
+  domain: '1-100',
+  values: []
+});
+const dimension1 = Dimension.create('test1', dimension1Type);
+
+// const dimension1: Dimension = Dimension.create(
+//   'test1',
+//   'test1',
+//   formatter,
+//   1,
+//   100
+// );
+
+const dimension2Type = new DimensionType({
+  name: 'test2',
+  key: 'test2',
+  parser: 'default',
+  formatter: 'default',
+  domain: '200-300',
+  values: []
+});
+const dimension2 = Dimension.create('test2', dimension2Type);
+
+// const dimension2: Dimension = Dimension.create(
+//   'test2',
+//   'test2',
+//   formatter,
+//   200,
+//   300
+// );
+
+const dimension3Type = new DimensionType({
+  name: 'test3',
+  key: 'test3',
+  parser: 'default',
+  formatter: 'default',
+  domain: '1000-2000',
+  values: []
+});
+const dimension3 = Dimension.create('test3', dimension3Type);
+
+// const dimension3: Dimension = Dimension.create(
+//   'test3',
+//   'test3',
+//   formatter,
+//   1000,
+//   2000
+// );
+
+const dimension4Type = new DimensionType({
+  name: 'test4',
+  key: 'test4',
+  parser: 'default',
+  formatter: 'default',
+  domain: '1-100',
+  values: []
+});
+const dimension4 = Dimension.create('test4', dimension4Type);
+
+// const dimension4: Dimension = Dimension.create(
+//   'test4',
+//   'test4',
+//   formatter,
+//   1,
+//   100
+// );
 
 const range0 = new DimensionedRange(dimension0, new DRange(10, 20));
 
@@ -55,8 +108,8 @@ const range3b = new DimensionedRange(dimension3, new DRange(1000, 1250));
 const range4 = new DimensionedRange(dimension4, new DRange(10, 20));
 
 const emptyRange = new DimensionedRange(dimension2, new DRange());
-const universeRange = new DimensionedRange(dimension2, dimension2.domain);
-const universeRange3 = new DimensionedRange(dimension3, dimension3.domain);
+const universeRange = new DimensionedRange(dimension2, dimension2.type.domain);
+const universeRange3 = new DimensionedRange(dimension3, dimension3.type.domain);
 
 describe('Conjunction', () => {
   describe('create()', () => {

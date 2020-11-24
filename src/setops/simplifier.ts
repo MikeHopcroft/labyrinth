@@ -125,7 +125,7 @@ function combine(
       // TODO: DimensionedRange contruction could have optional second parameter
       // to specify domain.
       combinedRange = combinedRange.union(
-        new DimensionedRange(dimension, dimension.domain)
+        new DimensionedRange(dimension, dimension.type.domain)
       );
       // const message = `Did not find dimension ${dimension.id}.`;
       // throw new TypeError(message);

@@ -8,7 +8,7 @@ export class DimensionedRange {
 
   constructor(dimension: Dimension, range: DRange) {
     // TODO: move this to factory for better performance.
-    const outOfDomain = range.clone().subtract(dimension.domain);
+    const outOfDomain = range.clone().subtract(dimension.type.domain);
     if (outOfDomain.length > 0) {
       const message = 'Range must be a subset of domain.';
       throw new TypeError(message);
@@ -23,7 +23,7 @@ export class DimensionedRange {
   }
 
   isUniverse(): boolean {
-    const complement = this.dimension.domain.clone().subtract(this.range);
+    const complement = this.dimension.type.domain.clone().subtract(this.range);
     return complement.length === 0;
   }
 
@@ -50,7 +50,7 @@ export class DimensionedRange {
   }
 
   complement(): DimensionedRange {
-    const range = this.dimension.domain.clone().subtract(this.range);
+    const range = this.dimension.type.domain.clone().subtract(this.range);
     return new DimensionedRange(this.dimension, range);
   }
 
@@ -60,8 +60,8 @@ export class DimensionedRange {
 
   format(prefix = ''): string {
     const name = this.dimension.name;
-    const value = this.dimension.formatter(this.range);
-    const complement = this.dimension.formatter(this.complement().range);
+    const value = this.dimension.type.formatter(this.range);
+    const complement = this.dimension.type.formatter(this.complement().range);
     if (value.length < complement.length) {
       return `${prefix}${name}: ${value}`;
     } else {

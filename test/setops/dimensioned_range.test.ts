@@ -1,23 +1,44 @@
 import {assert} from 'chai';
 import DRange from 'drange';
 import 'mocha';
-import {Dimension, DimensionedRange} from '../../src/setops';
+import {Dimension, DimensionedRange, DimensionType} from '../../src/setops';
 
-const formatter = () => '';
-const dimension1: Dimension = Dimension.create(
-  'test1',
-  'test1',
-  formatter,
-  1,
-  10
-);
-const dimension2: Dimension = Dimension.create(
-  'test2',
-  'test2',
-  formatter,
-  5,
-  15
-);
+// const formatter = () => '';
+const dimension1Type = new DimensionType({
+  name: 'test1',
+  key: 'test1',
+  parser: 'default',
+  formatter: 'default',
+  domain: '1-10',
+  values: []
+});
+const dimension1 = Dimension.create('test1', dimension1Type);
+
+// const dimension1: Dimension = Dimension.create(
+//   'test1',
+//   'test1',
+//   formatter,
+//   1,
+//   10
+// );
+
+const dimension2Type = new DimensionType({
+  name: 'test2',
+  key: 'test2',
+  parser: 'default',
+  formatter: 'default',
+  domain: '5-15',
+  values: []
+});
+const dimension2 = Dimension.create('test2', dimension2Type);
+
+// const dimension2: Dimension = Dimension.create(
+//   'test2',
+//   'test2',
+//   formatter,
+//   5,
+//   15
+// );
 
 describe('DimensionedRange', () => {
   it('constructor validates range', () => {
@@ -41,7 +62,7 @@ describe('DimensionedRange', () => {
 
   it('isUniverse()', () => {
     // Case: universe
-    const dr1 = new DimensionedRange(dimension1, dimension1.domain);
+    const dr1 = new DimensionedRange(dimension1, dimension1.type.domain);
     assert.isTrue(dr1.isUniverse());
 
     // Case: not universe

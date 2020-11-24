@@ -6,21 +6,55 @@ import {
   Conjunction,
   Dimension,
   DimensionedRange,
+  DimensionType,
   Disjunction,
   disjunctionValues,
 } from '../../src/setops';
 
-const formatter = () => '';
-const dimension1: Dimension = Dimension.create(
-  'test1',
-  'test1',
-  formatter,
-  1,
-  100
-);
+const dimension1Type = new DimensionType({
+  name: 'test1',
+  key: 'test1',
+  parser: 'default',
+  formatter: 'default',
+  domain: '1-100',
+  values: []
+});
+const dimension1 = Dimension.create('test1', dimension1Type);
+// const formatter = () => '';
+// const dimension1: Dimension = Dimension.create(
+//   'test1',
+//   'test1',
+//   formatter,
+//   1,
+//   100
+// );
+
+const dimensionXType = new DimensionType({
+  name: 'x',
+  key: 'x',
+  parser: 'default',
+  formatter: 'default',
+  domain: '0-4',
+  values: []
+});
+const dimensionX = Dimension.create('x', dimensionXType);
+
+const dimensionYType = new DimensionType({
+  name: 'y',
+  key: 'y',
+  parser: 'default',
+  formatter: 'default',
+  domain: '0-6',
+  values: []
+});
+const dimensionY = Dimension.create('y', dimensionYType);
+
+// const x = Dimension.create('x', 'x', formatter, 0, 4);
+// const y = Dimension.create('y', 'y', formatter, 0, 6);
+
 
 const range1 = new DimensionedRange(dimension1, new DRange(10, 20));
-const universeRange1 = new DimensionedRange(dimension1, dimension1.domain);
+const universeRange1 = new DimensionedRange(dimension1, dimension1.type.domain);
 const emptyRange1 = new DimensionedRange(dimension1, new DRange());
 
 describe('Disjunction', () => {
@@ -54,8 +88,10 @@ describe('Disjunction', () => {
 
   describe('intersect()', () => {
     it('intersect(): X & Y', () => {
-      const x = Dimension.create('x', 'x', formatter, 0, 4);
-      const y = Dimension.create('y', 'y', formatter, 0, 6);
+      const x = dimensionX;
+      const y = dimensionY;
+      // const x = Dimension.create('x', 'x', formatter, 0, 4);
+      // const y = Dimension.create('y', 'y', formatter, 0, 6);
 
       // Set A:
       //   . . . . .
@@ -109,8 +145,10 @@ describe('Disjunction', () => {
     });
 
     it('intersect(): X & 0', () => {
-      const x = Dimension.create('x', 'x', formatter, 0, 4);
-      const y = Dimension.create('y', 'y', formatter, 0, 6);
+      const x = dimensionX;
+      const y = dimensionY;
+      // const x = Dimension.create('x', 'x', formatter, 0, 4);
+      // const y = Dimension.create('y', 'y', formatter, 0, 6);
 
       const a = Disjunction.create([
         Conjunction.create([
@@ -131,8 +169,10 @@ describe('Disjunction', () => {
     });
 
     it('intersect(): X & 1', () => {
-      const x = Dimension.create('x', 'x', formatter, 0, 4);
-      const y = Dimension.create('y', 'y', formatter, 0, 6);
+      const x = dimensionX;
+      const y = dimensionY;
+      // const x = Dimension.create('x', 'x', formatter, 0, 4);
+      // const y = Dimension.create('y', 'y', formatter, 0, 6);
 
       const a = Disjunction.create([
         Conjunction.create([

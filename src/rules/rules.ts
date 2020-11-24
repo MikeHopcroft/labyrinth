@@ -1,6 +1,81 @@
-import {Disjunction} from '../setops';
+import {Conjunction, Disjunction} from '../setops';
 
-import {ActionType, Rule} from './types';
+import {protocolToDRange} from './lookup_protocol';
+
+import {
+  createParserDEPRECATED,
+  parseIpOrSymbol2,
+  parseNumberOrSymbol2,
+} from './parser';
+
+import {ActionType, Rule, RuleDimensions, RuleSpec} from './types';
+
+
+export function parseRuleSpec(
+  dimensions: RuleDimensions,
+  rule: RuleSpec
+): Rule {
+  let conjunction = Conjunction.create([]);
+
+  // Source rules
+  if (rule.sourceIp) {
+    conjunction = conjunction.intersect(
+      parseIpSet(dimensions.sourceIp, rule.sourceIp)
+    );
+  }
+  if (rule.sourcePort) {
+    conjunction = conjunction.intersect(
+      parsePortSet(dimensions.sourcePort, rule.sourcePort)
+    );
+  }
+
+  // Destination rules
+  if (rule.destIp) {
+    conjunction = conjunction.intersect(
+      parseIpSet(dimensions.destIp, rule.destIp)
+    );
+  }
+  if (rule.destPort) {
+    conjunction = conjunction.intersect(
+      parsePortSet(dimensions.destPort, rule.destPort)
+    );
+  }
+
+  // Protocol rules
+  if (rule.protocol) {
+    conjunction = conjunction.intersect(
+      parseProtocolSet(dimensions.protocol, rule.protocol)
+    );
+  }
+
+  const {action, priority} = rule;
+  return {action, priority, conjunction};
+}
+
+export const parseIpSet = createParserDEPRECATED(
+  parseIpOrSymbol2,
+  symbolToUndefined
+);
+
+export const parseProtocolSet = createParserDEPRECATED(
+  parseNumberOrSymbol2,
+  (text: string) => protocolToDRange.get(text)
+);
+
+export const parsePortSet = createParserDEPRECATED(
+  parseNumberOrSymbol2,
+  symbolToUndefined
+);
+
+function symbolToUndefined(symbol: string) {
+  return undefined;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//
+//
+///////////////////////////////////////////////////////////////////////////////
 
 interface RuleGroup {
   priority: number;

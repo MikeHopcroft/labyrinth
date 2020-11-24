@@ -3,18 +3,41 @@ import 'mocha';
 
 import {parseIpSet, parsePortSet, parseProtocolSet} from '../../src/rules';
 
-import {Dimension} from '../../src/setops';
+import {Dimension, DimensionType} from '../../src/setops';
 
-const formatter = () => '';
-const ips = Dimension.create(
-  'source ip',
-  'ip address',
-  formatter,
-  0,
-  4294967295
-);
-const ports = Dimension.create('source port', 'port', formatter, 0, 65535);
-const protocols = Dimension.create('protocol', 'protocol', formatter, 0, 255);
+const ipType = new DimensionType({
+  name: 'ip address',
+  key: 'ip',
+  parser: 'ip',
+  formatter: 'ip',
+  domain: '0.0.0.0-255.255.255.255',
+  values: []
+})
+
+const ips = Dimension.create('source ip', ipType);
+
+const portType = new DimensionType({
+  name: 'port',
+  key: 'port',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xffff',
+  values: []
+})
+
+const ports = Dimension.create('source port', portType);
+
+const protocolType = new DimensionType({
+  name: 'protocol',
+  key: 'protocol',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xff',
+  values: []
+})
+
+const protocols = Dimension.create('protocolt', protocolType);
+// const protocols = Dimension.create('protocol', 'protocol', formatter, 0, 255);
 
 describe('Parser', () => {
   describe('parseIpSet', () => {

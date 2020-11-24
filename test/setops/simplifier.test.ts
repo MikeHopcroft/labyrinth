@@ -16,7 +16,7 @@ import {
   // RuleSpec
 } from '../../src/rules';
 
-import {createConjunctionInfo, Dimension, simplify} from '../../src/setops';
+import {createConjunctionInfo, Dimension, DimensionType, simplify} from '../../src/setops';
 
 const ipFormatter = createFormatter(
   createIpFormatter(new Map<string, string>())
@@ -35,50 +35,90 @@ const protocolFormatter = createFormatter(
   )
 );
 
-const sourceIp = Dimension.create(
-  'source ip',
-  'ip address',
-  ipFormatter,
-  0,
-  0xffffffff
-  // 4294967295
-);
+const ipType = new DimensionType({
+  name: 'ip address',
+  key: 'ip',
+  parser: 'ip',
+  formatter: 'ip',
+  domain: '0.0.0.0-255.255.255.255',
+  values: []
+})
 
-const sourcePort = Dimension.create(
-  'source port',
-  'port',
-  portFormatter,
-  0,
-  0xffff
-  // 65535
-);
+const sourceIp = Dimension.create('source ip', ipType);
 
-const destIp = Dimension.create(
-  'destination ip',
-  'ip address',
-  ipFormatter,
-  0,
-  0xffffffff
-  // 4294967295
-);
+const portType = new DimensionType({
+  name: 'port',
+  key: 'port',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xffff',
+  values: []
+})
 
-const destPort = Dimension.create(
-  'destination port',
-  'port',
-  portFormatter,
-  0,
-  0xffff
-  // 65535
-);
+const sourcePort = Dimension.create('source port', portType);
 
-const protocol = Dimension.create(
-  'protocol',
-  'protocol',
-  protocolFormatter,
-  0,
-  0xff
-  // 255
-);
+const destIp = Dimension.create('dest ip', ipType);
+
+const destPort = Dimension.create('destination port', portType);
+
+const protocolType = new DimensionType({
+  name: 'protocol',
+  key: 'protocol',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xff',
+  values: [
+    { symbol: 'TCP', range: '6' },
+    { symbol: 'UDP', range: '17' },
+  ]
+})
+
+const protocol = Dimension.create('protocol', protocolType);
+
+// const sourceIp = Dimension.create(
+//   'source ip',
+//   'ip address',
+//   ipFormatter,
+//   0,
+//   0xffffffff
+//   // 4294967295
+// );
+
+// const sourcePort = Dimension.create(
+//   'source port',
+//   'port',
+//   portFormatter,
+//   0,
+//   0xffff
+//   // 65535
+// );
+
+// const destIp = Dimension.create(
+//   'destination ip',
+//   'ip address',
+//   ipFormatter,
+//   0,
+//   0xffffffff
+//   // 4294967295
+// );
+
+// const destPort = Dimension.create(
+//   'destination port',
+//   'port',
+//   portFormatter,
+//   0,
+//   0xffff
+//   // 65535
+// );
+
+// const protocol = Dimension.create(
+//   'protocol',
+//   'protocol',
+//   protocolFormatter,
+//   0,
+//   0xff
+//   // 255
+// );
 
 const dimensionList = [sourceIp, sourcePort, destIp, destPort, protocol];
 

@@ -1,4 +1,4 @@
-import {Dimension, simplify} from '../setops';
+import {Dimension, DimensionType, simplify} from '../setops';
 
 import {
   ActionType,
@@ -29,45 +29,42 @@ const protocolFormatter = createFormatter(
   )
 );
 
-const sourceIp = Dimension.create(
-  'source ip',
-  'ip address',
-  ipFormatter,
-  0,
-  0xffffffff
-);
+const ipType = new DimensionType({
+  name: 'ip address',
+  key: 'ip',
+  parser: 'ip',
+  formatter: 'ip',
+  domain: '0.0.0.0-255.255.255.255',
+  values: []
+})
 
-const sourcePort = Dimension.create(
-  'source port',
-  'port',
-  portFormatter,
-  0,
-  0xffff
-);
+const sourceIp = Dimension.create('source ip', ipType);
 
-const destIp = Dimension.create(
-  'destination ip',
-  'ip address',
-  ipFormatter,
-  0,
-  0xffffffff
-);
+const portType = new DimensionType({
+  name: 'port',
+  key: 'port',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xffff',
+  values: []
+})
 
-const destPort = Dimension.create(
-  'destination port',
-  'port',
-  portFormatter,
-  0,
-  0xffff
-);
+const sourcePort = Dimension.create('source port', portType);
 
-const protocol = Dimension.create(
-  'protocol',
-  'protocol',
-  protocolFormatter,
-  0,
-  0xff
-);
+const destIp = Dimension.create('dest ip', ipType);
+
+const destPort = Dimension.create('destination port', portType);
+
+const protocolType = new DimensionType({
+  name: 'protocol',
+  key: 'protocol',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xff',
+  values: []
+});
+
+const protocol = Dimension.create('protocol', protocolType);
 
 const dimensions: RuleDimensions = {
   sourceIp,

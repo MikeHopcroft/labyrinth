@@ -5,24 +5,50 @@ import 'mocha';
 import {
   createIpFormatter,
   createNumberSymbolFormatter,
-  createParser,
-  emptyLookup,
+  createParserDEPRECATED,
   formatDRange,
-  parseNumberOrSymbol,
+  parseNumberOrSymbol2,
   parseIpSet,
 } from '../../src/rules';
 
-import {Dimension} from '../../src/setops';
+import {Dimension, DimensionType} from '../../src/setops';
 
-const formatter = () => '';
-const ips = Dimension.create(
-  'source ip',
-  'ip address',
-  formatter,
-  0,
-  4294967295
-);
-const ports = Dimension.create('source port', 'port', formatter, 0, 0xffff);
+function emptyLookup(symbol: string) {
+  return undefined;
+}
+
+const ipType = new DimensionType({
+  name: 'ip address',
+  key: 'ip',
+  parser: 'ip',
+  formatter: 'ip',
+  domain: '0.0.0.0-255.255.255.255',
+  values: []
+})
+
+const ips = Dimension.create('source ip', ipType);
+
+// const formatter = () => '';
+// const ips = Dimension.create(
+//   'source ip',
+//   'ip address',
+//   formatter,
+//   0,
+//   4294967295
+// );
+
+const portType = new DimensionType({
+  name: 'port',
+  key: 'port',
+  parser: 'default',
+  formatter: 'default',
+  domain: '00-0xffff',
+  values: []
+})
+
+const ports = Dimension.create('source port', portType);
+
+// const ports = Dimension.create('source port', 'port', formatter, 0, 0xffff);
 
 describe('Formatters', () => {
   describe('ip', () => {
@@ -154,7 +180,7 @@ describe('Formatters', () => {
       it('No symbols', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = input;
-        const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
+        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
         const formatter = createNumberSymbolFormatter(
           new Map<string, string>()
         );
@@ -164,7 +190,7 @@ describe('Formatters', () => {
       it('Symbols for indivdual numbers', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = 'a, b, c-d, e-f, g';
-        const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
+        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
 
         const lookup = new Map<string, string>([
           ['1', 'a'],
@@ -183,7 +209,7 @@ describe('Formatters', () => {
       it('Symbols for numeric ranges', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = '1, 3, a, b, 11';
-        const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
+        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
 
         const lookup = new Map<string, string>([
           ['5-6', 'a'],
@@ -197,7 +223,7 @@ describe('Formatters', () => {
       it('Symbol for start of numeric range', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = '1, 3, a-6, 8-9, 11';
-        const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
+        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
 
         const lookup = new Map<string, string>([['5', 'a']]);
         const formatter = createNumberSymbolFormatter(lookup);
@@ -208,7 +234,7 @@ describe('Formatters', () => {
       it('Symbol for entire range', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = 'a';
-        const r1 = createParser(parseNumberOrSymbol, emptyLookup)(ports, input);
+        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
 
         const lookup = new Map<string, string>([['1, 3, 5-6, 8-9, 11', 'a']]);
         const formatter = createNumberSymbolFormatter(lookup);
