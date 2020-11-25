@@ -1,7 +1,9 @@
 import {assert} from 'chai';
 import DRange from 'drange';
 import 'mocha';
-import {Dimension, DimensionedRange, DimensionType} from '../../src/setops';
+
+import {Dimension, DimensionType} from '../../src/dimensions';
+import {DimensionedRange} from '../../src/setops';
 
 // const formatter = () => '';
 const dimension1Type = new DimensionType({
@@ -12,7 +14,7 @@ const dimension1Type = new DimensionType({
   domain: '1-10',
   values: []
 });
-const dimension1 = Dimension.create('test1', dimension1Type);
+const dimension1 = new Dimension('test1', 'test1', dimension1Type);
 
 // const dimension1: Dimension = Dimension.create(
 //   'test1',
@@ -30,7 +32,7 @@ const dimension2Type = new DimensionType({
   domain: '5-15',
   values: []
 });
-const dimension2 = Dimension.create('test2', dimension2Type);
+const dimension2 = new Dimension('test2', 'test2', dimension2Type);
 
 // const dimension2: Dimension = Dimension.create(
 //   'test2',

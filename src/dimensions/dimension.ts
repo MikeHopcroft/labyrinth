@@ -1,57 +1,56 @@
+console.log('importing dimension.ts');
 import DRange from 'drange';
+import * as t from 'io-ts';
+
+import { Conjunction, DimensionedRange } from '../setops';
+
 import { DimensionType } from './dimension_type';
+
+export class IdGenerator {
+  nextId = 1;
+
+  constructor(startId = 1) {
+    this.nextId = startId;
+  }
+
+  next() {
+    return this.nextId++;
+  }
+}
+
+export const DimensionSpecType = t.type({
+  name: t.string,
+  key: t.string,
+  type: t.string
+});
+export type DimensionSpec = t.TypeOf<typeof DimensionSpecType>;
 
 export type DimensionFormatter = (r: DRange) => string;
 
-// export class Dimension extends DimensionType {
-//   static create(
-//     name: string,
-//     typeName: string,
-//     formatter: DimensionFormatter,
-//     start?: number,
-//     end?: number
-//   ): Dimension {
-//     return new Dimension(typeName)
-//   }
-// }
-
 export class Dimension {
-  // private static reservedId = 0;
-  // private static reservedName = 'empty';
-  // private static reservedTypeName = 'empty type';
-  // private static reservedFormatter = () => 'none';
-  // static reserved: Dimension = new Dimension();
-  private static nextId = 100;
+  private static idGenerator = new IdGenerator();
 
   readonly name: string;
+  readonly key: string;
   readonly type: DimensionType;
   readonly id: number;
-  // readonly typeName: string;
-  // readonly formatter: DimensionFormatter;
-  // readonly domain: DRange;
 
-
-  static create(
+  // DESIGN NOTE: optional idGenerator is provideto simplify unit tests.
+  constructor(
     name: string,
+    key: string,
     type: DimensionType,
-    // formatter: DimensionFormatter,
-    // start?: number,
-    // end?: number
-  ): Dimension {
-    // if (start === undefined) {
-    //   return Dimension.reserved;
-    // } else {
-      return new Dimension(name, type);
-    // }
-  }
-
-  private constructor(
-    name: string,
-    type: DimensionType,
+    idGenerator?: IdGenerator
   ) {
     this.name = name;
+    // TODO: IMPLEMENT
+    // TODO: check for key collision with Rule: action, priority
+    // TODO: check for illegal key
+    //   https://stackoverflow.com/questions/1661197/what-characters-are-valid-for-javascript-variable-names/9337047#9337047
+    //   https://mathiasbynens.be/notes/javascript-identifiers-es6
+    this.key = key;
     this.type = type;
-    this.id = Dimension.nextId++;
+    this.id = (idGenerator || Dimension.idGenerator).next()
   }
 
   // private constructorOld(
@@ -87,4 +86,11 @@ export class Dimension {
   //     this.domain = new DRange(start, end);
   //   }
   // }
+
+  parse(text: string): Conjunction {
+    const range = this.type.parser(text);
+    return Conjunction.create([
+      new DimensionedRange(this, range)
+    ]);
+  }
 }

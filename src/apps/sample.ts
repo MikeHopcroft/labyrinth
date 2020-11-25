@@ -1,15 +1,24 @@
-import {Dimension, DimensionType, simplify} from '../setops';
-
 import {
-  ActionType,
   createFormatter,
   createNumberSymbolFormatter,
   createIpFormatter,
+  Dimension,
+  DimensionType,
+  DimensionTypeSpec
+} from '../dimensions';
+
+import {
+  ActionType,
   evaluate,
-  parseRuleSpec,
+  parseRuleSpec2,
   RuleDimensions,
   RuleSpec,
+  RuleSpecEx,
+  Universe,
+  UniverseSpec
 } from '../rules';
+
+import {simplify} from '../setops';
 
 const ipFormatter = createFormatter(
   createIpFormatter(new Map<string, string>())
@@ -29,61 +38,101 @@ const protocolFormatter = createFormatter(
   )
 );
 
-const ipType = new DimensionType({
+const ipTypeSpec: DimensionTypeSpec = {
   name: 'ip address',
   key: 'ip',
   parser: 'ip',
   formatter: 'ip',
   domain: '0.0.0.0-255.255.255.255',
   values: []
-})
+};
+const ipType = new DimensionType(ipTypeSpec)
 
-const sourceIp = Dimension.create('source ip', ipType);
+const sourceIp = new Dimension('source ip', 'sourceIp', ipType);
 
-const portType = new DimensionType({
+const portTypeSpec: DimensionTypeSpec = {
   name: 'port',
   key: 'port',
   parser: 'default',
   formatter: 'default',
   domain: '00-0xffff',
   values: []
-})
+};
+const portType = new DimensionType(portTypeSpec)
 
-const sourcePort = Dimension.create('source port', portType);
+const sourcePort = new Dimension('source port', 'sourcePort', portType);
 
-const destIp = Dimension.create('destination ip', ipType);
+const destIp = new Dimension('destination ip', 'destinationIp', ipType);
 
-const destPort = Dimension.create('destination port', portType);
+const destPort = new  Dimension('destination port', 'destinationPort', portType);
 
-const protocolType = new DimensionType({
+const protocolTypeSpec: DimensionTypeSpec = {
   name: 'protocol',
   key: 'protocol',
   parser: 'default',
   formatter: 'default',
   domain: '00-0xff',
-  values: []
-});
+  values: [
+    { symbol: 'TCP', range: '6' },
+    { symbol: 'UDP', range: '17' },
+  ]
+};
+const protocolType = new DimensionType(protocolTypeSpec);
 
-const protocol = Dimension.create('protocol', protocolType);
+const protocol = new Dimension('protocol', 'protocol', protocolType);
 
-const dimensions: RuleDimensions = {
-  sourceIp,
-  sourcePort,
-  destIp,
-  destPort,
-  protocol,
+// const dimensions: RuleDimensions = {
+//   sourceIp,
+//   sourcePort,
+//   destIp,
+//   destPort,
+//   protocol,
+// };
+
+// const dimensionList: Dimension[] = [
+//   sourceIp,
+//   sourcePort,
+//   destIp,
+//   destPort,
+//   protocol,
+// ];
+
+const universeSpec: UniverseSpec = {
+  types: [ipTypeSpec, portTypeSpec, protocolTypeSpec],
+  dimensions: [
+    {
+      name: 'source ip',
+      key: 'sourceIp',
+      type: 'ip'
+    },
+    {
+      name: 'source port',
+      key: 'sourcePort',
+      type: 'port'
+    },
+    {
+      name: 'destination ip',
+      key: 'destinationIp',
+      type: 'ip'
+    },
+    {
+      name: 'destination port',
+      key: 'destinationPort',
+      type: 'port'
+    },
+    {
+      name: 'protocol',
+      key: 'protocol',
+      type: 'protocol'
+    },
+  ]
 };
 
-const dimensionList: Dimension[] = [
-  sourceIp,
-  sourcePort,
-  destIp,
-  destPort,
-  protocol,
-];
-
 function go() {
-  const ruleSpecs1: RuleSpec[] = [
+  const universe = new Universe(universeSpec);
+  const dimensionList: Dimension[] = universe.dimensions;
+
+  const ruleSpecs1: RuleSpecEx[] = [
     {
       action: ActionType.ALLOW,
       priority: 1,
@@ -93,13 +142,13 @@ function go() {
     {
       action: ActionType.DENY,
       priority: 10,
-      destIp: '10.10.10.0/24',
-      destPort: '81',
+      destinationIp: '10.10.10.0/24',
+      destinationPort: '81',
       sourcePort: '80-83',
     },
   ];
 
-  const ruleSpecs2: RuleSpec[] = [
+  const ruleSpecs2: RuleSpecEx[] = [
     {
       action: ActionType.ALLOW,
       priority: 1,
@@ -115,13 +164,13 @@ function go() {
     {
       action: ActionType.DENY,
       priority: 10,
-      destIp: '10.10.10.0/24',
-      destPort: '81',
+      destinationIp: '10.10.10.0/24',
+      destinationPort: '81',
       sourcePort: '80',
     },
   ];
-  const rules1 = ruleSpecs1.map(r => parseRuleSpec(dimensions, r));
-  const rules2 = ruleSpecs2.map(r => parseRuleSpec(dimensions, r));
+  const rules1 = ruleSpecs1.map(r => parseRuleSpec2(universe, r));
+  const rules2 = ruleSpecs2.map(r => parseRuleSpec2(universe, r));
   const r1 = evaluate(rules1);
   const r2 = evaluate(rules2);
 

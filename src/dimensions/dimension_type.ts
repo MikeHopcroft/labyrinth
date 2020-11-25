@@ -1,19 +1,18 @@
+console.log('importing dimension_types.ts');
+
 import DRange from 'drange';
 import * as t from 'io-ts';
 
-import {Dimension, DimensionFormatter} from '../setops';
-
-// TODO: formatters and parsers should probably move to setops.
 import {
   createFormatter,
   createIpFormatter,
   createNumberSymbolFormatter,
   createParserNEW,
-  parseDRange,
+  DimensionFormatter,
   parseIpOrSymbol2,
   parseNumberOrSymbol2,
-  ParseToDRange
-} from '../rules';
+  ParseToDRange,
+} from '../dimensions';
 
 export const DimensionTypeSpecType = t.type({
   name: t.string,
@@ -27,6 +26,8 @@ export const DimensionTypeSpecType = t.type({
   }))
 });
 export type DimensionTypeSpec = t.TypeOf<typeof DimensionTypeSpecType>;
+
+console.log(`  DimensionTypeSpecType: ${DimensionTypeSpecType}`);
 
 export class DimensionType {
   readonly name: string;

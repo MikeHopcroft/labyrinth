@@ -30,13 +30,17 @@ types:
         range: 17
 dimensions:
   - name: source ip
+    key: sourceIp
     type: ip address
   - name: source port
+    key: sourcePort
     type: port
-  - name: dest ip
+  - name: destination ip
+    key: destinationIp
     type: ip address
-  - name: dest port
+  - name: destination port
+    key: destinationPort
     type: port
   - name: protocol
+    key: protocol
     type: protocol
-

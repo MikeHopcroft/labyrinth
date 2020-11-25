@@ -1,5 +1,5 @@
 import {Conjunction} from './conjunction';
-import {Dimension} from './dimension';
+import {Dimension} from '../dimensions/dimension';
 import {Disjunction} from './disjunction';
 
 export function disjunctionValues(
@@ -37,18 +37,6 @@ export function* crossProduct(
         suffix.shift();
       }
     }
-  }
-}
-
-export class IdGenerator {
-  nextId = 1;
-
-  constructor(startId = 1) {
-    this.nextId = startId;
-  }
-
-  next() {
-    return this.nextId++;
   }
 }
 

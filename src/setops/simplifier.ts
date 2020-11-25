@@ -1,7 +1,7 @@
 import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
 import {Conjunction} from './conjunction';
-import {Dimension} from './dimension';
+import {Dimension} from '../dimensions/dimension';
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
 

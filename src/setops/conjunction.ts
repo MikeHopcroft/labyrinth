@@ -1,6 +1,7 @@
+import {Dimension} from '../dimensions/dimension';
+
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
-import {Dimension} from './dimension';
 
 // Represents a Conjunction of DRanges associated with Dimensions.
 export class Conjunction {

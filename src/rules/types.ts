@@ -1,6 +1,7 @@
 import * as t from 'io-ts';
 
-import {Conjunction, Dimension} from '../setops';
+import {Dimension} from '../dimensions';
+import {Conjunction} from '../setops';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -27,21 +28,26 @@ export enum ActionType {
 // tslint:disable-next-line:variable-name
 const ActionTypeType = createEnum<ActionType>(ActionType, 'ActionType');
 
-const ruleSpecType = t.intersection([
-  t.type({
-    action: ActionTypeType,
-    priority: t.number,
-  }),
-  t.partial({
-    sourceIp: t.string,
-    sourcePort: t.string,
-    destIp: t.string,
-    destPort: t.string,
-    protocol: t.string,
-  }),
-]);
+// const ruleSpecType = t.intersection([
+//   t.type({
+//     action: ActionTypeType,
+//     priority: t.number,
+//   }),
+//   t.partial({
+//     sourceIp: t.string,
+//     sourcePort: t.string,
+//     destIp: t.string,
+//     destPort: t.string,
+//     protocol: t.string,
+//   }),
+// ]);
+const ruleSpecType = t.type({
+  action: ActionTypeType,
+  priority: t.number,
+});
 
 export type RuleSpec = t.TypeOf<typeof ruleSpecType>;
+export type RuleSpecEx = RuleSpec & { [others: string]: any; };
 
 const ruleSpecSetType = t.type({
   rules: t.array(ruleSpecType),
@@ -49,11 +55,11 @@ const ruleSpecSetType = t.type({
 
 export type RuleSpecSet = t.TypeOf<typeof ruleSpecSetType>;
 
-export interface Rule {
-  action: ActionType;
-  priority: number;
-  conjunction: Conjunction;
-}
+// export interface Rule {
+//   action: ActionType;
+//   priority: number;
+//   conjunction: Conjunction;
+// }
 
 export interface RuleDimensions {
   sourceIp: Dimension;

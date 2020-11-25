@@ -1,16 +1,12 @@
 import DRange from 'drange';
 import * as ip from 'ip';
 
+import {Dimension, DimensionType} from '.';
+
 import {
   Conjunction,
-  Dimension,
   DimensionedRange,
-  DimensionType,
-  DimensionTypeSpec,
 } from '../setops';
-import { RuleDimensions } from './types';
-
-// type DTEMP = Dimension | DimensionTypeSpec;
 
 type Parser = (dimension: Dimension, text: string) => Conjunction;
 export type ParseToDRange = (text: string) => DRange;

@@ -6,12 +6,15 @@ import {
   createIpFormatter,
   createNumberSymbolFormatter,
   createParserDEPRECATED,
+  Dimension,
+  DimensionType,
   formatDRange,
   parseNumberOrSymbol2,
+} from '../../src/dimensions';
+
+import {
   parseIpSet,
 } from '../../src/rules';
-
-import {Dimension, DimensionType} from '../../src/setops';
 
 function emptyLookup(symbol: string) {
   return undefined;
@@ -26,7 +29,7 @@ const ipType = new DimensionType({
   values: []
 })
 
-const ips = Dimension.create('source ip', ipType);
+const ips = new Dimension('source ip', 'sourceIp', ipType);
 
 // const formatter = () => '';
 // const ips = Dimension.create(
@@ -46,7 +49,7 @@ const portType = new DimensionType({
   values: []
 })
 
-const ports = Dimension.create('source port', portType);
+const ports = new Dimension('source port', 'sourcePort', portType);
 
 // const ports = Dimension.create('source port', 'port', formatter, 0, 0xffff);
 

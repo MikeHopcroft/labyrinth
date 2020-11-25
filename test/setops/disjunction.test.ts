@@ -2,11 +2,11 @@ import {assert} from 'chai';
 import DRange from 'drange';
 import 'mocha';
 
+import {Dimension, DimensionType} from '../../src/dimensions';
+
 import {
   Conjunction,
-  Dimension,
   DimensionedRange,
-  DimensionType,
   Disjunction,
   disjunctionValues,
 } from '../../src/setops';
@@ -19,7 +19,7 @@ const dimension1Type = new DimensionType({
   domain: '1-100',
   values: []
 });
-const dimension1 = Dimension.create('test1', dimension1Type);
+const dimension1 = new Dimension('test1', 'test1', dimension1Type);
 // const formatter = () => '';
 // const dimension1: Dimension = Dimension.create(
 //   'test1',
@@ -37,7 +37,7 @@ const dimensionXType = new DimensionType({
   domain: '0-4',
   values: []
 });
-const dimensionX = Dimension.create('x', dimensionXType);
+const dimensionX = new Dimension('x', 'x', dimensionXType);
 
 const dimensionYType = new DimensionType({
   name: 'y',
@@ -47,7 +47,7 @@ const dimensionYType = new DimensionType({
   domain: '0-6',
   values: []
 });
-const dimensionY = Dimension.create('y', dimensionYType);
+const dimensionY = new Dimension('y', 'y', dimensionYType);
 
 // const x = Dimension.create('x', 'x', formatter, 0, 4);
 // const y = Dimension.create('y', 'y', formatter, 0, 6);

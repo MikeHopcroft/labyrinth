@@ -1,9 +1,8 @@
 import {assert} from 'chai';
 import 'mocha';
 
+import {Dimension, DimensionType} from '../../src/dimensions';
 import {parseIpSet, parsePortSet, parseProtocolSet} from '../../src/rules';
-
-import {Dimension, DimensionType} from '../../src/setops';
 
 const ipType = new DimensionType({
   name: 'ip address',
@@ -14,7 +13,7 @@ const ipType = new DimensionType({
   values: []
 })
 
-const ips = Dimension.create('source ip', ipType);
+const ips = new Dimension('source ip', 'sourceIp', ipType);
 
 const portType = new DimensionType({
   name: 'port',
@@ -25,7 +24,7 @@ const portType = new DimensionType({
   values: []
 })
 
-const ports = Dimension.create('source port', portType);
+const ports = new Dimension('source port', 'sourcePort', portType);
 
 const protocolType = new DimensionType({
   name: 'protocol',
@@ -36,7 +35,7 @@ const protocolType = new DimensionType({
   values: []
 })
 
-const protocols = Dimension.create('protocolt', protocolType);
+const protocols = new Dimension('protocolt', 'protocol', protocolType);
 // const protocols = Dimension.create('protocol', 'protocol', formatter, 0, 255);
 
 describe('Parser', () => {

@@ -1,6 +1,6 @@
 import DRange from 'drange';
 
-import {Dimension} from './dimension';
+import {Dimension} from '../dimensions/dimension';
 
 export class DimensionedRange {
   readonly dimension: Dimension;

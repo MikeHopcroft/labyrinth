@@ -6,57 +6,82 @@ import {
   createParserDEPRECATED,
   parseIpOrSymbol2,
   parseNumberOrSymbol2,
-} from './parser';
+} from '../dimensions/parser';
 
-import {ActionType, Rule, RuleDimensions, RuleSpec} from './types';
+import {ActionType, RuleDimensions, RuleSpec} from './types';
+import { Universe } from './universe';
 
+export interface Rule {
+  action: ActionType;
+  priority: number;
+  conjunction: Conjunction;
+}
 
-export function parseRuleSpec(
-  dimensions: RuleDimensions,
-  rule: RuleSpec
-): Rule {
+export function parseRuleSpec2(universe: Universe, spec: RuleSpec): Rule {
+  const {action, priority, ...rest} = spec;
   let conjunction = Conjunction.create([]);
 
-  // Source rules
-  if (rule.sourceIp) {
-    conjunction = conjunction.intersect(
-      parseIpSet(dimensions.sourceIp, rule.sourceIp)
-    );
-  }
-  if (rule.sourcePort) {
-    conjunction = conjunction.intersect(
-      parsePortSet(dimensions.sourcePort, rule.sourcePort)
-    );
+  for (const key of Object.getOwnPropertyNames(rest)) {
+    const dimension = universe.get(key);
+    const value = (rest as any)[key];
+    if (typeof(value) !== 'string') {
+      const message = `${key}: expected a string value.`;
+      throw new TypeError(message);
+    }
+    conjunction = conjunction.intersect(dimension.parse(value));
   }
 
-  // Destination rules
-  if (rule.destIp) {
-    conjunction = conjunction.intersect(
-      parseIpSet(dimensions.destIp, rule.destIp)
-    );
-  }
-  if (rule.destPort) {
-    conjunction = conjunction.intersect(
-      parsePortSet(dimensions.destPort, rule.destPort)
-    );
-  }
-
-  // Protocol rules
-  if (rule.protocol) {
-    conjunction = conjunction.intersect(
-      parseProtocolSet(dimensions.protocol, rule.protocol)
-    );
-  }
-
-  const {action, priority} = rule;
   return {action, priority, conjunction};
 }
+
+// export function parseRuleSpec3(
+//   dimensions: RuleDimensions,
+//   rule: RuleSpec
+// ): Rule {
+//   let conjunction = Conjunction.create([]);
+
+//   // Source rules
+//   if (rule.sourceIp) {
+//     conjunction = conjunction.intersect(
+//       parseIpSet(dimensions.sourceIp, rule.sourceIp)
+//     );
+//   }
+//   if (rule.sourcePort) {
+//     conjunction = conjunction.intersect(
+//       parsePortSet(dimensions.sourcePort, rule.sourcePort)
+//     );
+//   }
+
+//   // Destination rules
+//   if (rule.destIp) {
+//     conjunction = conjunction.intersect(
+//       parseIpSet(dimensions.destIp, rule.destIp)
+//     );
+//   }
+//   if (rule.destPort) {
+//     conjunction = conjunction.intersect(
+//       parsePortSet(dimensions.destPort, rule.destPort)
+//     );
+//   }
+
+//   // Protocol rules
+//   if (rule.protocol) {
+//     conjunction = conjunction.intersect(
+//       parseProtocolSet(dimensions.protocol, rule.protocol)
+//     );
+//   }
+
+//   const {action, priority} = rule;
+//   return {action, priority, conjunction};
+// }
 
 export const parseIpSet = createParserDEPRECATED(
   parseIpOrSymbol2,
   symbolToUndefined
 );
 
+// TODO: these methods should go away.
+// TODO: separate rule parsing from evaluation.
 export const parseProtocolSet = createParserDEPRECATED(
   parseNumberOrSymbol2,
   (text: string) => protocolToDRange.get(text)
