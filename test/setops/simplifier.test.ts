@@ -87,7 +87,7 @@ const universeSpec: UniverseSpec = {
     },
     {
       name: 'destination port',
-      key: 'destinationePort',
+      key: 'destinationPort',
       type: 'port'
     },
     {
@@ -132,55 +132,55 @@ const universe = new Universe(universeSpec);
 // const protocolType = new DimensionType(protocolTypeSpec);
 
 
-const ipType = new DimensionType({
-  name: 'ip address',
-  key: 'ip',
-  parser: 'ip',
-  formatter: 'ip',
-  domain: '0.0.0.0-255.255.255.255',
-  values: []
-})
+// const ipType = new DimensionType({
+//   name: 'ip address',
+//   key: 'ip',
+//   parser: 'ip',
+//   formatter: 'ip',
+//   domain: '0.0.0.0-255.255.255.255',
+//   values: []
+// })
 
-const sourceIp = new Dimension('source ip', 'sourceIp', ipType);
+// const sourceIp = new Dimension('source ip', 'sourceIp', ipType);
 
-const portType = new DimensionType({
-  name: 'port',
-  key: 'port',
-  parser: 'default',
-  formatter: 'default',
-  domain: '00-0xffff',
-  values: []
-})
+// const portType = new DimensionType({
+//   name: 'port',
+//   key: 'port',
+//   parser: 'default',
+//   formatter: 'default',
+//   domain: '00-0xffff',
+//   values: []
+// })
 
-const sourcePort = new Dimension('source port', 'sourcePort', portType);
+// const sourcePort = new Dimension('source port', 'sourcePort', portType);
 
-const destIp = new Dimension('destination ip', 'destinationIp', ipType);
+// const destIp = new Dimension('destination ip', 'destinationIp', ipType);
 
-const destPort = new Dimension('destination port', 'destinationPort', portType);
+// const destPort = new Dimension('destination port', 'destinationPort', portType);
 
-const protocolType = new DimensionType({
-  name: 'protocol',
-  key: 'protocol',
-  parser: 'default',
-  formatter: 'default',
-  domain: '00-0xff',
-  values: [
-    { symbol: 'TCP', range: '6' },
-    { symbol: 'UDP', range: '17' },
-  ]
-})
+// const protocolType = new DimensionType({
+//   name: 'protocol',
+//   key: 'protocol',
+//   parser: 'default',
+//   formatter: 'default',
+//   domain: '00-0xff',
+//   values: [
+//     { symbol: 'TCP', range: '6' },
+//     { symbol: 'UDP', range: '17' },
+//   ]
+// })
 
-const protocol = new Dimension('protocol', 'protocol', protocolType);
+// const protocol = new Dimension('protocol', 'protocol', protocolType);
 
-const dimensionList = [sourceIp, sourcePort, destIp, destPort, protocol];
+// const dimensionList = [sourceIp, sourcePort, destIp, destPort, protocol];
 
-const dimensions: RuleDimensions = {
-  sourceIp,
-  sourcePort,
-  destIp,
-  destPort,
-  protocol,
-};
+// const dimensions: RuleDimensions = {
+//   sourceIp,
+//   sourcePort,
+//   destIp,
+//   destPort,
+//   protocol,
+// };
 
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
@@ -193,8 +193,8 @@ describe('Simplifier', () => {
     };
     const rule1: Rule = parseRuleSpec2(universe, spec);
 
-    const info = createConjunctionInfo(dimensionList, rule1.conjunction);
-    assert.equal(info.factors.length, dimensionList.length);
+    const info = createConjunctionInfo(universe.dimensions, rule1.conjunction);
+    assert.equal(info.factors.length, universe.dimensions.length);
     assert.equal(
       info.factors[0].key,
       '\nsource port: 80\ndestination ip: *\ndestination port: *\nprotocol: TCP, UDP'
@@ -239,7 +239,7 @@ describe('Simplifier', () => {
       console.log(expression.format());
       console.log();
 
-      const simplified = simplify(dimensionList, expression);
+      const simplified = simplify(universe.dimensions, expression);
 
       console.log('After simplification:');
       console.log(simplified.format());
@@ -263,7 +263,7 @@ describe('Simplifier', () => {
         {
           action: ActionType.ALLOW,
           priority: 1,
-          destPort: '101',
+          destinationPort: '101',
         },
       ];
 
@@ -271,7 +271,7 @@ describe('Simplifier', () => {
         {
           action: ActionType.ALLOW,
           priority: 1,
-          destPort: '101',
+          destinationPort: '101',
         },
         {
           action: ActionType.ALLOW,
@@ -290,7 +290,7 @@ describe('Simplifier', () => {
       console.log(expression.format());
       console.log();
 
-      const simplified = simplify(dimensionList, expression);
+      const simplified = simplify(universe.dimensions, expression);
 
       console.log('After simplification:');
       console.log(simplified.format());
@@ -323,7 +323,7 @@ describe('Simplifier', () => {
         {
           action: ActionType.ALLOW,
           priority: 1,
-          destPort: '101',
+          destinationPort: '101',
         },
       ];
 
@@ -360,7 +360,7 @@ describe('Simplifier', () => {
       console.log(expression.format());
       console.log();
 
-      const simplified = simplify(dimensionList, expression);
+      const simplified = simplify(universe.dimensions, expression);
 
       console.log('After simplification:');
       console.log(simplified.format());
@@ -383,28 +383,28 @@ describe('Simplifier', () => {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
-          destPort: '100',
+          destinationPort: '100',
           protocol: 'TCP',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
-          destPort: '100',
+          destinationPort: '100',
           protocol: 'TCP',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',
-          destPort: '101',
+          destinationPort: '101',
           protocol: 'TCP',
         },
         {
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',
-          destPort: '100-101',
+          destinationPort: '100-101',
           protocol: 'UDP',
         },
       ];
@@ -416,7 +416,7 @@ describe('Simplifier', () => {
       console.log(expression.format());
       console.log();
 
-      const simplified = simplify(dimensionList, expression);
+      const simplified = simplify(universe.dimensions, expression);
 
       console.log('After simplification:');
       console.log(simplified.format());
