@@ -1,7 +1,7 @@
 import {Conjunction, Disjunction} from '../setops';
 
+import {Universe} from '../dimensions';
 import {ActionType, RuleSpec} from './types';
-import {Universe} from './universe';
 
 ///////////////////////////////////////////////////////////////////////////////
 //

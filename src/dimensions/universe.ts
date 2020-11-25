@@ -1,12 +1,7 @@
 import * as t from 'io-ts';
 
-import {
-  Dimension,
-  DimensionSpecType,
-  DimensionType,
-  DimensionTypeSpecType,
-  IdGenerator,
-} from '../dimensions';
+import {Dimension, DimensionSpecType, IdGenerator} from './dimension';
+import {DimensionType, DimensionTypeSpecType} from './dimension_type';
 
 const UniverseSpecType = t.type({
   types: t.array(DimensionTypeSpecType),

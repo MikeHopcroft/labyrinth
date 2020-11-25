@@ -1,13 +1,6 @@
-import {Dimension} from '../dimensions';
+import {Dimension, Universe, UniverseSpec} from '../dimensions';
 
-import {
-  ActionType,
-  evaluate,
-  parseRuleSpec,
-  RuleSpecEx,
-  Universe,
-  UniverseSpec,
-} from '../rules';
+import {ActionType, evaluate, parseRuleSpec, RuleSpecEx} from '../rules';
 
 import {simplify} from '../setops';
 

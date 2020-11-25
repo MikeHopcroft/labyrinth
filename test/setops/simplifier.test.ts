@@ -1,13 +1,13 @@
 import {assert} from 'chai';
 import 'mocha';
 
+import {Universe, UniverseSpec} from '../../src/dimensions';
+
 import {
   ActionType,
   evaluate,
   parseRuleSpec,
   Rule,
-  UniverseSpec,
-  Universe,
   RuleSpecEx,
 } from '../../src/rules';
 
