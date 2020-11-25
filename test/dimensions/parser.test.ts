@@ -41,7 +41,10 @@ describe('Parser', () => {
   describe('parseIpSet', () => {
     it('invalid', () => {
       // Random identifier not in predefined symbols
-      assert.throws(() => parseIpSet('abc'), 'Unknown ip address "abc".');
+      assert.throws(
+        () => parseIpSet('abc'),
+        'Dimension "ip address": unknown ip address "abc".'
+      );
 
       // Incomplete
       assert.throws(
@@ -124,7 +127,10 @@ describe('Parser', () => {
     it('invalid', () => {
       // Non-numeric
       // Random identifier not in predefined symbols
-      assert.throws(() => parsePortSet('abc'), 'Unknown port "abc".');
+      assert.throws(
+        () => parsePortSet('abc'),
+        'Dimension "port": unknown port "abc".'
+      );
 
       // Out of range
       assert.throws(() => parsePortSet('-1'), 'Invalid port "-1".');
@@ -199,7 +205,10 @@ describe('Parser', () => {
   describe('parseProtocolSet', () => {
     it('invalid', () => {
       // Non-numeric
-      assert.throws(() => parseProtocolSet('abc'), 'Unknown protocol "abc".');
+      assert.throws(
+        () => parseProtocolSet('abc'),
+        'Dimension "protocol": unknown protocol "abc".'
+      );
 
       // Out of range
       assert.throws(() => parseProtocolSet('-1'), 'Invalid protocol "-1".');

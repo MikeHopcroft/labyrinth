@@ -16,10 +16,10 @@ export class Universe {
   private readonly keyToDimension = new Map<string, Dimension>();
   private readonly idGenerator = new IdGenerator();
 
-  constructor(spec: UniverseSpec) {
+  constructor(spec: UniverseSpec, reservedWords?: Set<string>) {
     // Create and index DimensionTypes.
     for (const s of spec.types) {
-      const type = new DimensionType(s);
+      const type = new DimensionType(s, reservedWords);
       if (this.keyToDimensionType.has(s.key)) {
         const message = `Duplicate dimension type key "${s.key}".`;
         throw new TypeError(message);

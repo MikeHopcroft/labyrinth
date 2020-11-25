@@ -12,6 +12,8 @@ import {
   ParseToDRange,
 } from '../dimensions';
 
+import {isValidIdentifier} from './ecmascript-6';
+
 export const DimensionTypeSpecType = t.type({
   name: t.string,
   key: t.string,
@@ -40,7 +42,9 @@ export class DimensionType {
   readonly symbolToRange = new Map<string, DRange>();
   readonly rangeToSymbol = new Map<string, string>();
 
-  constructor(spec: DimensionTypeSpec) {
+  static readonly reservedWords = new Set<string>(['all', '*']);
+
+  constructor(spec: DimensionTypeSpec, reservedWords?: Set<string>) {
     this.lookup = this.lookup.bind(this);
 
     this.name = spec.name;
@@ -48,6 +52,18 @@ export class DimensionType {
     // TODO: disallow `action`, `priority`, etc.
     // Reason is that key will be field name in Rule.
     // Can't clash with Rule.action and Rule.priority.
+    if (!isValidIdentifier(spec.key)) {
+      const message = `Dimension "${this.name}": illegal Javascript identifier "${spec.key}".`;
+      throw new TypeError(message);
+    }
+
+    if (reservedWords && reservedWords.has(spec.key)) {
+      const message = `Dimension "${this.name}": reserved keyword "${
+        spec.key
+      }". Cannot use ${[...reservedWords.values()]}.`;
+      throw new TypeError(message);
+    }
+
     this.key = spec.key;
 
     // Initialize formatter.
@@ -58,7 +74,7 @@ export class DimensionType {
         createNumberSymbolFormatter(this.rangeToSymbol)
       );
     } else {
-      const message = `Unknown formatter "${spec.formatter}".`;
+      const message = `Dimension "${this.name}": unknown formatter "${spec.formatter}".`;
       throw new TypeError(message);
     }
 
@@ -68,7 +84,7 @@ export class DimensionType {
     } else if (spec.parser === 'default') {
       this.parser = createParser(this, parseNumberOrSymbol);
     } else {
-      const message = `Unknown parser "${spec.parser}".`;
+      const message = `Dimension "${this.name}": unknown parser "${spec.parser}".`;
       throw new TypeError(message);
     }
 
@@ -79,13 +95,17 @@ export class DimensionType {
     // Initalize table of symbol definitions.
     for (const {symbol, range} of spec.values) {
       ///////////////////////////////////////////////////////////////////
-      // TODO: Disallow `*`, `any`
+      // TODO: Disallow `*`, `any`, `-`, `,`
       // What about numbers and ip addresses?
       // Should at least unit test behavior.
       // Also unit test cycle detection and symbol chain.
       ///////////////////////////////////////////////////////////////////
+      if (!isValidIdentifier(symbol, DimensionType.reservedWords)) {
+        const message = `Dimension "${this.name}": illegal symbol "${symbol}".`;
+        throw new TypeError(message);
+      }
       if (this.symbolToDefinition.has(symbol)) {
-        const message = `Dimension "${this.name}": Attempt to redefine symbol "${symbol}".`;
+        const message = `Dimension "${this.name}": attempt to redefine symbol "${symbol}".`;
         throw new TypeError(message);
       }
       this.symbolToDefinition.set(symbol, {
@@ -114,11 +134,11 @@ export class DimensionType {
 
     const definition = this.symbolToDefinition.get(symbol);
     if (definition === undefined) {
-      const message = `Unknown ${this.name} "${symbol}".`;
+      const message = `Dimension "${this.name}": unknown ${this.name} "${symbol}".`;
       throw new TypeError(message);
     }
     if (definition.open) {
-      const message = `Cyclic definition for "${symbol}".`;
+      const message = `Dimension "${this.name}": cyclic definition for "${symbol}".`;
       throw new TypeError(message);
     }
 

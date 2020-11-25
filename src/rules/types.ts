@@ -27,6 +27,8 @@ const ruleSpecType = t.type({
 
 export type RuleSpec = t.TypeOf<typeof ruleSpecType>;
 
+export const RuleSpecReservedWords = new Set<string>(['action', 'priority']);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RuleSpecEx = RuleSpec & {[others: string]: any};
 

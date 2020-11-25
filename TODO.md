@@ -1,11 +1,12 @@
 # TODO
 
 * dimension_types.ts:
-  * // TODO: disallow `action`, `priority`, etc.
-  * // TODO: Disallow `*`, `any`
-  * // Symbols cannot contain ',' and '-'. Probably not '.'
-  * // https://gist.github.com/mathiasbynens/6334847
   * // TODO: what if multiple symbols define the same range?
+  * x // TODO: disallow `action`, `priority`, etc. For dimension keys.
+  * x // TODO: Disallow `*`, `any`
+  * x // Symbols cannot contain ',' and '-'. Probably not '.'
+  * x // https://gist.github.com/mathiasbynens/6334847
+  * x // Also unit test cycle detection and symbol chain.
 * dimension.ts
   * // TODO: IMPLEMENT
   * // TODO: check for key collision with Rule: action, priority
@@ -17,9 +18,10 @@
 * Formatters should display `*` or `any`
   * // TODO: this is brittle because it may format different than
 * Unit tests
+  * x Tests for DimensionType.lookup() with chained definitions
+  * x Tests for DimensionType exceptions
   * Shared built-in universe object. Consider for sample as well.
   * Reduce console spew, especially in `(a+b)(c+d)`.
-  * Tests for DimensionType.lookup()
 * Parser support for 'except'
 * Command line utility
   * Command line parameters: <universe> <rules1> [rules2] --telemetry
