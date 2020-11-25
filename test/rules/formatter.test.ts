@@ -5,20 +5,13 @@ import 'mocha';
 import {
   createIpFormatter,
   createNumberSymbolFormatter,
-  createParserDEPRECATED,
+  createParser,
   Dimension,
   DimensionType,
   formatDRange,
+  parseIpOrSymbol2,
   parseNumberOrSymbol2,
 } from '../../src/dimensions';
-
-import {
-  parseIpSet,
-} from '../../src/rules';
-
-function emptyLookup(symbol: string) {
-  return undefined;
-}
 
 const ipType = new DimensionType({
   name: 'ip address',
@@ -28,17 +21,9 @@ const ipType = new DimensionType({
   domain: '0.0.0.0-255.255.255.255',
   values: []
 })
+const parseIpSet = ipType.parser;
 
-const ips = new Dimension('source ip', 'sourceIp', ipType);
-
-// const formatter = () => '';
-// const ips = Dimension.create(
-//   'source ip',
-//   'ip address',
-//   formatter,
-//   0,
-//   4294967295
-// );
+// const ips = new Dimension('source ip', 'sourceIp', ipType);
 
 const portType = new DimensionType({
   name: 'port',
@@ -49,9 +34,7 @@ const portType = new DimensionType({
   values: []
 })
 
-const ports = new Dimension('source port', 'sourcePort', portType);
-
-// const ports = Dimension.create('source port', 'port', formatter, 0, 0xffff);
+// const ports = new Dimension('source port', 'sourcePort', portType);
 
 describe('Formatters', () => {
   describe('ip', () => {
@@ -113,15 +96,15 @@ describe('Formatters', () => {
       it('No symbols', () => {
         const input = '0.0.0.1, 1.1.1.0/24, 2.0.0.0-2.0.0.3, 5.5.5.1-6.6.6.1';
         const expected = '0.0.0.1, 1.1.1.0/24, 2.0.0.0/30, 5.5.5.1-6.6.6.1';
-        const r1 = parseIpSet(ips, input);
+        const r1 = parseIpSet(input);
         const formatter = createIpFormatter(new Map<string, string>());
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbols for indivdual ips', () => {
         const input = '0.0.0.1, 1.1.1.0/24, 2.0.0.0-2.0.0.3, 5.5.5.1-6.6.6.1';
         const expected = 'abc, 1.1.1.0/24, 2.0.0.0/30, def-ghi';
-        const r1 = parseIpSet(ips, input);
+        const r1 = parseIpSet(input);
 
         const lookup = new Map<string, string>([
           [(0x00000001).toString(), 'abc'],
@@ -131,13 +114,13 @@ describe('Formatters', () => {
         ]);
         const formatter = createIpFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbols for ip ranges', () => {
         const input = '0.0.0.1, 1.1.1.0/24, 2.0.0.0-2.0.0.3, 5.5.5.1-6.6.6.1';
         const expected = '0.0.0.1, abc, 2.0.0.0/30, def';
-        const r1 = parseIpSet(ips, input);
+        const r1 = parseIpSet(input);
 
         const lookup = new Map<string, string>([
           [(0x01010100).toString() + '-' + (0x010101ff).toString(), 'abc'],
@@ -145,13 +128,13 @@ describe('Formatters', () => {
         ]);
         const formatter = createIpFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbol for entire range', () => {
         const input = '0.0.0.1, 1.1.1.0/24, 2.0.0.0-2.0.0.3, 5.5.5.1-6.6.6.1';
         const expected = 'abc';
-        const r1 = parseIpSet(ips, input);
+        const r1 = parseIpSet(input);
 
         const lookup = new Map<string, string>([
           [
@@ -173,7 +156,7 @@ describe('Formatters', () => {
         ]);
         const formatter = createIpFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
     });
   });
@@ -183,17 +166,17 @@ describe('Formatters', () => {
       it('No symbols', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = input;
-        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
+        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
         const formatter = createNumberSymbolFormatter(
           new Map<string, string>()
         );
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbols for indivdual numbers', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = 'a, b, c-d, e-f, g';
-        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
+        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
 
         const lookup = new Map<string, string>([
           ['1', 'a'],
@@ -206,13 +189,13 @@ describe('Formatters', () => {
         ]);
         const formatter = createNumberSymbolFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbols for numeric ranges', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = '1, 3, a, b, 11';
-        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
+        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
 
         const lookup = new Map<string, string>([
           ['5-6', 'a'],
@@ -220,29 +203,29 @@ describe('Formatters', () => {
         ]);
         const formatter = createNumberSymbolFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbol for start of numeric range', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = '1, 3, a-6, 8-9, 11';
-        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
+        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
 
         const lookup = new Map<string, string>([['5', 'a']]);
         const formatter = createNumberSymbolFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
 
       it('Symbol for entire range', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = 'a';
-        const r1 = createParserDEPRECATED(parseNumberOrSymbol2, emptyLookup)(ports, input);
+        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
 
         const lookup = new Map<string, string>([['1, 3, 5-6, 8-9, 11', 'a']]);
         const formatter = createNumberSymbolFormatter(lookup);
 
-        assert.equal(formatDRange(formatter, r1.dimensions[0].range), expected);
+        assert.equal(formatDRange(formatter, r1), expected);
       });
     });
   });

@@ -5,8 +5,6 @@ import {
   createFormatter,
   createNumberSymbolFormatter,
   createIpFormatter,
-  Dimension,
-  DimensionType,
 } from '../../src/dimensions';
 
 import {
@@ -14,7 +12,6 @@ import {
   evaluate,
   parseRuleSpec2,
   Rule,
-  RuleDimensions,
   UniverseSpec,
   Universe,
   RuleSpecEx,
@@ -22,22 +19,22 @@ import {
 
 import {createConjunctionInfo, simplify} from '../../src/setops';
 
-const ipFormatter = createFormatter(
-  createIpFormatter(new Map<string, string>())
-);
+// const ipFormatter = createFormatter(
+//   createIpFormatter(new Map<string, string>())
+// );
 
-const portFormatter = createFormatter(
-  createNumberSymbolFormatter(new Map<string, string>())
-);
+// const portFormatter = createFormatter(
+//   createNumberSymbolFormatter(new Map<string, string>())
+// );
 
-const protocolFormatter = createFormatter(
-  createNumberSymbolFormatter(
-    new Map<string, string>([
-      ['6', 'TCP'],
-      ['17', 'UDP'],
-    ])
-  )
-);
+// const protocolFormatter = createFormatter(
+//   createNumberSymbolFormatter(
+//     new Map<string, string>([
+//       ['6', 'TCP'],
+//       ['17', 'UDP'],
+//     ])
+//   )
+// );
 
 const universeSpec: UniverseSpec = {
   types: [

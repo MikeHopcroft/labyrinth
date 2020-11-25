@@ -1,18 +1,9 @@
-import {
-  createFormatter,
-  createNumberSymbolFormatter,
-  createIpFormatter,
-  Dimension,
-  DimensionType,
-  DimensionTypeSpec
-} from '../dimensions';
+import {Dimension} from '../dimensions';
 
 import {
   ActionType,
   evaluate,
   parseRuleSpec2,
-  RuleDimensions,
-  RuleSpec,
   RuleSpecEx,
   Universe,
   UniverseSpec
@@ -20,85 +11,36 @@ import {
 
 import {simplify} from '../setops';
 
-const ipFormatter = createFormatter(
-  createIpFormatter(new Map<string, string>())
-);
-
-const portFormatter = createFormatter(
-  createNumberSymbolFormatter(new Map<string, string>())
-);
-
-const protocolFormatter = createFormatter(
-  createNumberSymbolFormatter(
-    new Map<string, string>([
-      ['1', 'ICMPxx'],
-      ['6', 'TCPxx'],
-      ['17', 'UDPxx'],
-    ])
-  )
-);
-
-const ipTypeSpec: DimensionTypeSpec = {
-  name: 'ip address',
-  key: 'ip',
-  parser: 'ip',
-  formatter: 'ip',
-  domain: '0.0.0.0-255.255.255.255',
-  values: []
-};
-const ipType = new DimensionType(ipTypeSpec)
-
-const sourceIp = new Dimension('source ip', 'sourceIp', ipType);
-
-const portTypeSpec: DimensionTypeSpec = {
-  name: 'port',
-  key: 'port',
-  parser: 'default',
-  formatter: 'default',
-  domain: '00-0xffff',
-  values: []
-};
-const portType = new DimensionType(portTypeSpec)
-
-const sourcePort = new Dimension('source port', 'sourcePort', portType);
-
-const destIp = new Dimension('destination ip', 'destinationIp', ipType);
-
-const destPort = new  Dimension('destination port', 'destinationPort', portType);
-
-const protocolTypeSpec: DimensionTypeSpec = {
-  name: 'protocol',
-  key: 'protocol',
-  parser: 'default',
-  formatter: 'default',
-  domain: '00-0xff',
-  values: [
-    { symbol: 'TCP', range: '6' },
-    { symbol: 'UDP', range: '17' },
-  ]
-};
-const protocolType = new DimensionType(protocolTypeSpec);
-
-const protocol = new Dimension('protocol', 'protocol', protocolType);
-
-// const dimensions: RuleDimensions = {
-//   sourceIp,
-//   sourcePort,
-//   destIp,
-//   destPort,
-//   protocol,
-// };
-
-// const dimensionList: Dimension[] = [
-//   sourceIp,
-//   sourcePort,
-//   destIp,
-//   destPort,
-//   protocol,
-// ];
-
 const universeSpec: UniverseSpec = {
-  types: [ipTypeSpec, portTypeSpec, protocolTypeSpec],
+  types: [
+    {
+      name: 'ip address',
+      key: 'ip',
+      parser: 'ip',
+      formatter: 'ip',
+      domain: '0.0.0.0-255.255.255.255',
+      values: []
+    },
+    {
+      name: 'port',
+      key: 'port',
+      parser: 'default',
+      formatter: 'default',
+      domain: '00-0xffff',
+      values: []
+    },
+    {
+      name: 'protocol',
+      key: 'protocol',
+      parser: 'default',
+      formatter: 'default',
+      domain: '00-0xff',
+      values: [
+        { symbol: 'TCP', range: '6' },
+        { symbol: 'UDP', range: '17' },
+      ]
+    }
+  ],
   dimensions: [
     {
       name: 'source ip',

@@ -1,5 +1,14 @@
 # TODO
 
+* dimension_types.ts:
+  * // TODO: disallow `action`, `priority`, etc.
+  * // TODO: Disallow `*`, `any`
+  * // TODO: what if multiple symbols define the same range?
+* dimension.ts
+  * // TODO: check for key collision with Rule: action, priority
+  * // TODO: check for illegal key
+
+* Consider making IdGenerator into a function.
 * Consider renaming rules.ts to evaluate.ts
 * Use or remove errors.ts
 * Rewrite parseRuleSpec() to be data-driven

@@ -1,5 +1,3 @@
-console.log('importing dimension_types.ts');
-
 import DRange from 'drange';
 import * as t from 'io-ts';
 
@@ -7,7 +5,7 @@ import {
   createFormatter,
   createIpFormatter,
   createNumberSymbolFormatter,
-  createParserNEW,
+  createParser,
   DimensionFormatter,
   parseIpOrSymbol2,
   parseNumberOrSymbol2,
@@ -26,8 +24,6 @@ export const DimensionTypeSpecType = t.type({
   }))
 });
 export type DimensionTypeSpec = t.TypeOf<typeof DimensionTypeSpecType>;
-
-console.log(`  DimensionTypeSpecType: ${DimensionTypeSpecType}`);
 
 export class DimensionType {
   readonly name: string;
@@ -49,6 +45,7 @@ export class DimensionType {
     // Can't clash with Rule.action and Rule.priority.
     this.key = spec.key;
 
+    // Initialize formatter.
     if (spec.formatter === 'ip') {
       this.formatter = createFormatter(createIpFormatter(this.rangeToSymbol));
     } else if (spec.formatter === 'default') {
@@ -60,24 +57,21 @@ export class DimensionType {
       throw new TypeError(message);
     }
 
+    // Initialize parser.
     if (spec.parser === 'ip') {
-      this.parser = createParserNEW(this, parseIpOrSymbol2);
-      // this.parser = (text: string) => {
-      //   return parseIpOrSymbol2(this, this.lookup, text);
-      // };
+      this.parser = createParser(this, parseIpOrSymbol2);
     } else if (spec.parser === 'default') {
-      this.parser = createParserNEW(this, parseNumberOrSymbol2);
-      // this.parser = (text: string) => {
-      //   return parseNumberOrSymbol2(this, this.lookup, text);
-      // };
+      this.parser = createParser(this, parseNumberOrSymbol2);
     } else {
       const message = `Unknown parser "${spec.parser}".`;
       throw new TypeError(message);
     }
 
+    // Initialize the domain.
     this.domain = new DRange(0, 0xffffffff);
     this.domain = this.parser(spec.domain);
 
+    // Initalize table of symbol definitions.
     for (const {symbol, range} of spec.values) {
       ///////////////////////////////////////////////////////////////////
       // TODO: Disallow `*`, `any`
@@ -102,6 +96,8 @@ export class DimensionType {
       )
     }
 
+    // Use this.lookup() to evaluate symbol definitions in topological
+    // sort order.
     for (const symbol of this.symbolToDefinition.keys()) {
       const range = this.lookup(symbol);
       this.symbolToRange.set(symbol, range);
@@ -110,25 +106,6 @@ export class DimensionType {
       const rangeText = range.toString().slice(2, -2); // Trim off "[ " and " ]"
       this.rangeToSymbol.set(rangeText, symbol);
     }
-
-    //   // Disallow `*`, `any`
-
-    //   // TODO: move this check into lookup.
-    //   // Skip symbols that are already defined.
-    //   if (this.symbolToRange.has(symbol)) {
-    //     const message = `Dimension "${
-    //       this.name
-    //     }": Attempt to redefine symbol "${
-    //       symbol
-    //     }".`;
-    //     throw new TypeError(message);
-    //   }
-
-    //   // Parse the range.
-      
-    //   // Create entries in symbolToRange and rangeToSymbol.
-    //   // const r = this.parser
-    // }
   }
 
   lookup(symbol: string): DRange {
@@ -139,21 +116,16 @@ export class DimensionType {
 
     const definition = this.symbolToDefinition.get(symbol);
     if (definition === undefined) {
-      const message = `Undefined symbol "${symbol}".`;
+      const message = `Unknown ${this.name} "${symbol}".`;
       throw new TypeError(message);
     }
     if (definition.open) {
-    // if (openSymbols.has(symbol)) {
       const message = `Cyclic definition for "${symbol}".`;
       throw new TypeError(message);
     }
-    definition.open = true;
 
-    // openSymbols.add(symbol);
-    // TODO: parser needs to take DimensionType, not Dimension.
-    // TODO: insert real code.
+    definition.open = true;
     const newRange = this.parser(definition.value);
-    // openSymbols.delete(symbol);
     definition.open = false;
 
     return newRange;

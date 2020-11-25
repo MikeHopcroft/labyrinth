@@ -1,4 +1,3 @@
-console.log('importing dimension.ts');
 import DRange from 'drange';
 import * as t from 'io-ts';
 
@@ -6,8 +5,9 @@ import { Conjunction, DimensionedRange } from '../setops';
 
 import { DimensionType } from './dimension_type';
 
+// TODO: consider making IdGenerator into a function.
 export class IdGenerator {
-  nextId = 1;
+  private nextId = 1;
 
   constructor(startId = 1) {
     this.nextId = startId;
@@ -35,7 +35,9 @@ export class Dimension {
   readonly type: DimensionType;
   readonly id: number;
 
-  // DESIGN NOTE: optional idGenerator is provideto simplify unit tests.
+  // DESIGN NOTE: optional idGenerator is provided to simplify unit tests.
+  // Without the default idGenerator, many unit tests would have to be modified
+  // to pass an IdGenerator.
   constructor(
     name: string,
     key: string,
@@ -52,40 +54,6 @@ export class Dimension {
     this.type = type;
     this.id = (idGenerator || Dimension.idGenerator).next()
   }
-
-  // private constructorOld(
-  //   name: string,
-  //   type: DimensionType,
-  //   // formatter?: DimensionFormatter,
-  //   // start?: number,
-  //   // end?: number
-  // ) {
-  //   if (name === Dimension.reservedName) {
-  //     const message = `Dimension name "${Dimension.reservedName} is reserved."`;
-  //     throw new TypeError(message);
-  //   }
-  //   // if (typeName === Dimension.reservedTypeName) {
-  //   //   const message = `Dimension type name "${Dimension.reservedTypeName} is reserved."`;
-  //   //   throw new TypeError(message);
-  //   // }
-  //   this.name = name || Dimension.reservedName;
-  //   // this.typeName = typeName || Dimension.reservedName;
-  //   this.formatter = formatter || Dimension.reservedFormatter;
-
-  //   if (start === undefined) {
-  //     // This is the empty dimension.
-  //     this.id = Dimension.reservedId;
-  //     this.domain = new DRange();
-  //   } else {
-  //     if (end !== undefined && start > end) {
-  //       const message = 'Start of domain cannot be greater than end of domain.';
-  //       throw new TypeError(message);
-  //     }
-
-  //     this.id = Dimension.nextId++;
-  //     this.domain = new DRange(start, end);
-  //   }
-  // }
 
   parse(text: string): Conjunction {
     const range = this.type.parser(text);

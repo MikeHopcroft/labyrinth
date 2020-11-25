@@ -61,10 +61,10 @@ export type RuleSpecSet = t.TypeOf<typeof ruleSpecSetType>;
 //   conjunction: Conjunction;
 // }
 
-export interface RuleDimensions {
-  sourceIp: Dimension;
-  sourcePort: Dimension;
-  destIp: Dimension;
-  destPort: Dimension;
-  protocol: Dimension;
-}
+// export interface RuleDimensions {
+//   sourceIp: Dimension;
+//   sourcePort: Dimension;
+//   destIp: Dimension;
+//   destPort: Dimension;
+//   protocol: Dimension;
+// }

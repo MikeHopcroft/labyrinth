@@ -1,34 +1,16 @@
 import DRange from 'drange';
 import * as ip from 'ip';
 
-import {Dimension, DimensionType} from '.';
+import {DimensionType} from './dimension_type';
 
-import {
-  Conjunction,
-  DimensionedRange,
-} from '../setops';
-
-type Parser = (dimension: Dimension, text: string) => Conjunction;
 export type ParseToDRange = (text: string) => DRange;
 
 type SymbolToDRange = (symbol: string) => DRange | undefined;
-export type BaseParser2 = (
+type BaseParser2 = (
   dimension: DimensionType,
   lookup: SymbolToDRange,
   text: string
 ) => DRange;
-function symbolToUndefined(symbol: string) {
-  return undefined;
-}
-
-function parseSet(
-  dimension: Dimension,
-  parse: (dimension: DimensionType, text: string) => DRange,
-  text: string
-): Conjunction {
-  const range = parseDRange(dimension.type, parse, text);
-  return Conjunction.create([new DimensionedRange(dimension, range)]);
-}
 
 export function parseDRange(
   dimension: DimensionType,
@@ -91,26 +73,7 @@ export function parseDRange(
   return range;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//
-//
-///////////////////////////////////////////////////////////////////////////////
-
-
-export function createParserDEPRECATED(
-  baseParser: BaseParser2,
-  lookup: SymbolToDRange
-): Parser {
-  const parser = (dimension: DimensionType, text: string) => {
-    return baseParser(dimension, lookup, text);
-  };
-
-  return (dimension: Dimension, text: string) =>
-    parseSet(dimension, parser, text);
-}
-
-export function createParserNEW(
+export function createParser(
   type: DimensionType,
   baseParser: BaseParser2,
 ): ParseToDRange {
@@ -147,7 +110,7 @@ export function parseNumberOrSymbol2(
   }
 }
 
-export function parseIp(dimension: DimensionType, text: string): DRange {
+function parseIp(dimension: DimensionType, text: string): DRange {
   const trimmed = text.trim();
   const parts = trimmed.split('/');
 
@@ -183,7 +146,7 @@ export function parseIp(dimension: DimensionType, text: string): DRange {
   }
 }
 
-export function parseNumber(dimension: DimensionType, text: string): DRange {
+function parseNumber(dimension: DimensionType, text: string): DRange {
   const name = dimension.name;
   const value = Number(text);
   if (Number.isNaN(value)) {
@@ -206,7 +169,7 @@ export function parseNumber(dimension: DimensionType, text: string): DRange {
   return new DRange(value);
 }
 
-export function parseSymbol2(
+function parseSymbol2(
   dimension: DimensionType,
   lookup: SymbolToDRange,
   text: string

@@ -1,14 +1,14 @@
 import {Conjunction, Disjunction} from '../setops';
 
-import {protocolToDRange} from './lookup_protocol';
+// import {protocolToDRange} from './lookup_protocol';
 
-import {
-  createParserDEPRECATED,
-  parseIpOrSymbol2,
-  parseNumberOrSymbol2,
-} from '../dimensions/parser';
+// import {
+//   createParserDEPRECATED,
+//   parseIpOrSymbol2,
+//   parseNumberOrSymbol2,
+// } from '../dimensions';
 
-import {ActionType, RuleDimensions, RuleSpec} from './types';
+import {ActionType, RuleSpec} from './types';
 import { Universe } from './universe';
 
 export interface Rule {
@@ -75,26 +75,28 @@ export function parseRuleSpec2(universe: Universe, spec: RuleSpec): Rule {
 //   return {action, priority, conjunction};
 // }
 
-export const parseIpSet = createParserDEPRECATED(
-  parseIpOrSymbol2,
-  symbolToUndefined
-);
+// export const parseIpSet = createParser();
+
+// export const parseIpSet = createParserDEPRECATED(
+//   parseIpOrSymbol2,
+//   symbolToUndefined
+// );
 
 // TODO: these methods should go away.
 // TODO: separate rule parsing from evaluation.
-export const parseProtocolSet = createParserDEPRECATED(
-  parseNumberOrSymbol2,
-  (text: string) => protocolToDRange.get(text)
-);
+// export const parseProtocolSet = createParserDEPRECATED(
+//   parseNumberOrSymbol2,
+//   (text: string) => protocolToDRange.get(text)
+// );
 
-export const parsePortSet = createParserDEPRECATED(
-  parseNumberOrSymbol2,
-  symbolToUndefined
-);
+// export const parsePortSet = createParserDEPRECATED(
+//   parseNumberOrSymbol2,
+//   symbolToUndefined
+// );
 
-function symbolToUndefined(symbol: string) {
-  return undefined;
-}
+// function symbolToUndefined(symbol: string) {
+//   return undefined;
+// }
 
 ///////////////////////////////////////////////////////////////////////////////
 //
