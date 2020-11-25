@@ -11,7 +11,7 @@ const dimension1Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '1-10',
-  values: []
+  values: [],
 });
 const dimension1 = new Dimension('test1', 'test1', dimension1Type);
 
@@ -21,7 +21,7 @@ const dimension2Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '5-15',
-  values: []
+  values: [],
 });
 const dimension2 = new Dimension('test2', 'test2', dimension2Type);
 

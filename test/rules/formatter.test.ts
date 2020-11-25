@@ -17,8 +17,8 @@ const ipType = new DimensionType({
   parser: 'ip',
   formatter: 'ip',
   domain: '0.0.0.0-255.255.255.255',
-  values: []
-})
+  values: [],
+});
 const parseIpSet = ipType.parser;
 
 const portType = new DimensionType({
@@ -27,8 +27,8 @@ const portType = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '00-0xffff',
-  values: []
-})
+  values: [],
+});
 
 describe('Formatters', () => {
   describe('ip', () => {

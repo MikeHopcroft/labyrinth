@@ -1,8 +1,7 @@
 import {Conjunction, Disjunction} from '../setops';
 
-
 import {ActionType, RuleSpec} from './types';
-import { Universe } from './universe';
+import {Universe} from './universe';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -23,8 +22,10 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
 
   for (const key of Object.getOwnPropertyNames(rest)) {
     const dimension = universe.get(key);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const value = (rest as any)[key];
-    if (typeof(value) !== 'string') {
+    if (typeof value !== 'string') {
       const message = `${key}: expected a string value.`;
       throw new TypeError(message);
     }

@@ -5,19 +5,18 @@ import {
   DimensionSpecType,
   DimensionType,
   DimensionTypeSpecType,
-  IdGenerator
+  IdGenerator,
 } from '../dimensions';
-
 
 const UniverseSpecType = t.type({
   types: t.array(DimensionTypeSpecType),
-  dimensions: t.array(DimensionSpecType)
+  dimensions: t.array(DimensionSpecType),
 });
 export type UniverseSpec = t.TypeOf<typeof UniverseSpecType>;
 
 export class Universe {
   readonly dimensions: Dimension[] = [];
-  
+
   private readonly keyToDimensionType = new Map<string, DimensionType>();
   private readonly keyToDimension = new Map<string, Dimension>();
   private readonly idGenerator = new IdGenerator();

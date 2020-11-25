@@ -26,7 +26,9 @@ const ruleSpecType = t.type({
 });
 
 export type RuleSpec = t.TypeOf<typeof ruleSpecType>;
-export type RuleSpecEx = RuleSpec & { [others: string]: any; };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RuleSpecEx = RuleSpec & {[others: string]: any};
 
 const ruleSpecSetType = t.type({
   rules: t.array(ruleSpecType),

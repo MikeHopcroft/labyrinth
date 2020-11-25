@@ -18,10 +18,12 @@ export const DimensionTypeSpecType = t.type({
   parser: t.string,
   formatter: t.string,
   domain: t.string,
-  values: t.array(t.type({
-    symbol: t.string,
-    range: t.string
-  }))
+  values: t.array(
+    t.type({
+      symbol: t.string,
+      range: t.string,
+    })
+  ),
 });
 export type DimensionTypeSpec = t.TypeOf<typeof DimensionTypeSpecType>;
 
@@ -31,7 +33,10 @@ export class DimensionType {
   readonly parser: ParseToDRange;
   readonly formatter: DimensionFormatter;
   readonly domain: DRange;
-  readonly symbolToDefinition = new Map<string, {value: string, open: boolean}>();
+  readonly symbolToDefinition = new Map<
+    string,
+    {value: string; open: boolean}
+  >();
   readonly symbolToRange = new Map<string, DRange>();
   readonly rangeToSymbol = new Map<string, string>();
 
@@ -80,20 +85,13 @@ export class DimensionType {
       // Also unit test cycle detection and symbol chain.
       ///////////////////////////////////////////////////////////////////
       if (this.symbolToDefinition.has(symbol)) {
-        const message = `Dimension "${
-          this.name
-        }": Attempt to redefine symbol "${
-          symbol
-        }".`;
+        const message = `Dimension "${this.name}": Attempt to redefine symbol "${symbol}".`;
         throw new TypeError(message);
       }
-      this.symbolToDefinition.set(
-        symbol,
-        {
-          value: range,
-          open: false,
-        }
-      )
+      this.symbolToDefinition.set(symbol, {
+        value: range,
+        open: false,
+      });
     }
 
     // Use this.lookup() to evaluate symbol definitions in topological

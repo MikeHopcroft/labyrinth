@@ -9,7 +9,7 @@ const ipType = new DimensionType({
   parser: 'ip',
   formatter: 'ip',
   domain: '0.0.0.0-255.255.255.255',
-  values: []
+  values: [],
 });
 const parseIpSet = ipType.parser;
 
@@ -19,7 +19,7 @@ const portType = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '00-0xffff',
-  values: []
+  values: [],
 });
 const parsePortSet = portType.parser;
 
@@ -30,10 +30,10 @@ const protocolType = new DimensionType({
   formatter: 'default',
   domain: '00-0xff',
   values: [
-    { symbol: 'ICMP', range: '1' },
-    { symbol: 'TCP', range: '6' },
-    { symbol: 'UDP', range: '17' },
-  ]
+    {symbol: 'ICMP', range: '1'},
+    {symbol: 'TCP', range: '6'},
+    {symbol: 'UDP', range: '17'},
+  ],
 });
 const parseProtocolSet = protocolType.parser;
 
@@ -86,10 +86,10 @@ describe('Parser', () => {
 
     it('any', () => {
       const r1 = parseIpSet('any');
-      assert.deepEqual(r1, ipType.domain)
+      assert.deepEqual(r1, ipType.domain);
 
-      const r2 = parseIpSet( '*');
-      assert.deepEqual(r2, ipType.domain)
+      const r2 = parseIpSet('*');
+      assert.deepEqual(r2, ipType.domain);
     });
 
     it('single address', () => {
@@ -101,19 +101,13 @@ describe('Parser', () => {
     it('address range', () => {
       const r1 = parseIpSet('1.1.1.1-1.1.1.5');
       assert.equal(r1.length, 5);
-      assert.equal(
-        r1.toString(),
-        `[ ${0x01010101}-${0x01010105} ]`
-      );
+      assert.equal(r1.toString(), `[ ${0x01010101}-${0x01010105} ]`);
     });
 
     it('CIDR', () => {
-      const r1 = parseIpSet( '1.1.1.0/24');
+      const r1 = parseIpSet('1.1.1.0/24');
       assert.equal(r1.length, 256);
-      assert.equal(
-        r1.toString(),
-        `[ ${0x01010100}-${0x010101ff} ]`
-      );
+      assert.equal(r1.toString(), `[ ${0x01010100}-${0x010101ff} ]`);
     });
 
     it('address list', () => {
@@ -121,17 +115,7 @@ describe('Parser', () => {
       assert.equal(r1.length, 261);
       assert.equal(
         r1.toString(),
-        `[ ${
-          0x00000001
-        }, ${
-          0x01010100
-        }-${
-          0x010101ff
-        }, ${
-          0x02000000
-        }-${
-          0x02000003
-        } ]`
+        `[ ${0x00000001}, ${0x01010100}-${0x010101ff}, ${0x02000000}-${0x02000003} ]`
       );
     });
   });
@@ -156,10 +140,7 @@ describe('Parser', () => {
       );
 
       // Too many dashes
-      assert.throws(
-        () => parsePortSet('1-2-3'),
-        'Invalid port "1-2-3".'
-      );
+      assert.throws(() => parsePortSet('1-2-3'), 'Invalid port "1-2-3".');
 
       // * or any comingled
       assert.throws(
@@ -193,7 +174,7 @@ describe('Parser', () => {
     it('single port', () => {
       const r1 = parsePortSet('1234');
       assert.equal(r1.length, 1);
-      assert.equal(r1.toString(), `[ 1234 ]`);
+      assert.equal(r1.toString(), '[ 1234 ]');
     });
 
     it('single port - hexidecimal', () => {
@@ -205,32 +186,23 @@ describe('Parser', () => {
     it('port range', () => {
       const r1 = parsePortSet('567-789');
       assert.equal(r1.length, 789 - 567 + 1);
-      assert.equal(r1.toString(), `[ 567-789 ]`);
+      assert.equal(r1.toString(), '[ 567-789 ]');
     });
 
     it('port list', () => {
       const r1 = parsePortSet('1,10-20, 30, 40, 50-60');
       assert.equal(r1.length, 25);
-      assert.equal(
-        r1.toString(),
-        `[ 1, 10-20, 30, 40, 50-60 ]`
-      );
+      assert.equal(r1.toString(), '[ 1, 10-20, 30, 40, 50-60 ]');
     });
   });
 
   describe('parseProtocolSet', () => {
     it('invalid', () => {
       // Non-numeric
-      assert.throws(
-        () => parseProtocolSet('abc'),
-        'Unknown protocol "abc".'
-      );
+      assert.throws(() => parseProtocolSet('abc'), 'Unknown protocol "abc".');
 
       // Out of range
-      assert.throws(
-        () => parseProtocolSet('-1'),
-        'Invalid protocol "-1".'
-      );
+      assert.throws(() => parseProtocolSet('-1'), 'Invalid protocol "-1".');
 
       // Out of range
       assert.throws(
@@ -282,7 +254,7 @@ describe('Parser', () => {
     it('single numeric protocol', () => {
       const r1 = parseProtocolSet('17');
       assert.equal(r1.length, 1);
-      assert.equal(r1.toString(), `[ 17 ]`);
+      assert.equal(r1.toString(), '[ 17 ]');
     });
 
     it('single numeric protocol - hexidecimal', () => {
@@ -294,30 +266,25 @@ describe('Parser', () => {
     it('single symbolic protocol', () => {
       const r1 = parseProtocolSet('TCP');
       assert.equal(r1.length, 1);
-      assert.equal(r1.toString(), `[ 6 ]`);
+      assert.equal(r1.toString(), '[ 6 ]');
     });
 
     it('numeric protocol range', () => {
       const r1 = parseProtocolSet('6-17');
       assert.equal(r1.length, 12);
-      assert.equal(r1.toString(), `[ 6-17 ]`);
+      assert.equal(r1.toString(), '[ 6-17 ]');
     });
 
     it('symbolic protocol range', () => {
       const r1 = parseProtocolSet('TCP-UDP');
       assert.equal(r1.length, 12);
-      assert.equal(r1.toString(), `[ 6-17 ]`);
+      assert.equal(r1.toString(), '[ 6-17 ]');
     });
 
     it('protocol list', () => {
-      const r1 = parseProtocolSet(
-        'ICMP, TCP, 30-40, UDP, 50, 60-70'
-      );
+      const r1 = parseProtocolSet('ICMP, TCP, 30-40, UDP, 50, 60-70');
       assert.equal(r1.length, 26);
-      assert.equal(
-        r1.toString(),
-        `[ 1, 6, 17, 30-40, 50, 60-70 ]`
-      );
+      assert.equal(r1.toString(), '[ 1, 6, 17, 30-40, 50, 60-70 ]');
     });
   });
 });

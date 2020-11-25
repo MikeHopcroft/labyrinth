@@ -6,7 +6,7 @@ import {
   parseRuleSpec,
   RuleSpecEx,
   Universe,
-  UniverseSpec
+  UniverseSpec,
 } from '../rules';
 
 import {simplify} from '../setops';
@@ -19,7 +19,7 @@ const universeSpec: UniverseSpec = {
       parser: 'ip',
       formatter: 'ip',
       domain: '0.0.0.0-255.255.255.255',
-      values: []
+      values: [],
     },
     {
       name: 'port',
@@ -27,7 +27,7 @@ const universeSpec: UniverseSpec = {
       parser: 'default',
       formatter: 'default',
       domain: '00-0xffff',
-      values: []
+      values: [],
     },
     {
       name: 'protocol',
@@ -36,38 +36,38 @@ const universeSpec: UniverseSpec = {
       formatter: 'default',
       domain: '00-0xff',
       values: [
-        { symbol: 'TCP', range: '6' },
-        { symbol: 'UDP', range: '17' },
-      ]
-    }
+        {symbol: 'TCP', range: '6'},
+        {symbol: 'UDP', range: '17'},
+      ],
+    },
   ],
   dimensions: [
     {
       name: 'source ip',
       key: 'sourceIp',
-      type: 'ip'
+      type: 'ip',
     },
     {
       name: 'source port',
       key: 'sourcePort',
-      type: 'port'
+      type: 'port',
     },
     {
       name: 'destination ip',
       key: 'destinationIp',
-      type: 'ip'
+      type: 'ip',
     },
     {
       name: 'destination port',
       key: 'destinationPort',
-      type: 'port'
+      type: 'port',
     },
     {
       name: 'protocol',
       key: 'protocol',
-      type: 'protocol'
+      type: 'protocol',
     },
-  ]
+  ],
 };
 
 function go() {

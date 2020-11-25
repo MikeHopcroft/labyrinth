@@ -3,7 +3,6 @@ import * as ip from 'ip';
 
 import {DimensionType} from './dimension_type';
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Parser factory
@@ -20,14 +19,13 @@ type SubRangeParser = (
 
 export function createParser(
   type: DimensionType,
-  subRangeParser: SubRangeParser,
+  subRangeParser: SubRangeParser
 ): ParseToDRange {
   const parser = (type: DimensionType, text: string) => {
     return subRangeParser(type, type.lookup, text);
   };
 
-  return (text: string) =>
-    parseDRange(type, parser, text);
+  return (text: string) => parseDRange(type, parser, text);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

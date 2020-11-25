@@ -1,9 +1,9 @@
 import DRange from 'drange';
 import * as t from 'io-ts';
 
-import { Conjunction, DimensionedRange } from '../setops';
+import {Conjunction, DimensionedRange} from '../setops';
 
-import { DimensionType } from './dimension_type';
+import {DimensionType} from './dimension_type';
 
 // TODO: consider making IdGenerator into a function.
 export class IdGenerator {
@@ -21,7 +21,7 @@ export class IdGenerator {
 export const DimensionSpecType = t.type({
   name: t.string,
   key: t.string,
-  type: t.string
+  type: t.string,
 });
 export type DimensionSpec = t.TypeOf<typeof DimensionSpecType>;
 
@@ -52,13 +52,11 @@ export class Dimension {
     //   https://mathiasbynens.be/notes/javascript-identifiers-es6
     this.key = key;
     this.type = type;
-    this.id = (idGenerator || Dimension.idGenerator).next()
+    this.id = (idGenerator || Dimension.idGenerator).next();
   }
 
   parse(text: string): Conjunction {
     const range = this.type.parser(text);
-    return Conjunction.create([
-      new DimensionedRange(this, range)
-    ]);
+    return Conjunction.create([new DimensionedRange(this, range)]);
   }
 }

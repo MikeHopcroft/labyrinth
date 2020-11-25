@@ -11,7 +11,7 @@ const dimension0Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '1-100',
-  values: []
+  values: [],
 });
 const dimension0 = new Dimension('test0', 'test0', dimension0Type);
 
@@ -21,7 +21,7 @@ const dimension1Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '1-100',
-  values: []
+  values: [],
 });
 const dimension1 = new Dimension('test1', 'test1', dimension1Type);
 
@@ -31,7 +31,7 @@ const dimension2Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '200-300',
-  values: []
+  values: [],
 });
 const dimension2 = new Dimension('test2', 'test2', dimension2Type);
 
@@ -41,7 +41,7 @@ const dimension3Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '1000-2000',
-  values: []
+  values: [],
 });
 const dimension3 = new Dimension('test3', 'test3', dimension3Type);
 
@@ -51,7 +51,7 @@ const dimension4Type = new DimensionType({
   parser: 'default',
   formatter: 'default',
   domain: '1-100',
-  values: []
+  values: [],
 });
 const dimension4 = new Dimension('test4', 'test4', dimension4Type);
 

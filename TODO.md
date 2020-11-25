@@ -3,6 +3,8 @@
 * dimension_types.ts:
   * // TODO: disallow `action`, `priority`, etc.
   * // TODO: Disallow `*`, `any`
+  * // Symbols cannot contain ',' and '-'. Probably not '.'
+  * // https://gist.github.com/mathiasbynens/6334847
   * // TODO: what if multiple symbols define the same range?
 * dimension.ts
   * // TODO: IMPLEMENT
@@ -12,63 +14,63 @@
   * // TODO: SubRangeParser does not need separate `lookup` parameter. Can get from DimensionType.
 * rules.ts
   * // TODO: Consider moving to Rule.constructor().
+* Formatters should display `*` or `any`
+  * // TODO: this is brittle because it may format different than
 * Unit tests
   * Shared built-in universe object. Consider for sample as well.
   * Reduce console spew, especially in `(a+b)(c+d)`.
   * Tests for DimensionType.lookup()
-
-* Consider making IdGenerator into a function.
-* Consider renaming rules.ts to evaluate.ts
-* Use or remove errors.ts
-* Rewrite parseRuleSpec() to be data-driven
-  * Refactor parseRuleSpec(), parseIpSet, parsePortSet, parseProtocolSet
-  * Rewrite parser unit tests to support data-driven version
-* x Single step through unit test "Symbol for numeric range"
-* x formatter.ts:   if (symbol !== text) {  // TODO: this seems wrong. Why return text?
-* x Unit test parsing with hex literals
-* Formatters should display `*` or `any`
-  * // TODO: this is brittle because it may format different than
-* Replace tslint suppressions with eslint suppressions
-* Universe
-  * Universe class
-  * Concept of keys vs names
-  * Disallow keys 'action' and 'priority' in rules and dimensions.
-  * Schema check rules.
-    * Correct keys, as defined by universe
-    * Accepted types are string or number
-    * No superfluous keys
-  * IdGenerator class
-  * UniverseSpec
-  * DimensionTypeSpec
-  * DimensionSpec
-  * Simplifier should use DimensionSet/Universe object that enforces dimension ordering
-* Data-driven formatters
-  * Use reverse lookup tables
-* README.md
 * Parser support for 'except'
-* Perhaps don't hard-code all and *. Put them into lookups?
-* Try on more realistic example from paper
 * Command line utility
   * Instead of Dimension[]
   * Might be base class for RulesDimensions
   * Consider renaming RulesDimensions to something like FireWallDimensions
-* TODOs in simplifier.ts
-* Better naming scheme in simplifier.ts
-* It is easy to add a bogus field like destinationPort instead of destPort
-  * System fails silently
-  * Is validation in place?
-  * https://github.com/gcanti/io-ts/issues/322
-* Figure out ipFormatter unit test regression.
-  * Investigate why 0.0.0.1 sometimes formats as "1" and other times as "0.0.0.1"
-* x Indented printing
-* Named IP ranges - parsing and formatting
-* x Common factor simplification
+* README.md
+* Try out more realistic example from paper
 * Print diagnostic information
   * Number of conjunctions
   * Number of DRanges
   * Size of unreduced cross product
 * Log diagnostic information
   * High water mark of disjunction sizes
+
+* Consider making IdGenerator into a function.
+* Consider renaming rules.ts to evaluate.ts
+* Use or remove errors.ts
+* Replace tslint suppressions with eslint suppressions
+* x Rewrite parseRuleSpec() to be data-driven
+  * x Refactor parseRuleSpec(), parseIpSet, parsePortSet, parseProtocolSet
+  * Rewrite parser unit tests to support data-driven version
+* x Single step through unit test "Symbol for numeric range"
+* x formatter.ts:   if (symbol !== text) {  // TODO: this seems wrong. Why return text?
+* x Unit test parsing with hex literals
+* . Universe
+  * x Universe class
+  * x Concept of keys vs names
+  * Disallow keys 'action' and 'priority' in rules and dimensions.
+  * Schema check rules.
+    * x Correct keys, as defined by universe
+    * Accepted types are string (OK) or number (??)
+    * x No superfluous keys
+  * x IdGenerator class
+  * x UniverseSpec
+  * x DimensionTypeSpec
+  * x DimensionSpec
+  * x Simplifier should use DimensionSet/Universe object that enforces dimension ordering
+* x Data-driven formatters
+  * x Use reverse lookup tables
+* Perhaps don't hard-code all and *. Put them into lookups?
+* TODOs in simplifier.ts
+* Better naming scheme in simplifier.ts
+* x It is easy to add a bogus field like destinationPort instead of destPort
+  * x System fails silently
+  * x Is validation in place?
+  * x https://github.com/gcanti/io-ts/issues/322
+* Figure out ipFormatter unit test regression.
+  * Investigate why 0.0.0.1 sometimes formats as "1" and other times as "0.0.0.1"
+* x Indented printing
+* x Named IP ranges - parsing and formatting
+* x Common factor simplification
 * Formatting utilities for React App
   * Don't want full string - want parts and types
 * React App
@@ -78,6 +80,7 @@
   * Diagnostic pane - counts of expressions
   * Update button (with enabled/disabled)
   * Delta pane (tabs for left, right, l-r, and r-l)
+  * Consider 2d and 3d universe arrangement visualizer
 
 * Disjunction
   * x subtract
@@ -87,14 +90,14 @@
   * x complement
 * x formatter.ts should probably be in rules, not setops.
 * Pretty printing
-  * Indented printing
+  * x Indented printing
   * x Disjunction formatter
   * x Conjunction formatter
   * x Dimension formatter
-  * IP formatter
+  * x IP formatter
     * x Single ip address
     * x CIDR detection
-    * Named range detection
+    * x Named range detection
   * Protcol formatter
     * Deal with protocol names with dashes, e.g. unit test expects 'ICMP, TCP, UDP, NETBLT-IL, ESP, IPv6-Opts-VISA'
   * x Port forwarder
@@ -145,14 +148,14 @@
 * X & 1 = X
 * X & 0 = 0
 * X | 1 = 1
-* X | 0 = X
+* x X | 0 = X
 * Rules
-  * soure ip
-  * source port
-  * destination ip
-  * destination port
-  * protocol
-  * action: allow/deny
-  * priority
-  * pretty printing
-  * 
+  * x soure ip
+  * x source port
+  * x destination ip
+  * x destination port
+  * x protocol
+  * x action: allow/deny
+  * x priority
+  * x pretty printing
+
