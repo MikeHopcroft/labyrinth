@@ -9,8 +9,8 @@
   * x // Also unit test cycle detection and symbol chain.
 * dimension.ts
   * // TODO: IMPLEMENT
-  * // TODO: check for key collision with Rule: action, priority
-  * // TODO: check for illegal key
+  * x // TODO: check for key collision with Rule: action, priority
+  * x // TODO: check for illegal key
 * parser.ts
   * // TODO: SubRangeParser does not need separate `lookup` parameter. Can get from DimensionType.
 * rules.ts
