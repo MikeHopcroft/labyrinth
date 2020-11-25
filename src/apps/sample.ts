@@ -3,7 +3,7 @@ import {Dimension} from '../dimensions';
 import {
   ActionType,
   evaluate,
-  parseRuleSpec2,
+  parseRuleSpec,
   RuleSpecEx,
   Universe,
   UniverseSpec
@@ -111,8 +111,8 @@ function go() {
       sourcePort: '80',
     },
   ];
-  const rules1 = ruleSpecs1.map(r => parseRuleSpec2(universe, r));
-  const rules2 = ruleSpecs2.map(r => parseRuleSpec2(universe, r));
+  const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
+  const rules2 = ruleSpecs2.map(r => parseRuleSpec(universe, r));
   const r1 = evaluate(rules1);
   const r2 = evaluate(rules2);
 

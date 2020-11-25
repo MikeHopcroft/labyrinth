@@ -11,6 +11,8 @@ describe('Utilities', () => {
       [6, 7],
     ];
 
+    // TODO: REVIEW: this test is brittle because it assumes an ordering
+    // for the cross product.
     const expected = [
       [1, 3, 6],
       [2, 3, 6],

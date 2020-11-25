@@ -5,8 +5,17 @@
   * // TODO: Disallow `*`, `any`
   * // TODO: what if multiple symbols define the same range?
 * dimension.ts
+  * // TODO: IMPLEMENT
   * // TODO: check for key collision with Rule: action, priority
   * // TODO: check for illegal key
+* parser.ts
+  * // TODO: SubRangeParser does not need separate `lookup` parameter. Can get from DimensionType.
+* rules.ts
+  * // TODO: Consider moving to Rule.constructor().
+* Unit tests
+  * Shared built-in universe object. Consider for sample as well.
+  * Reduce console spew, especially in `(a+b)(c+d)`.
+  * Tests for DimensionType.lookup()
 
 * Consider making IdGenerator into a function.
 * Consider renaming rules.ts to evaluate.ts

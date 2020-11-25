@@ -3,15 +3,38 @@ import * as ip from 'ip';
 
 import {DimensionType} from './dimension_type';
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Parser factory
+//
+///////////////////////////////////////////////////////////////////////////////
 export type ParseToDRange = (text: string) => DRange;
 
-type SymbolToDRange = (symbol: string) => DRange | undefined;
-type BaseParser2 = (
+type SubRangeParser = (
+  // TODO: SubRangeParser does not need separate `lookup` parameter. Can get from DimensionType.
   dimension: DimensionType,
   lookup: SymbolToDRange,
   text: string
 ) => DRange;
 
+export function createParser(
+  type: DimensionType,
+  subRangeParser: SubRangeParser,
+): ParseToDRange {
+  const parser = (type: DimensionType, text: string) => {
+    return subRangeParser(type, type.lookup, text);
+  };
+
+  return (text: string) =>
+    parseDRange(type, parser, text);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// DRange parser
+//
+///////////////////////////////////////////////////////////////////////////////
 export function parseDRange(
   dimension: DimensionType,
   parse: (dimension: DimensionType, text: string) => DRange,
@@ -73,19 +96,14 @@ export function parseDRange(
   return range;
 }
 
-export function createParser(
-  type: DimensionType,
-  baseParser: BaseParser2,
-): ParseToDRange {
-  const parser = (type: DimensionType, text: string) => {
-    return baseParser(type, type.lookup, text);
-  };
+///////////////////////////////////////////////////////////////////////////////
+//
+// SubRange Parsers
+//
+///////////////////////////////////////////////////////////////////////////////
+type SymbolToDRange = (symbol: string) => DRange | undefined;
 
-  return (text: string) =>
-    parseDRange(type, parser, text);
-}
-
-export function parseIpOrSymbol2(
+export function parseIpOrSymbol(
   dimension: DimensionType,
   lookup: SymbolToDRange,
   text: string
@@ -94,11 +112,11 @@ export function parseIpOrSymbol2(
   if (text[0] !== undefined && text[0] >= '0' && text[0] <= '9') {
     return parseIp(dimension, text);
   } else {
-    return parseSymbol2(dimension, lookup, text);
+    return parseSymbol(dimension, lookup, text);
   }
 }
 
-export function parseNumberOrSymbol2(
+export function parseNumberOrSymbol(
   dimension: DimensionType,
   lookup: SymbolToDRange,
   text: string
@@ -106,7 +124,7 @@ export function parseNumberOrSymbol2(
   if (!Number.isNaN(Number(text))) {
     return parseNumber(dimension, text);
   } else {
-    return parseSymbol2(dimension, lookup, text);
+    return parseSymbol(dimension, lookup, text);
   }
 }
 
@@ -169,7 +187,7 @@ function parseNumber(dimension: DimensionType, text: string): DRange {
   return new DRange(value);
 }
 
-function parseSymbol2(
+function parseSymbol(
   dimension: DimensionType,
   lookup: SymbolToDRange,
   text: string

@@ -6,11 +6,9 @@ import {
   createIpFormatter,
   createNumberSymbolFormatter,
   createParser,
-  Dimension,
   DimensionType,
   formatDRange,
-  parseIpOrSymbol2,
-  parseNumberOrSymbol2,
+  parseNumberOrSymbol,
 } from '../../src/dimensions';
 
 const ipType = new DimensionType({
@@ -23,8 +21,6 @@ const ipType = new DimensionType({
 })
 const parseIpSet = ipType.parser;
 
-// const ips = new Dimension('source ip', 'sourceIp', ipType);
-
 const portType = new DimensionType({
   name: 'port',
   key: 'port',
@@ -33,8 +29,6 @@ const portType = new DimensionType({
   domain: '00-0xffff',
   values: []
 })
-
-// const ports = new Dimension('source port', 'sourcePort', portType);
 
 describe('Formatters', () => {
   describe('ip', () => {
@@ -166,7 +160,7 @@ describe('Formatters', () => {
       it('No symbols', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = input;
-        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
+        const r1 = createParser(portType, parseNumberOrSymbol)(input);
         const formatter = createNumberSymbolFormatter(
           new Map<string, string>()
         );
@@ -176,7 +170,7 @@ describe('Formatters', () => {
       it('Symbols for indivdual numbers', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = 'a, b, c-d, e-f, g';
-        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
+        const r1 = createParser(portType, parseNumberOrSymbol)(input);
 
         const lookup = new Map<string, string>([
           ['1', 'a'],
@@ -195,7 +189,7 @@ describe('Formatters', () => {
       it('Symbols for numeric ranges', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = '1, 3, a, b, 11';
-        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
+        const r1 = createParser(portType, parseNumberOrSymbol)(input);
 
         const lookup = new Map<string, string>([
           ['5-6', 'a'],
@@ -209,7 +203,7 @@ describe('Formatters', () => {
       it('Symbol for start of numeric range', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = '1, 3, a-6, 8-9, 11';
-        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
+        const r1 = createParser(portType, parseNumberOrSymbol)(input);
 
         const lookup = new Map<string, string>([['5', 'a']]);
         const formatter = createNumberSymbolFormatter(lookup);
@@ -220,7 +214,7 @@ describe('Formatters', () => {
       it('Symbol for entire range', () => {
         const input = '1, 3, 5-6, 8-9, 11';
         const expected = 'a';
-        const r1 = createParser(portType, parseNumberOrSymbol2)(input);
+        const r1 = createParser(portType, parseNumberOrSymbol)(input);
 
         const lookup = new Map<string, string>([['1, 3, 5-6, 8-9, 11', 'a']]);
         const formatter = createNumberSymbolFormatter(lookup);

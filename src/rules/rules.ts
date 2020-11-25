@@ -1,15 +1,14 @@
 import {Conjunction, Disjunction} from '../setops';
 
-// import {protocolToDRange} from './lookup_protocol';
-
-// import {
-//   createParserDEPRECATED,
-//   parseIpOrSymbol2,
-//   parseNumberOrSymbol2,
-// } from '../dimensions';
 
 import {ActionType, RuleSpec} from './types';
 import { Universe } from './universe';
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Rule
+//
+///////////////////////////////////////////////////////////////////////////////
 
 export interface Rule {
   action: ActionType;
@@ -17,7 +16,8 @@ export interface Rule {
   conjunction: Conjunction;
 }
 
-export function parseRuleSpec2(universe: Universe, spec: RuleSpec): Rule {
+// TODO: Consider moving to Rule.constructor().
+export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   const {action, priority, ...rest} = spec;
   let conjunction = Conjunction.create([]);
 
@@ -34,73 +34,9 @@ export function parseRuleSpec2(universe: Universe, spec: RuleSpec): Rule {
   return {action, priority, conjunction};
 }
 
-// export function parseRuleSpec3(
-//   dimensions: RuleDimensions,
-//   rule: RuleSpec
-// ): Rule {
-//   let conjunction = Conjunction.create([]);
-
-//   // Source rules
-//   if (rule.sourceIp) {
-//     conjunction = conjunction.intersect(
-//       parseIpSet(dimensions.sourceIp, rule.sourceIp)
-//     );
-//   }
-//   if (rule.sourcePort) {
-//     conjunction = conjunction.intersect(
-//       parsePortSet(dimensions.sourcePort, rule.sourcePort)
-//     );
-//   }
-
-//   // Destination rules
-//   if (rule.destIp) {
-//     conjunction = conjunction.intersect(
-//       parseIpSet(dimensions.destIp, rule.destIp)
-//     );
-//   }
-//   if (rule.destPort) {
-//     conjunction = conjunction.intersect(
-//       parsePortSet(dimensions.destPort, rule.destPort)
-//     );
-//   }
-
-//   // Protocol rules
-//   if (rule.protocol) {
-//     conjunction = conjunction.intersect(
-//       parseProtocolSet(dimensions.protocol, rule.protocol)
-//     );
-//   }
-
-//   const {action, priority} = rule;
-//   return {action, priority, conjunction};
-// }
-
-// export const parseIpSet = createParser();
-
-// export const parseIpSet = createParserDEPRECATED(
-//   parseIpOrSymbol2,
-//   symbolToUndefined
-// );
-
-// TODO: these methods should go away.
-// TODO: separate rule parsing from evaluation.
-// export const parseProtocolSet = createParserDEPRECATED(
-//   parseNumberOrSymbol2,
-//   (text: string) => protocolToDRange.get(text)
-// );
-
-// export const parsePortSet = createParserDEPRECATED(
-//   parseNumberOrSymbol2,
-//   symbolToUndefined
-// );
-
-// function symbolToUndefined(symbol: string) {
-//   return undefined;
-// }
-
 ///////////////////////////////////////////////////////////////////////////////
 //
-//
+// Rule set evaluation.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -111,7 +47,7 @@ interface RuleGroup {
 }
 
 export function evaluate(rules: Rule[]): Disjunction {
-  // Sort rules by priority ascending
+  // Sort rules by ascending priority.
   const sorted = [...rules].sort((a: Rule, b: Rule) => {
     return a.priority - b.priority;
   });
@@ -132,10 +68,6 @@ export function evaluate(rules: Rule[]): Disjunction {
     }
   }
 
-  // Default first rule allows all.
-  // Should this deny all instead?
-  // let expression: Disjunction = Disjunction.create([Conjunction.create([])]);
-
   // Default to empty set.
   let expression: Disjunction = Disjunction.create([]);
 
@@ -147,7 +79,7 @@ export function evaluate(rules: Rule[]): Disjunction {
     }
 
     // TODO: REVIEW: not sure this is correct.
-    // Do we need to apply De Morgan to the entire conjunction?
+    // Do we need to apply De Morgan's to the entire conjunction?
     for (const r of g.deny) {
       const e = r.conjunction.complement();
       expression = expression.intersect(e);

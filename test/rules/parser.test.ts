@@ -1,8 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {Dimension, DimensionType} from '../../src/dimensions';
-// import {parsePortSet, parseProtocolSet} from '../../src/rules';
+import {DimensionType} from '../../src/dimensions';
 
 const ipType = new DimensionType({
   name: 'ip address',
@@ -14,10 +13,6 @@ const ipType = new DimensionType({
 });
 const parseIpSet = ipType.parser;
 
-// const parseIpSet = createParser(ipType, parseIpOrSymbol2);
-
-// const ips = new Dimension('source ip', 'sourceIp', ipType);
-
 const portType = new DimensionType({
   name: 'port',
   key: 'port',
@@ -27,8 +22,6 @@ const portType = new DimensionType({
   values: []
 });
 const parsePortSet = portType.parser;
-
-const ports = new Dimension('source port', 'sourcePort', portType);
 
 const protocolType = new DimensionType({
   name: 'protocol',
@@ -44,9 +37,6 @@ const protocolType = new DimensionType({
 });
 const parseProtocolSet = protocolType.parser;
 
-const protocols = new Dimension('protocolt', 'protocol', protocolType);
-// const protocols = Dimension.create('protocol', 'protocol', formatter, 0, 255);
-
 describe('Parser', () => {
   describe('parseIpSet', () => {
     it('invalid', () => {
@@ -59,6 +49,7 @@ describe('Parser', () => {
         'Invalid IPv4 address: "1.1.1".'
       );
 
+      // TODO: REVIEW: commented out because `ip` package allows this ip address.
       // assert.throws(
       //   () => parseIpSet(ips, '500.500.500.500'),
       //   'Invalid IPv4 address: "1.1.1".'

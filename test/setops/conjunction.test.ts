@@ -5,7 +5,6 @@ import 'mocha';
 import {Dimension, DimensionType} from '../../src/dimensions';
 import {Conjunction, DimensionedRange} from '../../src/setops';
 
-// const formatter = () => '';
 const dimension0Type = new DimensionType({
   name: 'test0',
   key: 'test0',
@@ -15,13 +14,6 @@ const dimension0Type = new DimensionType({
   values: []
 });
 const dimension0 = new Dimension('test0', 'test0', dimension0Type);
-// const dimension0: Dimension = Dimension.create(
-//   'test0',
-//   'test0',
-//   formatter,
-//   1,
-//   100
-// );
 
 const dimension1Type = new DimensionType({
   name: 'test1',
@@ -33,14 +25,6 @@ const dimension1Type = new DimensionType({
 });
 const dimension1 = new Dimension('test1', 'test1', dimension1Type);
 
-// const dimension1: Dimension = Dimension.create(
-//   'test1',
-//   'test1',
-//   formatter,
-//   1,
-//   100
-// );
-
 const dimension2Type = new DimensionType({
   name: 'test2',
   key: 'test2',
@@ -50,14 +34,6 @@ const dimension2Type = new DimensionType({
   values: []
 });
 const dimension2 = new Dimension('test2', 'test2', dimension2Type);
-
-// const dimension2: Dimension = Dimension.create(
-//   'test2',
-//   'test2',
-//   formatter,
-//   200,
-//   300
-// );
 
 const dimension3Type = new DimensionType({
   name: 'test3',
@@ -69,14 +45,6 @@ const dimension3Type = new DimensionType({
 });
 const dimension3 = new Dimension('test3', 'test3', dimension3Type);
 
-// const dimension3: Dimension = Dimension.create(
-//   'test3',
-//   'test3',
-//   formatter,
-//   1000,
-//   2000
-// );
-
 const dimension4Type = new DimensionType({
   name: 'test4',
   key: 'test4',
@@ -86,14 +54,6 @@ const dimension4Type = new DimensionType({
   values: []
 });
 const dimension4 = new Dimension('test4', 'test4', dimension4Type);
-
-// const dimension4: Dimension = Dimension.create(
-//   'test4',
-//   'test4',
-//   formatter,
-//   1,
-//   100
-// );
 
 const range0 = new DimensionedRange(dimension0, new DRange(10, 20));
 

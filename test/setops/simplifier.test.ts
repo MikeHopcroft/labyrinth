@@ -2,15 +2,9 @@ import {assert} from 'chai';
 import 'mocha';
 
 import {
-  createFormatter,
-  createNumberSymbolFormatter,
-  createIpFormatter,
-} from '../../src/dimensions';
-
-import {
   ActionType,
   evaluate,
-  parseRuleSpec2,
+  parseRuleSpec,
   Rule,
   UniverseSpec,
   Universe,
@@ -18,23 +12,6 @@ import {
 } from '../../src/rules';
 
 import {createConjunctionInfo, simplify} from '../../src/setops';
-
-// const ipFormatter = createFormatter(
-//   createIpFormatter(new Map<string, string>())
-// );
-
-// const portFormatter = createFormatter(
-//   createNumberSymbolFormatter(new Map<string, string>())
-// );
-
-// const protocolFormatter = createFormatter(
-//   createNumberSymbolFormatter(
-//     new Map<string, string>([
-//       ['6', 'TCP'],
-//       ['17', 'UDP'],
-//     ])
-//   )
-// );
 
 const universeSpec: UniverseSpec = {
   types: [
@@ -97,88 +74,6 @@ const universeSpec: UniverseSpec = {
 
 const universe = new Universe(universeSpec);
 
-// const ipTypeSpec: DimensionTypeSpec = {
-//   name: 'ip address',
-//   key: 'ip',
-//   parser: 'ip',
-//   formatter: 'ip',
-//   domain: '0.0.0.0-255.255.255.255',
-//   values: []
-// };
-
-// const portTypeSpec: DimensionTypeSpec = {
-//   name: 'port',
-//   key: 'port',
-//   parser: 'default',
-//   formatter: 'default',
-//   domain: '00-0xffff',
-//   values: []
-// };
-
-// const protocolTypeSpec: DimensionTypeSpec = {
-//   name: 'protocol',
-//   key: 'protocol',
-//   parser: 'default',
-//   formatter: 'default',
-//   domain: '00-0xff',
-//   values: [
-//     { symbol: 'TCP', range: '6' },
-//     { symbol: 'UDP', range: '17' },
-//   ]
-// };
-// const protocolType = new DimensionType(protocolTypeSpec);
-
-
-// const ipType = new DimensionType({
-//   name: 'ip address',
-//   key: 'ip',
-//   parser: 'ip',
-//   formatter: 'ip',
-//   domain: '0.0.0.0-255.255.255.255',
-//   values: []
-// })
-
-// const sourceIp = new Dimension('source ip', 'sourceIp', ipType);
-
-// const portType = new DimensionType({
-//   name: 'port',
-//   key: 'port',
-//   parser: 'default',
-//   formatter: 'default',
-//   domain: '00-0xffff',
-//   values: []
-// })
-
-// const sourcePort = new Dimension('source port', 'sourcePort', portType);
-
-// const destIp = new Dimension('destination ip', 'destinationIp', ipType);
-
-// const destPort = new Dimension('destination port', 'destinationPort', portType);
-
-// const protocolType = new DimensionType({
-//   name: 'protocol',
-//   key: 'protocol',
-//   parser: 'default',
-//   formatter: 'default',
-//   domain: '00-0xff',
-//   values: [
-//     { symbol: 'TCP', range: '6' },
-//     { symbol: 'UDP', range: '17' },
-//   ]
-// })
-
-// const protocol = new Dimension('protocol', 'protocol', protocolType);
-
-// const dimensionList = [sourceIp, sourcePort, destIp, destPort, protocol];
-
-// const dimensions: RuleDimensions = {
-//   sourceIp,
-//   sourcePort,
-//   destIp,
-//   destPort,
-//   protocol,
-// };
-
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
     const spec: RuleSpecEx = {
@@ -188,7 +83,7 @@ describe('Simplifier', () => {
       protocol: 'TCP,UDP',
       sourcePort: '80',
     };
-    const rule1: Rule = parseRuleSpec2(universe, spec);
+    const rule1: Rule = parseRuleSpec(universe, spec);
 
     const info = createConjunctionInfo(universe.dimensions, rule1.conjunction);
     assert.equal(info.factors.length, universe.dimensions.length);
@@ -229,7 +124,7 @@ describe('Simplifier', () => {
         },
       ];
 
-      const rules = ruleSpecs.map(r => parseRuleSpec2(universe, r));
+      const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
       const expression = evaluate(rules);
 
       console.log('Before simplification:');
@@ -277,8 +172,8 @@ describe('Simplifier', () => {
         },
       ];
 
-      const rules1 = ruleSpecs1.map(r => parseRuleSpec2(universe, r));
-      const rules2 = ruleSpecs2.map(r => parseRuleSpec2(universe, r));
+      const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
+      const rules2 = ruleSpecs2.map(r => parseRuleSpec(universe, r));
       const expression1 = evaluate(rules1);
       const expression2 = evaluate(rules2);
       const expression = expression1.intersect(expression2);
@@ -342,7 +237,7 @@ describe('Simplifier', () => {
       //     at addConjunction (build\src\setops\simplifier.js:129:23)
       //     at Object.simplify (build\src\setops\simplifier.js:29:9)
       //     at Context.<anonymous> (build\test\setops\simplifier.test.js:118:41)
-      const rules1 = ruleSpecs1.map(r => parseRuleSpec2(universe, r));
+      const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       // const rules2 = ruleSpecs1.map(r => parseRuleSpec(dimensions, r));
       const expression1 = evaluate(rules1);
       // const expression2 = evaluate(rules2);
@@ -406,7 +301,7 @@ describe('Simplifier', () => {
         },
       ];
 
-      const rules = ruleSpecs.map(r => parseRuleSpec2(universe, r));
+      const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
       const expression = evaluate(rules);
 
       console.log('Before simplification:');

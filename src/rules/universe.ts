@@ -1,5 +1,3 @@
-console.log('importing universe.ts');
-
 import * as t from 'io-ts';
 
 import {
@@ -18,8 +16,9 @@ const UniverseSpecType = t.type({
 export type UniverseSpec = t.TypeOf<typeof UniverseSpecType>;
 
 export class Universe {
-  private readonly keyToDimensionType = new Map<string, DimensionType>();
   readonly dimensions: Dimension[] = [];
+  
+  private readonly keyToDimensionType = new Map<string, DimensionType>();
   private readonly keyToDimension = new Map<string, Dimension>();
   private readonly idGenerator = new IdGenerator();
 

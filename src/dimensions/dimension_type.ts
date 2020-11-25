@@ -7,8 +7,8 @@ import {
   createNumberSymbolFormatter,
   createParser,
   DimensionFormatter,
-  parseIpOrSymbol2,
-  parseNumberOrSymbol2,
+  parseIpOrSymbol,
+  parseNumberOrSymbol,
   ParseToDRange,
 } from '../dimensions';
 
@@ -59,9 +59,9 @@ export class DimensionType {
 
     // Initialize parser.
     if (spec.parser === 'ip') {
-      this.parser = createParser(this, parseIpOrSymbol2);
+      this.parser = createParser(this, parseIpOrSymbol);
     } else if (spec.parser === 'default') {
-      this.parser = createParser(this, parseNumberOrSymbol2);
+      this.parser = createParser(this, parseNumberOrSymbol);
     } else {
       const message = `Unknown parser "${spec.parser}".`;
       throw new TypeError(message);
