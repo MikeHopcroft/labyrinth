@@ -2,7 +2,7 @@ import {Dimension, Universe, UniverseSpec} from '../dimensions';
 
 import {ActionType, evaluate, parseRuleSpec, RuleSpecEx} from '../rules';
 
-import {simplify} from '../setops';
+import {setopsTelemetry, simplify, Snapshot} from '../setops';
 
 const universeSpec: UniverseSpec = {
   types: [
@@ -64,6 +64,7 @@ const universeSpec: UniverseSpec = {
 };
 
 function go() {
+  const s = new Snapshot(setopsTelemetry);
   const universe = new Universe(universeSpec);
   const dimensionList: Dimension[] = universe.dimensions;
 
@@ -105,18 +106,47 @@ function go() {
     },
   ];
   const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
+  console.log('Parse rules1:');
+  console.log(s.format('  '));
+  s.reset();
+
   const rules2 = ruleSpecs2.map(r => parseRuleSpec(universe, r));
+  console.log('Parse rules2:');
+  console.log(s.format('  '));
+  s.reset();
+
   const r1 = evaluate(rules1);
+  console.log('Evaluate rules1:');
+  console.log(s.format('  '));
+  s.reset();
+
   const r2 = evaluate(rules2);
+  console.log('Evaluate rules2:');
+  console.log(s.format('  '));
+  s.reset();
 
   console.log('Allowed routes in r1:');
   console.log(r1.format('  '));
   console.log();
 
   const r1SubR2 = simplify(dimensionList, r1.subtract(r2));
-  const r2SubR1 = simplify(dimensionList, r2.subtract(r1));
+  console.log('Simplify rules1-rules2:');
+  console.log(s.format('  '));
+  s.reset();
+  console.log('Complexity of rules1-rules2:');
+  console.log(r1SubR2.complexity().format('  '));
 
-  if (r1SubR2.isEmpty() && r2SubR1.isEmpty()) {
+  const r2SubR1 = r2.subtract(r1);
+  console.log('Complexity of rules2-rules1:');
+  console.log(r2SubR1.complexity().format('  '));
+  const r2SubR1Simplified = simplify(dimensionList, r2SubR1);
+  console.log('Simplify rules2-rules1:');
+  console.log(s.format('  '));
+  s.reset();
+  console.log('Complexity of rules2-rules1 after simplification:');
+  console.log(r2SubR1Simplified.complexity().format('  '));
+
+  if (r1SubR2.isEmpty() && r2SubR1Simplified.isEmpty()) {
     console.log('Rule sets r1 and r2 are equivalent');
   } else {
     if (r1SubR2.isEmpty()) {
@@ -127,11 +157,11 @@ function go() {
     }
     console.log();
 
-    if (r2SubR1.isEmpty()) {
+    if (r2SubR1Simplified.isEmpty()) {
       console.log('All routes in r2 are also in r1.');
     } else {
       console.log('Routes in r2 that are not in r1:');
-      console.log(r2SubR1.format('  '));
+      console.log(r2SubR1Simplified.format('  '));
     }
   }
   console.log();

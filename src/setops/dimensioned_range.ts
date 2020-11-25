@@ -2,11 +2,16 @@ import DRange from 'drange';
 
 import {Dimension} from '../dimensions/dimension';
 
+import {setopsTelemetry} from './telemetry';
+
 export class DimensionedRange {
   readonly dimension: Dimension;
   range: DRange;
 
   constructor(dimension: Dimension, range: DRange) {
+    // console.log(`NEW DimensionedRange: ${dimension.name}`);
+    setopsTelemetry.increment('DimensionedRange');
+
     // TODO: move this to factory for better performance.
     const outOfDomain = range.clone().subtract(dimension.type.domain);
     if (outOfDomain.length > 0) {

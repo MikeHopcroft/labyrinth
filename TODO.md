@@ -22,15 +22,16 @@
   * Tests for DimensionType.lookup()
 * Parser support for 'except'
 * Command line utility
-  * Instead of Dimension[]
-  * Might be base class for RulesDimensions
-  * Consider renaming RulesDimensions to something like FireWallDimensions
+  * Command line parameters: <universe> <rules1> [rules2] --telemetry
+  * Modes:
+    * Compare rules1 and rules2
+    * Test rules2 against rules1
 * README.md
 * Try out more realistic example from paper
-* Print diagnostic information
-  * Number of conjunctions
-  * Number of DRanges
-  * Size of unreduced cross product
+* . Print diagnostic information / telemetry
+  * x Number of conjunctions
+  * x Number of DRanges
+  * x Size of unreduced cross product
 * Log diagnostic information
   * High water mark of disjunction sizes
 
@@ -56,7 +57,11 @@
   * x UniverseSpec
   * x DimensionTypeSpec
   * x DimensionSpec
-  * x Simplifier should use DimensionSet/Universe object that enforces dimension ordering
+* x Simplifier should use DimensionSet/Universe object that enforces dimension ordering
+  * x Instead of Dimension[]
+  * x Might be base class for RulesDimensions
+  * x Consider renaming RulesDimensions to something like FireWallDimensions
+
 * x Data-driven formatters
   * x Use reverse lookup tables
 * Perhaps don't hard-code all and *. Put them into lookups?

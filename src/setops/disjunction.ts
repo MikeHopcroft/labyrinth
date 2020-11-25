@@ -1,4 +1,5 @@
 import {Conjunction} from './conjunction';
+import {setopsTelemetry, Snapshot, Telemetry} from './telemetry';
 
 export class Disjunction {
   conjunctions: Conjunction[];
@@ -21,6 +22,7 @@ export class Disjunction {
   }
 
   private constructor(conjunctions: Conjunction[]) {
+    setopsTelemetry.increment('Disjunction');
     this.conjunctions = conjunctions;
   }
 
@@ -93,5 +95,21 @@ export class Disjunction {
   format(prefix = '') {
     const lines = this.conjunctions.map(c => c.format(prefix));
     return lines.join('\n\n');
+  }
+
+  complexity(): Snapshot {
+    const telemetry = new Telemetry();
+    const snapshot = new Snapshot(telemetry);
+
+    telemetry.increment('Disjunction');
+    for (const c of this.conjunctions) {
+      telemetry.increment('Conjunction');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      for (const d of c.dimensions) {
+        telemetry.increment('DimensionedRange');
+      }
+    }
+
+    return snapshot;
   }
 }
