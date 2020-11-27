@@ -1,7 +1,11 @@
-import {Conjunction, Disjunction} from '../setops';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
 import {Universe} from '../dimensions';
-import {ActionType, RuleSpec} from './types';
+import {Conjunction, Disjunction} from '../setops';
+import {validate} from '../utilities';
+
+import {ActionType, RuleSpec, ruleSpecSetType} from './types';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,6 +37,16 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   }
 
   return {action, priority, conjunction};
+}
+
+export function loadRules(universe: Universe, file: string): Rule[] {
+  console.log(`Load rules from "${file}".`);
+
+  const text = fs.readFileSync(file, 'utf8');
+  const root = yaml.safeLoad(text);
+  const spec = validate(ruleSpecSetType, root);
+  const rules = spec.rules.map(r => parseRuleSpec(universe, r));
+  return rules;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

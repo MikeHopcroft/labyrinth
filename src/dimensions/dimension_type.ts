@@ -11,6 +11,7 @@ import {
   parseNumberOrSymbol,
   ParseToDRange,
 } from '../dimensions';
+import { DimensionSpecType } from './dimension';
 
 import {isValidIdentifier} from './ecmascript-6';
 
@@ -100,7 +101,7 @@ export class DimensionType {
       // Should at least unit test behavior.
       // Also unit test cycle detection and symbol chain.
       ///////////////////////////////////////////////////////////////////
-      if (!isValidIdentifier(symbol, DimensionType.reservedWords)) {
+      if (!this.isValidSymbol(symbol)) {
         const message = `Dimension "${this.name}": illegal symbol "${symbol}".`;
         throw new TypeError(message);
       }
@@ -124,6 +125,14 @@ export class DimensionType {
       const rangeText = range.toString().slice(2, -2); // Trim off "[ " and " ]"
       this.rangeToSymbol.set(rangeText, symbol);
     }
+  }
+
+  isValidSymbol(text: string): boolean {
+    if (text.match(/[\-,]/)) {
+      return false;
+    }
+
+    return !DimensionType.reservedWords.has(text);
   }
 
   lookup(symbol: string): DRange {

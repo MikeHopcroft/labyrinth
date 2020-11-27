@@ -32,7 +32,7 @@ export const firewallSpec: UniverseSpec = {
         {symbol: 'finger', range: '79'},
         {symbol: 'HTTP', range: '80, 443'},
         {symbol: 'MSSQL', range: '1433,1434'},
-        {symbol: 'ephemeral', range: '49152–65535'},
+        {symbol: 'ephemeral', range: '49152-65535'},
       ],
     },
     {
@@ -42,6 +42,7 @@ export const firewallSpec: UniverseSpec = {
       formatter: 'default',
       domain: '00-0xff',
       values: [
+        {symbol: 'ip', range: 'all'},
         {symbol: 'HOPOPT', range: '0'},
         {symbol: 'ICMP', range: '1'},
         {symbol: 'IGMP', range: '2'},

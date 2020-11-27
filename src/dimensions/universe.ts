@@ -1,4 +1,8 @@
+import fs from 'fs';
 import * as t from 'io-ts';
+import yaml from 'js-yaml';
+
+import {validate} from '../utilities';
 
 import {Dimension, DimensionSpecType, IdGenerator} from './dimension';
 import {DimensionType, DimensionTypeSpecType} from './dimension_type';
@@ -15,6 +19,20 @@ export class Universe {
   private readonly keyToDimensionType = new Map<string, DimensionType>();
   private readonly keyToDimension = new Map<string, Dimension>();
   private readonly idGenerator = new IdGenerator();
+
+  static fromYAMLFile(
+    file: string,
+    reservedWords?: Set<string>
+  ): Universe | undefined {
+    console.log(`Load universe from "${file}".`);
+
+    const text = fs.readFileSync(file, 'utf8');
+    const root = yaml.safeLoad(text);
+    const spec = validate(UniverseSpecType, root);
+
+    return new Universe(spec, reservedWords);
+  }
+  
 
   constructor(spec: UniverseSpec, reservedWords?: Set<string>) {
     // Create and index DimensionTypes.

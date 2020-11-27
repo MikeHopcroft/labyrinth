@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "sample",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -16,6 +16,21 @@
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "analyze",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/build/src/apps/analyze.js",
+      "args": ["data/rules1.yaml"],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/build/**/*.js"
+      ]
     }
+
   ]
 }

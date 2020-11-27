@@ -1,5 +1,16 @@
 # TODO
 
+* Protocols should not be case-sensitive
+* Symbols should be able to have values like 'all' and '*'
+* Action synonym 'permit'
+* Command line utility
+  * Command line parameters: <universe> <rules1> [rules2] --telemetry
+  * Modes:
+    * Compare rules1 and rules2
+    * Test rules2 against rules1
+* README.md
+* Try out more realistic example from paper
+* Rule models other than firewall
 * dimension_types.ts:
   * // TODO: what if multiple symbols define the same range?
   * x // TODO: disallow `action`, `priority`, etc. For dimension keys.
@@ -20,16 +31,10 @@
 * Unit tests
   * x Tests for DimensionType.lookup() with chained definitions
   * x Tests for DimensionType exceptions
+  * Basic boolean principles: ab = ba, a+b=b+a, a(b+c) = ab +bc
   * Shared built-in universe object. Consider for sample as well.
   * Reduce console spew, especially in `(a+b)(c+d)`.
 * Parser support for 'except'
-* Command line utility
-  * Command line parameters: <universe> <rules1> [rules2] --telemetry
-  * Modes:
-    * Compare rules1 and rules2
-    * Test rules2 against rules1
-* README.md
-* Try out more realistic example from paper
 * . Print diagnostic information / telemetry
   * x Number of conjunctions
   * x Number of DRanges

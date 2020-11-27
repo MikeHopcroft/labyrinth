@@ -1,0 +1,14 @@
+rules:
+  - action: allow
+    priority: 1
+    sourceIp: '127.0.0.1'
+    protocol: 'TCP'
+  - action: allow
+    priority: 1
+    sourceIp: '127.0.0.1'
+    protocol: 'UDP'
+  - action: deny
+    priority: 10
+    destinationIp: '10.10.10.0/24'
+    destinationPort: '81'
+    sourcePort: '80'

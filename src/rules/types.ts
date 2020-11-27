@@ -32,7 +32,7 @@ export const RuleSpecReservedWords = new Set<string>(['action', 'priority']);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RuleSpecEx = RuleSpec & {[others: string]: any};
 
-const ruleSpecSetType = t.type({
+export const ruleSpecSetType = t.type({
   rules: t.array(ruleSpecType),
 });
 
