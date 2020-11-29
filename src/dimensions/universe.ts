@@ -20,19 +20,25 @@ export class Universe {
   private readonly keyToDimension = new Map<string, Dimension>();
   private readonly idGenerator = new IdGenerator();
 
-  static fromYAMLFile(
+  static fromYamlFile(
     file: string,
     reservedWords?: Set<string>
-  ): Universe | undefined {
+  ): Universe {
     console.log(`Load universe from "${file}".`);
 
     const text = fs.readFileSync(file, 'utf8');
+    return Universe.fromYamlString(text, reservedWords);
+  }
+
+  static fromYamlString(
+    text: string,
+    reservedWords?: Set<string>
+  ): Universe {
     const root = yaml.safeLoad(text);
     const spec = validate(UniverseSpecType, root);
 
     return new Universe(spec, reservedWords);
   }
-  
 
   constructor(spec: UniverseSpec, reservedWords?: Set<string>) {
     // Create and index DimensionTypes.

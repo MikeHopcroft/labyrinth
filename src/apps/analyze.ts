@@ -6,7 +6,7 @@ import path from 'path';
 import {firewallSpec} from '../specs';
 
 import {Universe} from '../dimensions';
-import {evaluate, loadRules} from '../rules';
+import {denyOverrides, firstApplicable, loadRulesFile} from '../rules';
 import {simplify} from '../setops';
 import {fail, handleError, succeed} from '../utilities';
 
@@ -27,16 +27,21 @@ function main() {
 
     // Initialize universe.
     const universe = (args.u) ?
-      Universe.fromYAMLFile(args.u)!:
+      Universe.fromYamlFile(args.u)!:
       new Universe(firewallSpec);
 
     // Load rules1.
-    const rules1 = loadRules(universe, args._[0]);
-    const r1 = simplify(universe.dimensions, evaluate(rules1));
+    const rules1 = loadRulesFile(universe, args._[0]);
+    // TODO: BUGBUG: first call to simplify should have resulted in
+    // simplest form, so that second call would find no further simplications.
+    const r1a = simplify(universe.dimensions, firstApplicable(rules1));
+    const r1 = simplify(universe.dimensions, r1a);
+    // const r1 = simplify(universe.dimensions, denyOverrides(rules1));
 
     if (args.c) {
-      const rules2 = loadRules(universe, args.c);
-      const r2 = simplify(universe.dimensions, evaluate(rules2));
+      const rules2 = loadRulesFile(universe, args.c);
+      const r2 = simplify(universe.dimensions, firstApplicable(rules2));
+      // const r2 = simplify(universe.dimensions, denyOverrides(rules2));
 
       const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));
       const r2SubR1 = simplify(universe.dimensions, r2.subtract(r1));

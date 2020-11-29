@@ -179,10 +179,10 @@ function addConjunction(
   for (const f of conjunction.factors) {
     const entry = index.get(f.key);
     if (entry) {
-      if (!queue.remove(entry)) {
-        const message = 'Entry not in priority queue';
-        throw new TypeError(message);
-      }
+      // if (!queue.remove(entry)) {
+      //   const message = 'Entry not in priority queue';
+      //   throw new TypeError(message);
+      // }
       entry.conjunctions.add(f);
       queue.add(entry);
     } else {

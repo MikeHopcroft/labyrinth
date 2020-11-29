@@ -1,13 +1,31 @@
 # TODO
 
+* Bugs
+  * Why do sg1.txt and sg1.yaml generate different results?
+    * node build\src\apps\analyze.js data\sg1.txt
+    * node build\src\apps\analyze.js data\sg1.yaml
+  * Why does simplifier leave unsimplified terms?
+    * node build\src\apps\analyze.js data\sg1.yaml
+* Fuzzer and benchmarks
+* Cisco-like parser and rules evaluator
+* Split lookup table and dimension table
+* Add TCP flags:
+  * established
+  * RST
+  * ACK
+  * FIN-ACK
+  * PSH-ACK
+  * RST-ACK
+  * URG-ACK
 * Protocols should not be case-sensitive
 * Symbols should be able to have values like 'all' and '*'
 * Action synonym 'permit'
 * Command line utility
   * Command line parameters: <universe> <rules1> [rules2] --telemetry
-  * Modes:
-    * Compare rules1 and rules2
-    * Test rules2 against rules1
+  * Modes/Reports:
+    * Compare rules1 and rules2 - drift
+    * Test rules2 against rules1 - contract validation
+    * Redundant rules
 * README.md
 * Try out more realistic example from paper
 * Rule models other than firewall

@@ -1,0 +1,56 @@
+rules:
+# By default, allow everything
+  - action: allow
+    priority: 1
+# 1 remark Isolating private addresses
+# 2 deny ip 0.0.0.0/32 any
+# 3 deny ip 10.0.0.0/8 any
+# 4 deny ip 172.16.0.0/12 any
+# 5 deny ip 192.0.2.0/24 any
+  - action: deny
+    priority: 2
+    destinationIp: 0.0.0.0/32, 10.0.0.0/8, 172.16.0.0/12, 192.0.2.0/24
+    protocol: ip
+# 6 ...
+# 7 remark Anti spoofing ACLs
+# 8 deny ip 128.30.0.0/15 any
+# 9 deny ip 171.64.0.0/15 any
+  - action: deny
+    priority: 3
+    destinatoinIp: 128.30.0.0/15, 192.0.2.0/24
+    # sourceIp: 128.30.0.0/15, 192.0.2.0/24
+    protocol: ip
+# 10 ...
+# 11 remark permits for IPs without
+# 12 port and protocol blocks
+# 13 permit ip any 171.64.64.0/20
+  - action: allow
+    priority: 4
+    sourceIp: 171.64.64.0/20
+    protocol: ip
+# 14 ....
+# 15 remark standard port and protocol
+# 16 blocks
+# 17 deny tcp any any eq 445
+# 18 deny udp any any eq 445
+# 19 deny tcp any any eq 593
+# 20 deny udp any any eq 593
+  - action: deny
+    priority: 5
+    destinationPort: 445, 593
+    protocol: tcp, udp
+# 21 ...
+# 22 deny 53 any any
+# 23 deny 55 any any
+  - action: deny
+    priority: 6
+    protocol: 53, 55
+# 24 ...
+# 25 remark permits for IPs with
+# 26 port and protocol blocks
+# 27 permit ip any 128.30.0.0/15
+# 28 permit ip any 171.64.0.0/15
+  - action: allow
+    priority: 7
+    sourceIp: 128.30.0.0/15, 171.64.0.0/15
+    protocol: ip

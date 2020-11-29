@@ -1,5 +1,7 @@
 import * as t from 'io-ts';
 
+import {Conjunction} from '../setops';
+
 // createEnum() from https://github.com/gcanti/io-ts/issues/67
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createEnum = <E>(e: any, name: string): t.Type<E> => {
@@ -20,7 +22,7 @@ export enum ActionType {
 // tslint:disable-next-line:variable-name
 const ActionTypeType = createEnum<ActionType>(ActionType, 'ActionType');
 
-const ruleSpecType = t.type({
+export const ruleSpecType = t.type({
   action: ActionTypeType,
   priority: t.number,
 });
@@ -37,3 +39,9 @@ export const ruleSpecSetType = t.type({
 });
 
 export type RuleSpecSet = t.TypeOf<typeof ruleSpecSetType>;
+
+export interface Rule {
+  action: ActionType;
+  priority: number;
+  conjunction: Conjunction;
+}

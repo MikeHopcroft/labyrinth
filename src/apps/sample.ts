@@ -1,6 +1,6 @@
 import {Dimension, Universe, UniverseSpec} from '../dimensions';
 
-import {ActionType, evaluate, parseRuleSpec, RuleSpecEx} from '../rules';
+import {ActionType, denyOverrides, parseRuleSpec, RuleSpecEx} from '../rules';
 
 import {setopsTelemetry, simplify, Snapshot} from '../setops';
 
@@ -115,12 +115,12 @@ function go() {
   console.log(s.format('  '));
   s.reset();
 
-  const r1 = evaluate(rules1);
+  const r1 = denyOverrides(rules1);
   console.log('Evaluate rules1:');
   console.log(s.format('  '));
   s.reset();
 
-  const r2 = evaluate(rules2);
+  const r2 = denyOverrides(rules2);
   console.log('Evaluate rules2:');
   console.log(s.format('  '));
   s.reset();

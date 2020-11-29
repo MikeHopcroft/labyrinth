@@ -5,7 +5,7 @@ import {Universe, UniverseSpec} from '../../src/dimensions';
 
 import {
   ActionType,
-  evaluate,
+  denyOverrides,
   parseRuleSpec,
   Rule,
   RuleSpecEx,
@@ -125,7 +125,7 @@ describe('Simplifier', () => {
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
-      const expression = evaluate(rules);
+      const expression = denyOverrides(rules);
 
       console.log('Before simplification:');
       console.log(expression.format());
@@ -174,8 +174,8 @@ describe('Simplifier', () => {
 
       const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       const rules2 = ruleSpecs2.map(r => parseRuleSpec(universe, r));
-      const expression1 = evaluate(rules1);
-      const expression2 = evaluate(rules2);
+      const expression1 = denyOverrides(rules1);
+      const expression2 = denyOverrides(rules2);
       const expression = expression1.intersect(expression2);
 
       console.log('Before simplification:');
@@ -239,7 +239,7 @@ describe('Simplifier', () => {
       //     at Context.<anonymous> (build\test\setops\simplifier.test.js:118:41)
       const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       // const rules2 = ruleSpecs1.map(r => parseRuleSpec(dimensions, r));
-      const expression1 = evaluate(rules1);
+      const expression1 = denyOverrides(rules1);
       // const expression2 = evaluate(rules2);
       const expression = expression1.intersect(expression1);
 
@@ -302,7 +302,7 @@ describe('Simplifier', () => {
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
-      const expression = evaluate(rules);
+      const expression = denyOverrides(rules);
 
       console.log('Before simplification:');
       console.log(expression.format());
