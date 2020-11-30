@@ -168,7 +168,7 @@ export function createIpFormatter(
 // If [s,e] represents a CIDR block, returns a string with the corresponding
 // CIDR notation. Otherwise returns undefined.
 //
-function tryGetCIDR(s: number, e: number): string | undefined {
+export function tryGetCIDR(s: number, e: number): string | undefined {
   if (s === e) {
     // Not a CIDR block
     return undefined;
@@ -186,7 +186,7 @@ function tryGetCIDR(s: number, e: number): string | undefined {
     s1 >>= 1;
     e1 >>= 1;
   }
-  if (bits > 0) {
+  if (bits > 0 && (s1 ^ e1) === 0) {
     // CIDR block
     return `${ip.fromLong(s)}/${32 - bits}`;
   } else {

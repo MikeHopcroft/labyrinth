@@ -1,11 +1,22 @@
 # TODO
 
+* README.md
+* . Try out more realistic example from paper
+* Rule models other than firewall
+* Consider JSDoc comments
+* x Loader creates sequential priorities
 * Bugs
   * Why do sg1.txt and sg1.yaml generate different results?
     * node build\src\apps\analyze.js data\sg1.txt
     * node build\src\apps\analyze.js data\sg1.yaml
-  * Why does simplifier leave unsimplified terms?
-    * node build\src\apps\analyze.js data\sg1.yaml
+  * x Why does simplifier leave unsimplified terms?
+    * x node build\src\apps\analyze.js data\sg1.yaml
+    * x Issue was use of remove() instead of removeOne().
+* simplifier.ts
+  * // TODO: replace Dimension[] with DimensionSet object that enforces monotonic ids.
+  * // TODO: this is brittle because it may format different than
+  * Rework complex logic in combine(). Look at commented out exception.
+  * More unit test coverage.
 * Fuzzer and benchmarks
 * . Cisco-like parser and rules evaluator
 * Split lookup table and dimension table
@@ -19,16 +30,14 @@
   * URG-ACK
 * ? Protocols should not be case-sensitive
 * x Symbols should be able to have values like 'all' and '*'
-* Action synonym 'permit'
+* x Action synonym 'permit'
 * Command line utility
+  * Command-line switch for firstApplicable vs denyOverride
   * Command line parameters: <universe> <rules1> [rules2] --telemetry
   * Modes/Reports:
     * Compare rules1 and rules2 - drift
     * Test rules2 against rules1 - contract validation
     * Redundant rules
-* README.md
-* Try out more realistic example from paper
-* Rule models other than firewall
 * dimension_types.ts:
   * // TODO: what if multiple symbols define the same range?
   * x // TODO: disallow `action`, `priority`, etc. For dimension keys.

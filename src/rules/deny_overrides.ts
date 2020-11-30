@@ -1,61 +1,6 @@
-// import fs from 'fs';
-// import yaml from 'js-yaml';
-
-// import {Universe} from '../dimensions';
 import {Disjunction} from '../setops';
+
 import {ActionType, Rule} from './types';
-
-// import {validate} from '../utilities';
-
-// import {ActionType, RuleSpec, ruleSpecSetType} from './types';
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Rule
-//
-///////////////////////////////////////////////////////////////////////////////
-
-// export interface Rule {
-//   action: ActionType;
-//   priority: number;
-//   conjunction: Conjunction;
-// }
-
-// // TODO: Consider moving to Rule.constructor().
-// export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
-//   const {action, priority, ...rest} = spec;
-//   let conjunction = Conjunction.create([]);
-
-//   for (const key of Object.getOwnPropertyNames(rest)) {
-//     const dimension = universe.get(key);
-
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//     const value = (rest as any)[key];
-//     if (typeof value !== 'string') {
-//       const message = `${key}: expected a string value.`;
-//       throw new TypeError(message);
-//     }
-//     conjunction = conjunction.intersect(dimension.parse(value));
-//   }
-
-//   return {action, priority, conjunction};
-// }
-
-// export function loadRules(universe: Universe, file: string): Rule[] {
-//   console.log(`Load rules from "${file}".`);
-
-//   const text = fs.readFileSync(file, 'utf8');
-//   const root = yaml.safeLoad(text);
-//   const spec = validate(ruleSpecSetType, root);
-//   const rules = spec.rules.map(r => parseRuleSpec(universe, r));
-//   return rules;
-// }
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Rule set evaluation.
-//
-///////////////////////////////////////////////////////////////////////////////
 
 interface RuleGroup {
   priority: number;
@@ -80,8 +25,11 @@ export function denyOverrides(rules: Rule[]): Disjunction {
     }
     if (r.action === ActionType.ALLOW) {
       groups[groups.length - 1].allow.push(r);
-    } else {
+    } else if (r.action === ActionType.DENY){
       groups[groups.length - 1].deny.push(r);
+    } else {
+      const message = `Illegal action: ${r.action}.`;
+      throw new TypeError(message);
     }
   }
 

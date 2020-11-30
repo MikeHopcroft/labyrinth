@@ -1,13 +1,13 @@
 import commandLineUsage from 'command-line-usage';
 import { Section } from 'command-line-usage';
-// import * as dotenv from 'dotenv';
+import { evaluate } from 'fp-ts/lib/State';
 import minimist from 'minimist';
 import path from 'path';
-import {firewallSpec} from '../specs';
 
 import {Universe} from '../dimensions';
-import {denyOverrides, firstApplicable, loadRulesFile} from '../rules';
-import {simplify} from '../setops';
+import {denyOverrides, firstApplicable, loadRulesFile, Rule} from '../rules';
+import {Disjunction, simplify} from '../setops';
+import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
 
 function main() {
@@ -23,8 +23,19 @@ function main() {
   }
 
   try {
-    console.log('Do something');
-
+    let evaluator: (rules: Rule[]) => Disjunction;
+    if (args.m === 'firstApplicable' || args.m === 'f') {
+      console.log('Mode is firstApplicable.');
+      evaluator = firstApplicable;
+    } else if (args.m === undefined || args.m === 'denyOverrides' || args.m === 'd') {
+      console.log('Mode is denyOverrides.');
+      evaluator = firstApplicable;
+    } else {
+      const message = `Unsupported mode "${args.m}".`;
+      throw new TypeError(message);
+    }
+    console.log();
+  
     // Initialize universe.
     const universe = (args.u) ?
       Universe.fromYamlFile(args.u)!:
@@ -32,19 +43,11 @@ function main() {
 
     // Load rules1.
     const rules1 = loadRulesFile(universe, args._[0]);
-    // TODO: BUGBUG: first call to simplify should have resulted in
-    // simplest form, so that second call would find no further simplications.
-    
-    // const r1a = simplify(universe.dimensions, firstApplicable(rules1));
-    // const r1 = simplify(universe.dimensions, r1a);
-    const r1 = simplify(universe.dimensions, firstApplicable(rules1));
-
-    // const r1 = simplify(universe.dimensions, denyOverrides(rules1));
+    const r1 = simplify(universe.dimensions, evaluator(rules1));
 
     if (args.c) {
       const rules2 = loadRulesFile(universe, args.c);
-      const r2 = simplify(universe.dimensions, firstApplicable(rules2));
-      // const r2 = simplify(universe.dimensions, denyOverrides(rules2));
+      const r2 = simplify(universe.dimensions, evaluator(rules2));
 
       const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));
       const r2SubR1 = simplify(universe.dimensions, r2.subtract(r1));
@@ -54,31 +57,29 @@ function main() {
         console.log('Rule sets r1 and r2 are equivalent');
       } else {
         if (r1SubR2.isEmpty()) {
-          console.log('All routes in r1 are also in r2.');
+          console.log('All routes in policy are also in contract.');
         } else {
-          console.log('Routes in r1 that are not in r2:');
+          console.log('Routes in policy that are not in contract:');
           console.log(r1SubR2.format('  '));
         }
         console.log();
 
         if (r2SubR1.isEmpty()) {
-          console.log('All routes in r2 are also in r1.');
+          console.log('All routes in contract are also in policy.');
         } else {
-          console.log('Routes in r2 that are not in r1:');
+          console.log('Routes in contract that are not in policy:');
           console.log(r2SubR1.format('  '));
         }
         console.log();
 
         if (r1AndR2.isEmpty()) {
-          console.log('Rule sets r1 and r2 have no routes in common.');
+          console.log('Policy and contract have no routes in common.');
         } else {
-          console.log('Routes common to r1 and r2:');
+          console.log('Routes common to policy and contract:');
           console.log(r1AndR2.format('  '));
         }
       }
       console.log();
-    } else if (args.v) {
-      console.log('Not implemented');
     } else {
       console.log('Allowed routes:');
       console.log(r1.format('  '));
@@ -91,11 +92,6 @@ function main() {
   return succeed(true);
 }
 
-// function loadRules(file: string): Rule[] {
-//   console.log(`Load rules from "${file}".`);
-//   return [];
-// }
-
 function showUsage() {
   const program = path.basename(process.argv[1]);
 
@@ -107,16 +103,16 @@ function showUsage() {
     {
       header: 'Usage',
       content: [
-        `node ${program} {underline <rules.yaml>} [...options]`,
+        `node ${program} {underline <rules>} [...options]`,
       ],
     },
     {
       header: 'Required Parameters',
       content: [
         {
-          name: '{underline <rules.yaml>}',
+          name: '{underline <rules>}',
           summary:
-            'Path to a YAML file the defines a set of rules.',
+            'Path to a csv, txt, or yaml file the defines a set of rules.',
         },
       ],
     },
@@ -124,20 +120,19 @@ function showUsage() {
       header: 'Options',
       optionList: [
         {
-          name: 'compare',
+          name: 'contract',
           alias: 'c',
-          typeLabel: '{underline <other.yaml>}',
+          typeLabel: '{underline <contract>}',
           description:
-            `Compare the rule set in {underline <other.yaml>} with those in {underline <rules.yaml>}.\n`,
-          // type: Boolean,
+            `Compare the rule set in {underline <contract>} with those in {underline <rules>}.\n`,
         },
         {
-          name: 'verify',
-          alias: 'v',
-          typeLabel: '{underline <other.yaml>}',
+          name: 'mode',
+          alias: 'm',
+          typeLabel: '{underline <mode>}',
           description:
-            `Verify the rule set in {underline <other.yaml>} is a subset of those in {underline <rules.yaml>}.\n`,
-          // type: Boolean,
+            `Defines the rule evaluation strategy. Choices are {underline denyOverrides}` +
+            `and {underline firstApplicable}. Defaults to {underline denyOverrides}.`,
         },
         {
           name: 'universe',
@@ -167,4 +162,3 @@ function showUsage() {
 }
 
 main();
-

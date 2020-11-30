@@ -1,8 +1,8 @@
 // import * as csv from 'fast-csv';
 import csv from 'csv-parse/lib/sync'
 import fs from 'fs';
-import path from 'path';
 import yaml from 'js-yaml';
+import path from 'path';
 
 
 import { Universe } from '../dimensions';
@@ -13,10 +13,10 @@ import { Rule, RuleSpec, ruleSpecType, ruleSpecSetType } from './types';
 
 export function loadRulesFile(
   universe: Universe,
-  file: string
+  file: string,
+  extension: string | undefined = undefined
 ): Rule[] {
-  const e = path.extname(file).toLowerCase();
-  console.log(`EXT = "${e}"`);
+  const e = extension || path.extname(file).toLowerCase();
   if (['.yaml', '.yml'].includes(e)) {
     return loadYamlRulesFile(universe, file);
   } else if (e === '.csv') {
@@ -29,6 +29,29 @@ export function loadRulesFile(
   }
 }
 
+/** Loads a text-format rules file
+ * @param {Universe} universe - provides definitions for the
+ *  dimensions referenced by the rules file.
+ * @param {string} filename - path to the rules file to be loaded
+ * 
+ * The rules file consists of a sequence of rows, each of which is
+ * a space-separated sequence of fields. The first row defines the
+ * key of the fields filled by the remaining rows. The field keys
+ * correspond to the Dimension.key values in the Universe. Note
+ * that the field keys can appear in any order. There is no requirement
+ * to include keys for all of the Dimensions, but a key cannot appear
+ * in more than one field.
+ * 
+ * Blank lines and lines starting with # and remark are considered
+ * comments.
+ * 
+ * @example foobar
+ * # The first non-comment row defines the dimension keys
+ * action, sourceIp, sourcePort, protocol
+ * # The remaining lines define the field values
+ * allow 127.0.0.0/8 80 tcp
+ * deny any 53 any
+  */
 export function loadTxtRulesFile(
   universe: Universe,
   filename: string
@@ -38,6 +61,7 @@ export function loadTxtRulesFile(
 }
 
 export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
+  let priority = 0;
   const lines = new PeekableSequence(text.split(/\r?\n/).values());
 
   skipComments(lines);
@@ -47,6 +71,14 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
   }
 
   const headers = lines.get().split(/\s+/).map(x => x.trim());
+  const dedupe = new Set<string>();
+  for (const key of headers) {
+    if (dedupe.has(key)) {
+      const message = `Detected duplicate key "${key}".`;
+      throw new TypeError(message);
+    }
+    dedupe.add(key);
+  }
 
   const rules: Rule[] = [];
   while (!lines.atEOS()) {
@@ -55,7 +87,7 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
       break;
     }
 
-    const lineObject: {[key:string]: string|number} = {};
+    const lineObject: { [key: string]: string | number } = {};
     const fields = lines.get().split(/\s+/).map(x => x.trim());
     for (const [column, value] of fields.entries()) {
       const key = headers[column];
@@ -67,11 +99,13 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
     }
 
     if (lineObject.priority === undefined) {
-      lineObject.priority = 1;
+      lineObject.priority = ++priority;
+    }
+    if (lineObject.action === 'permit') {
+      lineObject.action = 'allow';
     }
 
     const spec = validate(ruleSpecType, lineObject);
-    // console.log(spec);
     const rule = parseRuleSpec(universe, spec);
     rules.push(rule);
   }
@@ -102,150 +136,63 @@ export function loadCsvRulesString(
   universe: Universe,
   text: string
 ): Rule[] {
-  // const rules: any[] = [];
-
-  // await csv.parseFile(text, { headers: true })
-  //   .on('error', error => {
-  //     console.log(`error: ${error}`);
-  //     throw error
-  //   })
-  //   .on('data', row => {
-  //     // TODO: decide whether this check is appropriate.
-  //     // Would we ever use csv format for denyOverride semantics?
-  //     if (row.priority !== undefined) {
-  //       const message = `Illegal column: "priority".`;
-  //       throw new TypeError(message);
-  //     }
-  //     rules.push({ ...row, priority: 1 });
-  //   })
-  //   .on('end', (rowCount: number) => console.log(`Parsed ${rowCount} rows`));
-
   const rules = csv(
     text,
     {
       columns: true,
-      // headers => {
-      //   if (headers.includes('priority')) {
-      //     const message = `Illegal column: "priority".`;
-      //     throw new TypeError(message);
-      //   }
-      //   return [...headers, 'priority'];
-      // },
       relax_column_count_less: true,
       skipEmptyLines: true,
       trim: true,
     }
-  ).map((rule:any) => {
+  ).map((rule: any) => {
     if (rule.priority !== undefined) {
       const message = `Illegal column: "priority".`;
       throw new TypeError(message);
     }
-    return {...rule, priority: 1};
+    return { ...rule, priority: 1 };
   });
 
   const spec = validate(ruleSpecSetType, { rules });
   return spec.rules.map(r => parseRuleSpec(universe, r));
+}
 
-  //   return parseCsvStream(
-  //     universe,
-  //     csv.parseString(text, { headers: true })
-  //   );
-  }
+export function loadYamlRulesFile(
+  universe: Universe,
+  filename: string
+): Rule[] {
+  const text = fs.readFileSync(filename, 'utf8');
+  const root = yaml.safeLoad(text);
+  const spec = validate(ruleSpecSetType, root);
+  const rules = spec.rules.map(r => parseRuleSpec(universe, r));
+  return rules;
+}
 
-  // export async function loadCsvRulesFile(
-  //   universe: Universe,
-  //   filename: string
-  // ): Promise<Rule[]> {
-  //   // const rules: any[] = [];
+export function loadYamlRulesString(
+  universe: Universe,
+  text: string
+): Rule[] {
+  const root = yaml.safeLoad(text);
+  const spec = validate(ruleSpecSetType, root);
+  const rules = spec.rules.map(r => parseRuleSpec(universe, r));
+  return rules;
+}
 
-  //   // csv.parseFile(filename, { headers: true })
-  //   // .on('error', error => {
-  //   //   throw error
-  //   // })
-  //   // .on('data', row => {
-  //   //   // TODO: decide whether this check is appropriate.
-  //   //   // Would we ever use csv format for denyOverride semantics?
-  //   //   if (row.priority !== undefined) {
-  //   //     const message = `Illegal column: "priority".`;
-  //   //     throw new TypeError(message);
-  //   //   }
-  //   //   rules.push({...row, priority: 1});
-  //   // })
-  //   // .on('end', (rowCount: number) => console.log(`Parsed ${rowCount} rows`));
+// TODO: Consider moving to Rule.constructor().
+export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
+  const { action, priority, ...rest } = spec;
+  let conjunction = Conjunction.create([]);
 
-  //   // const spec = validate(ruleSpecSetType, { rules });
-  //   // return spec.rules.map(r => parseRuleSpec(universe, r));
+  for (const key of Object.getOwnPropertyNames(rest)) {
+    const dimension = universe.get(key);
 
-  //   return parseCsvStream(
-  //     universe,
-  //     csv.parseFile(filename, { headers: true })
-  //   );
-  // }
-
-  // async function parseCsvStream<I, O>(
-  //   universe: Universe,
-  //   parser: csv.CsvParserStream<I, O>
-  // ): Promise<Rule[]> {
-  //   const rules: any[] = [];
-
-  //   await parser
-  //     .on('error', error => {
-  //       throw error
-  //     })
-  //     .on('data', row => {
-  //       // TODO: decide whether this check is appropriate.
-  //       // Would we ever use csv format for denyOverride semantics?
-  //       if (row.priority !== undefined) {
-  //         const message = `Illegal column: "priority".`;
-  //         throw new TypeError(message);
-  //       }
-  //       rules.push({ ...row, priority: 1 });
-  //     })
-  //     .on('end', (rowCount: number) => console.log(`Parsed ${rowCount} rows`));
-
-  //   const spec = validate(ruleSpecSetType, { rules });
-  //   return spec.rules.map(r => parseRuleSpec(universe, r));
-  // }
-
-  export function loadYamlRulesFile(
-    universe: Universe,
-    filename: string
-  ): Rule[] {
-    console.log(`Load rules from "${filename}".`);
-
-    const text = fs.readFileSync(filename, 'utf8');
-    const root = yaml.safeLoad(text);
-    const spec = validate(ruleSpecSetType, root);
-    const rules = spec.rules.map(r => parseRuleSpec(universe, r));
-    return rules;
-  }
-
-  export function loadYamlRulesString(
-    universe: Universe,
-    text: string
-  ): Rule[] {
-    const root = yaml.safeLoad(text);
-    const spec = validate(ruleSpecSetType, root);
-    const rules = spec.rules.map(r => parseRuleSpec(universe, r));
-    return rules;
-  }
-
-  // TODO: Consider moving to Rule.constructor().
-  export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
-    const { action, priority, ...rest } = spec;
-    let conjunction = Conjunction.create([]);
-
-    for (const key of Object.getOwnPropertyNames(rest)) {
-      const dimension = universe.get(key);
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const value = (rest as any)[key];
-      if (typeof value !== 'string') {
-        const message = `${key}: expected a string value.`;
-        throw new TypeError(message);
-      }
-      conjunction = conjunction.intersect(dimension.parse(value));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const value = (rest as any)[key];
+    if (typeof value !== 'string') {
+      const message = `${key}: expected a string value.`;
+      throw new TypeError(message);
     }
-
-    return { action, priority, conjunction };
+    conjunction = conjunction.intersect(dimension.parse(value));
   }
+
+  return { action, priority, conjunction };
+}

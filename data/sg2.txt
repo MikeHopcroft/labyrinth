@@ -1,0 +1,27 @@
+action protocol destinationIp sourceIp destinationPort
+# Isolating private addresses
+deny ip 0.0.0.0/32 any
+deny ip 10.0.0.0/8 any
+deny ip 172.16.0.0/12 any
+deny ip 192.0.2.0/24 any
+# ...
+# Anti spoofing ACLs
+deny ip 128.30.0.0/15 any
+deny ip 171.64.0.0/18 any
+# ...
+# permits for IPs without port and protocol blocks
+allow ip any 171.64.64.0/18
+# ....
+# standard port and protocol blocks
+deny tcp any any 445
+deny udp any any 445
+deny tcp any any 593
+deny udp any any 593
+# ...
+deny 53 any any
+deny 55 any any
+# ...
+# permits for IPs with port and protocol blocks
+allow ip any 128.30.0.0/15
+allow ip any 171.64.0.0/15
+permit ip any 128.230.0.0/16

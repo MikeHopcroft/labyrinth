@@ -9,6 +9,7 @@ import {
   DimensionType,
   formatDRange,
   parseNumberOrSymbol,
+  tryGetCIDR,
 } from '../../src/dimensions';
 
 const ipType = new DimensionType({
@@ -71,6 +72,19 @@ describe('Formatters', () => {
             ip.toLong('1.1.1.8').toString()
           ),
           '1.1.1.0-1.1.1.8'
+        );
+
+        // The following case was from a bug in tryGetCIDR().
+        // Before the bug fix, tryGetCIDR() returned '0.0.0.80/28'
+        // because it wasn't checking that the high order bits were
+        // identical.
+        assert.equal(
+          formatter(
+            '',
+            0x50.toString(),
+            0x7f.toString()
+          ),
+          `${ip.fromLong(0x50)}-${ip.fromLong(0x7f)}`
         );
       });
 
