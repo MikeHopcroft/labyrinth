@@ -25,7 +25,7 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/build/src/apps/analyze.js",
-      "args": ["data/sg1.txt"],
+      "args": ["data/sg1-fixed.txt"],
       // "args": ["data/rules1.yaml", "-c=data/rules2.yaml"],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [

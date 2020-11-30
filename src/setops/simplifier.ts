@@ -1,9 +1,9 @@
 import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
-import {Conjunction} from './conjunction';
-import {Dimension} from '../dimensions/dimension';
-import {DimensionedRange} from './dimensioned_range';
-import {Disjunction} from './disjunction';
+import { Conjunction } from './conjunction';
+import { Dimension } from '../dimensions/dimension';
+import { DimensionedRange } from './dimensioned_range';
+import { Disjunction } from './disjunction';
 
 // See also this article on boolean expression simplification.
 //   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
@@ -13,6 +13,8 @@ export interface ConjunctionInfo {
   factors: FactorInfo[];
 }
 
+let nextFactorInfoId = 0;
+
 export interface FactorInfo {
   key: string;
   dimension: Dimension;
@@ -20,6 +22,8 @@ export interface FactorInfo {
 }
 
 export interface FactorEntry {
+  // TODO: remove id field. Was added for debugging.
+  id: number;
   key: string;
   dimension: Dimension;
   conjunctions: Set<FactorInfo>;
@@ -27,7 +31,7 @@ export interface FactorEntry {
 
 // Can't define a type alias here because we want to be able to use new.
 //   https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
-class KeyToFactorEntry extends Map<string, FactorEntry> {}
+class KeyToFactorEntry extends Map<string, FactorEntry> { }
 
 export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   const index = new KeyToFactorEntry();
@@ -41,15 +45,32 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
     addConjunction(index, queue, terms, info);
   }
 
+  for (const [key, value] of index.entries()) {
+    if (key.startsWith('[sourceIp]')) {
+      console.log('---------------------------------------');
+      console.log(key);
+      console.log(`id=${value.id}`);
+      for (const c of value.conjunctions) {
+        console.log(c.conjunction.conjunction.format('  '));
+        console.log();
+      }
+      console.log();
+    }
+  }
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const entry = queue.poll();
+    const entry = queue.peek();
     if (entry === undefined || entry.conjunctions.size < 2) {
       break;
     }
 
     combine(dimensions, index, queue, terms, entry);
   }
+
+  queue.forEach((entry: FactorEntry, i: number) => {
+    console.log(`${i}: ${entry.id} ${entry.conjunctions.size}`);
+  });
 
   return Disjunction.create([...terms.values()].map(x => x.conjunction));
 }
@@ -61,7 +82,7 @@ export function createConjunctionInfo(
   conjunction: Conjunction
 ): ConjunctionInfo {
   const factors: FactorInfo[] = [];
-  const info: ConjunctionInfo = {conjunction, factors};
+  const info: ConjunctionInfo = { conjunction, factors };
 
   let i = 0;
   const lines: string[] = [];
@@ -81,7 +102,7 @@ export function createConjunctionInfo(
 
   for (const [i, dimension] of dimensions.entries()) {
     const save = lines[i];
-    lines[i] = '';
+    lines[i] = `[${dimension.key}]`;//'';
     const key = lines.join('\n');
     factors.push({
       key,
@@ -104,6 +125,9 @@ function combine(
   //
   // Make new, combined conjunction
   //
+  console.log(`Combining ${entry.conjunctions.size} conjunctions:`);
+  console.log(entry.key);
+  console.log();
 
   // First merge ranges that are on entry.dimension.
   const dimension = entry.dimension;
@@ -159,8 +183,15 @@ function combine(
     removeConjunction(index, queue, terms, c.conjunction);
   }
 
+  console.log('Adding');
+  console.log(combined.conjunction.format('  '));
+
+
   // Add new conjunction to index
   addConjunction(index, queue, terms, combined);
+
+  console.log(`======== queue has ${queue.size} entries ========`);
+  // console.log(`  size = ${queue.peek()?.conjunctions.size}`);
 }
 
 function addConjunction(
@@ -179,14 +210,20 @@ function addConjunction(
   for (const f of conjunction.factors) {
     const entry = index.get(f.key);
     if (entry) {
-      // if (!queue.remove(entry)) {
-      //   const message = 'Entry not in priority queue';
-      //   throw new TypeError(message);
-      // }
+      if (entry.id === 5) {
+        console.log('1: Removing id=5');
+      }
+      // queue.remove(entry);
+      if (!queue.removeOne(x => x === entry)) {
+        const message = 'Entry not in priority queue';
+        throw new TypeError(message);
+      }
       entry.conjunctions.add(f);
       queue.add(entry);
     } else {
       const entry: FactorEntry = {
+        // TODO: remove id. Was added for debugging.
+        id: nextFactorInfoId++,
         key: f.key,
         dimension: f.dimension,
         conjunctions: new Set<FactorInfo>([f]),
@@ -216,11 +253,15 @@ function removeConjunction(
       throw new TypeError(message);
     }
 
+    if (entry.id === 5) {
+      console.log('2: Removing id=5');
+    }
     // Entry may have been removed from queue in main loop.
-    // if (!queue.remove(entry)) {
-    //   const message = `Entry not in priority queue:\n${f.key}`;
-    //   throw new TypeError(message);
-    // }
+    if (!queue.removeOne(x => x === entry)) {
+      const message = `Entry not in priority queue:\n${f.key}`;
+      throw new TypeError(message);
+    }
+    // queue.remove(entry)
     entry.conjunctions.delete(f);
     queue.add(entry);
   }

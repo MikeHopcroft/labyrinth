@@ -7,7 +7,7 @@
   * Why does simplifier leave unsimplified terms?
     * node build\src\apps\analyze.js data\sg1.yaml
 * Fuzzer and benchmarks
-* Cisco-like parser and rules evaluator
+* . Cisco-like parser and rules evaluator
 * Split lookup table and dimension table
 * Add TCP flags:
   * established
@@ -17,8 +17,8 @@
   * PSH-ACK
   * RST-ACK
   * URG-ACK
-* Protocols should not be case-sensitive
-* Symbols should be able to have values like 'all' and '*'
+* ? Protocols should not be case-sensitive
+* x Symbols should be able to have values like 'all' and '*'
 * Action synonym 'permit'
 * Command line utility
   * Command line parameters: <universe> <rules1> [rules2] --telemetry

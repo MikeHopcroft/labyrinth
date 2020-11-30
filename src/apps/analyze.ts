@@ -34,8 +34,11 @@ function main() {
     const rules1 = loadRulesFile(universe, args._[0]);
     // TODO: BUGBUG: first call to simplify should have resulted in
     // simplest form, so that second call would find no further simplications.
-    const r1a = simplify(universe.dimensions, firstApplicable(rules1));
-    const r1 = simplify(universe.dimensions, r1a);
+    
+    // const r1a = simplify(universe.dimensions, firstApplicable(rules1));
+    // const r1 = simplify(universe.dimensions, r1a);
+    const r1 = simplify(universe.dimensions, firstApplicable(rules1));
+
     // const r1 = simplify(universe.dimensions, denyOverrides(rules1));
 
     if (args.c) {
