@@ -1,7 +1,8 @@
 import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
 
-import { Dimension } from '../dimensions/dimension';
+import { Dimension } from '../dimensions';
+import {combineSets} from '../utilities';
 
 import { Conjunction } from './conjunction';
 import { DimensionedRange } from './dimensioned_range';
@@ -110,6 +111,8 @@ function combine(
   // Make new, combined conjunction
   //
 
+  const rules = combineSets([...entry.conjunctions.values()].map(c => c.conjunction.conjunction.rules));
+
   // First merge ranges that are on entry.dimension.
   const dimension = entry.dimension;
   let combinedRange = new DimensionedRange(dimension, new DRange());
@@ -152,7 +155,7 @@ function combine(
   }
   const combined = createConjunctionInfo(
     dimensions,
-    Conjunction.create(ranges)
+    Conjunction.create(ranges, rules)
   );
 
   //

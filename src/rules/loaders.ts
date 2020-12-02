@@ -9,7 +9,14 @@ import { Universe } from '../dimensions';
 import { Conjunction } from '../setops';
 import { PeekableSequence, validate } from '../utilities';
 
-import { Rule, RuleSpec, ruleSpecType, ruleSpecSetType } from './types';
+import {
+  Rule,
+  RuleSpec,
+  RuleSpecSet,
+  ruleSpecType,
+  ruleSpecSetType,
+  ruleSpecNoIdSetType,
+} from './types';
 
 export function loadRulesFile(
   universe: Universe,
@@ -28,6 +35,12 @@ export function loadRulesFile(
     throw new TypeError(message);
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Text format loader
+//
+///////////////////////////////////////////////////////////////////////////////
 
 /** Loads a text-format rules file
  * @param {Universe} universe - provides definitions for the
@@ -105,6 +118,12 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
       lineObject.action = 'allow';
     }
 
+    if (lineObject.id !== undefined) {
+      const message = `Illegal column: "id".`;
+      throw new TypeError(message);
+    }
+    lineObject.id = lines.position();
+
     const spec = validate(ruleSpecType, lineObject);
     const rule = parseRuleSpec(universe, spec);
     rules.push(rule);
@@ -123,6 +142,13 @@ function skipComments(lines: PeekableSequence<string>) {
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// CSV format loader
+//
+///////////////////////////////////////////////////////////////////////////////
 
 export function loadCsvRulesFile(
   universe: Universe,
@@ -144,27 +170,37 @@ export function loadCsvRulesString(
       skipEmptyLines: true,
       trim: true,
     }
-  ).map((rule: any) => {
+  ).map((rule: any, id: number) => {
+    // TODO: REVIEW: why wouldn't CSV be used for DenyOverride?
+    // (which uses priority)
     if (rule.priority !== undefined) {
       const message = `Illegal column: "priority".`;
       throw new TypeError(message);
     }
-    return { ...rule, priority: 1 };
+    if (rule.id !== undefined) {
+      const message = `Illegal column: "id".`;
+      throw new TypeError(message);
+    }
+    return { ...rule, id, priority: 1 };
   });
 
   const spec = validate(ruleSpecSetType, { rules });
   return spec.rules.map(r => parseRuleSpec(universe, r));
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// YAML format loader
+//
+///////////////////////////////////////////////////////////////////////////////
+
 export function loadYamlRulesFile(
   universe: Universe,
   filename: string
 ): Rule[] {
   const text = fs.readFileSync(filename, 'utf8');
-  const root = yaml.safeLoad(text);
-  const spec = validate(ruleSpecSetType, root);
-  const rules = spec.rules.map(r => parseRuleSpec(universe, r));
-  return rules;
+  return loadYamlRulesString(universe, text);
 }
 
 export function loadYamlRulesString(
@@ -172,15 +208,22 @@ export function loadYamlRulesString(
   text: string
 ): Rule[] {
   const root = yaml.safeLoad(text);
-  const spec = validate(ruleSpecSetType, root);
-  const rules = spec.rules.map(r => parseRuleSpec(universe, r));
+  const spec = validate(ruleSpecNoIdSetType, root) as RuleSpecSet;
+  const rules = spec.rules.map((r, i) => {
+    if (r.id !== undefined) {
+      const message = `Illegal field: "id".`;
+      throw new TypeError(message);
+    }
+    r.id = i;
+    return parseRuleSpec(universe, r);
+  });
   return rules;
 }
 
 // TODO: Consider moving to Rule.constructor().
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
-  const { action, priority, ...rest } = spec;
-  let conjunction = Conjunction.create([]);
+  const { action, id, priority, ...rest } = spec;
+  let conjunction = Conjunction.create([], new Set<number>([id]));
 
   for (const key of Object.getOwnPropertyNames(rest)) {
     const dimension = universe.get(key);

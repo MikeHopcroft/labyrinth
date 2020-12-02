@@ -77,6 +77,7 @@ const universe = new Universe(universeSpec);
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
     const spec: RuleSpecEx = {
+      id: 1,
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
@@ -105,18 +106,21 @@ describe('Simplifier', () => {
     it('first', () => {
       const ruleSpecs = [
         {
+          id: 1,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
           destinationPort: '100',
         },
         {
+          id: 2,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
           destinationPort: '100',
         },
         {
+          id: 3,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '3',
@@ -148,11 +152,13 @@ describe('Simplifier', () => {
     it('(a+b)(c+d)', () => {
       const ruleSpecs1 = [
         {
+          id: 1,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
         },
         {
+          id: 2,
           action: ActionType.ALLOW,
           priority: 1,
           destinationPort: '101',
@@ -161,11 +167,13 @@ describe('Simplifier', () => {
 
       const ruleSpecs2 = [
         {
+          id: 3,
           action: ActionType.ALLOW,
           priority: 1,
           destinationPort: '101',
         },
         {
+          id: 4,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
@@ -208,11 +216,13 @@ describe('Simplifier', () => {
     it('(a+b)(a+b)', () => {
       const ruleSpecs1 = [
         {
+          id: 1,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
         },
         {
+          id: 2,
           action: ActionType.ALLOW,
           priority: 1,
           destinationPort: '101',
@@ -272,6 +282,7 @@ describe('Simplifier', () => {
       //   3. Merge protocol of this result with fourth rule, yielding TCP, UDP
       const ruleSpecs = [
         {
+          id: 1,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
@@ -279,6 +290,7 @@ describe('Simplifier', () => {
           protocol: 'TCP',
         },
         {
+          id: 2,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
@@ -286,6 +298,7 @@ describe('Simplifier', () => {
           protocol: 'TCP',
         },
         {
+          id: 3,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',
@@ -293,6 +306,7 @@ describe('Simplifier', () => {
           protocol: 'TCP',
         },
         {
+          id: 4,
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',

@@ -1,12 +1,26 @@
 # TODO
 
+* loaders.ts
+  * // TODO: REVIEW: why wouldn't CSV be used for DenyOverride?
+* disjunction.test.ts
+  * // TODO: convenience method
+  * const b = Disjunction.create([Conjunction.create([], ignore)]);
+  * Other files use this pattern
+  * May want analogous method for Conjunction
 * Rule attribution
-  * Line numbers from .txt
-  * Line numbers from .csv
+  * Consider using DRange instead of Set<number>
+    * Cons: linear time instead of log, could use Set<RuleSpec> instead.
+    * Pros: better formatting, perhaps quicker for small sets, less code
+    * If we use Set<RuleSpec> we can
+      * Abstract out id vs line number difference - both can be in RuleSpec
+      * Formatter can still use DRange on line numbers, rule numbers, etc.
+  * x Line numbers from .txt
+  * x Line numbers from .csv
   * Line numbers from YAML
+    * See https://eemeli.org/yaml/#options
     * How to deal with multiple tags on the same line?
-  * Rule numbers
-  * Rule attribution in Conjunction constructor and algebra
+  * Rule specs include line numbers and rule ids.
+  * x Rule attribution in Conjunction constructor and algebra
   * Formatting rule attribution
     * Line numbers
     * Rule numbers

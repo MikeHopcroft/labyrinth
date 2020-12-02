@@ -22,17 +22,28 @@ export enum ActionType {
 // tslint:disable-next-line:variable-name
 const ActionTypeType = createEnum<ActionType>(ActionType, 'ActionType');
 
-export const ruleSpecType = t.type({
+export const ruleSpecNoIdType = t.type({
   action: ActionTypeType,
   priority: t.number,
 });
 
+export const ruleSpecType = t.intersection([
+  ruleSpecNoIdType,
+  t.type({
+    id: t.number,
+  })
+]);
+
 export type RuleSpec = t.TypeOf<typeof ruleSpecType>;
 
-export const RuleSpecReservedWords = new Set<string>(['action', 'priority']);
+export const RuleSpecReservedWords = new Set<string>(['action', 'id', 'priority']);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RuleSpecEx = RuleSpec & {[others: string]: any};
+
+export const ruleSpecNoIdSetType = t.type({
+  rules: t.array(ruleSpecNoIdType),
+});
 
 export const ruleSpecSetType = t.type({
   rules: t.array(ruleSpecType),

@@ -57,6 +57,9 @@ export class Dimension {
 
   parse(text: string): Conjunction {
     const range = this.type.parser(text);
-    return Conjunction.create([new DimensionedRange(this, range)]);
+
+    // DESIGN NOTE: passing empty rules list because parser is only intended
+    // to be used in contexts where rules list is known, e.g. parseRuleSpec().
+    return Conjunction.create([new DimensionedRange(this, range)], new Set<number>());
   }
 }

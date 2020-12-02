@@ -1,4 +1,5 @@
-import {Dimension} from '../dimensions/dimension';
+import {Dimension} from '../dimensions';
+import {combineSets} from '../utilities';
 
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
@@ -7,8 +8,9 @@ import {setopsTelemetry} from './telemetry';
 // Represents a Conjunction of DRanges associated with Dimensions.
 export class Conjunction {
   dimensions: DimensionedRange[];
+  rules: Set<number>;
 
-  static create(dimensions: DimensionedRange[]) {
+  static create(dimensions: DimensionedRange[], rules: Set<number>) {
     // Verify dimensions are in increaing order, no duplicates
     for (let i = 0; i < dimensions.length - 1; ++i) {
       if (dimensions[i].dimension.id >= dimensions[i + 1].dimension.id) {
@@ -32,14 +34,15 @@ export class Conjunction {
       }
     }
 
-    return new Conjunction(simplified);
+    return new Conjunction(simplified, rules);
   }
 
   // TODO: REVIEW: what is use case for constructor other than call from Factory?
   // Can the two be combined?
-  private constructor(dimensions: DimensionedRange[]) {
+  private constructor(dimensions: DimensionedRange[], rules: Set<number>) {
     setopsTelemetry.increment('Conjunction');
     this.dimensions = dimensions;
+    this.rules = rules;
   }
 
   isEmpty(): boolean {
@@ -51,6 +54,7 @@ export class Conjunction {
   }
 
   intersect(other: Conjunction): Conjunction {
+    const rules = combineSets([this.rules, other.rules]);
     let i1 = 0;
     let i2 = 0;
     const dimensions: DimensionedRange[] = [];
@@ -76,7 +80,7 @@ export class Conjunction {
 
       if (d.isEmpty()) {
         // If any dimension is empty, return the empty set.
-        return new Conjunction([d]);
+        return new Conjunction([d], rules);
       } else if (d.isUniverse()) {
         // Filter out universe dimensions.
         continue;
@@ -93,7 +97,7 @@ export class Conjunction {
       dimensions.push(other.dimensions[i2++]);
     }
 
-    return new Conjunction(dimensions);
+    return new Conjunction(dimensions, rules);
   }
 
   complement(): Disjunction {
@@ -102,11 +106,11 @@ export class Conjunction {
       return Disjunction.create([]);
     } else if (this.isEmpty()) {
       // Complement is a disjunction with one universal conjunction.
-      return Disjunction.create([new Conjunction([])]);
+      return Disjunction.create([new Conjunction([], this.rules)]);
     } else {
       // Apply De Morgan's Law
       const terms = this.dimensions.map(d => {
-        return new Conjunction([d.complement()]);
+        return new Conjunction([d.complement()], this.rules);
       });
       return Disjunction.create(terms);
     }
@@ -132,6 +136,8 @@ export class Conjunction {
   }
 
   format(prefix = ''): string {
-    return this.dimensions.map(d => d.format(prefix)).join('\n');
+    const lines = this.dimensions.map(d => d.format(prefix));
+    lines.unshift(`${prefix}Rules: ${[...this.rules.values()]}`);
+    return lines.join('\n');
   }
 }

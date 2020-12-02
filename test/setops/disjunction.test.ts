@@ -45,11 +45,13 @@ const range1 = new DimensionedRange(dimension1, new DRange(10, 20));
 const universeRange1 = new DimensionedRange(dimension1, dimension1.type.domain);
 const emptyRange1 = new DimensionedRange(dimension1, new DRange());
 
+const ignore = new Set<number>();
+
 describe('Disjunction', () => {
   describe('create()', () => {
     it('X + 1 = 1', () => {
-      const c = Conjunction.create([range1]);
-      const u = Conjunction.create([universeRange1]);
+      const c = Conjunction.create([range1], ignore);
+      const u = Conjunction.create([universeRange1], ignore);
 
       const d1 = Disjunction.create([u, c]);
       assert.equal(d1.conjunctions.length, 1);
@@ -61,8 +63,8 @@ describe('Disjunction', () => {
     });
 
     it('X + 0 = X', () => {
-      const c = Conjunction.create([range1]);
-      const e = Conjunction.create([emptyRange1]);
+      const c = Conjunction.create([range1], ignore);
+      const e = Conjunction.create([emptyRange1], ignore);
 
       const d1 = Disjunction.create([e, c]);
       assert.equal(d1.conjunctions.length, 1);
@@ -88,14 +90,20 @@ describe('Disjunction', () => {
       //   . a a . .
       //   . . . . .
       const a = Disjunction.create([
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(1, 2)),
-          new DimensionedRange(y, new DRange(1, 2)),
-        ]),
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(1, 2)),
-          new DimensionedRange(y, new DRange(4, 5)),
-        ]),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(1, 2)),
+            new DimensionedRange(y, new DRange(1, 2)),
+          ],
+          ignore
+        ),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(1, 2)),
+            new DimensionedRange(y, new DRange(4, 5)),
+          ],
+          ignore
+        ),
       ]);
 
       // Set B:
@@ -107,14 +115,20 @@ describe('Disjunction', () => {
       //   b b b b b
       //   . . b . .
       const b = Disjunction.create([
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(2)),
-          new DimensionedRange(y, new DRange(0, 6)),
-        ]),
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(0, 4)),
-          new DimensionedRange(y, new DRange(5)),
-        ]),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(2)),
+            new DimensionedRange(y, new DRange(0, 6)),
+          ],
+          ignore
+        ),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(0, 4)),
+            new DimensionedRange(y, new DRange(5)),
+          ],
+          ignore
+        ),
       ]);
 
       // Set C = A & B:
@@ -135,14 +149,20 @@ describe('Disjunction', () => {
       const y = dimensionY;
 
       const a = Disjunction.create([
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(1, 2)),
-          new DimensionedRange(y, new DRange(1, 2)),
-        ]),
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(1, 2)),
-          new DimensionedRange(y, new DRange(4, 5)),
-        ]),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(1, 2)),
+            new DimensionedRange(y, new DRange(1, 2)),
+          ],
+          ignore
+        ),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(1, 2)),
+            new DimensionedRange(y, new DRange(4, 5)),
+          ],
+          ignore
+        ),
       ]);
 
       const b = Disjunction.create([]);
@@ -157,17 +177,24 @@ describe('Disjunction', () => {
       const y = dimensionY;
 
       const a = Disjunction.create([
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(1, 2)),
-          new DimensionedRange(y, new DRange(1, 2)),
-        ]),
-        Conjunction.create([
-          new DimensionedRange(x, new DRange(1, 2)),
-          new DimensionedRange(y, new DRange(4, 5)),
-        ]),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(1, 2)),
+            new DimensionedRange(y, new DRange(1, 2)),
+          ],
+          ignore
+        ),
+        Conjunction.create(
+          [
+            new DimensionedRange(x, new DRange(1, 2)),
+            new DimensionedRange(y, new DRange(4, 5)),
+          ],
+          ignore
+        ),
       ]);
 
-      const b = Disjunction.create([Conjunction.create([])]);
+      // TODO: convenience method
+      const b = Disjunction.create([Conjunction.create([], ignore)]);
 
       const c = a.intersect(b);
       const values = [...disjunctionValues([x, y], c).values()];
@@ -191,19 +218,19 @@ describe('Disjunction', () => {
       assert.isTrue(d1.isEmpty());
 
       // Not empty
-      const c1 = Conjunction.create([range1]);
+      const c1 = Conjunction.create([range1], ignore);
       const d2 = Disjunction.create([c1]);
       assert.isFalse(d2.isEmpty());
     });
 
     it('isUniverse()', () => {
       // Actually universe
-      const u = Conjunction.create([universeRange1]);
+      const u = Conjunction.create([universeRange1], ignore);
       const d1 = Disjunction.create([u]);
       assert.isTrue(d1.isUniverse());
 
       // Actually universe
-      const c1 = Conjunction.create([range1]);
+      const c1 = Conjunction.create([range1], ignore);
       const d2 = Disjunction.create([c1]);
       assert.isFalse(d2.isUniverse());
     });

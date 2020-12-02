@@ -72,34 +72,36 @@ const emptyRange = new DimensionedRange(dimension2, new DRange());
 const universeRange = new DimensionedRange(dimension2, dimension2.type.domain);
 const universeRange3 = new DimensionedRange(dimension3, dimension3.type.domain);
 
+const ignore = new Set<number>();
+
 describe('Conjunction', () => {
   describe('create()', () => {
     // Dimension order check
     it('parameter validation', () => {
       assert.throws(() => {
-        Conjunction.create([range2, range1]);
+        Conjunction.create([range2, range1], ignore);
       });
 
       assert.doesNotThrow(() => {
-        Conjunction.create([range1, range2]);
+        Conjunction.create([range1, range2], ignore);
       });
     });
 
     // Trim on encountering empty dimension
     it('X & 0 = 0', () => {
-      const c = Conjunction.create([range1, emptyRange, range3]);
+      const c = Conjunction.create([range1, emptyRange, range3], ignore);
       assert.equal(c.dimensions.length, 1);
       assert.equal(c.dimensions[0], emptyRange);
     });
 
     // Filter out universe dimensions
     it('X & 1 = X', () => {
-      const c1 = Conjunction.create([range1, universeRange, range3]);
+      const c1 = Conjunction.create([range1, universeRange, range3], ignore);
       assert.equal(c1.dimensions.length, 2);
       assert.equal(c1.dimensions[0], range1);
       assert.equal(c1.dimensions[1], range3);
 
-      const c2 = Conjunction.create([universeRange]);
+      const c2 = Conjunction.create([universeRange], ignore);
       assert.equal(c2.dimensions.length, 0);
     });
   });
@@ -108,40 +110,40 @@ describe('Conjunction', () => {
     // isEmpty()
     it('isEmpty()', () => {
       // Actually empty
-      const c1 = Conjunction.create([range1, emptyRange, range3]);
+      const c1 = Conjunction.create([range1, emptyRange, range3], ignore);
       assert.isTrue(c1.isEmpty());
 
       // Not empty
-      const c2 = Conjunction.create([range1, range3]);
+      const c2 = Conjunction.create([range1, range3], ignore);
       assert.isFalse(c2.isEmpty());
     });
 
     // isUniverse()
     it('isUniverse()', () => {
       // Actually universe
-      const c1 = Conjunction.create([universeRange]);
+      const c1 = Conjunction.create([universeRange], ignore);
       assert.isTrue(c1.isUniverse());
 
       // Actually universe
-      const c2 = Conjunction.create([universeRange, universeRange3]);
+      const c2 = Conjunction.create([universeRange, universeRange3], ignore);
       assert.isTrue(c2.isUniverse());
 
       // Not empty
-      const c3 = Conjunction.create([range1, range3]);
+      const c3 = Conjunction.create([range1, range3], ignore);
       assert.isFalse(c3.isUniverse());
     });
   });
 
   it('intersect()', () => {
-    const c1 = Conjunction.create([range0, range1, range2, range3]);
-    const c2 = Conjunction.create([range1b, range2b, range3b, range4]);
+    const c1 = Conjunction.create([range0, range1, range2, range3], ignore);
+    const c2 = Conjunction.create([range1b, range2b, range3b, range4], ignore);
 
     // Expect empty set since range2 and range2b don't overlap.
     const r1 = c1.intersect(c2);
     assert.equal(r1.dimensions.length, 1);
     assert.equal(r1.dimensions[0].range.toString(), '[  ]');
 
-    const c3 = Conjunction.create([range1b, range3b, range4]);
+    const c3 = Conjunction.create([range1b, range3b, range4], ignore);
     const r2 = c1.intersect(c3);
     assert.equal(r2.dimensions.length, 5);
     assert.equal(r2.dimensions[0].range.toString(), '[ 10-20 ]');
@@ -153,7 +155,7 @@ describe('Conjunction', () => {
 
   // complement()
   it('complement()', () => {
-    const c1 = Conjunction.create([range1, range2, range3]);
+    const c1 = Conjunction.create([range1, range2, range3], ignore);
     const notC1 = c1.complement();
 
     assert.equal(notC1.conjunctions.length, 3);

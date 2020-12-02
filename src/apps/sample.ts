@@ -70,12 +70,14 @@ function go() {
 
   const ruleSpecs1: RuleSpecEx[] = [
     {
+      id: 1,
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
       protocol: 'TCP,UDP',
     },
     {
+      id: 2,
       action: ActionType.DENY,
       priority: 10,
       destinationIp: '10.10.10.0/24',
@@ -86,18 +88,21 @@ function go() {
 
   const ruleSpecs2: RuleSpecEx[] = [
     {
+      id: 3,
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
       protocol: 'TCP',
     },
     {
+      id: 4,
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
       protocol: 'UDP',
     },
     {
+      id: 5,
       action: ActionType.DENY,
       priority: 10,
       destinationIp: '10.10.10.0/24',
