@@ -8,17 +8,21 @@
   * Other files use this pattern
   * May want analogous method for Conjunction
 * Rule attribution
+  * Rule list formatting
+      * Config object selects line number vs rule number
+      * Dealing with policy vs contract rules - what happens when they are comingled?
   * Fix unit tests
     * Issue is rules attribution display
       * Perhaps remove rules from format()?
       * Perhaps have optional config object with prefix, and showRules?
   * Consider using DRange instead of Set<number>
-    * Cons: linear time instead of log, could use Set<RuleSpec> instead.
-    * Pros: better formatting, perhaps quicker for small sets, less code
-    * If we use Set<RuleSpec> we can
+    * x Cons: linear time instead of log, could use Set<RuleSpec> instead.
+    * x Pros: better formatting, perhaps quicker for small sets, less code
+    * . If we use Set<RuleSpec> we can
       * Abstract out id vs line number difference - both can be in RuleSpec
-      * Formatter can still use DRange on line numbers, rule numbers, etc.
-      * RuleSpec can either be wrapped by or contain an object with meta data from the parser. Might want to use reserved symbol name class (e.g. starts with _)
+      * x Formatter can still use DRange on line numbers, rule numbers, etc.
+      * RuleSpec can either be wrapped by or contain an object with meta data from the parser.
+        * Might want to use reserved symbol name class (e.g. starts with _)
   * x Line numbers from .txt
   * x Line numbers from .csv
   * Line numbers from YAML

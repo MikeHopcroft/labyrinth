@@ -3,7 +3,7 @@ import DRange from 'drange';
 import 'mocha';
 
 import {Dimension, DimensionType} from '../../src/dimensions';
-import {Conjunction, DimensionedRange} from '../../src/setops';
+import {Conjunction, DimensionedRange, RuleSpec} from '../../src/setops';
 
 const dimension0Type = new DimensionType({
   name: 'test0',
@@ -72,7 +72,7 @@ const emptyRange = new DimensionedRange(dimension2, new DRange());
 const universeRange = new DimensionedRange(dimension2, dimension2.type.domain);
 const universeRange3 = new DimensionedRange(dimension3, dimension3.type.domain);
 
-const ignore = new Set<number>();
+const ignore = new Set<RuleSpec>();
 
 describe('Conjunction', () => {
   describe('create()', () => {

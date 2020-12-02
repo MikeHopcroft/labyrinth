@@ -1,16 +1,18 @@
 import {Dimension} from '../dimensions';
+import DRange from 'drange';
 import {combineSets} from '../utilities';
 
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
+import {RuleSpec} from './ruleSpec';
 import {setopsTelemetry} from './telemetry';
 
 // Represents a Conjunction of DRanges associated with Dimensions.
 export class Conjunction {
   dimensions: DimensionedRange[];
-  rules: Set<number>;
+  rules: Set<RuleSpec>;
 
-  static create(dimensions: DimensionedRange[], rules: Set<number>) {
+  static create(dimensions: DimensionedRange[], rules: Set<RuleSpec>) {
     // Verify dimensions are in increaing order, no duplicates
     for (let i = 0; i < dimensions.length - 1; ++i) {
       if (dimensions[i].dimension.id >= dimensions[i + 1].dimension.id) {
@@ -39,7 +41,7 @@ export class Conjunction {
 
   // TODO: REVIEW: what is use case for constructor other than call from Factory?
   // Can the two be combined?
-  private constructor(dimensions: DimensionedRange[], rules: Set<number>) {
+  private constructor(dimensions: DimensionedRange[], rules: Set<RuleSpec>) {
     setopsTelemetry.increment('Conjunction');
     this.dimensions = dimensions;
     this.rules = rules;
@@ -137,7 +139,12 @@ export class Conjunction {
 
   format(prefix = ''): string {
     const lines = this.dimensions.map(d => d.format(prefix));
-    // lines.unshift(`${prefix}Rules: ${[...this.rules.values()]}`);
+
+    const ids = [...this.rules.values()].map(x => x.id);
+    const range = new DRange();
+    ids.map(x => {range.add(x)});
+    const idText = range.toString().slice(2, -2);
+    lines.unshift(`${prefix}Rules: ${idText}`);
     return lines.join('\n');
   }
 }

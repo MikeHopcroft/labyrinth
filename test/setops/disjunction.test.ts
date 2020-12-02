@@ -8,6 +8,7 @@ import {
   Conjunction,
   DimensionedRange,
   Disjunction,
+  RuleSpec,
 } from '../../src/setops';
 
 import {disjunctionValues} from '../shared';
@@ -46,7 +47,7 @@ const range1 = new DimensionedRange(dimension1, new DRange(10, 20));
 const universeRange1 = new DimensionedRange(dimension1, dimension1.type.domain);
 const emptyRange1 = new DimensionedRange(dimension1, new DRange());
 
-const ignore = new Set<number>();
+const ignore = new Set<RuleSpec>();
 
 describe('Disjunction', () => {
   describe('create()', () => {

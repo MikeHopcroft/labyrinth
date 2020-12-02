@@ -220,7 +220,7 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   const {action, id, priority, ...rest} = spec;
   let conjunction = Conjunction.create(
     [],
-    new Set<number>([id])
+    new Set([spec])
   );
 
   for (const key of Object.getOwnPropertyNames(rest)) {
@@ -235,7 +235,7 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
     conjunction = conjunction.intersect(
       Conjunction.create(
         [new DimensionedRange(dimension, dimension.parse(value))],
-        new Set<number>()
+        new Set<RuleSpec>()
     ));
   }
 
