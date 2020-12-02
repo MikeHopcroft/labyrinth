@@ -1,6 +1,24 @@
 # TODO
 
+* Rule attribution
+  * Line numbers from .txt
+  * Line numbers from .csv
+  * Line numbers from YAML
+    * How to deal with multiple tags on the same line?
+  * Rule numbers
+  * Rule attribution in Conjunction constructor and algebra
+  * Formatting rule attribution
+    * Line numbers
+    * Rule numbers
+* Redundant rules
 * README.md
+* Set up Travis
+  * CI badge
+* Set up NYC
+  * CC badge
+* Which is clearer?
+  * 171.64.80.0-171.64.127.255
+  * 171.64.80.0/20,171.64.96.0/19
 * . Try out more realistic example from paper
 * Rule models other than firewall
 * Consider JSDoc comments
@@ -20,14 +38,14 @@
 * Fuzzer and benchmarks
 * . Cisco-like parser and rules evaluator
 * Split lookup table and dimension table
-* Add TCP flags:
-  * established
-  * RST
-  * ACK
-  * FIN-ACK
-  * PSH-ACK
-  * RST-ACK
-  * URG-ACK
+* . Add TCP flags:
+  * established - TODO: encode established
+  * . RST
+  * . ACK
+  * . FIN-ACK
+  * . PSH-ACK
+  * . RST-ACK
+  * . URG-ACK
 * ? Protocols should not be case-sensitive
 * x Symbols should be able to have values like 'all' and '*'
 * x Action synonym 'permit'
@@ -38,6 +56,7 @@
     * Compare rules1 and rules2 - drift
     * Test rules2 against rules1 - contract validation
     * Redundant rules
+    * Rule attribution (which rule contributed to this expression)
 * dimension_types.ts:
   * // TODO: what if multiple symbols define the same range?
   * x // TODO: disallow `action`, `priority`, etc. For dimension keys.

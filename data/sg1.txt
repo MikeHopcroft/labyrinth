@@ -1,4 +1,4 @@
-action protocol destinationIp sourceIp destinationPort
+action protocol sourceIp destinationIp destinationPort
 # Isolating private addresses
 deny ip 0.0.0.0/32 any
 deny ip 10.0.0.0/8 any

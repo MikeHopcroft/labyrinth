@@ -180,6 +180,24 @@ export const firewallSpec: UniverseSpec = {
         {symbol: 'reserved', range: '255'},
       ],
     },
+    {
+      name: 'tcp flags',
+      key: 'flags',
+      parser: 'default',
+      formatter: 'default',
+      domain: '0-8',
+      values: [
+        {symbol: 'FIN', range: '0'},
+        {symbol: 'SYN', range: '1'},
+        {symbol: 'RST', range: '2'},
+        {symbol: 'PSH', range: '3'},
+        {symbol: 'ACK', range: '4'},
+        {symbol: 'URG', range: '5'},
+        {symbol: 'ECE', range: '6'},
+        {symbol: 'CWR', range: '7'},
+        {symbol: 'NS', range: '8'},
+      ],
+    },
   ],
   dimensions: [
     {
