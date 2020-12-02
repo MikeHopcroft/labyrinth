@@ -1,6 +1,5 @@
 import commandLineUsage from 'command-line-usage';
-import { Section } from 'command-line-usage';
-import { evaluate } from 'fp-ts/lib/State';
+import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
 
@@ -27,7 +26,11 @@ function main() {
     if (args.m === 'firstApplicable' || args.m === 'f') {
       console.log('Mode is firstApplicable.');
       evaluator = firstApplicable;
-    } else if (args.m === undefined || args.m === 'denyOverrides' || args.m === 'd') {
+    } else if (
+      args.m === undefined ||
+      args.m === 'denyOverrides' ||
+      args.m === 'd'
+    ) {
       console.log('Mode is denyOverrides.');
       evaluator = firstApplicable;
     } else {
@@ -35,11 +38,11 @@ function main() {
       throw new TypeError(message);
     }
     console.log();
-  
+
     // Initialize universe.
-    const universe = (args.u) ?
-      Universe.fromYamlFile(args.u)!:
-      new Universe(firewallSpec);
+    const universe = args.u
+      ? Universe.fromYamlFile(args.u)!
+      : new Universe(firewallSpec);
 
     // Load rules1.
     const rules1 = loadRulesFile(universe, args._[0]);
@@ -98,13 +101,11 @@ function showUsage() {
   const usage: Section[] = [
     {
       header: 'Network rule analysis tool',
-      content: `Utility for analyzing network security rules.`,
+      content: 'Utility for analyzing network security rules.',
     },
     {
       header: 'Usage',
-      content: [
-        `node ${program} {underline <rules>} [...options]`,
-      ],
+      content: [`node ${program} {underline <rules>} [...options]`],
     },
     {
       header: 'Required Parameters',
@@ -124,15 +125,15 @@ function showUsage() {
           alias: 'c',
           typeLabel: '{underline <contract>}',
           description:
-            `Compare the rule set in {underline <contract>} with those in {underline <rules>}.\n`,
+            'Compare the rule set in {underline <contract>} with those in {underline <rules>}.\n',
         },
         {
           name: 'mode',
           alias: 'm',
           typeLabel: '{underline <mode>}',
           description:
-            `Defines the rule evaluation strategy. Choices are {underline denyOverrides}` +
-            `and {underline firstApplicable}. Defaults to {underline denyOverrides}.`,
+            'Defines the rule evaluation strategy. Choices are {underline denyOverrides}' +
+            'and {underline firstApplicable}. Defaults to {underline denyOverrides}.',
         },
         {
           name: 'universe',
@@ -150,10 +151,9 @@ function showUsage() {
         {
           name: 'telemetry',
           alias: 't',
-          description: `Display telemetry on boolean expression complexity.`,
+          description: 'Display telemetry on boolean expression complexity.',
           type: Boolean,
         },
-
       ],
     },
   ];

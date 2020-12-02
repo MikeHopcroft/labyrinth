@@ -60,6 +60,9 @@ export class Dimension {
 
     // DESIGN NOTE: passing empty rules list because parser is only intended
     // to be used in contexts where rules list is known, e.g. parseRuleSpec().
-    return Conjunction.create([new DimensionedRange(this, range)], new Set<number>());
+    return Conjunction.create(
+      [new DimensionedRange(this, range)],
+      new Set<number>()
+    );
   }
 }

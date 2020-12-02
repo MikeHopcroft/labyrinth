@@ -1,10 +1,9 @@
 import {Disjunction} from '../setops';
 
-import {ActionType, Rule} from './types';
+import {Rule} from './rule';
+import {ActionType} from './ruleSpec';
 
-export function firstApplicable(
-  rules: Rule[],
-): Disjunction { 
+export function firstApplicable(rules: Rule[]): Disjunction {
   return buildExpression(0, rules);
 }
 

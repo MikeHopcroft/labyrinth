@@ -1,19 +1,23 @@
 import DRange from 'drange';
 import * as t from 'io-ts';
 
+import {isValidIdentifier} from '../utilities';
+
+import {DimensionFormatter} from './dimension';
+
 import {
   createFormatter,
   createIpFormatter,
   createNumberSymbolFormatter,
+} from './formatters';
+
+import {
   createParser,
-  DimensionFormatter,
   parseIpOrSymbol,
   parseNumberOrSymbol,
   ParseToDRange,
-} from '../dimensions';
-import { DimensionSpecType } from './dimension';
+} from './parsers';
 
-import {isValidIdentifier} from './ecmascript-6';
 
 export const DimensionTypeSpecType = t.type({
   name: t.string,

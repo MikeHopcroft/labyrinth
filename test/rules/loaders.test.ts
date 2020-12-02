@@ -1,10 +1,15 @@
-import { assert } from 'chai';
+import {assert} from 'chai';
 import 'mocha';
 
-// import { DimensionType } from '../../src/dimensions';
 import {Universe} from '../../src/dimensions';
-import {denyOverrides, firstApplicable, loadCsvRulesString} from '../../src/rules';
-import {firewallSpec} from '../../src/specs'
+
+import {
+  denyOverrides,
+  firstApplicable,
+  loadCsvRulesString,
+} from '../../src/rules';
+
+import {firewallSpec} from '../../src/specs';
 
 const universe = new Universe(firewallSpec);
 

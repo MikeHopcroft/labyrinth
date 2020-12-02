@@ -1,22 +1,22 @@
 // import * as csv from 'fast-csv';
-import csv from 'csv-parse/lib/sync'
+import csv from 'csv-parse/lib/sync';
 import fs from 'fs';
 import yaml from 'js-yaml';
 import path from 'path';
 
+import {Universe} from '../dimensions';
+import {Conjunction} from '../setops';
+import {PeekableSequence, validate} from '../utilities';
 
-import { Universe } from '../dimensions';
-import { Conjunction } from '../setops';
-import { PeekableSequence, validate } from '../utilities';
+import {Rule} from './rule';
 
 import {
-  Rule,
   RuleSpec,
   RuleSpecSet,
   ruleSpecType,
   ruleSpecSetType,
   ruleSpecNoIdSetType,
-} from './types';
+} from './ruleSpec';
 
 export function loadRulesFile(
   universe: Universe,
@@ -46,7 +46,7 @@ export function loadRulesFile(
  * @param {Universe} universe - provides definitions for the
  *  dimensions referenced by the rules file.
  * @param {string} filename - path to the rules file to be loaded
- * 
+ *
  * The rules file consists of a sequence of rows, each of which is
  * a space-separated sequence of fields. The first row defines the
  * key of the fields filled by the remaining rows. The field keys
@@ -54,21 +54,18 @@ export function loadRulesFile(
  * that the field keys can appear in any order. There is no requirement
  * to include keys for all of the Dimensions, but a key cannot appear
  * in more than one field.
- * 
+ *
  * Blank lines and lines starting with # and remark are considered
  * comments.
- * 
+ *
  * @example foobar
  * # The first non-comment row defines the dimension keys
  * action, sourceIp, sourcePort, protocol
  * # The remaining lines define the field values
  * allow 127.0.0.0/8 80 tcp
  * deny any 53 any
-  */
-export function loadTxtRulesFile(
-  universe: Universe,
-  filename: string
-): Rule[] {
+ */
+export function loadTxtRulesFile(universe: Universe, filename: string): Rule[] {
   const text = fs.readFileSync(filename, 'utf-8');
   return loadTxtRulesString(universe, text);
 }
@@ -83,7 +80,10 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
     throw new TypeError(message);
   }
 
-  const headers = lines.get().split(/\s+/).map(x => x.trim());
+  const headers = lines
+    .get()
+    .split(/\s+/)
+    .map(x => x.trim());
   const dedupe = new Set<string>();
   for (const key of headers) {
     if (dedupe.has(key)) {
@@ -100,8 +100,11 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
       break;
     }
 
-    const lineObject: { [key: string]: string | number } = {};
-    const fields = lines.get().split(/\s+/).map(x => x.trim());
+    const lineObject: {[key: string]: string | number} = {};
+    const fields = lines
+      .get()
+      .split(/\s+/)
+      .map(x => x.trim());
     for (const [column, value] of fields.entries()) {
       const key = headers[column];
       if (key === undefined) {
@@ -119,7 +122,7 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
     }
 
     if (lineObject.id !== undefined) {
-      const message = `Illegal column: "id".`;
+      const message = 'Illegal column: "id".';
       throw new TypeError(message);
     }
     lineObject.id = lines.position();
@@ -135,7 +138,11 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
 function skipComments(lines: PeekableSequence<string>) {
   while (!lines.atEOS()) {
     const line = lines.peek().trim();
-    if (line.startsWith('#') || line.startsWith('remark') || line.length === 0) {
+    if (
+      line.startsWith('#') ||
+      line.startsWith('remark') ||
+      line.length === 0
+    ) {
       lines.get();
     } else {
       break;
@@ -143,51 +150,40 @@ function skipComments(lines: PeekableSequence<string>) {
   }
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // CSV format loader
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export function loadCsvRulesFile(
-  universe: Universe,
-  filename: string
-): Rule[] {
+export function loadCsvRulesFile(universe: Universe, filename: string): Rule[] {
   const text = fs.readFileSync(filename, 'utf-8');
   return loadCsvRulesString(universe, text);
 }
 
-export function loadCsvRulesString(
-  universe: Universe,
-  text: string
-): Rule[] {
-  const rules = csv(
-    text,
-    {
-      columns: true,
-      relax_column_count_less: true,
-      skipEmptyLines: true,
-      trim: true,
-    }
-  ).map((rule: any, id: number) => {
+export function loadCsvRulesString(universe: Universe, text: string): Rule[] {
+  const rules = csv(text, {
+    columns: true,
+    relax_column_count_less: true,
+    skipEmptyLines: true,
+    trim: true,
+  }).map((rule: any, id: number) => {
     // TODO: REVIEW: why wouldn't CSV be used for DenyOverride?
     // (which uses priority)
     if (rule.priority !== undefined) {
-      const message = `Illegal column: "priority".`;
+      const message = 'Illegal column: "priority".';
       throw new TypeError(message);
     }
     if (rule.id !== undefined) {
-      const message = `Illegal column: "id".`;
+      const message = 'Illegal column: "id".';
       throw new TypeError(message);
     }
-    return { ...rule, id, priority: 1 };
+    return {...rule, id, priority: 1};
   });
 
-  const spec = validate(ruleSpecSetType, { rules });
+  const spec = validate(ruleSpecSetType, {rules});
   return spec.rules.map(r => parseRuleSpec(universe, r));
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -203,15 +199,12 @@ export function loadYamlRulesFile(
   return loadYamlRulesString(universe, text);
 }
 
-export function loadYamlRulesString(
-  universe: Universe,
-  text: string
-): Rule[] {
+export function loadYamlRulesString(universe: Universe, text: string): Rule[] {
   const root = yaml.safeLoad(text);
   const spec = validate(ruleSpecNoIdSetType, root) as RuleSpecSet;
   const rules = spec.rules.map((r, i) => {
     if (r.id !== undefined) {
-      const message = `Illegal field: "id".`;
+      const message = 'Illegal field: "id".';
       throw new TypeError(message);
     }
     r.id = i;
@@ -222,8 +215,11 @@ export function loadYamlRulesString(
 
 // TODO: Consider moving to Rule.constructor().
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
-  const { action, id, priority, ...rest } = spec;
-  let conjunction = Conjunction.create([], new Set<number>([id]));
+  const {action, id, priority, ...rest} = spec;
+  let conjunction = Conjunction.create(
+    [],
+    new Set<number>([id])
+  );
 
   for (const key of Object.getOwnPropertyNames(rest)) {
     const dimension = universe.get(key);
@@ -237,5 +233,5 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
     conjunction = conjunction.intersect(dimension.parse(value));
   }
 
-  return { action, priority, conjunction };
+  return {action, priority, conjunction};
 }

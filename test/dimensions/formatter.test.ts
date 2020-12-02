@@ -9,7 +9,6 @@ import {
   DimensionType,
   formatDRange,
   parseNumberOrSymbol,
-  tryGetCIDR,
 } from '../../src/dimensions';
 
 const ipType = new DimensionType({
@@ -79,11 +78,7 @@ describe('Formatters', () => {
         // because it wasn't checking that the high order bits were
         // identical.
         assert.equal(
-          formatter(
-            '',
-            0x50.toString(),
-            0x7f.toString()
-          ),
+          formatter('', (0x50).toString(), (0x7f).toString()),
           `${ip.fromLong(0x50)}-${ip.fromLong(0x7f)}`
         );
       });

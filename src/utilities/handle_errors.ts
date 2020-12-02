@@ -8,14 +8,14 @@ export function handleError(e: any) {
   if (e.name === 'YAMLException') {
     message = `invalid YAML - ${e.reason}`;
   } else if (e.name === 'YAML Validation Error') {
-    message = `YAML does not conform to schema`;
+    message = 'YAML does not conform to schema';
   } else {
     switch (e.code) {
       case 'ENOENT':
         message = `cannot ${e.syscall} "${e.path}".`;
         break;
       case 'EISDIR':
-        message = `directory found when file was expected.`;
+        message = 'directory found when file was expected.';
         break;
       default:
         message = e.message || 'unknown error';

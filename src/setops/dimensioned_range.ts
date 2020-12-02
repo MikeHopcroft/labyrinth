@@ -1,6 +1,6 @@
 import DRange from 'drange';
 
-import {Dimension} from '../dimensions/dimension';
+import {Dimension} from '../dimensions';
 
 import {setopsTelemetry} from './telemetry';
 

@@ -1,12 +1,12 @@
 import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
 
-import { Dimension } from '../dimensions';
+import {Dimension} from '../dimensions';
 import {combineSets} from '../utilities';
 
-import { Conjunction } from './conjunction';
-import { DimensionedRange } from './dimensioned_range';
-import { Disjunction } from './disjunction';
+import {Conjunction} from './conjunction';
+import {DimensionedRange} from './dimensioned_range';
+import {Disjunction} from './disjunction';
 
 // See also this article on boolean expression simplification.
 //   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
@@ -30,7 +30,7 @@ export interface FactorEntry {
 
 // Can't define a type alias here because we want to be able to use new.
 //   https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
-class KeyToFactorEntry extends Map<string, FactorEntry> { }
+class KeyToFactorEntry extends Map<string, FactorEntry> {}
 
 export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   const index = new KeyToFactorEntry();
@@ -67,7 +67,7 @@ export function createConjunctionInfo(
   conjunction: Conjunction
 ): ConjunctionInfo {
   const factors: FactorInfo[] = [];
-  const info: ConjunctionInfo = { conjunction, factors };
+  const info: ConjunctionInfo = {conjunction, factors};
 
   let i = 0;
   const lines: string[] = [];
@@ -87,7 +87,7 @@ export function createConjunctionInfo(
 
   for (const [i, dimension] of dimensions.entries()) {
     const save = lines[i];
-    lines[i] = `[${dimension.key}]`;//'';
+    lines[i] = `[${dimension.key}]`; //'';
     const key = lines.join('\n');
     factors.push({
       key,
@@ -111,7 +111,9 @@ function combine(
   // Make new, combined conjunction
   //
 
-  const rules = combineSets([...entry.conjunctions.values()].map(c => c.conjunction.conjunction.rules));
+  const rules = combineSets(
+    [...entry.conjunctions.values()].map(c => c.conjunction.conjunction.rules)
+  );
 
   // First merge ranges that are on entry.dimension.
   const dimension = entry.dimension;

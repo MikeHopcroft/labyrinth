@@ -1,5 +1,5 @@
 export * from './dimension';
 export * from './dimension_type';
 export * from './formatters';
-export * from './parser';
+export * from './parsers';
 export * from './universe';

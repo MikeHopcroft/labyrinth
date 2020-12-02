@@ -8,8 +8,9 @@ import {
   Conjunction,
   DimensionedRange,
   Disjunction,
-  disjunctionValues,
 } from '../../src/setops';
+
+import {disjunctionValues} from '../shared';
 
 const dimension1Type = new DimensionType({
   name: 'test1',

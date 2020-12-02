@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {crossProduct} from '../../src/setops';
+import {crossProduct} from './utilities';
 
 describe('Utilities', () => {
   it('crossProduct()', () => {

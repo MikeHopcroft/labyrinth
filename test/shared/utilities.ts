@@ -1,6 +1,5 @@
-import {Conjunction} from './conjunction';
-import {Dimension} from '../dimensions/dimension';
-import {Disjunction} from './disjunction';
+import {Dimension} from '../../src/dimensions';
+import {Conjunction, Disjunction} from '../../src/setops';
 
 export function disjunctionValues(
   dimensions: Dimension[],
@@ -15,7 +14,7 @@ export function disjunctionValues(
   return values;
 }
 
-export function* conjunctionValues(
+function* conjunctionValues(
   dimensions: Dimension[],
   conjunction: Conjunction
 ): IterableIterator<number[]> {

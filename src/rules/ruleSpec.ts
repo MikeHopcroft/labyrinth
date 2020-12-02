@@ -31,12 +31,16 @@ export const ruleSpecType = t.intersection([
   ruleSpecNoIdType,
   t.type({
     id: t.number,
-  })
+  }),
 ]);
 
 export type RuleSpec = t.TypeOf<typeof ruleSpecType>;
 
-export const RuleSpecReservedWords = new Set<string>(['action', 'id', 'priority']);
+export const RuleSpecReservedWords = new Set<string>([
+  'action',
+  'id',
+  'priority',
+]);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RuleSpecEx = RuleSpec & {[others: string]: any};
@@ -50,9 +54,3 @@ export const ruleSpecSetType = t.type({
 });
 
 export type RuleSpecSet = t.TypeOf<typeof ruleSpecSetType>;
-
-export interface Rule {
-  action: ActionType;
-  priority: number;
-  conjunction: Conjunction;
-}

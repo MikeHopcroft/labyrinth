@@ -1,6 +1,7 @@
 import {Disjunction} from '../setops';
 
-import {ActionType, Rule} from './types';
+import {Rule} from './rule';
+import {ActionType} from './ruleSpec';
 
 interface RuleGroup {
   priority: number;
@@ -25,7 +26,7 @@ export function denyOverrides(rules: Rule[]): Disjunction {
     }
     if (r.action === ActionType.ALLOW) {
       groups[groups.length - 1].allow.push(r);
-    } else if (r.action === ActionType.DENY){
+    } else if (r.action === ActionType.DENY) {
       groups[groups.length - 1].deny.push(r);
     } else {
       const message = `Illegal action: ${r.action}.`;

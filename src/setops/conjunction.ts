@@ -137,7 +137,7 @@ export class Conjunction {
 
   format(prefix = ''): string {
     const lines = this.dimensions.map(d => d.format(prefix));
-    lines.unshift(`${prefix}Rules: ${[...this.rules.values()]}`);
+    // lines.unshift(`${prefix}Rules: ${[...this.rules.values()]}`);
     return lines.join('\n');
   }
 }
