@@ -1,8 +1,13 @@
 import {Dimension, Universe, UniverseSpec} from '../dimensions';
+import {denyOverrides, parseRuleSpec} from '../loaders';
 
-import {ActionType, denyOverrides, parseRuleSpec, RuleSpecEx} from '../rules';
-
-import {setopsTelemetry, simplify, Snapshot} from '../setops';
+import {
+  ActionType,
+  RuleSpecEx,
+  setopsTelemetry,
+  simplify,
+  Snapshot
+} from '../setops';
 
 const universeSpec: UniverseSpec = {
   types: [

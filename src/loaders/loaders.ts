@@ -5,18 +5,20 @@ import yaml from 'js-yaml';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {Conjunction} from '../setops';
-import {PeekableSequence, validate} from '../utilities';
-
-import {Rule} from './rule';
 
 import {
+  Conjunction,
+  DimensionedRange,
   RuleSpec,
   RuleSpecSet,
   ruleSpecType,
   ruleSpecSetType,
   ruleSpecNoIdSetType,
-} from './ruleSpec';
+} from '../setops';
+
+import {PeekableSequence, validate} from '../utilities';
+
+import {Rule} from './rule';
 
 export function loadRulesFile(
   universe: Universe,
@@ -230,7 +232,11 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
       const message = `${key}: expected a string value.`;
       throw new TypeError(message);
     }
-    conjunction = conjunction.intersect(dimension.parse(value));
+    conjunction = conjunction.intersect(
+      Conjunction.create(
+        [new DimensionedRange(dimension, dimension.parse(value))],
+        new Set<number>()
+    ));
   }
 
   return {action, priority, conjunction};

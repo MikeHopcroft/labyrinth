@@ -1,8 +1,6 @@
 import DRange from 'drange';
 import * as t from 'io-ts';
 
-import {Conjunction, DimensionedRange} from '../setops';
-
 import {DimensionType} from './dimension_type';
 
 // TODO: consider making IdGenerator into a function.
@@ -55,14 +53,7 @@ export class Dimension {
     this.id = (idGenerator || Dimension.idGenerator).next();
   }
 
-  parse(text: string): Conjunction {
-    const range = this.type.parser(text);
-
-    // DESIGN NOTE: passing empty rules list because parser is only intended
-    // to be used in contexts where rules list is known, e.g. parseRuleSpec().
-    return Conjunction.create(
-      [new DimensionedRange(this, range)],
-      new Set<number>()
-    );
+  parse(text: string): DRange {
+    return this.type.parser(text);
   }
 }

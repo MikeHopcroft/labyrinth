@@ -1,6 +1,6 @@
 import {Conjunction} from '../setops';
 
-import {ActionType} from './ruleSpec';
+import {ActionType} from '../setops';
 
 export interface Rule {
   action: ActionType;

@@ -4,7 +4,7 @@ import minimist from 'minimist';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {denyOverrides, firstApplicable, loadRulesFile, Rule} from '../rules';
+import {denyOverrides, firstApplicable, loadRulesFile, Rule} from '../loaders';
 import {Disjunction, simplify} from '../setops';
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';

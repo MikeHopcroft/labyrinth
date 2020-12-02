@@ -7,7 +7,7 @@ import {
   denyOverrides,
   firstApplicable,
   loadCsvRulesString,
-} from '../../src/rules';
+} from '../../src/loaders';
 
 import {firewallSpec} from '../../src/specs';
 

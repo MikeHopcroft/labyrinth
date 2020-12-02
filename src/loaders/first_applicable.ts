@@ -1,7 +1,7 @@
 import {Disjunction} from '../setops';
 
 import {Rule} from './rule';
-import {ActionType} from './ruleSpec';
+import {ActionType} from '../setops';
 
 export function firstApplicable(rules: Rule[]): Disjunction {
   return buildExpression(0, rules);

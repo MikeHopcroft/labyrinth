@@ -1,7 +1,5 @@
 import * as t from 'io-ts';
 
-import {Conjunction} from '../setops';
-
 // createEnum() from https://github.com/gcanti/io-ts/issues/67
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createEnum = <E>(e: any, name: string): t.Type<E> => {

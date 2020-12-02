@@ -3,15 +3,18 @@ import 'mocha';
 
 import {Universe, UniverseSpec} from '../../src/dimensions';
 
-import {
-  ActionType,
+import {  
   denyOverrides,
   parseRuleSpec,
   Rule,
-  RuleSpecEx,
-} from '../../src/rules';
+} from '../../src/loaders';
 
-import {createConjunctionInfo, simplify} from '../../src/setops';
+import {
+  ActionType,
+  createConjunctionInfo,
+  RuleSpecEx,
+  simplify
+} from '../../src/setops';
 
 const universeSpec: UniverseSpec = {
   types: [
