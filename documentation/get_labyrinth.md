@@ -1,0 +1,20 @@
+# Get Labyrinth!
+
+`Labyrinth` is a [Node.js](https://nodejs.org/en/) project,
+written in [TypeScript](https://www.typescriptlang.org/).
+In order to use `labyrinth` you must have
+[Node](https://nodejs.org/en/download/) installed on your machine.
+`labyrinth` has been tested with Node version [13.7.0](https://nodejs.org/download/release/v13.7.0/).
+
+## Building Labyrinth from Sources
+
+~~~
+% git clone git@github.com:MikeHopcroft/labyrinth.git
+% cd labyrinth
+% npm install
+% npm run compile
+~~~
+
+## Installing Labyrinth from NPM
+
+NPM instructions coming soon!
