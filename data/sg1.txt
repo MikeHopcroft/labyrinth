@@ -8,6 +8,7 @@ deny ip 192.0.2.0/24 any
 # Anti spoofing ACLs
 deny ip 128.30.0.0/15 any
 deny ip 171.64.0.0/15 any
+deny ip 171.64.0.0/20 any
 # ...
 # permits for IPs without port and protocol blocks
 allow ip any 171.64.64.0/20

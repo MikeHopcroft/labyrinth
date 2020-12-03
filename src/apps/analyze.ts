@@ -4,11 +4,12 @@ import minimist from 'minimist';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {denyOverrides, firstApplicable, loadRulesFile, Rule} from '../loaders';
+import {denyOverrides, detectRedundantRules, firstApplicable, loadRulesFile, Rule} from '../loaders';
 
 import {
   Disjunction,
   FormatAttribution,
+  formatRules,
   FormattingOptions,
   simplify
 } from '../setops';
@@ -68,6 +69,8 @@ function main() {
     const r1 = simplify(universe.dimensions, evaluator(rules1));
 
     if (args.c) {
+      console.log('============ Contract Validation Report ============');
+
       const rules2 = loadRulesFile(universe, args.c, { source: 'contract'});
       const r2 = simplify(universe.dimensions, evaluator(rules2));
 
@@ -103,9 +106,16 @@ function main() {
       }
       console.log();
     } else {
+      console.log('============ Policy Report ============');
       console.log('Allowed routes:');
       console.log(r1.format(formatOptions));
       console.log();
+    }
+
+    if (args.r) {
+      console.log('============ Redundant Rules Report ============');
+      const policySpecs = detectRedundantRules(universe, evaluator, rules1);
+      console.log(`Redundant ${formatRules(new Set(policySpecs))}`);
     }
   } catch (e) {
     handleError(e);
@@ -171,6 +181,12 @@ function showUsage() {
                         - destination ip
                         - destination port
                         - protocol\n`,
+          type: Boolean,
+        },
+        {
+          name: 'reduncancy',
+          alias: 'r',
+          description: 'Display list of redundant policy rules.',
           type: Boolean,
         },
         {

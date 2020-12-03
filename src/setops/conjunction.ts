@@ -146,7 +146,7 @@ export class Conjunction {
   }
 }
 
-function formatRules(
+export function formatRules(
   rules: Set<RuleSpec>,
   options: FormattingOptions = {}
 ): string[] {

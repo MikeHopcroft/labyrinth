@@ -275,5 +275,5 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
     ));
   }
 
-  return {action, priority, conjunction};
+  return {action, priority, conjunction, spec};
 }
