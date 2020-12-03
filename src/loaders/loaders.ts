@@ -20,18 +20,23 @@ import {PeekableSequence, validate} from '../utilities';
 
 import {Rule} from './rule';
 
+interface LoaderOptions {
+  extension?: string;
+  source?: string;
+}
+
 export function loadRulesFile(
   universe: Universe,
   file: string,
-  extension: string | undefined = undefined
+  options: LoaderOptions = {}
 ): Rule[] {
-  const e = extension || path.extname(file).toLowerCase();
+  const e = options.extension || path.extname(file).toLowerCase();
   if (['.yaml', '.yml'].includes(e)) {
-    return loadYamlRulesFile(universe, file);
+    return loadYamlRulesFile(universe, file, options);
   } else if (e === '.csv') {
-    return loadCsvRulesFile(universe, file);
+    return loadCsvRulesFile(universe, file, options);
   } else if (e === '.txt') {
-    return loadTxtRulesFile(universe, file);
+    return loadTxtRulesFile(universe, file, options);
   } else {
     const message = 'File extension must be csv, yml, or yaml.';
     throw new TypeError(message);
@@ -67,12 +72,20 @@ export function loadRulesFile(
  * allow 127.0.0.0/8 80 tcp
  * deny any 53 any
  */
-export function loadTxtRulesFile(universe: Universe, filename: string): Rule[] {
+export function loadTxtRulesFile(
+  universe: Universe,
+  filename: string,
+  options: LoaderOptions = {}
+): Rule[] {
   const text = fs.readFileSync(filename, 'utf-8');
-  return loadTxtRulesString(universe, text);
+  return loadTxtRulesString(universe, text, options);
 }
 
-export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
+export function loadTxtRulesString(
+  universe: Universe,
+  text: string,
+  options: LoaderOptions = {}
+): Rule[] {
   let priority = 0;
   const lines = new PeekableSequence(text.split(/\r?\n/).values());
 
@@ -128,6 +141,7 @@ export function loadTxtRulesString(universe: Universe, text: string): Rule[] {
       throw new TypeError(message);
     }
     lineObject.id = lines.position();
+    lineObject.source = options.source || '';
 
     const spec = validate(ruleSpecType, lineObject);
     const rule = parseRuleSpec(universe, spec);
@@ -158,12 +172,20 @@ function skipComments(lines: PeekableSequence<string>) {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-export function loadCsvRulesFile(universe: Universe, filename: string): Rule[] {
+export function loadCsvRulesFile(
+  universe: Universe,
+  filename: string,
+  options: LoaderOptions = {}
+): Rule[] {
   const text = fs.readFileSync(filename, 'utf-8');
-  return loadCsvRulesString(universe, text);
+  return loadCsvRulesString(universe, text, options);
 }
 
-export function loadCsvRulesString(universe: Universe, text: string): Rule[] {
+export function loadCsvRulesString(
+  universe: Universe,
+  text: string,
+  options: LoaderOptions = {}
+): Rule[] {
   const rules = csv(text, {
     columns: true,
     relax_column_count_less: true,
@@ -180,7 +202,11 @@ export function loadCsvRulesString(universe: Universe, text: string): Rule[] {
       const message = 'Illegal column: "id".';
       throw new TypeError(message);
     }
-    return {...rule, id, priority: 1};
+    if (rule.source !== undefined) {
+      const message = 'Illegal column: "source".';
+      throw new TypeError(message);
+    }
+    return {...rule, id, priority: 1, source: options.source || ''};
   });
 
   const spec = validate(ruleSpecSetType, {rules});
@@ -195,13 +221,18 @@ export function loadCsvRulesString(universe: Universe, text: string): Rule[] {
 
 export function loadYamlRulesFile(
   universe: Universe,
-  filename: string
+  filename: string,
+  options: LoaderOptions = {}
 ): Rule[] {
   const text = fs.readFileSync(filename, 'utf8');
-  return loadYamlRulesString(universe, text);
+  return loadYamlRulesString(universe, text, options);
 }
 
-export function loadYamlRulesString(universe: Universe, text: string): Rule[] {
+export function loadYamlRulesString(
+  universe: Universe,
+  text: string,
+  options: LoaderOptions = {}
+): Rule[] {
   const root = yaml.safeLoad(text);
   const spec = validate(ruleSpecNoIdSetType, root) as RuleSpecSet;
   const rules = spec.rules.map((r, i) => {
@@ -209,7 +240,12 @@ export function loadYamlRulesString(universe: Universe, text: string): Rule[] {
       const message = 'Illegal field: "id".';
       throw new TypeError(message);
     }
+    if (r.source !== undefined) {
+      const message = 'Illegal column: "source".';
+      throw new TypeError(message);
+    }
     r.id = i;
+    r.source = options.source || '';
     return parseRuleSpec(universe, r);
   });
   return rules;
@@ -217,7 +253,7 @@ export function loadYamlRulesString(universe: Universe, text: string): Rule[] {
 
 // TODO: Consider moving to Rule.constructor().
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
-  const {action, id, priority, ...rest} = spec;
+  const {action, id, priority, source, ...rest} = spec;
   let conjunction = Conjunction.create(
     [],
     new Set([spec])

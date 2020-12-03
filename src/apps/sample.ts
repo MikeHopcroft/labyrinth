@@ -3,6 +3,7 @@ import {denyOverrides, parseRuleSpec} from '../loaders';
 
 import {
   ActionType,
+  FormattingOptions,
   RuleSpecEx,
   setopsTelemetry,
   simplify,
@@ -73,9 +74,14 @@ function go() {
   const universe = new Universe(universeSpec);
   const dimensionList: Dimension[] = universe.dimensions;
 
+  const formattingOptions: FormattingOptions = {
+    prefix: '  ',
+  };
+
   const ruleSpecs1: RuleSpecEx[] = [
     {
       id: 1,
+      source: 'policy',
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
@@ -83,6 +89,7 @@ function go() {
     },
     {
       id: 2,
+      source: 'policy',
       action: ActionType.DENY,
       priority: 10,
       destinationIp: '10.10.10.0/24',
@@ -94,6 +101,7 @@ function go() {
   const ruleSpecs2: RuleSpecEx[] = [
     {
       id: 3,
+      source: 'policy',
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
@@ -101,6 +109,7 @@ function go() {
     },
     {
       id: 4,
+      source: 'policy',
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
@@ -108,6 +117,7 @@ function go() {
     },
     {
       id: 5,
+      source: 'policy',
       action: ActionType.DENY,
       priority: 10,
       destinationIp: '10.10.10.0/24',
@@ -136,7 +146,7 @@ function go() {
   s.reset();
 
   console.log('Allowed routes in r1:');
-  console.log(r1.format('  '));
+  console.log(r1.format(formattingOptions));
   console.log();
 
   const r1SubR2 = simplify(dimensionList, r1.subtract(r2));
@@ -163,7 +173,7 @@ function go() {
       console.log('All routes in r1 are also in r2.');
     } else {
       console.log('Routes in r1 that are not in r2:');
-      console.log(r1SubR2.format('  '));
+      console.log(r1SubR2.format(formattingOptions));
     }
     console.log();
 
@@ -171,7 +181,7 @@ function go() {
       console.log('All routes in r2 are also in r1.');
     } else {
       console.log('Routes in r2 that are not in r1:');
-      console.log(r2SubR1Simplified.format('  '));
+      console.log(r2SubR1Simplified.format(formattingOptions));
     }
   }
   console.log();

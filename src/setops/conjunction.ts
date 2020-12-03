@@ -4,6 +4,7 @@ import {combineSets} from '../utilities';
 
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
+import {FormattingOptions} from './formatting';
 import {RuleSpec} from './ruleSpec';
 import {setopsTelemetry} from './telemetry';
 
@@ -137,14 +138,37 @@ export class Conjunction {
     );
   }
 
-  format(prefix = ''): string {
-    const lines = this.dimensions.map(d => d.format(prefix));
+  format(options: FormattingOptions = {}): string {
+    const prefix = options.prefix || '';
+    const lines = options.attribution ? formatRules(this.rules, options) : [];
+    this.dimensions.map(d => { lines.push(d.format(prefix)); });
+    return lines.join('\n');
+  }
+}
 
-    const ids = [...this.rules.values()].map(x => x.id);
+function formatRules(
+  rules: Set<RuleSpec>,
+  options: FormattingOptions = {}
+): string[] {
+  // First group specs by source.
+  const sourceToSpecs = new Map<string, RuleSpec[]>();
+  for (const spec of rules.values()) {
+    const specs = sourceToSpecs.get(spec.source);
+    if (specs === undefined) {
+      sourceToSpecs.set(spec.source, [spec]);
+    } else {
+      specs.push(spec);
+    }
+  }
+
+  const prefix = options.prefix || '';
+  const lines: string[] = [];
+  for (const [source, specs] of sourceToSpecs.entries()) {
+    const ids = specs.map(x => x.id);
     const range = new DRange();
     ids.map(x => {range.add(x)});
     const idText = range.toString().slice(2, -2);
-    lines.unshift(`${prefix}Rules: ${idText}`);
-    return lines.join('\n');
+    lines.push(`${prefix}${source} rules: ${idText}`);
   }
+  return lines;
 }

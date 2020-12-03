@@ -1,4 +1,5 @@
 import {Conjunction} from './conjunction';
+import {FormattingOptions} from './formatting';
 import {setopsTelemetry, Snapshot, Telemetry} from './telemetry';
 
 export class Disjunction {
@@ -92,8 +93,8 @@ export class Disjunction {
     return result;
   }
 
-  format(prefix = '') {
-    const lines = this.conjunctions.map(c => c.format(prefix));
+  format(options: FormattingOptions = {}) {
+    const lines = this.conjunctions.map(c => c.format(options));
     return lines.join('\n\n');
   }
 

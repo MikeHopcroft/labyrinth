@@ -29,6 +29,7 @@ export const ruleSpecType = t.intersection([
   ruleSpecNoIdType,
   t.type({
     id: t.number,
+    source: t.string,
   }),
 ]);
 
@@ -37,6 +38,7 @@ export type RuleSpec = t.TypeOf<typeof ruleSpecType>;
 export const RuleSpecReservedWords = new Set<string>([
   'action',
   'id',
+  'source',
   'priority',
 ]);
 

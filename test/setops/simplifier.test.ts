@@ -81,6 +81,7 @@ describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
     const spec: RuleSpecEx = {
       id: 1,
+      source: 'policy',
       action: ActionType.ALLOW,
       priority: 1,
       sourceIp: '127.0.0.1',
@@ -110,6 +111,7 @@ describe('Simplifier', () => {
       const ruleSpecs = [
         {
           id: 1,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
@@ -117,6 +119,7 @@ describe('Simplifier', () => {
         },
         {
           id: 2,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
@@ -124,6 +127,7 @@ describe('Simplifier', () => {
         },
         {
           id: 3,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '3',
@@ -156,12 +160,14 @@ describe('Simplifier', () => {
       const ruleSpecs1 = [
         {
           id: 1,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
         },
         {
           id: 2,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           destinationPort: '101',
@@ -171,12 +177,14 @@ describe('Simplifier', () => {
       const ruleSpecs2 = [
         {
           id: 3,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           destinationPort: '101',
         },
         {
           id: 4,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
@@ -220,12 +228,14 @@ describe('Simplifier', () => {
       const ruleSpecs1 = [
         {
           id: 1,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
         },
         {
           id: 2,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           destinationPort: '101',
@@ -286,6 +296,7 @@ describe('Simplifier', () => {
       const ruleSpecs = [
         {
           id: 1,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1',
@@ -294,6 +305,7 @@ describe('Simplifier', () => {
         },
         {
           id: 2,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '2',
@@ -302,6 +314,7 @@ describe('Simplifier', () => {
         },
         {
           id: 3,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',
@@ -310,6 +323,7 @@ describe('Simplifier', () => {
         },
         {
           id: 4,
+          source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
           sourcePort: '1-2',

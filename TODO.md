@@ -1,5 +1,11 @@
 # TODO
 
+* Detecting redundant rules
+* README.md
+* Set up Travis
+  * CI badge
+* Set up NYC
+  * CC badge
 * loaders.ts
   * // TODO: REVIEW: why wouldn't CSV be used for DenyOverride?
 * disjunction.test.ts
@@ -8,14 +14,14 @@
   * Other files use this pattern
   * May want analogous method for Conjunction
 * Rule attribution
-  * Rule list formatting
-      * Config object selects line number vs rule number
-      * Dealing with policy vs contract rules - what happens when they are comingled?
-  * Fix unit tests
-    * Issue is rules attribution display
-      * Perhaps remove rules from format()?
-      * Perhaps have optional config object with prefix, and showRules?
-  * Consider using DRange instead of Set<number>
+  * x Rule list formatting
+      * x Config object selects line number vs rule number
+      * x Dealing with policy vs contract rules - what happens when they are comingled?
+  * x Fix unit tests
+    * x Issue is rules attribution display
+      * x Perhaps remove rules from format()?
+      * x Perhaps have optional config object with prefix, and showRules?
+  * x Consider using DRange instead of Set<number>
     * x Cons: linear time instead of log, could use Set<RuleSpec> instead.
     * x Pros: better formatting, perhaps quicker for small sets, less code
     * . If we use Set<RuleSpec> we can
@@ -33,12 +39,6 @@
   * Formatting rule attribution
     * Line numbers
     * Rule numbers
-* Redundant rules
-* README.md
-* Set up Travis
-  * CI badge
-* Set up NYC
-  * CC badge
 * Which is clearer?
   * 171.64.80.0-171.64.127.255
   * 171.64.80.0/20,171.64.96.0/19

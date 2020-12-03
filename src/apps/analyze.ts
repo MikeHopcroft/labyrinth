@@ -5,7 +5,14 @@ import path from 'path';
 
 import {Universe} from '../dimensions';
 import {denyOverrides, firstApplicable, loadRulesFile, Rule} from '../loaders';
-import {Disjunction, simplify} from '../setops';
+
+import {
+  Disjunction,
+  FormatAttribution,
+  FormattingOptions,
+  simplify
+} from '../setops';
+
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
 
@@ -32,12 +39,24 @@ function main() {
       args.m === 'd'
     ) {
       console.log('Mode is denyOverrides.');
-      evaluator = firstApplicable;
+      evaluator = denyOverrides;
     } else {
       const message = `Unsupported mode "${args.m}".`;
       throw new TypeError(message);
     }
     console.log();
+
+    const formatOptions: FormattingOptions = {
+      prefix: '  ',
+    }
+    if (args.a === 'id') {
+      formatOptions.attribution = FormatAttribution.RULE_ID;
+    } else if (args.a === 'line' || args.a === true) {
+      formatOptions.attribution = FormatAttribution.LINE_NUMBER;
+    } else if (args.a) {
+      const message = `Unknown attribution option "${args.a}"`;
+      throw new TypeError(message);
+    }
 
     // Initialize universe.
     const universe = args.u
@@ -45,11 +64,11 @@ function main() {
       : new Universe(firewallSpec);
 
     // Load rules1.
-    const rules1 = loadRulesFile(universe, args._[0]);
+    const rules1 = loadRulesFile(universe, args._[0], { source: 'policy'});
     const r1 = simplify(universe.dimensions, evaluator(rules1));
 
     if (args.c) {
-      const rules2 = loadRulesFile(universe, args.c);
+      const rules2 = loadRulesFile(universe, args.c, { source: 'contract'});
       const r2 = simplify(universe.dimensions, evaluator(rules2));
 
       const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));
@@ -63,7 +82,7 @@ function main() {
           console.log('All routes in policy are also in contract.');
         } else {
           console.log('Routes in policy that are not in contract:');
-          console.log(r1SubR2.format('  '));
+          console.log(r1SubR2.format(formatOptions));
         }
         console.log();
 
@@ -71,7 +90,7 @@ function main() {
           console.log('All routes in contract are also in policy.');
         } else {
           console.log('Routes in contract that are not in policy:');
-          console.log(r2SubR1.format('  '));
+          console.log(r2SubR1.format(formatOptions));
         }
         console.log();
 
@@ -79,13 +98,13 @@ function main() {
           console.log('Policy and contract have no routes in common.');
         } else {
           console.log('Routes common to policy and contract:');
-          console.log(r1AndR2.format('  '));
+          console.log(r1AndR2.format(formatOptions));
         }
       }
       console.log();
     } else {
       console.log('Allowed routes:');
-      console.log(r1.format('  '));
+      console.log(r1.format(formatOptions));
       console.log();
     }
   } catch (e) {
@@ -120,6 +139,12 @@ function showUsage() {
     {
       header: 'Options',
       optionList: [
+        {
+          name: 'attribution',
+          alias: 'a',
+          typeLabel: '{underline line|id}',
+          description: 'Display rules attribution.',
+        },
         {
           name: 'contract',
           alias: 'c',
