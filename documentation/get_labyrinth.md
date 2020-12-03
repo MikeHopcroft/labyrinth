@@ -18,3 +18,6 @@ In order to use `labyrinth` you must have
 ## Installing Labyrinth from NPM
 
 NPM instructions coming soon!
+
+---
+### [Next: A Small Example](./a_small_example.md)

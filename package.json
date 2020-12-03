@@ -10,6 +10,7 @@
   "license": "Apache-2.0",
   "keywords": [],
   "scripts": {
+    "docs": "node node_modules/prepress/build/src/apps/prepress.js documentation/src documentation",
     "test": "mocha 'build/test/**/*.js'",
     "lint": "gts lint",
     "clean": "gts clean",
@@ -42,6 +43,7 @@
     "io-ts": "^2.2.12",
     "ip": "^1.1.5",
     "js-yaml": "^3.14.0",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "prepress": "0.0.1"
   }
 }

@@ -1,7 +1,8 @@
 # TODO
 
-* Detecting redundant rules
-* README.md
+* x Documentation generation code from prix-fixe/prepress
+* x Detecting redundant rules
+* x README.md
 * Set up Travis
   * CI badge
 * Set up NYC
