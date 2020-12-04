@@ -1,5 +1,10 @@
 # TODO
 
+* conjuntions.ts
+  * // TODO: rename to formatRules() formatRulesAttributions()
+* Better error mapping
+  * Error: Invalid Record Length: columns length is 2, got 5 on line 4
+    at Parser.__onRow (node_modules\csv-parse\lib\index.js:765:11)
 * x Documentation generation code from prix-fixe/prepress
 * x Detecting redundant rules
 * x README.md
@@ -104,7 +109,7 @@
   * Basic boolean principles: ab = ba, a+b=b+a, a(b+c) = ab +bc
   * Shared built-in universe object. Consider for sample as well.
   * Reduce console spew, especially in `(a+b)(c+d)`.
-* Parser support for 'except'
+* x Parser support for 'except'
 * . Print diagnostic information / telemetry
   * x Number of conjunctions
   * x Number of DRanges

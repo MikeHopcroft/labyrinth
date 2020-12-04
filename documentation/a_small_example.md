@@ -42,25 +42,28 @@ Options
 
 ~~~
 
-Let's look at the sample policy in [data/simple.txt](data/simple.txt):
+Let's look at the sample policy in [data/sample1.txt](data/sample1.txt):
+
+[//]: # (file data/sample1.txt)
 ~~~
-# The first line defines the fields in the remaining lines
-action protocol sourceIp destinationIp destinationPort
-
-# Subsequent lines define individual rules
-
-# Isolating private addresses
-deny ip 10.0.0.0/8 any
-
-# permits for IPs without port and protocol blocks
-allow ip any 171.64.64.0/20
-
-# standard port and protocol blocks
-deny tcp any any 445
-deny udp any any 445
-
-# permits for IPs with port and protocol blocks
-allow ip any 128.30.0.0/15
+ 1: # The first line defines the fields in the remaining lines
+ 2: action protocol sourceIp destinationIp destinationPort
+ 3: 
+ 4: # Subsequent lines define individual rules
+ 5: 
+ 6: # Isolating private addresses
+ 7: deny ip 10.0.0.0/8 any
+ 8: 
+ 9: # permits for IPs without port and protocol blocks
+10: allow ip any 171.64.64.0/20
+11: 
+12: # standard port and protocol blocks
+13: deny tcp any any 445
+14: deny udp any any 445
+15: 
+16: # permits for IPs with port and protocol blocks
+17: allow ip any 128.30.0.0/15
+18: 
 ~~~
 
 ## First applicable policy

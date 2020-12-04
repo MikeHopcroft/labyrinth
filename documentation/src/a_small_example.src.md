@@ -39,7 +39,9 @@ Options
   -t, --telemetry                  Display telemetry on boolean expression complexity.
 ~~~
 
-Let's look at the sample policy in [data/simple.txt](data/simple.txt):
+Let's look at the sample policy in [data/sample1.txt](data/sample1.txt):
+
+[//]: # (file data/sample1.txt)
 ~~~
 # The first line defines the fields in the remaining lines
 action protocol sourceIp destinationIp destinationPort
@@ -98,6 +100,7 @@ Allowed routes:
 ~~~
 
 Rule attribution
+
 [//]: # (spawn node build\src\apps\analyze.js data\sample1.txt -a)
 ~~~
 node build\src\apps\analyze.js data\sample1.txt -a

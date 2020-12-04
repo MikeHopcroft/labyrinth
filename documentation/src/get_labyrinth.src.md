@@ -8,11 +8,19 @@ In order to use `labyrinth` you must have
 
 ## Building Labyrinth from Sources
 
+Eventually, `labyrinth` will be available as an [npm](https://www.npmjs.com) package. Until then, the only way to get `labyrinth` is to build it from sources. Here are the steps:
+
 ~~~
 % git clone git@github.com:MikeHopcroft/labyrinth.git
 % cd labyrinth
 % npm install
 % npm run compile
+~~~
+
+You can test your build by running the unit test suite:
+
+[//]: # (spawn npm run test)
+~~~
 ~~~
 
 ## Installing Labyrinth from NPM

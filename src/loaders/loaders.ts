@@ -263,8 +263,10 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
     const dimension = universe.get(key);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const value = (rest as any)[key];
-    if (typeof value !== 'string') {
+    let value = (rest as any)[key];
+    if (typeof value === 'number') {
+      value = value.toString();
+    } else if (typeof value !== 'string') {
       const message = `${key}: expected a string value.`;
       throw new TypeError(message);
     }

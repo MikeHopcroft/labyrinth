@@ -146,6 +146,7 @@ export class Conjunction {
   }
 }
 
+// TODO: rename to formatRules() formatRulesAttributions()
 export function formatRules(
   rules: Set<RuleSpec>,
   options: FormattingOptions = {}

@@ -6,12 +6,32 @@ import {Universe} from '../../src/dimensions';
 import {
   denyOverrides,
   firstApplicable,
+  formatRule,
   loadCsvRulesString,
+  loadYamlRulesString,
 } from '../../src/loaders';
 
 import {firewallSpec} from '../../src/specs';
+import { stripLeadingSpaces } from '../shared';
 
 const universe = new Universe(firewallSpec);
+
+const policy1Yaml = `
+rules:
+  - action: deny
+    priority: 1
+    sourceIp: 10.0.0.0/8
+  - action: allow
+    priority: 2
+    destinationIp: 171.64.64.0/20
+  - action: deny
+    priority: 3
+    destinationPort: 445
+    protocol: tcp, udp
+  - action: allow
+    priority: 4
+    destinationIp: 128.30.0.0/15
+`;
 
 describe('Rules', () => {
   describe('Loaders', () => {
@@ -27,13 +47,48 @@ describe('Rules', () => {
     });
 
     it('loadYamlRulesString()', () => {
-      assert.fail();
+      const rules = loadYamlRulesString(universe, policy1Yaml);
+      // const observed = rules.map(r => r.conjunction.format()).join('\n\n');
+      const observed = rules.map(r => formatRule(r)).join('\n');
+      const expected = stripLeadingSpaces(`\
+        action: deny
+        priority: 1
+        source ip: 10.0.0.0/8
+
+        action: allow
+        priority: 2
+        destination ip: 171.64.64.0/20
+
+        action: deny
+        priority: 3
+        destination port: 445
+        protocol: tcp, udp
+
+        action: allow
+        priority: 4
+        destination ip: 128.30.0.0/15
+      `);
+      console.log(observed);
+      assert.equal(observed, expected);
     });
   });
 
   describe('denyOverrides()', () => {
     it('test()', () => {
-      assert.fail();
+      const text = `action,sourceIp
+                    deny,2.2.2.128
+                    allow,2.2.2.0/24
+                    deny,2.2.2.129`;
+
+      const rules = loadCsvRulesString(universe, text);
+      const e = denyOverrides(rules);
+      console.log(e.format());
+      const observed = e.format();
+      // TODO: this test is brittle because the expected value
+      // could be in a different order. Really need to do a set
+      // equivalence test.
+      const expected = 'source ip: 2.2.2.0/25, 2.2.2.130-2.2.2.255';
+      assert.equal(observed, expected);
     });
   });
 
@@ -41,7 +96,8 @@ describe('Rules', () => {
     it('test()', () => {
       const text = `action,sourceIp
                     deny,2.2.2.128
-                    allow,2.2.2.0/24`;
+                    allow,2.2.2.0/24
+                    deny,2.2.2.129`;
 
       const rules = loadCsvRulesString(universe, text);
       const e = firstApplicable(rules);
@@ -69,7 +125,7 @@ describe('Rules', () => {
       // TODO: this test is brittle because the expected value
       // could be in a different order. Really need to do a set
       // equivalence test.
-      const expected = 'foobar';
+      const expected = 'source ip: 2.2.2.0/25, 2.2.2.129-2.2.2.255\n\nsource ip: 1.1.1.1\nsource port: except 80';
       assert.equal(observed, expected);
     });
   });
