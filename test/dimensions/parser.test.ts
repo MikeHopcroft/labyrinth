@@ -121,6 +121,15 @@ describe('Parser', () => {
         `[ ${0x00000001}, ${0x01010100}-${0x010101ff}, ${0x02000000}-${0x02000003} ]`
       );
     });
+
+    it('except address list', () => {
+      const r1 = parseIpSet('except 0.0.0.1, 1.1.1.0/24, 2.0.0.0-2.0.0.3');
+      assert.equal(r1.length, 1 + (0x10101000 - 2 + 1) + (0x1fffffff - 0x0101020 + 1) + (0xffffffff - 0x02000004 + 1);
+      assert.equal(
+        r1.toString(),
+        `[ ${0x00000000}, ${0x00000002}-${0x010100ff}, ${0x01010200}-${0x01ffffff}, ${0x02000004}-${0xffffffff} ]`
+      );
+    });
   });
 
   describe('parsePortSet', () => {

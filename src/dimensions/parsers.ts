@@ -40,6 +40,13 @@ export function parseDRange(
 ): DRange {
   const name = dimension.name;
 
+  const match = text.match(/^\s*except\s+(.*)/);
+  let negated = false;
+  if (match) {
+    text = match[1];
+    negated = true;
+  }
+
   const sections = text.split(',');
   if (sections.length === 1) {
     const s = sections[0].trim();
@@ -91,7 +98,11 @@ export function parseDRange(
     }
   }
 
-  return range;
+  if (negated) {
+    return dimension.domain.clone().subtract(range);
+  } else {
+    return range;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
