@@ -23,6 +23,7 @@ deny udp any any 445
 
 # permits for IPs with port and protocol blocks
 allow ip any 128.30.0.0/15
+
 ~~~
 
 In this file, the policy is expressed as a sequence of rules that `allow` and `deny` certain routes. Each rule consists of a space-separated list of field values. The order of the fields is specified in the second line.
@@ -58,7 +59,7 @@ Let's examine `data/policy.txt` with the `Deny-Overrides` convention.
 This is the default convention, but we can specify it explicitly with
 `-m=d` or `-m=denyOverrides`:
 
-[//]: # (spawn node build\src\apps\analyze.js data\sample1.txt -m=d)
+[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -m=d)
 ~~~
 % node build/src/apps/analyze.js data\sample1.txt
 Mode is denyOverrides.
@@ -119,9 +120,9 @@ Notice how the allowed routes differ from those in the previous example:
 
 It is often helpful to know which rules let to a certain conjunction in the `Policy Report`. We can use the `-a` or `--attribution` flag to turn on rule attribution:
 
-[//]: # (spawn node build\src\apps\analyze.js data\sample1.txt -a)
+[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -a)
 ~~~
-node build\src\apps\analyze.js data\sample1.txt -a
+node build\src\apps\analyze.js data\policy.txt -a
 Mode is denyOverrides.
 
 ============ Policy Report ============
@@ -139,9 +140,38 @@ Allowed routes:
 ~~~
 
 This report now lists the sets of rules that led to each conjunction. At this time, the rules are referenced by line numbers in the input file, so for example, the first conjunction is informed by the following rules:
-* Line 10:
-* Line 13:
-* Line 14: 
+* **Line 10:** allow ip any 171.64.64.0/20
+* **Line 13:** deny tcp any any 445
+* **Line 14:** deny udp any any 445
+
+The second conjunction is only informed by a single rule:
+* **Line 17:** allow ip any 128.30.0.0/15
+
+## YAML Policy Files
+
+The preceding examples were based on a text format commonly used specifying for firewall rules. `labyrinth` can also accept policies from [YAML](https://en.wikipedia.org/wiki/YAML) files.
+
+The file `data/policy.yaml` encodes the same policy as `data/policy.txt`:
+
+[//]: # (file data/policy.yaml)
+~~~
+rules:
+  - action: deny
+    priority: 1
+    sourceIp: 10.0.0.0/8
+  - action: allow
+    priority: 2
+    destinationIp: 171.64.64.0/20
+  - action: deny
+    priority: 3
+    destinationPort: 445
+    protocol: tcp, udp
+  - action: allow
+    priority: 4
+    destinationIp: 128.30.0.0/15
+~~~
+
+Note the use of `priority` fields that specify  the order in which the rules are processed.
 
 ---
 ### [Next: Contract Validation](./contract_validation.md)

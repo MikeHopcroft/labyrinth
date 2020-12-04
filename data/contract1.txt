@@ -1,0 +1,17 @@
+# The first line defines the fields in the remaining lines
+action protocol sourceIp destinationIp destinationPort
+
+# Subsequent lines define individual rules
+
+# Isolating private addresses
+deny ip 10.0.0.0/8 any
+
+# permits for IPs without port and protocol blocks
+allow ip any 171.64.64.0/18
+
+# standard port and protocol blocks
+deny tcp any any 445
+deny udp any any 445
+
+# permits for IPs with port and protocol blocks
+allow ip any 128.30.0.0/15

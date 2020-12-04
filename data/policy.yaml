@@ -12,6 +12,3 @@ rules:
   - action: allow
     priority: 4
     destinationIp: 128.30.0.0/15
-
-
-

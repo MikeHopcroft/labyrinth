@@ -85,7 +85,7 @@ function main() {
       const r1AndR2 = simplify(universe.dimensions, r1.intersect(r2));
 
       if (r1SubR2.isEmpty() && r2SubR1.isEmpty()) {
-        console.log('Rule sets r1 and r2 are equivalent');
+        console.log('The policy and contract are equivalent');
       } else {
         if (r1SubR2.isEmpty()) {
           console.log('All routes in policy are also in contract.');
