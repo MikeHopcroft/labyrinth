@@ -167,4 +167,4 @@ version: 13
 ~~~
 
 ---
-### [Next: A Small Example](./a_small_example.md)
+### [Next: Labyrinth CLI](./labyrinth_cli.md)

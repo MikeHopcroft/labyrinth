@@ -173,8 +173,8 @@ function showUsage() {
           alias: 'm',
           typeLabel: '{underline <mode>}',
           description:
-            'Defines the rule evaluation strategy. Choices are {underline denyOverrides}' +
-            'and {underline firstApplicable}. Defaults to {underline denyOverrides}.',
+            'Defines the rule evaluation strategy. Choices are {underline denyOverrides} (or {underline d}) ' +
+            'and {underline firstApplicable} (or {underline f}). Defaults to {underline denyOverrides}.',
         },
         {
           name: 'universe',

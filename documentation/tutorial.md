@@ -5,7 +5,7 @@ This tutorial shows how to install `labyrinth` and then walks through examples o
 ## Scenarios
 
 * [Get Labyrinth](./get_labyrinth.md)
-* [A Small Example](./a_small_example.md)
+* [Labyrinth CLI](./labyrinth_cli.md)
 * [Policy Explanation](./policy_explanation.md)
 * [Contract Validation](./contract_validation.md)
 * [Policy Drift](./policy_drift.md)
