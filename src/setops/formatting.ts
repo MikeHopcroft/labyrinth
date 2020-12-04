@@ -4,6 +4,6 @@ export enum FormatAttribution {
 }
 
 export interface FormattingOptions {
-  prefix?: string,
-  attribution?: FormatAttribution,
+  prefix?: string;
+  attribution?: FormatAttribution;
 }

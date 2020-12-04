@@ -7,7 +7,7 @@ import {
   RuleSpecEx,
   setopsTelemetry,
   simplify,
-  Snapshot
+  Snapshot,
 } from '../setops';
 
 const universeSpec: UniverseSpec = {

@@ -141,7 +141,9 @@ export class Conjunction {
   format(options: FormattingOptions = {}): string {
     const prefix = options.prefix || '';
     const lines = options.attribution ? formatRules(this.rules, options) : [];
-    this.dimensions.map(d => { lines.push(d.format(prefix)); });
+    this.dimensions.map(d => {
+      lines.push(d.format(prefix));
+    });
     return lines.join('\n');
   }
 }
@@ -167,7 +169,9 @@ export function formatRules(
   for (const [source, specs] of sourceToSpecs.entries()) {
     const ids = specs.map(x => x.id);
     const range = new DRange();
-    ids.map(x => {range.add(x)});
+    ids.map(x => {
+      range.add(x);
+    });
     const idText = range.toString().slice(2, -2);
     lines.push(`${prefix}${source} rules: ${idText}`);
   }

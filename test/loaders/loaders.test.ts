@@ -12,7 +12,7 @@ import {
 } from '../../src/loaders';
 
 import {firewallSpec} from '../../src/specs';
-import { stripLeadingSpaces } from '../shared';
+import {stripLeadingSpaces} from '../shared';
 
 const universe = new Universe(firewallSpec);
 
@@ -68,7 +68,7 @@ describe('Rules', () => {
         priority: 4
         destination ip: 128.30.0.0/15
       `);
-      console.log(observed);
+      // console.log(observed);
       assert.equal(observed, expected);
     });
   });
@@ -82,7 +82,7 @@ describe('Rules', () => {
 
       const rules = loadCsvRulesString(universe, text);
       const e = denyOverrides(rules);
-      console.log(e.format());
+      // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
       // could be in a different order. Really need to do a set
@@ -101,7 +101,7 @@ describe('Rules', () => {
 
       const rules = loadCsvRulesString(universe, text);
       const e = firstApplicable(rules);
-      console.log(e.format());
+      // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
       // could be in a different order. Really need to do a set
@@ -120,12 +120,13 @@ describe('Rules', () => {
       const rules = loadCsvRulesString(universe, text);
       const e = firstApplicable(rules);
       // const e = denyOverrides(rules);
-      console.log(e.format());
+      // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
       // could be in a different order. Really need to do a set
       // equivalence test.
-      const expected = 'source ip: 2.2.2.0/25, 2.2.2.129-2.2.2.255\n\nsource ip: 1.1.1.1\nsource port: except 80';
+      const expected =
+        'source ip: 2.2.2.0/25, 2.2.2.129-2.2.2.255\n\nsource ip: 1.1.1.1\nsource port: except 80';
       assert.equal(observed, expected);
     });
   });

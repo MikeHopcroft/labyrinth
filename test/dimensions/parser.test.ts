@@ -126,10 +126,10 @@ describe('Parser', () => {
       const r1 = parseIpSet('except 0.0.0.1, 1.1.1.0/24, 2.0.0.0-2.0.0.3');
 
       const length =
-        1
-        + (0x010100ff - 2 + 1)
-        + (0x01ffffff - 0x01010200 + 1)
-        + (0xffffffff - 0x02000004 + 1);
+        1 +
+        (0x010100ff - 2 + 1) +
+        (0x01ffffff - 0x01010200 + 1) +
+        (0xffffffff - 0x02000004 + 1);
 
       assert.equal(r1.length, length);
       assert.equal(

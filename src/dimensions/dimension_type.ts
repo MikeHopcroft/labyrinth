@@ -18,7 +18,6 @@ import {
   ParseToDRange,
 } from './parsers';
 
-
 export const DimensionTypeSpecType = t.type({
   name: t.string,
   key: t.string,
@@ -132,7 +131,7 @@ export class DimensionType {
   }
 
   isValidSymbol(text: string): boolean {
-    if (text.match(/[\-,]/)) {
+    if (text.match(/[-,]/)) {
       return false;
     }
 

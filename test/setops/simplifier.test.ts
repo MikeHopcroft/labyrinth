@@ -3,17 +3,13 @@ import 'mocha';
 
 import {Universe, UniverseSpec} from '../../src/dimensions';
 
-import {  
-  denyOverrides,
-  parseRuleSpec,
-  Rule,
-} from '../../src/loaders';
+import {denyOverrides, parseRuleSpec, Rule} from '../../src/loaders';
 
 import {
   ActionType,
   createConjunctionInfo,
   RuleSpecEx,
-  simplify
+  simplify,
 } from '../../src/setops';
 
 const universeSpec: UniverseSpec = {
@@ -138,15 +134,15 @@ describe('Simplifier', () => {
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
       const expression = denyOverrides(rules);
 
-      console.log('Before simplification:');
-      console.log(expression.format());
-      console.log();
+      // console.log('Before simplification:');
+      // console.log(expression.format());
+      // console.log();
 
       const simplified = simplify(universe.dimensions, expression);
 
-      console.log('After simplification:');
-      console.log(simplified.format());
-      console.log();
+      // console.log('After simplification:');
+      // console.log(simplified.format());
+      // console.log();
 
       // TODO: this test is brittle because the algorithm could get the right
       // answer in a different order.
@@ -197,15 +193,15 @@ describe('Simplifier', () => {
       const expression2 = denyOverrides(rules2);
       const expression = expression1.intersect(expression2);
 
-      console.log('Before simplification:');
-      console.log(expression.format());
-      console.log();
+      // console.log('Before simplification:');
+      // console.log(expression.format());
+      // console.log();
 
       const simplified = simplify(universe.dimensions, expression);
 
-      console.log('After simplification:');
-      console.log(simplified.format());
-      console.log();
+      // console.log('After simplification:');
+      // console.log(simplified.format());
+      // console.log();
 
       // Result should be simpler than
       // After simplification:
@@ -271,15 +267,15 @@ describe('Simplifier', () => {
       // const expression1 = evaluate(rules1);
       // const expression = expression1.intersect(expression1);
 
-      console.log('Before simplification:');
-      console.log(expression.format());
-      console.log();
+      // console.log('Before simplification:');
+      // console.log(expression.format());
+      // console.log();
 
       const simplified = simplify(universe.dimensions, expression);
 
-      console.log('After simplification:');
-      console.log(simplified.format());
-      console.log();
+      // console.log('After simplification:');
+      // console.log(simplified.format());
+      // console.log();
 
       // TODO: this test is brittle because the algorithm could get the right
       // answer in a different order.
@@ -335,15 +331,15 @@ describe('Simplifier', () => {
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
       const expression = denyOverrides(rules);
 
-      console.log('Before simplification:');
-      console.log(expression.format());
-      console.log();
+      // console.log('Before simplification:');
+      // console.log(expression.format());
+      // console.log();
 
       const simplified = simplify(universe.dimensions, expression);
 
-      console.log('After simplification:');
-      console.log(simplified.format());
-      console.log();
+      // console.log('After simplification:');
+      // console.log(simplified.format());
+      // console.log();
 
       // TODO: this test is brittle because the algorithm could get the right
       // answer in a different order.

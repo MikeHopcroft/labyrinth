@@ -40,10 +40,11 @@ export function* crossProduct(
 }
 
 export function stripLeadingSpaces(text: string) {
-  return text
-    .split(/\r?\n/)
-    .map(l => l.trimLeft())
-    // .slice(1)  // Originally for removing first \n.
-    .join('\n');
+  return (
+    text
+      .split(/\r?\n/)
+      .map(l => l.trimLeft())
+      // .slice(1)  // Originally for removing first \n.
+      .join('\n')
+  );
 }
-

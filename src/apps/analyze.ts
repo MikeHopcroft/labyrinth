@@ -4,14 +4,20 @@ import minimist from 'minimist';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {denyOverrides, detectRedundantRules, firstApplicable, loadRulesFile, Rule} from '../loaders';
+import {
+  denyOverrides,
+  detectRedundantRules,
+  firstApplicable,
+  loadRulesFile,
+  Rule,
+} from '../loaders';
 
 import {
   Disjunction,
   FormatAttribution,
   formatRules,
   FormattingOptions,
-  simplify
+  simplify,
 } from '../setops';
 
 import {firewallSpec} from '../specs';
@@ -49,7 +55,7 @@ function main() {
 
     const formatOptions: FormattingOptions = {
       prefix: '  ',
-    }
+    };
     if (args.a === 'id') {
       formatOptions.attribution = FormatAttribution.RULE_ID;
     } else if (args.a === 'line' || args.a === true) {
@@ -65,13 +71,13 @@ function main() {
       : new Universe(firewallSpec);
 
     // Load rules1.
-    const rules1 = loadRulesFile(universe, args._[0], { source: 'policy'});
+    const rules1 = loadRulesFile(universe, args._[0], {source: 'policy'});
     const r1 = simplify(universe.dimensions, evaluator(rules1));
 
     if (args.c) {
       console.log('============ Contract Validation Report ============');
 
-      const rules2 = loadRulesFile(universe, args.c, { source: 'contract'});
+      const rules2 = loadRulesFile(universe, args.c, {source: 'contract'});
       const r2 = simplify(universe.dimensions, evaluator(rules2));
 
       const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));

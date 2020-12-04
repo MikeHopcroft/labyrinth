@@ -14,11 +14,7 @@ export function formatRule(
   options: FormattingOptions = {}
 ): string {
   const prefix = options.prefix || '';
-  return `${prefix}action: ${
-    rule.action
-  }\n${prefix}priority: ${
+  return `${prefix}action: ${rule.action}\n${prefix}priority: ${
     rule.priority
-  }\n${prefix}${
-    rule.conjunction.format(options)
-  }\n`;
+  }\n${prefix}${rule.conjunction.format(options)}\n`;
 }

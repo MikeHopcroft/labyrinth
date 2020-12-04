@@ -191,6 +191,7 @@ export function loadCsvRulesString(
     relax_column_count_less: true,
     skipEmptyLines: true,
     trim: true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }).map((rule: any, id: number) => {
     // TODO: REVIEW: why wouldn't CSV be used for DenyOverride?
     // (which uses priority)
@@ -253,11 +254,9 @@ export function loadYamlRulesString(
 
 // TODO: Consider moving to Rule.constructor().
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {action, id, priority, source, ...rest} = spec;
-  let conjunction = Conjunction.create(
-    [],
-    new Set([spec])
-  );
+  let conjunction = Conjunction.create([], new Set([spec]));
 
   for (const key of Object.getOwnPropertyNames(rest)) {
     const dimension = universe.get(key);
@@ -274,7 +273,8 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
       Conjunction.create(
         [new DimensionedRange(dimension, dimension.parse(value))],
         new Set<RuleSpec>()
-    ));
+      )
+    );
   }
 
   return {action, priority, conjunction, spec};
