@@ -18,6 +18,14 @@ dimensions: [
 ]
 ~~~
 
+## Set Expressions
+This section coming soon. Synopsis:
+* literals - numbers, ip addresses, ip CIDRs
+* ranges
+* symbols
+* reserved words
+* note on cyclic dependencies
+
 ## Defining Types
 
 In `labyrinth`, all assertions are encoded as sets of integers within some [min,max] domain.
