@@ -43,10 +43,11 @@ Note that field values can take a wide variety of forms including
 * Symbols that map to single values like `localhost` or `tcp`.
 * Symbols that map to ranges like `internet` or `loopback`.
 * Unions of the above, like `tcp, udp` or `10.10.10.0/8, localhost`.
+* The `except` keyword can be used to specify the complement of an expression.
 
 You can read more about field values in [Firewall Universe](TBD_FIREWALL.md) and [Defining the Universe](TBD_UNIVERSE.md)
 
-## Policy Interpretation
+## Policy Conventions
 
 In order to reason about a policy, `labyrinth` must know whether to interpret it with the `First-Applicable` convention or the `Deny-Overrides` convention. We can use the `--mode` or `-m` flag to specify
 the convention. If no convention is specified, `labyrinth` defaults to `Deny-Overrides`.

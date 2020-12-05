@@ -8,6 +8,5 @@ This tutorial shows how to install `labyrinth` and then walks through examples o
 * [Labyrinth CLI](./labyrinth_cli.md)
 * [Policy Explanation](./policy_explanation.md)
 * [Contract Validation](./contract_validation.md)
-* [Policy Drift](./policy_drift.md)
 * [Detecting Redundant Rules](./detecting_redundant_rules)
-* [Specifying Policies](./specifying_policies.md)
+* [Defining Universes](./defining_universes.md)

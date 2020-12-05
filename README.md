@@ -10,29 +10,3 @@ It provides a command-line tool for the following scenarios:
 
 `Labyrinth` is currently in the earliest stages of development, so documentation is sparse, and the code stability is uneven. If you are interested in taking a look, we recommend starting with the
 [Labyrinth Tutorial](documentation/tutorial.md).
-
-## Building Labyrinth
-
-`Labyrinth` is a [Node.js](https://nodejs.org/en/) project,
-written in [TypeScript](https://www.typescriptlang.org/).
-In order to use `labyrinth` you must have
-[Node](https://nodejs.org/en/download/) installed on your machine.
-`labyrinth` has been tested with Node version [13.7.0](https://nodejs.org/download/release/v13.7.0/).
-
-~~~
-% git clone git@github.com:MikeHopcroft/labyrinth.git
-% cd labyrinth
-% npm install
-% npm run compile
-~~~
-
-## Documentation, Tools and Samples
-
-`Labyrinth` includes the following applications, samples, and tutorials:
-* Labyrinth Tutorial - Coming soon!
-
-## Contributing
-Interested in contributing? CONTTRIBUTING.md coming soon!
-
-
-
