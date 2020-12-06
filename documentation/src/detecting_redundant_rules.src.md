@@ -56,6 +56,8 @@ This report shows these rules on lines 7, 11, and 17 are redundant:
 * **Line 11:** allow ip any 171.64.64.0/21
 * **Line 17:** deny tcp any 171.64.64.1 445
 
+Note that one cannot necessarily erase all redundant rules and preserve policy semantics. Suppose, for example, that a rule was repeated. In this case, the `Redundant Rules Report` would show both copies of the repeated rule, but only one copy could be removed, while preserving policy semantics. Minimizing a rule set is an iterative process that involves scanning for redundant rules, removing one of these rules, and repeating until there are no remaining redundant rules.
+
 Note that, for `data/redundant.txt`, we get a different answer, when we use `First-Applicable` convention:
 
 [//]: # (spawn node build\src\apps\analyze.js data\redundant.txt -r -m=f)

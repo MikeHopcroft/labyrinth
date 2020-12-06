@@ -10,3 +10,6 @@ It provides a command-line tool for the following scenarios:
 
 `Labyrinth` is currently in the earliest stages of development, so documentation is sparse, and the code stability is uneven. If you are interested in taking a look, we recommend starting with the
 [Labyrinth Tutorial](documentation/tutorial.md).
+
+If you are interested in learning more about how `labyrinth` works, please read the
+[labyrinth architectural concepts](documentation/architectural_concepts.md).

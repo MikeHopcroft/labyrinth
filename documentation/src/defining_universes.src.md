@@ -26,6 +26,12 @@ This section coming soon. Synopsis:
 * reserved words
 * note on cyclic dependencies
 
+## Formatters and Parsers
+This section coming soon. Synopsis:
+* ip addresses
+* numbers
+* pluggable formatters and parsers
+
 ## Defining Types
 
 In `labyrinth`, all assertions are encoded as sets of integers within some [min,max] domain.
