@@ -1,8 +1,8 @@
 # Policy Explanation
 
-`labyrinth` can reason about policies [from many domains](TBD_UNIVERSE.md).
+`labyrinth` can reason about policies [from many domains](./defining_universes.md).
 For this example, let's consider firewall policies 
-like the one in [data/policy.txt](data/policy.txt):
+like the one in [data/policy.txt](../data/policy.txt):
 
 [//]: # (file data/policy.txt)
 ~~~
@@ -45,7 +45,7 @@ Note that field values can take a wide variety of forms including
 * Unions of the above, like `tcp, udp` or `10.10.10.0/8, localhost`.
 * The `except` keyword can be used to specify the complement of an expression.
 
-You can read more about field values in [Firewall Universe](TBD_FIREWALL.md) and [Defining the Universe](TBD_UNIVERSE.md)
+You can read more about field values in [Firewall Specification]((../src/spec/../../../../build/src/specs/firewall.js)) and [Defining Universes](./defining_universes.md)
 
 ## Policy Conventions
 
@@ -161,7 +161,7 @@ The preceding examples were based on a text format commonly used specifying for 
 The file `data/policy.yaml` encodes the same policy as `data/policy.txt`:
 
 [//]: # (file data/policy.yaml)
-~~~
+~~~yaml
 rules:
   - action: deny
     priority: 1
