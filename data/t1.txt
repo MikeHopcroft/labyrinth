@@ -1,3 +1,0 @@
-action protocol destinationIp sourceIp destinationPort
-# allow ip any 171.64.64.0/20
-allow ip 171.64.80.0-171.64.127.255

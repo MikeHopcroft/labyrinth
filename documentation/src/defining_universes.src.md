@@ -2,7 +2,7 @@
 
 All `labyrinth` analysis happens in the context of a `Universe`. The `Universe` defines the `types` and `dimensions` used to express policy rules.
 
-`labyrinth` includes [a sample Universe definition for firewalls](src/spec/../../../../build/src/specs/firewall.js). 
+`labyrinth` includes [a sample Universe definition for firewalls](../src/spec/../../../../build/src/specs/firewall.js). 
 
 ## Defining the Universe
 

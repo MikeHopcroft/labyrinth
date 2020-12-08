@@ -1,5 +1,0 @@
-rules:
-  - action: allow
-    priority: 1
-    sourceIp: '127.0.0.2'
-    protocol: 'TCP'

@@ -7,6 +7,7 @@ It provides a command-line tool for the following scenarios:
 * **Policy Drift** - explain how two policies differ.
 * **Rule Attribution** - reports attribute behaviors to specific policy rules and policy file line numbers.
 * **Detecting Redundant Rules** - identify those rules that can be removed from a policy without changing semantics.
+* **Defining Universes** - defining the vocabulary used to express rules.
 
 `Labyrinth` is currently in the earliest stages of development, so documentation is sparse, and the code stability is uneven. If you are interested in taking a look, we recommend starting with the
 [Labyrinth Tutorial](documentation/tutorial.md).

@@ -1,5 +1,6 @@
 # TODO
 
+* Sort allowable routes by attribution
 * conjuntions.ts
   * // TODO: rename to formatRules() formatRulesAttributions()
 * Better error mapping
