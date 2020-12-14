@@ -28,6 +28,7 @@
     "@types/minimist": "^1.2.1",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.11.2",
+    "@types/seedrandom": "^2.4.28",
     "chai": "^4.2.0",
     "gts": "^3.0.2",
     "mocha": "^8.2.1",
@@ -45,6 +46,7 @@
     "js-yaml": "^3.14.0",
     "minimist": "^1.2.5",
     "prepress": "0.0.2",
+    "seedrandom": "^3.0.5",
     "yaml": "^1.10.0"
   }
 }

@@ -36,7 +36,7 @@ The route `(0x0a000002, 49152, 0xab404002, 443, 6)` represents a packet
 * using protocol number `6 (tcp)`.
 
 ### Rules 
-Rules in `labyrinth` consist of assertions of membership in a collection of sets.
+Rules in `labyrinth` consist of assertions of membership in sets associated with each dimension in the `Universe`.
 Consider the following rule with three assertion:
 ~~~
 soureIp: except 10.0.0.0/8
@@ -51,6 +51,8 @@ in other words, those addresses not between `10.0.0.0` and `10.255.255.255`. Thi
 `[0, 0x09ffffff]` and `[0x0b000000, 0xffffffff]`.
 * The second assertion corresponds to those destination IP addresses _inside_ the `171.64.64.0/18` CIDR. These are addresses in the integer range
 `[0xab404000, 0xab40bfff]`.
+
+**NOTE** about implicit dimension `sourcePort`.
 
 ## Parsing Rules
 

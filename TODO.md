@@ -247,3 +247,57 @@
   * x priority
   * x pretty printing
 
+This caueses an out-of-heap error on the commit immediately after 1b80b574fc7d48cd475fc46224cd059b7f78c9d2. This is the commit that adds the initial fuzzer. Size n=10 works.
+* n=10: works quickly
+* n=25: works after a pause
+* n=50: fails
+* n=100: fails
+~~~
+% node build\src\apps\fuzz.js -n=10
+
+... lots of rules ...
+
+  {
+    "action": "deny",
+    "priority": 1,
+    "id": 1,
+    "source": "1",
+    "sourceIp": "1.218.1.205-100.138.106.128"
+  }
+]
+
+<--- Last few GCs --->
+
+[26576:000002A1B4DC7B20]    43812 ms: Scavenge 2034.1 (2050.9) -> 2026.0 (2051.6) MB, 5.2 / 0.0 ms  (average mu = 0.132, current mu = 0.101) allocation failure
+[26576:000002A1B4DC7B20]    43825 ms: Scavenge 2034.7 (2051.6) -> 2026.7 (2051.9) MB, 5.2 / 0.0 ms  (average mu = 0.132, current mu = 0.101) allocation failure
+[26576:000002A1B4DC7B20]    43837 ms: Scavenge 2035.4 (2051.9) -> 2027.3 (2065.6) MB, 5.3 / 0.0 ms  (average mu = 0.132, current mu = 0.101) allocation failure
+
+
+<--- JS stacktrace --->
+
+==== JS stack trace =========================================
+
+    0: ExitFrame [pc: 00007FF7AB48154D]
+Security context: 0x02f732640921 <JSObject>
+    1: _add(aka _add) [000000B6648190A9] [D:\git\labyrinth\node_modules\drange\lib\index.js:~77] [pc=000000394B11CEAB](this=0x03ff05fc04b9 <undefined>,0x03d3c2b597a1 <SubRange map = 000001B74BFADEE1>)
+    2: intersect [000000BDDDE51089] [D:\git\labyrinth\build\src\setops\disjunction.js:~32] [pc=000000394B125E26](this=0x03b5f157ffb9 <Disjunction map = 00000...
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+ 1: 00007FF7AA870BEF napi_wrap+126287
+ 2: 00007FF7AA80DF26 v8::base::CPU::has_sse+34950
+ 3: 00007FF7AA80EBF6 v8::base::CPU::has_sse+38230
+ 4: 00007FF7AB037FEE v8::Isolate::ReportExternalAllocationLimitReached+94
+ 5: 00007FF7AB01F741 v8::SharedArrayBuffer::Externalize+785
+ 6: 00007FF7AAEE67AC v8::internal::Heap::EphemeronKeyWriteBarrierFromCode+1468
+ 7: 00007FF7AAEF1AF0 v8::internal::Heap::ProtectUnprotectedMemoryChunks+1312
+ 8: 00007FF7AAEEE5E4 v8::internal::Heap::PageFlagsAreConsistent+3188
+ 9: 00007FF7AAEE3CF3 v8::internal::Heap::CollectGarbage+1283
+10: 00007FF7AAEEA504 v8::internal::Heap::GlobalSizeOfObjects+212
+11: 00007FF7AAF227AB v8::internal::StackGuard::HandleInterrupts+907
+12: 00007FF7AAC60046 v8::internal::interpreter::JumpTableTargetOffsets::iterator::operator=+7830
+13: 00007FF7AB48154D v8::internal::SetupIsolateDelegate::SetupHeap+517453
+14: 000000394B11CEAB
+
+D:\git\labyrinth>node build\src\apps\fuzz.js -n=100
+
+~~~
