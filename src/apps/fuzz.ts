@@ -4,7 +4,15 @@ import minimist from 'minimist';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {createRandomPolicy, Random} from '../fuzzer';
+
+import {
+  createRandomPolicy,
+  expressionStatistics,
+  policyStatistics,
+  Random,
+  Stopwatch,
+} from '../fuzzer';
+
 import {
   denyOverrides,
   detectRedundantRules,
@@ -21,6 +29,8 @@ import {
   FormattingOptions,
   simplify,
 } from '../setops';
+
+import {simplify2} from '../simplifier';
 
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
@@ -79,21 +89,32 @@ function main() {
       fail(`Expected a number for the -n argument.`);
     }
 
-    // const ruleCount = Number(args.f);
     const random = new Random('1234');
     const {rules} = createRandomPolicy(universe, ruleCount, 0.6, random);
     console.log(JSON.stringify(rules, null, 2));
 
+    console.log(policyStatistics(universe, rules));
+
     const rules1 = rules.map(r => parseRuleSpec(universe, r));
-    // const rules1 = loadRulesFile(universe, args._[0], {source: 'policy'});
-    const r1 = simplify(universe.dimensions, evaluator(rules1));
+    console.log(`after parseRuleSpec()`);
+    const r1Original = evaluator(rules1);
+    console.log(expressionStatistics(universe, r1Original));
+    const stopwatch = new Stopwatch();
+    const r1 = simplify2(universe.dimensions, r1Original);
+    const time = stopwatch.format();
+    console.log(`Time for simplification: ${time}`);
+    console.log(`after simplify()`);
+    console.log(expressionStatistics(universe, r1));
 
     if (args.c) {
       console.log('============ Contract Validation Report ============');
 
-      const rules2 = loadRulesFile(universe, args.c, {source: 'contract'});
-      const r2 = simplify(universe.dimensions, evaluator(rules2));
-
+      // const rules2 = rules1; //loadRulesFile(universe, args.c, {source: 'contract'});
+      stopwatch.reset();
+      const r2 = simplify(universe.dimensions, r1Original);
+      const time = stopwatch.format();
+      console.log(`Time for simplification: ${time}`);
+  
       const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));
       const r2SubR1 = simplify(universe.dimensions, r2.subtract(r1));
       const r1AndR2 = simplify(universe.dimensions, r1.intersect(r2));
@@ -127,8 +148,8 @@ function main() {
       console.log();
     } else {
       console.log('============ Policy Report ============');
-      console.log('Allowed routes:');
-      console.log(r1.format(formatOptions));
+      // console.log('Allowed routes:');
+      // console.log(r1.format(formatOptions));
       console.log();
     }
 

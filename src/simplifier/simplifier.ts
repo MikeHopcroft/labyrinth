@@ -2,11 +2,11 @@ import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
 
 import {Dimension} from '../dimensions';
+import {Conjunction, DimensionedRange, Disjunction} from '../setops';
 import {combineSets} from '../utilities';
 
-import {Conjunction} from './conjunction';
-import {DimensionedRange} from './dimensioned_range';
-import {Disjunction} from './disjunction';
+import {Hasher} from './hash';
+
 
 // See also this article on boolean expression simplification.
 //   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
@@ -16,26 +16,29 @@ interface ConjunctionInfo {
   factors: FactorInfo[];
 }
 
+type Key = number;
+
 interface FactorInfo {
-  key: string;
+  key: Key;
   dimension: Dimension;
   conjunction: ConjunctionInfo;
 }
 
 interface FactorEntry {
-  key: string;
+  key: Key;
   dimension: Dimension;
   conjunctions: Set<FactorInfo>;
 }
 
 // Can't define a type alias here because we want to be able to use new.
 //   https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
-class KeyToFactorEntry extends Map<string, FactorEntry> {}
+class KeyToFactorEntry extends Map<Key, FactorEntry> {}
 
-export function simplify(
+export function simplify2(
   dimensions: Dimension[],
   d: Disjunction
 ): Disjunction {
+  const hasher = new Hasher(1234,5678);
   const index = new KeyToFactorEntry();
   const queue = new FastPriorityQueue<FactorEntry>((a, b) => {
     return a.conjunctions.size > b.conjunctions.size;
@@ -43,7 +46,7 @@ export function simplify(
   const terms = new Set<ConjunctionInfo>();
 
   for (const c of d.conjunctions) {
-    const info = createConjunctionInfo(dimensions, c);
+    const info = createConjunctionInfo(hasher, dimensions, c);
     addConjunction(index, queue, terms, info);
   }
 
@@ -57,7 +60,7 @@ export function simplify(
       break;
     }
 
-    combine(dimensions, index, queue, terms, entry);
+    combine(hasher, dimensions, index, queue, terms, entry);
   }
 
   return Disjunction.create([...terms.values()].map(x => x.conjunction));
@@ -66,6 +69,7 @@ export function simplify(
 export function createConjunctionInfo(
   // TODO: replace Dimension[] with DimensionSet object that enforces
   // monotonic ids.
+  hasher: Hasher,
   dimensions: Dimension[],
   conjunction: Conjunction
 ): ConjunctionInfo {
@@ -88,22 +92,35 @@ export function createConjunctionInfo(
     }
   }
 
+  const hashes = lines.map(hasher.hash);
+  const blanks = dimensions.map((d, i) => {
+    const h = hasher.hash(`[${d.key}]`);
+    return hasher.xor(hashes[i], h);
+  });
+
+  let key = hashes.reduce(
+    (accumulator, current) => hasher.xor(accumulator, current)
+  );
+
   for (const [i, dimension] of dimensions.entries()) {
-    const save = lines[i];
-    lines[i] = `[${dimension.key}]`; //'';
-    const key = lines.join('\n');
+    // const save = lines[i];
+    // lines[i] = `[${dimension.key}]`; //'';
+    // const key = lines.join('\n');
+    key = hasher.xor(key, blanks[i]);
     factors.push({
       key,
       dimension: dimension,
       conjunction: info,
     });
-    lines[i] = save;
+    key = hasher.xor(key, blanks[i]);
+    // lines[i] = save;
   }
 
   return info;
 }
 
 function combine(
+  hasher: Hasher,
   dimensions: Dimension[],
   index: KeyToFactorEntry,
   queue: FastPriorityQueue<FactorEntry>,
@@ -159,6 +176,7 @@ function combine(
     }
   }
   const combined = createConjunctionInfo(
+    hasher,
     dimensions,
     Conjunction.create(ranges, rules)
   );

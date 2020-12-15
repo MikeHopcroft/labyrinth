@@ -33,7 +33,23 @@
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "fuzz",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/build/src/apps/fuzz.js",
+      // "args": ["data/t1.txt", "-m=f"],
+      // "args": ["data/t1.txt", "-c=data/t2.txt", "-m=f"],
+      "args": ["-n=1"],
+      // "args": ["data/rules1.yaml", "-c=data/rules2.yaml"],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/build/**/*.js"
+      ]
     }
-
   ]
 }

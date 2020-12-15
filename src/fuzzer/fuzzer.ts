@@ -1,5 +1,4 @@
 import DRange from 'drange';
-// import ip from 'ip';
 
 import {Universe} from '../dimensions';
 import {Random} from './random';

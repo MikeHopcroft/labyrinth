@@ -1,5 +1,19 @@
 # TODO
 
+* Simplifier performance
+  * -p command-line parameter for fuzz.ts
+    * Initial gc heap issues were observed with p=0.6.
+  * Look for obvious memory leaks
+    * Are we holding pointers to previous iteration state?
+  * Report complexity of output
+    * Number of conjunctions
+  * Report running time
+  * Define baseline perf cases
+  * Define baseline correctness tests
+    * Perhaps run both algorithms side by side
+  * Implement 64 bit float hashes
+  * Implement 64 bit float XOR operation
+  * Prime implicant identifiers become hashes
 * Sort allowable routes by attribution
 * conjuntions.ts
   * // TODO: rename to formatRules() formatRulesAttributions()
