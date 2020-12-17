@@ -63,6 +63,9 @@ export function simplify2(
     combine(hasher, dimensions, index, queue, terms, entry);
   }
 
+  // console.log(`============ index size: ${index.size} ============`);
+  // console.log(`============ queue size: ${queue.size} ============`);
+
   return Disjunction.create([...terms.values()].map(x => x.conjunction));
 }
 
@@ -251,6 +254,14 @@ function removeConjunction(
       throw new TypeError(message);
     }
     entry.conjunctions.delete(f);
+
     queue.add(entry);
+
+    // Experiment in reducing data structure size.
+    // if (entry.conjunctions.size > 1) {
+    //   queue.add(entry);
+    // } else {
+    //   index.delete(f.key);
+    // }
   }
 }

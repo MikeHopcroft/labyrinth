@@ -1,0 +1,12 @@
+node build\src\apps\analyze.js data\policy.txt -a
+node build\src\apps\analyze.js data\policy.txt -a -m=f
+
+node build\src\apps\analyze.js data\policy.txt -c=data\contract1.txt -a
+node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt -a
+node build\src\apps\analyze.js data\contract1.txt -c=data\contract2.txt -a
+
+node build\src\apps\analyze.js data\redundant.txt -r -a
+node build\src\apps\analyze.js data\redundant.txt -r -a -m=f
+
+node build\src\apps\fuzz.js -n=100
+node build\src\apps\fuzz.js -n=23 -p=0.6

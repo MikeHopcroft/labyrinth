@@ -89,22 +89,31 @@ function main() {
       fail(`Expected a number for the -n argument.`);
     }
 
+    const defaultP = 0.1;
+    const p = args.p ? Number(args.p) : defaultP;
+    if (isNaN(p)) {
+      fail(`Expected a number for the -p argument.`);
+    }
+
     const random = new Random('1234');
-    const {rules} = createRandomPolicy(universe, ruleCount, 0.6, random);
+    const {rules} = createRandomPolicy(universe, ruleCount, p, random);
     console.log(JSON.stringify(rules, null, 2));
 
     console.log(policyStatistics(universe, rules));
 
     const rules1 = rules.map(r => parseRuleSpec(universe, r));
-    console.log(`after parseRuleSpec()`);
+    // console.log(`after parseRuleSpec()`);
     const r1Original = evaluator(rules1);
-    console.log(expressionStatistics(universe, r1Original));
+    console.log('Before simplification:');
+    const before = expressionStatistics(universe, r1Original);
+    console.log(before);
     const stopwatch = new Stopwatch();
     const r1 = simplify2(universe.dimensions, r1Original);
     const time = stopwatch.format();
     console.log(`Time for simplification: ${time}`);
-    console.log(`after simplify()`);
-    console.log(expressionStatistics(universe, r1));
+    console.log('After simplification:');
+    const after = expressionStatistics(universe, r1);
+    console.log(after);
 
     if (args.c) {
       console.log('============ Contract Validation Report ============');
@@ -148,9 +157,19 @@ function main() {
       console.log();
     } else {
       console.log('============ Policy Report ============');
-      // console.log('Allowed routes:');
-      // console.log(r1.format(formatOptions));
+      console.log('Allowed routes:');
+      console.log(r1.format(formatOptions));
       console.log();
+
+      console.log(policyStatistics(universe, rules));
+      console.log();
+      console.log('Before simplification:');
+      console.log(before);
+      console.log();
+      console.log(`Time for simplification: ${time}`);
+      console.log();
+      console.log('After simplification:');
+      console.log(after);
     }
 
     if (args.r) {
@@ -217,6 +236,13 @@ function showUsage() {
           typeLabel: '{underline <rule count>}',
           description:
             'Specifies the number of synthetic rules to generate',
+        },
+        {
+          name: 'probability',
+          alias: 'p',
+          typeLabel: '{underline <probability>}',
+          description:
+            'Specifies the probability for including each additional dimension contraint after the first.',
         },
         {
           name: 'universe',
