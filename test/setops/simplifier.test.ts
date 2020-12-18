@@ -90,15 +90,15 @@ describe('Simplifier', () => {
     assert.equal(info.factors.length, universe.dimensions.length);
     assert.equal(
       info.factors[0].key,
-      '[sourceIp]\nsource port: 80\ndestination ip: *\ndestination port: *\nprotocol: TCP, UDP'
+      '[sourceIp]\nsource port: 80\ndestination ip: *\ndestination port: *\nprotocol: 6, 17'
     );
     assert.equal(
       info.factors[1].key,
-      'source ip: 127.0.0.1\n[sourcePort]\ndestination ip: *\ndestination port: *\nprotocol: TCP, UDP'
+      `source ip: ${0x7f000001}\n[sourcePort]\ndestination ip: *\ndestination port: *\nprotocol: 6, 17`
     );
     assert.equal(
       info.factors[2].key,
-      'source ip: 127.0.0.1\nsource port: 80\n[destinationIp]\ndestination port: *\nprotocol: TCP, UDP'
+      `source ip: ${0x7f000001}\nsource port: 80\n[destinationIp]\ndestination port: *\nprotocol: 6, 17`
     );
   });
 

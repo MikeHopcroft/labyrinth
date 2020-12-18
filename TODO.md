@@ -1,7 +1,34 @@
 # TODO
 
 * Simplifier performance
-  * -p command-line parameter for fuzz.ts
+  * Graph reachability
+    * LongestPrefix interpretation
+  * Profiler learnings
+    * Murmurhash is slower than straight strings
+      * Consider keeping a global mapping from string to id
+      * Might contribute to excessive memory usage since there is no good way to determine when to free up entries.
+    * x fastFormat()
+      * x No "except" mode
+      * x No symbol lookup
+      * x No ip and cidr formatting
+      * x node build\src\apps\fuzz.js -n=23 -p=0.6
+        * x Before: 11851.830601ms, 12037.721301ms, 11653.452ms
+        * x After: 7476.3192ms, 7496.670699ms
+    * DimensionedRange constructor does expensive domain check
+    * Examine cost of telemetry
+    * Some error checks look for items in hash tables
+      * addConjunction()
+      * removeConjunction()
+    * Consider different key indexing strategy
+    * Explore optimal frequency for simplification
+      * Lemma: the product of two simplified forms is also a simplified form
+      * Where do non-simplified forms appear? Unions?
+    * Consider faster format
+      * Use hex values
+      * Don't use string interpolation
+      * Use buffers of binary values
+    * .gitignore profiler outputs, 0x, 14148.0x, etc.
+  * x -p command-line parameter for fuzz.ts
     * Initial gc heap issues were observed with p=0.6.
   * Look for obvious memory leaks
     * Are we holding pointers to previous iteration state?

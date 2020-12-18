@@ -79,7 +79,7 @@ export function createConjunctionInfo(
       i < conjunction.dimensions.length &&
       conjunction.dimensions[i].dimension.id === d.id
     ) {
-      lines.push(conjunction.dimensions[i++].format());
+      lines.push(conjunction.dimensions[i++].fastFormat());
     } else {
       // TODO: this is brittle because it may format different than
       // d.formatter(). Perhaps the DRange parameter to d.formatter()

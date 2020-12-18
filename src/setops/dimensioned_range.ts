@@ -73,4 +73,22 @@ export class DimensionedRange {
       return `${prefix}${name}: except ${complement}`;
     }
   }
+
+  // This function is used to generate prime impicant keys for the
+  // Quine-McCluskey simplification algorithm. It is faster than
+  // format() because it doesn't attempt to generate and format the
+  // complement and because it formats everything as numbers - there
+  // are no symbol lookups or translation to IP or CIDR format.
+  //
+  // Might be able to improve performance by formatting numbers as
+  // hex or by serializing binary values directly to a buffer.
+  fastFormat(): string {
+    const name = this.dimension.name;
+    const value = this.range.toString().slice(2,-2);
+    // Consider removing slice() for performance. Something like:
+    // const value = this.range.toString();
+    // Another possibility is to rewrite DRange.toString() to not
+    // include the square brackets in the first place.
+    return `${name}: ${value}`;
+  }
 }

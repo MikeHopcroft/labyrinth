@@ -36,6 +36,7 @@ import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
 
 function main() {
+  const stopwatch = new Stopwatch();
   const args = minimist(process.argv.slice(2));
 
   if (args.h || args.help) {
@@ -103,12 +104,15 @@ function main() {
 
     const rules1 = rules.map(r => parseRuleSpec(universe, r));
     // console.log(`after parseRuleSpec()`);
+    console.log(`Before evaluation: ${stopwatch.format()}`);
+    stopwatch.reset();
     const r1Original = evaluator(rules1);
-    console.log('Before simplification:');
+    console.log(`Before simplification: ${stopwatch.format()}`);
     const before = expressionStatistics(universe, r1Original);
     console.log(before);
-    const stopwatch = new Stopwatch();
-    const r1 = simplify2(universe.dimensions, r1Original);
+    // const stopwatch = new Stopwatch();
+    stopwatch.reset();
+    const r1 = simplify(universe.dimensions, r1Original);
     const time = stopwatch.format();
     console.log(`Time for simplification: ${time}`);
     console.log('After simplification:');
