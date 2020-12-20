@@ -132,7 +132,7 @@ describe('Simplifier', () => {
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
-      const expression = denyOverrides(rules);
+      const expression = denyOverrides(universe.dimensions, rules);
 
       // console.log('Before simplification:');
       // console.log(expression.format());
@@ -189,8 +189,8 @@ describe('Simplifier', () => {
 
       const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       const rules2 = ruleSpecs2.map(r => parseRuleSpec(universe, r));
-      const expression1 = denyOverrides(rules1);
-      const expression2 = denyOverrides(rules2);
+      const expression1 = denyOverrides(universe.dimensions, rules1);
+      const expression2 = denyOverrides(universe.dimensions, rules2);
       const expression = expression1.intersect(expression2);
 
       // console.log('Before simplification:');
@@ -258,7 +258,7 @@ describe('Simplifier', () => {
       //     at Context.<anonymous> (build\test\setops\simplifier.test.js:118:41)
       const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       // const rules2 = ruleSpecs1.map(r => parseRuleSpec(dimensions, r));
-      const expression1 = denyOverrides(rules1);
+      const expression1 = denyOverrides(universe.dimensions, rules1);
       // const expression2 = evaluate(rules2);
       const expression = expression1.intersect(expression1);
 
@@ -329,7 +329,7 @@ describe('Simplifier', () => {
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
-      const expression = denyOverrides(rules);
+      const expression = denyOverrides(universe.dimensions, rules);
 
       // console.log('Before simplification:');
       // console.log(expression.format());

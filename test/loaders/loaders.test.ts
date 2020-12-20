@@ -81,7 +81,7 @@ describe('Rules', () => {
                     deny,2.2.2.129`;
 
       const rules = loadCsvRulesString(universe, text);
-      const e = denyOverrides(rules);
+      const e = denyOverrides(universe.dimensions, rules);
       // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
@@ -100,7 +100,7 @@ describe('Rules', () => {
                     deny,2.2.2.129`;
 
       const rules = loadCsvRulesString(universe, text);
-      const e = firstApplicable(rules);
+      const e = firstApplicable(universe.dimensions, rules);
       // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
@@ -118,7 +118,7 @@ describe('Rules', () => {
                     allow,1.1.1.1`;
 
       const rules = loadCsvRulesString(universe, text);
-      const e = firstApplicable(rules);
+      const e = firstApplicable(universe.dimensions, rules);
       // const e = denyOverrides(rules);
       // console.log(e.format());
       const observed = e.format();

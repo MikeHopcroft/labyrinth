@@ -3,7 +3,7 @@ import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
 
-import {Universe} from '../dimensions';
+import {Dimension, Universe} from '../dimensions';
 
 import {
   createRandomPolicy,
@@ -16,8 +16,8 @@ import {
 import {
   denyOverrides,
   detectRedundantRules,
+  Evaluator,
   firstApplicable,
-  loadRulesFile,
   parseRuleSpec,
   Rule,
 } from '../loaders';
@@ -49,7 +49,7 @@ function main() {
   }
 
   try {
-    let evaluator: (rules: Rule[]) => Disjunction;
+    let evaluator: Evaluator;
     if (args.m === 'firstApplicable' || args.m === 'f') {
       console.log('Mode is firstApplicable.');
       evaluator = firstApplicable;
@@ -106,13 +106,14 @@ function main() {
     // console.log(`after parseRuleSpec()`);
     console.log(`Before evaluation: ${stopwatch.format()}`);
     stopwatch.reset();
-    const r1Original = evaluator(rules1);
+    const r1Original = evaluator(universe.dimensions, rules1);
     console.log(`Before simplification: ${stopwatch.format()}`);
     const before = expressionStatistics(universe, r1Original);
     console.log(before);
     // const stopwatch = new Stopwatch();
     stopwatch.reset();
     const r1 = simplify(universe.dimensions, r1Original);
+    // const r1 = simplify(universe.dimensions, simplify(universe.dimensions, r1Original));
     const time = stopwatch.format();
     console.log(`Time for simplification: ${time}`);
     console.log('After simplification:');
@@ -178,7 +179,7 @@ function main() {
 
     if (args.r) {
       console.log('============ Redundant Rules Report ============');
-      const policySpecs = detectRedundantRules(universe, evaluator, rules1);
+      const policySpecs = detectRedundantRules(universe.dimensions, evaluator, rules1);
       console.log(`Redundant ${formatRules(new Set(policySpecs))}`);
     }
   } catch (e) {

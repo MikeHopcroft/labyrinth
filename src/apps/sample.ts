@@ -135,12 +135,12 @@ function go() {
   console.log(s.format('  '));
   s.reset();
 
-  const r1 = denyOverrides(rules1);
+  const r1 = denyOverrides(universe.dimensions, rules1);
   console.log('Evaluate rules1:');
   console.log(s.format('  '));
   s.reset();
 
-  const r2 = denyOverrides(rules2);
+  const r2 = denyOverrides(universe.dimensions, rules2);
   console.log('Evaluate rules2:');
   console.log(s.format('  '));
   s.reset();

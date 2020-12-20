@@ -1,7 +1,8 @@
-import {Disjunction} from '../setops';
+import {Dimension} from '../dimensions';
+import {ActionType, Disjunction, simplify} from '../setops';
 
 import {Rule} from './rule';
-import {ActionType} from '../setops';
+import {EvaluatorOptions} from './types';
 
 interface RuleGroup {
   priority: number;
@@ -9,7 +10,11 @@ interface RuleGroup {
   deny: Rule[];
 }
 
-export function denyOverrides(rules: Rule[]): Disjunction {
+export function denyOverrides(
+  dimensions: Dimension[],
+  rules: Rule[],
+  options: EvaluatorOptions = { }
+): Disjunction {
   // Sort rules by ascending priority.
   const sorted = [...rules].sort((a: Rule, b: Rule) => {
     return a.priority - b.priority;
@@ -42,13 +47,23 @@ export function denyOverrides(rules: Rule[]): Disjunction {
       const e = Disjunction.create([r.conjunction]);
       // TODO: convenience method to intersect Disjunction with Conjunction.
       expression = expression.union(e);
+      if (options.simplify) {
+        expression = simplify(dimensions, expression);
+      }
     }
 
     // TODO: REVIEW: not sure this is correct.
     // Do we need to apply De Morgan's to the entire conjunction?
     for (const r of g.deny) {
-      const e = r.conjunction.complement();
+      let e = r.conjunction.complement();
+      if (options.simplify) {
+        e = simplify(dimensions, e);
+      }
+
       expression = expression.intersect(e);
+      if (options.simplify) {
+        expression = simplify(dimensions, expression);
+      }
     }
   }
 

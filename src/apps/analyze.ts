@@ -3,10 +3,12 @@ import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
 
-import {Universe} from '../dimensions';
+import {Dimension, Universe} from '../dimensions';
+
 import {
   denyOverrides,
   detectRedundantRules,
+  Evaluator,
   firstApplicable,
   loadRulesFile,
   Rule,
@@ -36,7 +38,7 @@ function main() {
   }
 
   try {
-    let evaluator: (rules: Rule[]) => Disjunction;
+    let evaluator: Evaluator;
     if (args.m === 'firstApplicable' || args.m === 'f') {
       console.log('Mode is firstApplicable.');
       evaluator = firstApplicable;
@@ -72,13 +74,13 @@ function main() {
 
     // Load rules1.
     const rules1 = loadRulesFile(universe, args._[0], {source: 'policy'});
-    const r1 = simplify(universe.dimensions, evaluator(rules1));
+    const r1 = simplify(universe.dimensions, evaluator(universe.dimensions, rules1));
 
     if (args.c) {
       console.log('============ Contract Validation Report ============');
 
       const rules2 = loadRulesFile(universe, args.c, {source: 'contract'});
-      const r2 = simplify(universe.dimensions, evaluator(rules2));
+      const r2 = simplify(universe.dimensions, evaluator(universe.dimensions, rules2));
 
       const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));
       const r2SubR1 = simplify(universe.dimensions, r2.subtract(r1));
@@ -120,7 +122,7 @@ function main() {
 
     if (args.r) {
       console.log('============ Redundant Rules Report ============');
-      const policySpecs = detectRedundantRules(universe, evaluator, rules1);
+      const policySpecs = detectRedundantRules(universe.dimensions, evaluator, rules1);
       console.log(`Redundant ${formatRules(new Set(policySpecs))}`);
     }
   } catch (e) {

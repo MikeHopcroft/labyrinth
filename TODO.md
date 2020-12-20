@@ -3,6 +3,24 @@
 * Simplifier performance
   * Graph reachability
     * LongestPrefix interpretation
+  * Heap exhaustion
+    * Simplify after each union
+      * node build\src\apps\fuzz.js -n=30 -p=0.6
+        * Before: runs out of heap during rules evaluation (before simplification)
+        * After: runs to completion with 493200 conjunctions (simplifies to 14)
+        * There is some question as to whether the resulting expression is correct.
+      * node build\src\apps\fuzz.js -n=40 -p=0.6 -m=f
+        * Before: runs out of heap during rules evaluation (before simplification)
+        * After: runs to completion, suspiciously fast.
+        * There is some question as to whether the resulting expression is correct.
+      * Possible experiment to verify internal consistency
+        * Run rules evaluation with and without simplification and then compare results.
+        * Extract and centralize multiple definitions of Evaluator
+        * EvaluatorOptions parameter specifies simplification strategry
+        * Serialize resulting expressions as allow rules
+      * Question: why does simplification after intersection make a difference?
+        * Possible lemma is incorrect
+        * Possible one argument is not in simplified form
   * Profiler learnings
     * Murmurhash is slower than straight strings
       * Consider keeping a global mapping from string to id

@@ -11,6 +11,12 @@ import {Disjunction} from './disjunction';
 // See also this article on boolean expression simplification.
 //   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
 
+export type Simplifier = (d: Disjunction) => Disjunction;
+
+export function createSimplifier(dimensions: Dimension[]): Simplifier {
+  return (d: Disjunction) => simplify(dimensions, d);
+}
+
 interface ConjunctionInfo {
   conjunction: Conjunction;
   factors: FactorInfo[];
