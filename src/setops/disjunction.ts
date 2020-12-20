@@ -1,8 +1,9 @@
 import {Dimension} from '../dimensions';
+import { nopSimplifier } from '../loaders';
 
 import {Conjunction} from './conjunction';
 import {FormattingOptions} from './formatting';
-import {simplify} from './simplifier';
+import {Simplifier, simplify} from './simplifier';
 import {setopsTelemetry, Snapshot, Telemetry} from './telemetry';
 
 export class Disjunction {
@@ -83,7 +84,10 @@ export class Disjunction {
     return new Disjunction(terms);
   }
 
-  equivalent(dimensions: Dimension[], other: Disjunction): boolean {
+  equivalent(
+    other: Disjunction,
+    simplifier: Simplifier = nopSimplifier
+  ): boolean {
     // For performance, subtract smaller expression from larger expression.
     // If this first subtract operation returns non-empty, we can return
     // false without performing the other, more expensive subtraction.
@@ -92,61 +96,25 @@ export class Disjunction {
       ? [this, other]
       : [other, this];
 
-    const aSubB = a.subtract2(dimensions, b);
+    const aSubB = a.subtract(b, simplifier);
     if (!aSubB.isEmpty) {
       return false;
     }
 
-    const bSubA = b.subtract2(dimensions, a);
+    const bSubA = b.subtract(a, simplifier);
     return bSubA.isEmpty();
   }
 
-  subtract2(dimensions: Dimension[], other: Disjunction): Disjunction {
+  subtract(
+    other: Disjunction,
+    simplifier: Simplifier = nopSimplifier
+  ): Disjunction {
     const factors = other.conjunctions.map(x => x.complement());
 
     return factors.reduce(
-      (acc, cur) => acc.isEmpty() ? acc : simplify(dimensions, acc.intersect(cur)),
+      (acc, cur) => acc.isEmpty() ? acc : simplifier(acc.intersect(cur)),
       this
     );
-
-    // // console.log('subtract:');
-
-    // // const s = factors.reduce((acc, cur) => acc * cur.conjunctions.length, 1);
-    // // console.log(`  estimated size: ${s}`);
-
-    // // TODO: use reduce
-    // // eslint-disable-next-line @typescript-eslint/no-this-alias
-    // let result: Disjunction = this;
-    // for (const [i, f] of factors.entries()) {
-    //   result = simplify(dimensions, result.intersect(f));
-    //   // console.log(`  ${i}: intersect with ${f.conjunctions.length} => ${result.conjunctions.length}`);
-    //   if (result.isEmpty()) {
-    //     break;
-    //   }
-    // }
-
-    // return result;
-  }
-
-  subtract(other: Disjunction): Disjunction {
-    const factors = other.conjunctions.map(x => x.complement());
-    console.log('subtract:');
-    let s1 = 1;
-    for (const [i, f] of factors.entries()) {
-      s1 *= f.conjunctions.length;
-      console.log(`  ${i}: ${f.conjunctions.length} ==> ${s1}`);
-    }
-    const s = factors.reduce((acc, cur) => acc * cur.conjunctions.length, 1);
-    console.log(`  estimated size: ${s}`);
-
-    // TODO: use reduce
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    let result: Disjunction = this;
-    for (const f of factors) {
-      result = result.intersect(f);
-    }
-
-    return result;
   }
 
   format(options: FormattingOptions = {}) {

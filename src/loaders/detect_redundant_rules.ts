@@ -1,34 +1,28 @@
-import {Dimension} from '../dimensions';
 import {Evaluator} from '../loaders';
-import {RuleSpec, simplify} from '../setops';
+import {RuleSpec, Simplifier} from '../setops';
 
+import {nopSimplifier} from './create_simplifier';
 import {Rule} from './rule';
 
 export function detectRedundantRules(
-  dimensions: Dimension[],
   evaluator: Evaluator,
-  rules: Rule[]
+  rules: Rule[],
+  simplify: Simplifier = nopSimplifier 
 ): RuleSpec[] {
   const redundant: RuleSpec[] = [];
 
-  const baseline = simplify(dimensions, evaluator(dimensions, rules));
+  const baseline = evaluator(rules, simplify);
   for (let i = 0; i < rules.length; ++i) {
     const filtered = rules.filter((rule, index) => index !== i);
     // console.log(`Checking ${filtered.map(x => x.spec.id)}`);
-    const other = simplify(dimensions, evaluator(dimensions, filtered));
+    const other = evaluator(filtered, simplify);
 
-    const baselineSubOther = simplify(
-      dimensions,
-      baseline.subtract(other)
-    );
+    const baselineSubOther = baseline.subtract(other, simplify);
     if (!baselineSubOther.isEmpty()) {
       continue;
     }
 
-    const otherSubBaseline = simplify(
-      dimensions,
-      other.subtract(baseline)
-    );
+    const otherSubBaseline = other.subtract(baseline, simplify);
     if (otherSubBaseline.isEmpty()) {
       redundant.push(rules[i].spec);
     }

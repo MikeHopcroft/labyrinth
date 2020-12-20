@@ -3,19 +3,18 @@ import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
 
-import {Dimension, Universe} from '../dimensions';
+import {Universe} from '../dimensions';
 
 import {
+  createSimplifier,
   denyOverrides,
   detectRedundantRules,
   Evaluator,
   firstApplicable,
   loadRulesFile,
-  Rule,
 } from '../loaders';
 
 import {
-  Disjunction,
   FormatAttribution,
   formatRules,
   FormattingOptions,
@@ -71,20 +70,21 @@ function main() {
     const universe = args.u
       ? Universe.fromYamlFile(args.u)!
       : new Universe(firewallSpec);
+    const simplifier = createSimplifier(universe);
 
     // Load rules1.
-    const rules1 = loadRulesFile(universe, args._[0], {source: 'policy'});
-    const r1 = simplify(universe.dimensions, evaluator(universe.dimensions, rules1));
+    const policy = loadRulesFile(universe, args._[0], {source: 'policy'});
+    const r1 = simplify(universe.dimensions, evaluator(policy, simplifier));
 
     if (args.c) {
       console.log('============ Contract Validation Report ============');
 
-      const rules2 = loadRulesFile(universe, args.c, {source: 'contract'});
-      const r2 = simplify(universe.dimensions, evaluator(universe.dimensions, rules2));
+      const contract = loadRulesFile(universe, args.c, {source: 'contract'});
+      const r2 = simplify(universe.dimensions, evaluator(contract, simplifier));
 
-      const r1SubR2 = simplify(universe.dimensions, r1.subtract(r2));
-      const r2SubR1 = simplify(universe.dimensions, r2.subtract(r1));
-      const r1AndR2 = simplify(universe.dimensions, r1.intersect(r2));
+      const r1SubR2 = r1.subtract(r2, simplifier);
+      const r2SubR1 = r2.subtract(r1, simplifier);
+      const r1AndR2 = simplifier(r1.intersect(r2));
 
       if (r1SubR2.isEmpty() && r2SubR1.isEmpty()) {
         console.log('The policy and contract are equivalent');
@@ -122,7 +122,7 @@ function main() {
 
     if (args.r) {
       console.log('============ Redundant Rules Report ============');
-      const policySpecs = detectRedundantRules(universe.dimensions, evaluator, rules1);
+      const policySpecs = detectRedundantRules(evaluator, policy, simplifier);
       console.log(`Redundant ${formatRules(new Set(policySpecs))}`);
     }
   } catch (e) {

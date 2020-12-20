@@ -59,10 +59,10 @@ Routes in contract that are not in policy:
   destination port: except 445
 
 Routes common to policy and contract:
-  destination ip: 128.30.0.0/15
-
   destination ip: 171.64.64.0/20
   destination port: except 445
+
+  destination ip: 128.30.0.0/15
 
   destination ip: 171.64.64.0/20
   protocol: except tcp, udp
@@ -121,10 +121,10 @@ Routes in contract that are not in policy:
   protocol: except tcp, udp
 
 Routes common to policy and contract:
-  destination ip: 128.30.0.0/15
-
   destination ip: 171.64.64.0/20
   destination port: except 445, 593
+
+  destination ip: 128.30.0.0/15
 
   destination ip: 171.64.64.0/20
   protocol: except tcp, udp
@@ -148,10 +148,10 @@ Routes in policy that are not in contract:
 All routes in contract are also in policy.
 
 Routes common to policy and contract:
-  destination ip: 128.30.0.0/15
-
   destination ip: 171.64.64.0/18
   destination port: except 445, 593
+
+  destination ip: 128.30.0.0/15
 
   destination ip: 171.64.64.0/18
   protocol: except tcp, udp
@@ -188,14 +188,14 @@ Routes in contract that are not in policy:
   protocol: except tcp, udp
 
 Routes common to policy and contract:
-  policy rules: 17
-  contract rules: 19
-  destination ip: 128.30.0.0/15
-
   policy rules: 10, 13-14
   contract rules: 10, 13-16
   destination ip: 171.64.64.0/20
   destination port: except 445, 593
+
+  policy rules: 17
+  contract rules: 19
+  destination ip: 128.30.0.0/15
 
   policy rules: 10, 13-14
   contract rules: 10, 13-16

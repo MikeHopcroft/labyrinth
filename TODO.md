@@ -1,5 +1,14 @@
 # TODO
 
+* Refactor for performance
+  * repro.ts
+    * x Replace universe parameter with simplifier
+    * Use equivalent()
+  * intersect()
+    * Consider adding simplifier parameter
+    * Make required at first to find all calls
+  * union()
+    * Consider adding simplifier parameter
 * Simplifier performance
   * Graph reachability
     * LongestPrefix interpretation

@@ -4,6 +4,7 @@ import 'mocha';
 import {Universe} from '../../src/dimensions';
 
 import {
+  createSimplifier,
   denyOverrides,
   firstApplicable,
   formatRule,
@@ -15,6 +16,7 @@ import {firewallSpec} from '../../src/specs';
 import {stripLeadingSpaces} from '../shared';
 
 const universe = new Universe(firewallSpec);
+const simplifier = createSimplifier(universe);
 
 const policy1Yaml = `
 rules:
@@ -81,7 +83,7 @@ describe('Rules', () => {
                     deny,2.2.2.129`;
 
       const rules = loadCsvRulesString(universe, text);
-      const e = denyOverrides(universe.dimensions, rules);
+      const e = denyOverrides(rules, simplifier);
       // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
@@ -100,7 +102,7 @@ describe('Rules', () => {
                     deny,2.2.2.129`;
 
       const rules = loadCsvRulesString(universe, text);
-      const e = firstApplicable(universe.dimensions, rules);
+      const e = firstApplicable(rules, simplifier);
       // console.log(e.format());
       const observed = e.format();
       // TODO: this test is brittle because the expected value
@@ -118,7 +120,7 @@ describe('Rules', () => {
                     allow,1.1.1.1`;
 
       const rules = loadCsvRulesString(universe, text);
-      const e = firstApplicable(universe.dimensions, rules);
+      const e = firstApplicable(rules, simplifier);
       // const e = denyOverrides(rules);
       // console.log(e.format());
       const observed = e.format();

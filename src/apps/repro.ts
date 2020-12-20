@@ -1,12 +1,20 @@
 import {Universe} from '../dimensions';
 import {createRandomPolicy, Random} from '../fuzzer';
-import {denyOverrides, parseRuleSpec, Rule} from '../loaders';
-import {simplify} from '../setops';
+
+import {
+  createSimplifier,
+  denyOverrides,
+  parseRuleSpec,
+  Rule
+} from '../loaders';
+
+import {Simplifier, simplify} from '../setops';
 import {firewallSpec} from '../specs';
 
 
 function go() {
   const universe = new Universe(firewallSpec);
+  const simplifier = createSimplifier(universe);
 
   // This version fails on iteration 7
   // First differs on iteration 6
@@ -21,23 +29,23 @@ function go() {
 
     const {rules} = createRandomPolicy(universe, i, 0.6, random);
     const rules1 = rules.map(r => parseRuleSpec(universe, r));
-    runTest(universe, rules1);
+    runTest(rules1, simplifier);
   }
 }
 
-function runTest(universe: Universe, rules: Rule[]) {
-  const a0 = denyOverrides(universe.dimensions, rules);
+function runTest(rules: Rule[], simplifier: Simplifier) {
+  const a0 = denyOverrides(rules, simplifier);
   console.log(`  Conjunctions in a: ${a0.conjunctions.length}`);
-  const a = simplify(universe.dimensions, a0);
+  const a = simplifier(a0);
   console.log(`  Conjunctions in a after simplification: ${a.conjunctions.length}`);
 
-  const b = denyOverrides(universe.dimensions, rules, { simplify: true });
+  const b = denyOverrides(rules, simplifier);
   console.log(`  Conjunctions in b: ${b.conjunctions.length}`);
 
-  const aSubB = a.subtract2(universe.dimensions, b);
+  const aSubB = a.subtract(b, simplifier);
   console.log(`  aSubB empty: ${aSubB.isEmpty()}`);
 
-  const bSubA = b.subtract2(universe.dimensions, a);
+  const bSubA = b.subtract(a, simplifier);
   console.log(`  bSubA empty: ${bSubA.isEmpty()}`);
 }
 

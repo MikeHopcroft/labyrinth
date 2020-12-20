@@ -23,6 +23,7 @@ Eventually, `labyrinth` will be available as an [npm](https://www.npmjs.com) pac
 
 You can test your build by running the unit test suite:
 
+[//]: # (verbatim npm run test)
 ~~~
 $ npm run test
 

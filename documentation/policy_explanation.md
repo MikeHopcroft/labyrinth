@@ -70,10 +70,10 @@ Allowed routes:
   destination ip: 171.64.64.0/20
   protocol: except tcp, udp
 
-  destination ip: 128.30.0.0/15
-
   destination ip: 171.64.64.0/20
   destination port: except 445
+
+  destination ip: 128.30.0.0/15
 
 
 ~~~
@@ -136,12 +136,12 @@ Allowed routes:
   destination ip: 171.64.64.0/20
   protocol: except tcp, udp
 
-  policy rules: 17
-  destination ip: 128.30.0.0/15
-
   policy rules: 10, 13-14
   destination ip: 171.64.64.0/20
   destination port: except 445
+
+  policy rules: 17
+  destination ip: 128.30.0.0/15
 
 
 ~~~
@@ -161,7 +161,7 @@ The preceding examples were based on a text format commonly used specifying for 
 The file `data/policy.yaml` encodes the same policy as `data/policy.txt`:
 
 [//]: # (file data/policy.yaml)
-~~~yaml
+~~~
 rules:
   - action: deny
     priority: 1

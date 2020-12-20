@@ -40,13 +40,13 @@ Mode is denyOverrides.
 
 ============ Policy Report ============
 Allowed routes:
-  destination ip: 128.30.0.0/15
-
   destination ip: 171.64.64.0/20
   protocol: except tcp, udp
 
   destination ip: 171.64.64.0/20
   destination port: except 445
+
+  destination ip: 128.30.0.0/15
 
 ============ Redundant Rules Report ============
 Redundant policy rules: 7, 11, 17

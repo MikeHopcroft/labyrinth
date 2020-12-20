@@ -3,7 +3,12 @@ import 'mocha';
 
 import {Universe, UniverseSpec} from '../../src/dimensions';
 
-import {denyOverrides, parseRuleSpec, Rule} from '../../src/loaders';
+import {
+  createSimplifier,
+  denyOverrides,
+  parseRuleSpec,
+  Rule
+} from '../../src/loaders';
 
 import {
   ActionType,
@@ -72,6 +77,7 @@ const universeSpec: UniverseSpec = {
 };
 
 const universe = new Universe(universeSpec);
+const simplifier = createSimplifier(universe);
 
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
@@ -132,13 +138,13 @@ describe('Simplifier', () => {
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
-      const expression = denyOverrides(universe.dimensions, rules);
+      const expression = denyOverrides(rules, simplifier);
 
       // console.log('Before simplification:');
       // console.log(expression.format());
       // console.log();
 
-      const simplified = simplify(universe.dimensions, expression);
+      const simplified = simplifier(expression);
 
       // console.log('After simplification:');
       // console.log(simplified.format());
@@ -147,7 +153,7 @@ describe('Simplifier', () => {
       // TODO: this test is brittle because the algorithm could get the right
       // answer in a different order.
       const expected =
-        'source port: 3\ndestination port: 200\n\nsource port: 1-2\ndestination port: 100';
+        'source port: 1-2\ndestination port: 100\n\nsource port: 3\ndestination port: 200';
       const observed = simplified.format();
       assert.equal(observed, expected);
     });
@@ -189,8 +195,8 @@ describe('Simplifier', () => {
 
       const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       const rules2 = ruleSpecs2.map(r => parseRuleSpec(universe, r));
-      const expression1 = denyOverrides(universe.dimensions, rules1);
-      const expression2 = denyOverrides(universe.dimensions, rules2);
+      const expression1 = denyOverrides(rules1, simplifier);
+      const expression2 = denyOverrides(rules2, simplifier);
       const expression = expression1.intersect(expression2);
 
       // console.log('Before simplification:');
@@ -258,7 +264,7 @@ describe('Simplifier', () => {
       //     at Context.<anonymous> (build\test\setops\simplifier.test.js:118:41)
       const rules1 = ruleSpecs1.map(r => parseRuleSpec(universe, r));
       // const rules2 = ruleSpecs1.map(r => parseRuleSpec(dimensions, r));
-      const expression1 = denyOverrides(universe.dimensions, rules1);
+      const expression1 = denyOverrides(rules1, simplifier);
       // const expression2 = evaluate(rules2);
       const expression = expression1.intersect(expression1);
 
@@ -329,7 +335,7 @@ describe('Simplifier', () => {
       ];
 
       const rules = ruleSpecs.map(r => parseRuleSpec(universe, r));
-      const expression = denyOverrides(universe.dimensions, rules);
+      const expression = denyOverrides(rules, simplifier);
 
       // console.log('Before simplification:');
       // console.log(expression.format());
