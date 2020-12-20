@@ -161,7 +161,7 @@ The preceding examples were based on a text format commonly used specifying for 
 The file `data/policy.yaml` encodes the same policy as `data/policy.txt`:
 
 [//]: # (file data/policy.yaml)
-~~~
+~~~yaml
 rules:
   - action: deny
     priority: 1

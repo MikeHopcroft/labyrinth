@@ -130,7 +130,7 @@ A dimension definition contains the following fields:
 
 Here is an excerpt of the firewall universe dimension definitions from `src/specs/firewall.hs`:
 
-~~~
+~~~yaml
 dimensions: [
   {
     name: 'source ip',
