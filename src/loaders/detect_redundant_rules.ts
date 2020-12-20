@@ -7,7 +7,7 @@ import {Rule} from './rule';
 export function detectRedundantRules(
   evaluator: Evaluator,
   rules: Rule[],
-  simplify: Simplifier = nopSimplifier 
+  simplify: Simplifier = nopSimplifier
 ): RuleSpec[] {
   const redundant: RuleSpec[] = [];
 

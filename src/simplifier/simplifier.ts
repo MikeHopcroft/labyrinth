@@ -7,7 +7,6 @@ import {combineSets} from '../utilities';
 
 import {Hasher} from './hash';
 
-
 // See also this article on boolean expression simplification.
 //   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
 
@@ -38,7 +37,7 @@ export function simplify2(
   dimensions: Dimension[],
   d: Disjunction
 ): Disjunction {
-  const hasher = new Hasher(1234,5678);
+  const hasher = new Hasher(1234, 5678);
   const index = new KeyToFactorEntry();
   const queue = new FastPriorityQueue<FactorEntry>((a, b) => {
     return a.conjunctions.size > b.conjunctions.size;
@@ -101,8 +100,8 @@ export function createConjunctionInfo(
     return hasher.xor(hashes[i], h);
   });
 
-  let key = hashes.reduce(
-    (accumulator, current) => hasher.xor(accumulator, current)
+  let key = hashes.reduce((accumulator, current) =>
+    hasher.xor(accumulator, current)
   );
 
   for (const [i, dimension] of dimensions.entries()) {

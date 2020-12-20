@@ -84,7 +84,7 @@ export class DimensionedRange {
   // hex or by serializing binary values directly to a buffer.
   fastFormat(): string {
     const name = this.dimension.name;
-    const value = this.range.toString().slice(2,-2);
+    const value = this.range.toString().slice(2, -2);
     // Consider removing slice() for performance. Something like:
     // const value = this.range.toString();
     // Another possibility is to rewrite DRange.toString() to not

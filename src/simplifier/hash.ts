@@ -1,4 +1,4 @@
-import { v3 } from 'murmurhash';
+import {v3} from 'murmurhash';
 
 // https://medium.com/coding-at-dawn/is-negative-zero-0-a-number-in-javascript-c62739f80114
 

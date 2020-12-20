@@ -85,13 +85,13 @@ function main() {
     const defaultRuleCount = 10;
     const ruleCount = args.n ? Number(args.n) : defaultRuleCount;
     if (isNaN(ruleCount)) {
-      fail(`Expected a number for the -n argument.`);
+      fail('Expected a number for the -n argument.');
     }
 
     const defaultP = 0.1;
     const p = args.p ? Number(args.p) : defaultP;
     if (isNaN(p)) {
-      fail(`Expected a number for the -p argument.`);
+      fail('Expected a number for the -p argument.');
     }
 
     const random = new Random('1234');
@@ -126,7 +126,7 @@ function main() {
       const r2 = simplify(universe.dimensions, r1Original);
       const time = stopwatch.format();
       console.log(`Time for simplification: ${time}`);
-  
+
       const r1SubR2 = r1.subtract(r2, simplifier);
       const r2SubR1 = r2.subtract(r1, simplifier);
       const r1AndR2 = r1.intersect(r2);
@@ -237,8 +237,7 @@ function showUsage() {
           name: 'number',
           alias: 'n',
           typeLabel: '{underline <rule count>}',
-          description:
-            'Specifies the number of synthetic rules to generate',
+          description: 'Specifies the number of synthetic rules to generate',
         },
         {
           name: 'probability',

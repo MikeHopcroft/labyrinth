@@ -35,10 +35,7 @@ interface FactorEntry {
 //   https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
 class KeyToFactorEntry extends Map<string, FactorEntry> {}
 
-export function simplify(
-  dimensions: Dimension[],
-  d: Disjunction
-): Disjunction {
+export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
   const index = new KeyToFactorEntry();
   const queue = new FastPriorityQueue<FactorEntry>((a, b) => {
     return a.conjunctions.size > b.conjunctions.size;

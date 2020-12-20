@@ -1,9 +1,8 @@
-import {Dimension} from '../dimensions';
-import { nopSimplifier } from '../loaders';
+import {nopSimplifier} from '../loaders';
 
 import {Conjunction} from './conjunction';
 import {FormattingOptions} from './formatting';
-import {Simplifier, simplify} from './simplifier';
+import {Simplifier} from './simplifier';
 import {setopsTelemetry, Snapshot, Telemetry} from './telemetry';
 
 export class Disjunction {
@@ -92,9 +91,9 @@ export class Disjunction {
     // If this first subtract operation returns non-empty, we can return
     // false without performing the other, more expensive subtraction.
     const [a, b] =
-      (this.conjunctions.length > other.conjunctions.length)
-      ? [this, other]
-      : [other, this];
+      this.conjunctions.length > other.conjunctions.length
+        ? [this, other]
+        : [other, this];
 
     const aSubB = a.subtract(b, simplifier);
     if (!aSubB.isEmpty) {
@@ -112,7 +111,7 @@ export class Disjunction {
     const factors = other.conjunctions.map(x => x.complement());
 
     return factors.reduce(
-      (acc, cur) => acc.isEmpty() ? acc : simplifier(acc.intersect(cur)),
+      (acc, cur) => (acc.isEmpty() ? acc : simplifier(acc.intersect(cur))),
       this
     );
   }

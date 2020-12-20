@@ -1,16 +1,10 @@
 import {Universe} from '../dimensions';
 import {createRandomPolicy, Random} from '../fuzzer';
 
-import {
-  createSimplifier,
-  denyOverrides,
-  parseRuleSpec,
-  Rule
-} from '../loaders';
+import {createSimplifier, denyOverrides, parseRuleSpec, Rule} from '../loaders';
 
-import {Simplifier, simplify} from '../setops';
+import {Simplifier} from '../setops';
 import {firewallSpec} from '../specs';
-
 
 function go() {
   const universe = new Universe(firewallSpec);
@@ -19,7 +13,7 @@ function go() {
   // This version fails on iteration 7
   // First differs on iteration 6
   // const random = new Random('1234');
-  
+
   for (let i = 1; i < 23; ++i) {
     console.log(`Rule count ${i}`);
 
@@ -37,7 +31,9 @@ function runTest(rules: Rule[], simplifier: Simplifier) {
   const a0 = denyOverrides(rules, simplifier);
   console.log(`  Conjunctions in a: ${a0.conjunctions.length}`);
   const a = simplifier(a0);
-  console.log(`  Conjunctions in a after simplification: ${a.conjunctions.length}`);
+  console.log(
+    `  Conjunctions in a after simplification: ${a.conjunctions.length}`
+  );
 
   const b = denyOverrides(rules, simplifier);
   console.log(`  Conjunctions in b: ${b.conjunctions.length}`);
@@ -50,4 +46,3 @@ function runTest(rules: Rule[], simplifier: Simplifier) {
 }
 
 go();
-

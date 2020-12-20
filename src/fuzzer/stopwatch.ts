@@ -6,8 +6,8 @@ export class Stopwatch {
   }
 
   elaspedMS() {
-    // tslint:disable-next-line:no-any
-    const end: bigint = (process.hrtime as any).bigint();
+    // eslint-disable-next-line node/no-unsupported-features/node-builtins
+    const end: bigint = process.hrtime.bigint();
     return Number(end - this.start) / 1.0e6;
   }
 
@@ -16,7 +16,7 @@ export class Stopwatch {
   }
 
   reset() {
-    // tslint:disable-next-line:no-any
-    this.start = (process.hrtime as any).bigint();
+    // eslint-disable-next-line node/no-unsupported-features/node-builtins
+    this.start = process.hrtime.bigint();
   }
 }

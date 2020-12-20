@@ -1,13 +1,17 @@
 import {Universe} from '../dimensions';
 import {ActionType, Disjunction, RuleSpec} from '../setops';
 
-export function policyStatistics(universe: Universe, policy: RuleSpec[]): string {
+export function policyStatistics(
+  universe: Universe,
+  policy: RuleSpec[]
+): string {
   const lines: string[] = [];
 
-  const allow = universe.dimensions.map(x => 0);
-  const deny = universe.dimensions.map(x => 0);
+  const allow = universe.dimensions.map(() => 0);
+  const deny = universe.dimensions.map(() => 0);
 
   for (const spec of policy) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {action, id, priority, source, ...rest} = spec;
     const count = Object.getOwnPropertyNames(rest).length;
     if (action === ActionType.ALLOW) {
@@ -24,20 +28,23 @@ export function policyStatistics(universe: Universe, policy: RuleSpec[]): string
   lines.push(`Total rules: ${total}`);
   lines.push(`Allow rules: ${totalAllow}`);
   for (const [i, v] of allow.entries()) {
-    lines.push(`  ${i+1}: ${v}`);
+    lines.push(`  ${i + 1}: ${v}`);
   }
   lines.push(`Deny rules: ${totalDeny}`);
   for (const [i, v] of deny.entries()) {
-    lines.push(`  ${i+1}: ${v}`);
+    lines.push(`  ${i + 1}: ${v}`);
   }
 
   return lines.join('\n');
 }
 
-export function expressionStatistics(universe: Universe, expression: Disjunction): string {
+export function expressionStatistics(
+  universe: Universe,
+  expression: Disjunction
+): string {
   const lines: string[] = [];
 
-  const histogram = universe.dimensions.map(x => 0);
+  const histogram = universe.dimensions.map(() => 0);
 
   for (const c of expression.conjunctions) {
     const count = c.dimensions.length;
@@ -45,9 +52,9 @@ export function expressionStatistics(universe: Universe, expression: Disjunction
   }
 
   lines.push(`Total conjunctions: ${expression.conjunctions.length}`);
-  lines.push(`Dimension count histogram:`);
+  lines.push('Dimension count histogram:');
   for (const [i, v] of histogram.entries()) {
-    lines.push(`  ${i+1}: ${v}`);
+    lines.push(`  ${i + 1}: ${v}`);
   }
 
   return lines.join('\n');

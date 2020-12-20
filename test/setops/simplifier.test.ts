@@ -7,7 +7,7 @@ import {
   createSimplifier,
   denyOverrides,
   parseRuleSpec,
-  Rule
+  Rule,
 } from '../../src/loaders';
 
 import {
