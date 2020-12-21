@@ -1,5 +1,24 @@
 # TODO
 
+* Add l-shaped region diagram to simplifier documentation
+* Document current simplifier algorithm and future directions
+* Deprecate (and remove from build and code coverage)
+  * murmurhash simplifier
+  * stuff directory
+  * telemetry
+* Templatize Conjunction
+* Unify rule types (and move rule-related code to rules directory)
+  * FilterRule
+  * ForwardRule
+  * Figure out how Conjunction attribution can hold RuleSpec and ForwardRuleSpec.
+* Move RuleSpec setOps?
+  * Currently in setOps because disjunctions are labeled with RuleSpecs for attribution/provenance.
+* Reserved words
+  * Review across the board.
+  * Special names "node" and "destination" not allowed in forwardRules.
+* Consider graph cycle identification after detection
+* Consider option to represent edges in graph spec.
+  * This would allow one to save routes for later analysis.
 * Refactor for performance
   * repro.ts
     * x Replace universe parameter with simplifier

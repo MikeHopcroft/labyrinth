@@ -8,7 +8,7 @@ import {setopsTelemetry, Snapshot, Telemetry} from './telemetry';
 export class Disjunction {
   conjunctions: Conjunction[];
 
-  static create(conjunctions: Conjunction[]) {
+  static create(conjunctions: Conjunction[]): Disjunction {
     // Simplify conjunction.
     let simplified: Conjunction[] = [];
     for (const c of conjunctions) {
@@ -23,6 +23,14 @@ export class Disjunction {
     }
 
     return new Disjunction(simplified);
+  }
+
+  static emptySet(): Disjunction {
+    return new Disjunction([]);
+  }
+
+  static universe(): Disjunction {
+    return new Disjunction([Conjunction.universe()]);
   }
 
   private constructor(conjunctions: Conjunction[]) {

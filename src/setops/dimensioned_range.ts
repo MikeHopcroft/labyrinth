@@ -8,6 +8,10 @@ export class DimensionedRange {
   readonly dimension: Dimension;
   range: DRange;
 
+  // static emptySet(): DimensionedRange {
+  //   return new DimensionedRange(dimension, new DRange());
+  // }
+
   constructor(dimension: Dimension, range: DRange) {
     // console.log(`NEW DimensionedRange: ${dimension.name}`);
     setopsTelemetry.increment('DimensionedRange');
@@ -28,6 +32,7 @@ export class DimensionedRange {
   }
 
   isUniverse(): boolean {
+    // TODO: more performant implementation.
     const complement = this.dimension.type.domain.clone().subtract(this.range);
     return complement.length === 0;
   }

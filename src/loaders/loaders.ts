@@ -256,13 +256,43 @@ export function loadYamlRulesString(
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {action, id, priority, source, ...rest} = spec;
+  const conjunction = parseConjunction(universe, rest, spec);
+  // let conjunction = Conjunction.create([], new Set([spec]));
+
+  // for (const key of Object.getOwnPropertyNames(rest)) {
+  //   const dimension = universe.get(key);
+
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   let value = (rest as any)[key];
+  //   if (typeof value === 'number') {
+  //     value = value.toString();
+  //   } else if (typeof value !== 'string') {
+  //     const message = `${key}: expected a string value.`;
+  //     throw new TypeError(message);
+  //   }
+  //   conjunction = conjunction.intersect(
+  //     Conjunction.create(
+  //       [new DimensionedRange(dimension, dimension.parse(value))],
+  //       new Set<RuleSpec>()
+  //     )
+  //   );
+  // }
+
+  return {action, priority, conjunction, spec};
+}
+
+export function parseConjunction(
+  universe: Universe,
+  fields: {},
+  spec: RuleSpec
+): Conjunction {
   let conjunction = Conjunction.create([], new Set([spec]));
 
-  for (const key of Object.getOwnPropertyNames(rest)) {
+  for (const key of Object.getOwnPropertyNames(fields)) {
     const dimension = universe.get(key);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let value = (rest as any)[key];
+    let value = (fields as any)[key];
     if (typeof value === 'number') {
       value = value.toString();
     } else if (typeof value !== 'string') {
@@ -277,5 +307,5 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
     );
   }
 
-  return {action, priority, conjunction, spec};
+  return conjunction;
 }

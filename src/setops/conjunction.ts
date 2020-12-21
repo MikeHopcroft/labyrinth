@@ -40,6 +40,11 @@ export class Conjunction {
     return new Conjunction(simplified, rules);
   }
 
+  // TODO: REVIEW: should constructor take attribution set?
+  static universe(): Conjunction {
+    return new Conjunction([], new Set<RuleSpec>());
+  }
+
   // TODO: REVIEW: what is use case for constructor other than call from Factory?
   // Can the two be combined?
   private constructor(dimensions: DimensionedRange[], rules: Set<RuleSpec>) {
