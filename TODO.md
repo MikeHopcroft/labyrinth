@@ -2,10 +2,10 @@
 
 * Add l-shaped region diagram to simplifier documentation
 * Document current simplifier algorithm and future directions
-* Deprecate (and remove from build and code coverage)
-  * murmurhash simplifier
-  * stuff directory
-  * telemetry
+* x Deprecate (and remove from build and code coverage)
+  * x murmurhash simplifier
+  * x stuff directory
+  * x telemetry
 * Templatize Conjunction
 * Unify rule types (and move rule-related code to rules directory)
   * FilterRule

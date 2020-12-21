@@ -1,9 +1,9 @@
 import DRange from 'drange';
 import FastPriorityQueue from 'fastpriorityqueue';
 
-import {Dimension} from '../dimensions';
-import {Conjunction, DimensionedRange, Disjunction} from '../setops';
-import {combineSets} from '../utilities';
+import {Dimension} from '../../dimensions';
+import {Conjunction, DimensionedRange, Disjunction} from '../../setops';
+import {combineSets} from '../../utilities';
 
 import {Hasher} from './hash';
 

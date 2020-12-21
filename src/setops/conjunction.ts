@@ -6,7 +6,6 @@ import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
 import {FormattingOptions} from './formatting';
 import {RuleSpec} from './ruleSpec';
-import {setopsTelemetry} from './telemetry';
 
 // Represents a Conjunction of DRanges associated with Dimensions.
 export class Conjunction {
@@ -48,7 +47,6 @@ export class Conjunction {
   // TODO: REVIEW: what is use case for constructor other than call from Factory?
   // Can the two be combined?
   private constructor(dimensions: DimensionedRange[], rules: Set<RuleSpec>) {
-    setopsTelemetry.increment('Conjunction');
     this.dimensions = dimensions;
     this.rules = rules;
   }

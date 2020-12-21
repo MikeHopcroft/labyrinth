@@ -4,4 +4,3 @@ export * from './disjunction';
 export * from './formatting';
 export * from './ruleSpec';
 export * from './simplifier';
-export * from './telemetry';
