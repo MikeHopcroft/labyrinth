@@ -3,12 +3,12 @@ import {createRandomPolicy, Random} from '../fuzzer';
 
 import {createSimplifier, denyOverrides, parseRuleSpec, Rule} from '../loaders';
 
-import {Simplifier} from '../setops';
+import {RuleSpec, Simplifier} from '../setops';
 import {firewallSpec} from '../specs';
 
 function go() {
   const universe = new Universe(firewallSpec);
-  const simplifier = createSimplifier(universe);
+  const simplifier = createSimplifier<RuleSpec>(universe);
 
   // This version fails on iteration 7
   // First differs on iteration 6
@@ -27,7 +27,7 @@ function go() {
   }
 }
 
-function runTest(rules: Rule[], simplifier: Simplifier) {
+function runTest(rules: Rule[], simplifier: Simplifier<RuleSpec>) {
   const a0 = denyOverrides(rules, simplifier);
   console.log(`  Conjunctions in a: ${a0.conjunctions.length}`);
   const a = simplifier(a0);

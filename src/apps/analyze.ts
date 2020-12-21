@@ -18,6 +18,8 @@ import {
   FormatAttribution,
   formatRules,
   FormattingOptions,
+  RuleSpec,
+  ruleSpecSetFormatter,
   simplify,
 } from '../setops';
 
@@ -37,7 +39,7 @@ function main() {
   }
 
   try {
-    let evaluator: Evaluator;
+    let evaluator: Evaluator<RuleSpec>;
     if (args.m === 'firstApplicable' || args.m === 'f') {
       console.log('Mode is firstApplicable.');
       evaluator = firstApplicable;
@@ -54,13 +56,13 @@ function main() {
     }
     console.log();
 
-    const formatOptions: FormattingOptions = {
+    const formatOptions: FormattingOptions<RuleSpec> = {
       prefix: '  ',
     };
     if (args.a === 'id') {
-      formatOptions.attribution = FormatAttribution.RULE_ID;
+      formatOptions.attribution = ruleSpecSetFormatter(FormatAttribution.RULE_ID);
     } else if (args.a === 'line' || args.a === true) {
-      formatOptions.attribution = FormatAttribution.LINE_NUMBER;
+      formatOptions.attribution = ruleSpecSetFormatter(FormatAttribution.LINE_NUMBER);
     } else if (args.a) {
       const message = `Unknown attribution option "${args.a}"`;
       throw new TypeError(message);
@@ -70,7 +72,7 @@ function main() {
     const universe = args.u
       ? Universe.fromYamlFile(args.u)!
       : new Universe(firewallSpec);
-    const simplifier = createSimplifier(universe);
+    const simplifier = createSimplifier<RuleSpec>(universe);
 
     // Load rules1.
     const policy = loadRulesFile(universe, args._[0], {source: 'policy'});

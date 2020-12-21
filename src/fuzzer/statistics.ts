@@ -40,7 +40,7 @@ export function policyStatistics(
 
 export function expressionStatistics(
   universe: Universe,
-  expression: Disjunction
+  expression: Disjunction<RuleSpec>
 ): string {
   const lines: string[] = [];
 

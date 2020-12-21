@@ -77,7 +77,7 @@ const universeSpec: UniverseSpec = {
 };
 
 const universe = new Universe(universeSpec);
-const simplifier = createSimplifier(universe);
+const simplifier = createSimplifier<RuleSpecEx>(universe);
 
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {

@@ -285,7 +285,7 @@ export function parseConjunction(
   universe: Universe,
   fields: {},
   spec: RuleSpec
-): Conjunction {
+): Conjunction<RuleSpec> {
   let conjunction = Conjunction.create([], new Set([spec]));
 
   for (const key of Object.getOwnPropertyNames(fields)) {

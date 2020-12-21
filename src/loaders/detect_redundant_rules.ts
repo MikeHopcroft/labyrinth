@@ -5,9 +5,9 @@ import {nopSimplifier} from './create_simplifier';
 import {Rule} from './rule';
 
 export function detectRedundantRules(
-  evaluator: Evaluator,
+  evaluator: Evaluator<RuleSpec>,
   rules: Rule[],
-  simplify: Simplifier = nopSimplifier
+  simplify: Simplifier<RuleSpec> = nopSimplifier
 ): RuleSpec[] {
   const redundant: RuleSpec[] = [];
 

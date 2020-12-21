@@ -4,12 +4,21 @@ import {Conjunction} from './conjunction';
 import {FormattingOptions} from './formatting';
 import {Simplifier} from './simplifier';
 
-export class Disjunction {
-  conjunctions: Conjunction[];
+///////////////////////////////////////////////////////////////////////////////
+//
+// Represents the disjunction or union of a collection of Conjunctions.
+//
+// A Disjunction is the normal form for a set theoretic representation of a
+// set of tuples.
+// TODO: write a more formal definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+export class Disjunction<A> {
+  conjunctions: Conjunction<A>[];
 
-  static create(conjunctions: Conjunction[]): Disjunction {
+  static create<A>(conjunctions: Conjunction<A>[]): Disjunction<A> {
     // Simplify conjunction.
-    let simplified: Conjunction[] = [];
+    let simplified: Conjunction<A>[] = [];
     for (const c of conjunctions) {
       if (c.isUniverse()) {
         // X | 1 = 1
@@ -24,15 +33,15 @@ export class Disjunction {
     return new Disjunction(simplified);
   }
 
-  static emptySet(): Disjunction {
-    return new Disjunction([]);
+  static emptySet<A>(): Disjunction<A> {
+    return new Disjunction<A>([]);
   }
 
-  static universe(): Disjunction {
-    return new Disjunction([Conjunction.universe()]);
+  static universe<A>(): Disjunction<A> {
+    return new Disjunction<A>([Conjunction.universe()]);
   }
 
-  private constructor(conjunctions: Conjunction[]) {
+  private constructor(conjunctions: Conjunction<A>[]) {
     this.conjunctions = conjunctions;
   }
 
@@ -44,8 +53,8 @@ export class Disjunction {
     return this.conjunctions.length === 1 && this.conjunctions[0].isUniverse();
   }
 
-  intersect(other: Disjunction): Disjunction {
-    let terms: Conjunction[] = [];
+  intersect(other: Disjunction<A>): Disjunction<A> {
+    let terms: Conjunction<A>[] = [];
     for (const t1 of this.conjunctions) {
       for (const t2 of other.conjunctions) {
         const t = t1.intersect(t2);
@@ -66,7 +75,7 @@ export class Disjunction {
     return new Disjunction(terms);
   }
 
-  union(other: Disjunction): Disjunction {
+  union(other: Disjunction<A>): Disjunction<A> {
     let terms = [...this.conjunctions];
     for (const t of other.conjunctions) {
       if (t.isEmpty()) {
@@ -90,8 +99,8 @@ export class Disjunction {
   }
 
   equivalent(
-    other: Disjunction,
-    simplifier: Simplifier = nopSimplifier
+    other: Disjunction<A>,
+    simplifier: Simplifier<A> = nopSimplifier
   ): boolean {
     // For performance, subtract smaller expression from larger expression.
     // If this first subtract operation returns non-empty, we can return
@@ -111,9 +120,9 @@ export class Disjunction {
   }
 
   subtract(
-    other: Disjunction,
-    simplifier: Simplifier = nopSimplifier
-  ): Disjunction {
+    other: Disjunction<A>,
+    simplifier: Simplifier<A> = nopSimplifier
+  ): Disjunction<A> {
     const factors = other.conjunctions.map(x => x.complement());
 
     return factors.reduce(
@@ -122,7 +131,7 @@ export class Disjunction {
     );
   }
 
-  format(options: FormattingOptions = {}) {
+  format(options: FormattingOptions<A> = {}) {
     const lines = this.conjunctions.map(c => c.format(options));
     return lines.join('\n\n');
   }

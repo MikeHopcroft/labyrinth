@@ -6,12 +6,12 @@ export interface Rule {
   spec: RuleSpec;
   action: ActionType;
   priority: number;
-  conjunction: Conjunction;
+  conjunction: Conjunction<RuleSpec>;
 }
 
 export function formatRule(
   rule: Rule,
-  options: FormattingOptions = {}
+  options: FormattingOptions<RuleSpec> = {}
 ): string {
   const prefix = options.prefix || '';
   return `${prefix}action: ${rule.action}\n${prefix}priority: ${

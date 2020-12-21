@@ -1,12 +1,16 @@
 # TODO
 
+* Prove lemma about intersection of minimal forms in documentation.
 * Add l-shaped region diagram to simplifier documentation
 * Document current simplifier algorithm and future directions
 * x Deprecate (and remove from build and code coverage)
   * x murmurhash simplifier
   * x stuff directory
   * x telemetry
-* Templatize Conjunction
+  * x Conjunction.toString()
+  * x Conjunction.numbers()
+* x Templatize Conjunction
+  * x Reinstate attribution formatter
 * Unify rule types (and move rule-related code to rules directory)
   * FilterRule
   * ForwardRule

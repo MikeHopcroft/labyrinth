@@ -167,7 +167,7 @@ describe('Disjunction', () => {
         ),
       ]);
 
-      const b = Disjunction.create([]);
+      const b = Disjunction.create<RuleSpec>([]);
 
       const c = a.intersect(b);
       const values = [...disjunctionValues([x, y], c).values()];

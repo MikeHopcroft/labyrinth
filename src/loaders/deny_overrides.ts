@@ -1,4 +1,4 @@
-import {ActionType, Disjunction, Simplifier} from '../setops';
+import {ActionType, Disjunction, RuleSpec, Simplifier} from '../setops';
 
 import {nopSimplifier} from './create_simplifier';
 import {Rule} from './rule';
@@ -11,8 +11,8 @@ interface RuleGroup {
 
 export function denyOverrides(
   rules: Rule[],
-  simplify: Simplifier = nopSimplifier
-): Disjunction {
+  simplify: Simplifier<RuleSpec> = nopSimplifier
+): Disjunction<RuleSpec> {
   // Sort rules by ascending priority.
   const sorted = [...rules].sort((a: Rule, b: Rule) => {
     return a.priority - b.priority;
@@ -38,7 +38,7 @@ export function denyOverrides(
   }
 
   // Default to empty set.
-  let expression = Disjunction.create([]);
+  let expression = Disjunction.create<RuleSpec>([]);
 
   for (const g of groups) {
     for (const r of g.allow) {

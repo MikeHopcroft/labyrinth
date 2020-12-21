@@ -12,11 +12,12 @@ import {
   loadYamlRulesString,
 } from '../../src/loaders';
 
+import {RuleSpec} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 import {stripLeadingSpaces} from '../shared';
 
 const universe = new Universe(firewallSpec);
-const simplifier = createSimplifier(universe);
+const simplifier = createSimplifier<RuleSpec>(universe);
 
 const policy1Yaml = `
 rules:

@@ -1,18 +1,25 @@
-import {Dimension} from '../dimensions';
-import DRange from 'drange';
 import {combineSets} from '../utilities';
 
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
 import {FormattingOptions} from './formatting';
-import {RuleSpec} from './ruleSpec';
 
-// Represents a Conjunction of DRanges associated with Dimensions.
-export class Conjunction {
+///////////////////////////////////////////////////////////////////////////////
+//
+// Represents the conjunction of a set DimensionedRanges.
+//
+// A Conjunction represents a set of tuples.
+// TODO: write a more formal definition.
+//
+///////////////////////////////////////////////////////////////////////////////
+export class Conjunction<A> {
   dimensions: DimensionedRange[];
-  rules: Set<RuleSpec>;
+  rules: Set<A>;
 
-  static create(dimensions: DimensionedRange[], rules: Set<RuleSpec>) {
+  static create<A>(
+    dimensions: DimensionedRange[],
+    rules: Set<A>
+  ): Conjunction<A> {
     // Verify dimensions are in increaing order, no duplicates
     for (let i = 0; i < dimensions.length - 1; ++i) {
       if (dimensions[i].dimension.id >= dimensions[i + 1].dimension.id) {
@@ -40,13 +47,13 @@ export class Conjunction {
   }
 
   // TODO: REVIEW: should constructor take attribution set?
-  static universe(): Conjunction {
-    return new Conjunction([], new Set<RuleSpec>());
+  static universe<A>(): Conjunction<A> {
+    return new Conjunction([], new Set<A>());
   }
 
   // TODO: REVIEW: what is use case for constructor other than call from Factory?
   // Can the two be combined?
-  private constructor(dimensions: DimensionedRange[], rules: Set<RuleSpec>) {
+  private constructor(dimensions: DimensionedRange[], rules: Set<A>) {
     this.dimensions = dimensions;
     this.rules = rules;
   }
@@ -59,7 +66,7 @@ export class Conjunction {
     return this.dimensions.length === 0;
   }
 
-  intersect(other: Conjunction): Conjunction {
+  intersect(other: Conjunction<A>): Conjunction<A> {
     const rules = combineSets([this.rules, other.rules]);
     let i1 = 0;
     let i2 = 0;
@@ -106,7 +113,7 @@ export class Conjunction {
     return new Conjunction(dimensions, rules);
   }
 
-  complement(): Disjunction {
+  complement(): Disjunction<A> {
     if (this.isUniverse()) {
       // Complement is the empty disjunction.
       return Disjunction.create([]);
@@ -122,61 +129,15 @@ export class Conjunction {
     }
   }
 
-  numbers(dimension: Dimension): number[] {
-    for (const factor of this.dimensions) {
-      if (factor.dimension === dimension) {
-        return factor.range.numbers();
-      }
-    }
-    return dimension.type.domain.numbers();
-  }
-
-  toString(): string {
-    return (
-      this.dimensions
-        .map(d => {
-          return d.toString();
-        })
-        .join('\n') + '\n'
-    );
-  }
-
-  format(options: FormattingOptions = {}): string {
+  format(options: FormattingOptions<A> = {}): string {
     const prefix = options.prefix || '';
-    const lines = options.attribution ? formatRules(this.rules, options) : [];
+    const lines = 
+      options.attribution
+      ? options.attribution(this.rules, options.prefix)
+      : [];
     this.dimensions.map(d => {
       lines.push(d.format(prefix));
     });
     return lines.join('\n');
   }
-}
-
-// TODO: rename to formatRules() formatRulesAttributions()
-export function formatRules(
-  rules: Set<RuleSpec>,
-  options: FormattingOptions = {}
-): string[] {
-  // First group specs by source.
-  const sourceToSpecs = new Map<string, RuleSpec[]>();
-  for (const spec of rules.values()) {
-    const specs = sourceToSpecs.get(spec.source);
-    if (specs === undefined) {
-      sourceToSpecs.set(spec.source, [spec]);
-    } else {
-      specs.push(spec);
-    }
-  }
-
-  const prefix = options.prefix || '';
-  const lines: string[] = [];
-  for (const [source, specs] of sourceToSpecs.entries()) {
-    const ids = specs.map(x => x.id);
-    const range = new DRange();
-    ids.map(x => {
-      range.add(x);
-    });
-    const idText = range.toString().slice(2, -2);
-    lines.push(`${prefix}${source} rules: ${idText}`);
-  }
-  return lines;
 }

@@ -10,7 +10,7 @@ import {ForwardRuleSpecEx, GraphSpec, NodeSpec} from './types';
 //
 ///////////////////////////////////////////////////////////////////////////////
 export interface ForwardRule {
-  conjunction: Conjunction;
+  conjunction: Conjunction<ForwardRuleSpecEx>;
   destination: string;
 }
 
@@ -27,7 +27,7 @@ function parseForwardRuleSpec(
 export interface Edge {
   from: string;
   to: string;
-  routes: Disjunction;
+  routes: Disjunction<ForwardRuleSpecEx>;
 }
 
 export class Node {
@@ -64,8 +64,8 @@ export class Node {
 
   forwardRoutes(graph: Graph) {
     // Construct outgoing routes
-    const keyToRoute = new Map<string, Disjunction>();
-    let remaining = Disjunction.universe();
+    const keyToRoute = new Map<string, Disjunction<ForwardRuleSpecEx>>();
+    let remaining = Disjunction.universe<ForwardRuleSpecEx>();
     for (const rule of this.rules) {
       const allowed = Disjunction.create([rule.conjunction]);
       const current = allowed.intersect(remaining);
@@ -88,7 +88,7 @@ export class Node {
 }
 
 export class Graph {
-  simplifier: Simplifier;
+  simplifier: Simplifier<ForwardRuleSpecEx>;
   keyToNode = new Map<string, Node>();
   ready: Node[] = [];
   edges: Edge[] = [];
@@ -96,7 +96,7 @@ export class Graph {
   constructor(
     universe: Universe,
     graphSpec: GraphSpec,
-    simplifier: Simplifier
+    simplifier: Simplifier<ForwardRuleSpecEx>
   ) {
     this.simplifier = simplifier;
 

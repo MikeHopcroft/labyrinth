@@ -1,9 +1,9 @@
 import {Dimension} from '../../src/dimensions';
 import {Conjunction, Disjunction} from '../../src/setops';
 
-export function disjunctionValues(
+export function disjunctionValues<A>(
   dimensions: Dimension[],
-  disjunction: Disjunction
+  disjunction: Disjunction<A>
 ): Set<string> {
   const values = new Set<string>();
   for (const c of disjunction.conjunctions) {
@@ -14,12 +14,26 @@ export function disjunctionValues(
   return values;
 }
 
-function* conjunctionValues(
+function* conjunctionValues<A>(
   dimensions: Dimension[],
-  conjunction: Conjunction
+  conjunction: Conjunction<A>
 ): IterableIterator<number[]> {
-  const values: number[][] = dimensions.map(d => conjunction.numbers(d));
+  const values: number[][] = dimensions.map(
+    d => conjunctionDimensionValues(conjunction, d)
+  );
   yield* crossProduct(values);
+}
+
+function conjunctionDimensionValues<A>(
+  c: Conjunction<A>,
+  dimension: Dimension
+): number[] {
+  for (const factor of c.dimensions) {
+    if (factor.dimension === dimension) {
+      return factor.range.numbers();
+    }
+  }
+  return dimension.type.domain.numbers();
 }
 
 export function* crossProduct(

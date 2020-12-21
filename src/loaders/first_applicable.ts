@@ -1,20 +1,20 @@
-import {ActionType, Disjunction, Simplifier} from '../setops';
+import {ActionType, Disjunction, RuleSpec, Simplifier} from '../setops';
 
 import {nopSimplifier} from './create_simplifier';
 import {Rule} from './rule';
 
 export function firstApplicable(
   rules: Rule[],
-  simplify: Simplifier = nopSimplifier
-): Disjunction {
+  simplify: Simplifier<RuleSpec> = nopSimplifier
+): Disjunction<RuleSpec> {
   return buildExpression(0, rules, simplify);
 }
 
 function buildExpression(
   index: number,
   rules: Rule[],
-  simplify: Simplifier
-): Disjunction {
+  simplify: Simplifier<RuleSpec>
+): Disjunction<RuleSpec> {
   if (index === rules.length) {
     return Disjunction.create([]);
   } else {

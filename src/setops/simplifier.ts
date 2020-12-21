@@ -8,39 +8,56 @@ import {Conjunction} from './conjunction';
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
 
+// Set expression simplifier.
+//
+// Approach is similar to the prime implicant combination phase in the
+// Quine-McCluskey algorithm. The main difference is that that algorithm
+// unions the sets in the excluded dimension, while Quine-McCluskey
+// combines true and false into "don't care" values.
+//
+// This simplifier currently does not perform an analog to Petrick's
+// algorithm. One consequence is that expressions are not always simplified
+// to their minimal form. This means that simplification may be needed
+// after set intersection. Normally, the intersection of two minimal forms
+// results in a minimal form without further simplification.
+// TODO: present a proof of above lemma in documentation.
+//
 // See also this article on boolean expression simplification.
 //   https://en.wikipedia.org/wiki/Quine%E2%80%93McCluskey_algorithm
 //   https://en.wikipedia.org/wiki/Petrick%27s_method
 
-export type Simplifier = (d: Disjunction) => Disjunction;
+export type Simplifier<A> = (d: Disjunction<A>) => Disjunction<A>;
 
-interface ConjunctionInfo {
-  conjunction: Conjunction;
-  factors: FactorInfo[];
+interface ConjunctionInfo<A> {
+  conjunction: Conjunction<A>;
+  factors: FactorInfo<A>[];
 }
 
-interface FactorInfo {
+interface FactorInfo<A> {
   key: string;
   dimension: Dimension;
-  conjunction: ConjunctionInfo;
+  conjunction: ConjunctionInfo<A>;
 }
 
-interface FactorEntry {
+interface FactorEntry<A> {
   key: string;
   dimension: Dimension;
-  conjunctions: Set<FactorInfo>;
+  conjunctions: Set<FactorInfo<A>>;
 }
 
 // Can't define a type alias here because we want to be able to use new.
 //   https://stackoverflow.com/questions/40982470/how-to-alias-complex-type-constructor-in-typescript
-class KeyToFactorEntry extends Map<string, FactorEntry> {}
+class KeyToFactorEntry<A> extends Map<string, FactorEntry<A>> {}
 
-export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
-  const index = new KeyToFactorEntry();
-  const queue = new FastPriorityQueue<FactorEntry>((a, b) => {
+export function simplify<A>(
+  dimensions: Dimension[],
+  d: Disjunction<A>
+): Disjunction<A> {
+  const index = new KeyToFactorEntry<A>();
+  const queue = new FastPriorityQueue<FactorEntry<A>>((a, b) => {
     return a.conjunctions.size > b.conjunctions.size;
   });
-  const terms = new Set<ConjunctionInfo>();
+  const terms = new Set<ConjunctionInfo<A>>();
 
   for (const c of d.conjunctions) {
     const info = createConjunctionInfo(dimensions, c);
@@ -60,17 +77,17 @@ export function simplify(dimensions: Dimension[], d: Disjunction): Disjunction {
     combine(dimensions, index, queue, terms, entry);
   }
 
-  return Disjunction.create([...terms.values()].map(x => x.conjunction));
+  return Disjunction.create<A>([...terms.values()].map(x => x.conjunction));
 }
 
-export function createConjunctionInfo(
+export function createConjunctionInfo<A>(
   // TODO: replace Dimension[] with DimensionSet object that enforces
   // monotonic ids.
   dimensions: Dimension[],
-  conjunction: Conjunction
-): ConjunctionInfo {
-  const factors: FactorInfo[] = [];
-  const info: ConjunctionInfo = {conjunction, factors};
+  conjunction: Conjunction<A>
+): ConjunctionInfo<A> {
+  const factors: FactorInfo<A>[] = [];
+  const info: ConjunctionInfo<A> = {conjunction, factors};
 
   let i = 0;
   const lines: string[] = [];
@@ -90,7 +107,7 @@ export function createConjunctionInfo(
 
   for (const [i, dimension] of dimensions.entries()) {
     const save = lines[i];
-    lines[i] = `[${dimension.key}]`; //'';
+    lines[i] = `[${dimension.key}]`;
     const key = lines.join('\n');
     factors.push({
       key,
@@ -103,12 +120,12 @@ export function createConjunctionInfo(
   return info;
 }
 
-function combine(
+function combine<A>(
   dimensions: Dimension[],
-  index: KeyToFactorEntry,
-  queue: FastPriorityQueue<FactorEntry>,
-  terms: Set<ConjunctionInfo>,
-  entry: FactorEntry
+  index: KeyToFactorEntry<A>,
+  queue: FastPriorityQueue<FactorEntry<A>>,
+  terms: Set<ConjunctionInfo<A>>,
+  entry: FactorEntry<A>
 ) {
   //
   // Make new, combined conjunction
@@ -121,7 +138,7 @@ function combine(
   // First merge ranges that are on entry.dimension.
   const dimension = entry.dimension;
   let combinedRange = new DimensionedRange(dimension, new DRange());
-  let firstConjunction: Conjunction | undefined = undefined;
+  let firstConjunction: Conjunction<A> | undefined = undefined;
   for (const c of entry.conjunctions) {
     if (!firstConjunction) {
       firstConjunction = c.conjunction.conjunction;
@@ -176,11 +193,11 @@ function combine(
   addConjunction(index, queue, terms, combined);
 }
 
-function addConjunction(
-  index: KeyToFactorEntry,
-  queue: FastPriorityQueue<FactorEntry>,
-  terms: Set<ConjunctionInfo>,
-  conjunction: ConjunctionInfo
+function addConjunction<A>(
+  index: KeyToFactorEntry<A>,
+  queue: FastPriorityQueue<FactorEntry<A>>,
+  terms: Set<ConjunctionInfo<A>>,
+  conjunction: ConjunctionInfo<A>
 ) {
   if (terms.has(conjunction)) {
     const message = 'Duplicate conjunction';
@@ -198,10 +215,10 @@ function addConjunction(
       entry.conjunctions.add(f);
       queue.add(entry);
     } else {
-      const entry: FactorEntry = {
+      const entry: FactorEntry<A> = {
         key: f.key,
         dimension: f.dimension,
-        conjunctions: new Set<FactorInfo>([f]),
+        conjunctions: new Set<FactorInfo<A>>([f]),
       };
       index.set(f.key, entry);
       queue.add(entry);
@@ -209,11 +226,11 @@ function addConjunction(
   }
 }
 
-function removeConjunction(
-  index: KeyToFactorEntry,
-  queue: FastPriorityQueue<FactorEntry>,
-  terms: Set<ConjunctionInfo>,
-  conjunction: ConjunctionInfo
+function removeConjunction<A>(
+  index: KeyToFactorEntry<A>,
+  queue: FastPriorityQueue<FactorEntry<A>>,
+  terms: Set<ConjunctionInfo<A>>,
+  conjunction: ConjunctionInfo<A>
 ) {
   if (!terms.has(conjunction)) {
     const message = 'Conjunction not found in terms';
