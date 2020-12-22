@@ -131,8 +131,7 @@ export class Conjunction<A> {
 
   format(options: FormattingOptions<A> = {}): string {
     const prefix = options.prefix || '';
-    const lines = 
-      options.attribution
+    const lines = options.attribution
       ? options.attribution(this.rules, options.prefix)
       : [];
     this.dimensions.map(d => {

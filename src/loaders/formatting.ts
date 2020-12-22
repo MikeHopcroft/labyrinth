@@ -1,13 +1,10 @@
 import DRange from 'drange';
 
-import {
-  AttributionFormatter,
-  FormatAttribution,
-  FormattingOptions
-} from '../setops';
+import {FormatAttribution} from '../setops';
 
 import {RuleSpec} from './ruleSpec';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function ruleSpecSetFormatter(style: FormatAttribution) {
   return formatRuleSpecSet;
   // TODO: evantually configure based on style. Something like
@@ -17,10 +14,7 @@ export function ruleSpecSetFormatter(style: FormatAttribution) {
 }
 
 // TODO: add support for FormatAttribution.RULE_ID.
-export function formatRuleSpecSet(
-  rules: Set<RuleSpec>,
-  prefix = ''
-): string[] {
+export function formatRuleSpecSet(rules: Set<RuleSpec>, prefix = ''): string[] {
   // First group specs by source.
   const sourceToSpecs = new Map<string, RuleSpec[]>();
   for (const spec of rules.values()) {

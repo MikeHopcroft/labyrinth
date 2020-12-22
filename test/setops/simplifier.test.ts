@@ -14,7 +14,7 @@ import {
 import {
   createConjunctionInfo,
   createSimplifier,
-  simplify
+  simplify,
 } from '../../src/setops';
 
 const universeSpec: UniverseSpec = {

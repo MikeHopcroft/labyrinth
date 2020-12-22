@@ -18,8 +18,8 @@ function* conjunctionValues<A>(
   dimensions: Dimension[],
   conjunction: Conjunction<A>
 ): IterableIterator<number[]> {
-  const values: number[][] = dimensions.map(
-    d => conjunctionDimensionValues(conjunction, d)
+  const values: number[][] = dimensions.map(d =>
+    conjunctionDimensionValues(conjunction, d)
   );
   yield* crossProduct(values);
 }

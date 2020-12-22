@@ -1,5 +1,4 @@
 import {Universe} from '../dimensions';
-import {parseConjunction} from '../loaders';
 import {Conjunction, Disjunction, Simplifier} from '../setops';
 
 import {ForwardRuleSpecEx, GraphSpec, NodeSpec} from './types';
@@ -56,7 +55,7 @@ export class Node {
   }
 
   forwardMarks(graph: Graph) {
-    const destinations = new Set<string>(this.rules.map(x => 'out'));
+    const destinations = new Set<string>(this.rules.map(() => 'out'));
     for (const key of destinations) {
       graph.node(key).mark();
     }

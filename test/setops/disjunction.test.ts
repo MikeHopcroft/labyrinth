@@ -5,11 +5,7 @@ import 'mocha';
 import {Dimension, DimensionType} from '../../src/dimensions';
 import {RuleSpec} from '../../src/loaders';
 
-import {
-  Conjunction,
-  DimensionedRange,
-  Disjunction,
-} from '../../src/setops';
+import {Conjunction, DimensionedRange, Disjunction} from '../../src/setops';
 
 import {disjunctionValues} from '../shared';
 

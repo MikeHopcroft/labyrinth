@@ -1,12 +1,7 @@
 import {Universe} from '../dimensions';
 import {createRandomPolicy, Random} from '../fuzzer';
 
-import {
-  denyOverrides,
-  parseRuleSpec,
-  Rule,
-  RuleSpec
-} from '../loaders';
+import {denyOverrides, parseRuleSpec, Rule, RuleSpec} from '../loaders';
 
 import {createSimplifier, Simplifier} from '../setops';
 import {firewallSpec} from '../specs';

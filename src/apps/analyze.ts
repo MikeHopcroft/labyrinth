@@ -60,9 +60,13 @@ function main() {
       prefix: '  ',
     };
     if (args.a === 'id') {
-      formatOptions.attribution = ruleSpecSetFormatter(FormatAttribution.RULE_ID);
+      formatOptions.attribution = ruleSpecSetFormatter(
+        FormatAttribution.RULE_ID
+      );
     } else if (args.a === 'line' || args.a === true) {
-      formatOptions.attribution = ruleSpecSetFormatter(FormatAttribution.LINE_NUMBER);
+      formatOptions.attribution = ruleSpecSetFormatter(
+        FormatAttribution.LINE_NUMBER
+      );
     } else if (args.a) {
       const message = `Unknown attribution option "${args.a}"`;
       throw new TypeError(message);
