@@ -1,8 +1,7 @@
-import {ActionType, RuleSpec} from '../loaders';
-import {Disjunction, Simplifier} from '../setops';
+import {Disjunction, nopSimplifier, Simplifier} from '../setops';
 
-import {nopSimplifier} from '../setops/create_simplifier';
 import {Rule} from './rule';
+import {ActionType, RuleSpec} from './ruleSpec';
 
 interface RuleGroup {
   priority: number;

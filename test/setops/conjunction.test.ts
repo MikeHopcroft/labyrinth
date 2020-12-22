@@ -3,7 +3,7 @@ import DRange from 'drange';
 import 'mocha';
 
 import {Dimension, DimensionType} from '../../src/dimensions';
-import {RuleSpec} from '../../src/loaders';
+import {RuleSpec} from '../../src/rules';
 import {Conjunction, DimensionedRange} from '../../src/setops';
 
 const dimension0Type = new DimensionType({

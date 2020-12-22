@@ -1,5 +1,5 @@
 import {Universe} from '../dimensions';
-import {ActionType, RuleSpec} from '../loaders';
+import {ActionType, RuleSpec} from '../rules';
 import {Disjunction} from '../setops';
 
 export function policyStatistics(

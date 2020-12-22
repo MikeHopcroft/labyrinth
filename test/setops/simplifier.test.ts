@@ -9,7 +9,7 @@ import {
   parseRuleSpec,
   Rule,
   RuleSpecEx,
-} from '../../src/loaders';
+} from '../../src/rules';
 
 import {
   createConjunctionInfo,

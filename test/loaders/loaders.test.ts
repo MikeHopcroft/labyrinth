@@ -10,7 +10,7 @@ import {
   loadCsvRulesString,
   loadYamlRulesString,
   RuleSpec,
-} from '../../src/loaders';
+} from '../../src/rules';
 
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';

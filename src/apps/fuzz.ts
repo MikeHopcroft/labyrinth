@@ -22,7 +22,7 @@ import {
   parseRuleSpec,
   RuleSpec,
   ruleSpecSetFormatter,
-} from '../loaders';
+} from '../rules';
 
 import {
   createSimplifier,

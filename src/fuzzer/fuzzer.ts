@@ -1,9 +1,9 @@
 import DRange from 'drange';
 
 import {Universe} from '../dimensions';
-import {Random} from './random';
+import {ActionType, RuleSpec, RuleSpecEx, RuleSpecSet} from '../rules';
 
-import {ActionType, RuleSpec, RuleSpecEx, RuleSpecSet} from '../loaders';
+import {Random} from './random';
 
 export function createRandomPolicy(
   universe: Universe,

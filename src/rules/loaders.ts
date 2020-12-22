@@ -5,6 +5,10 @@ import yaml from 'js-yaml';
 import path from 'path';
 
 import {Universe} from '../dimensions';
+import {Conjunction, DimensionedRange} from '../setops';
+import {PeekableSequence, validate} from '../utilities';
+
+import {Rule} from './rule';
 
 import {
   RuleSpec,
@@ -12,12 +16,7 @@ import {
   ruleSpecType,
   ruleSpecSetType,
   ruleSpecNoIdSetType,
-} from '../loaders';
-
-import {Conjunction, DimensionedRange} from '../setops';
-import {PeekableSequence, validate} from '../utilities';
-
-import {Rule} from './rule';
+} from './ruleSpec';
 
 interface LoaderOptions {
   extension?: string;
