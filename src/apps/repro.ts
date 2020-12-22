@@ -1,9 +1,14 @@
 import {Universe} from '../dimensions';
 import {createRandomPolicy, Random} from '../fuzzer';
 
-import {createSimplifier, denyOverrides, parseRuleSpec, Rule} from '../loaders';
+import {
+  denyOverrides,
+  parseRuleSpec,
+  Rule,
+  RuleSpec
+} from '../loaders';
 
-import {RuleSpec, Simplifier} from '../setops';
+import {createSimplifier, Simplifier} from '../setops';
 import {firewallSpec} from '../specs';
 
 function go() {

@@ -4,15 +4,15 @@ import 'mocha';
 import {Universe} from '../../src/dimensions';
 
 import {
-  createSimplifier,
   denyOverrides,
   firstApplicable,
   formatRule,
   loadCsvRulesString,
   loadYamlRulesString,
+  RuleSpec,
 } from '../../src/loaders';
 
-import {RuleSpec} from '../../src/setops';
+import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 import {stripLeadingSpaces} from '../shared';
 

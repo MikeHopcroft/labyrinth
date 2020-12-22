@@ -1,5 +1,6 @@
 import {Universe} from '../dimensions';
-import {Disjunction, Simplifier, simplify} from '../setops';
+import {Disjunction} from './disjunction';
+import {Simplifier, simplify} from './simplifier';
 
 export function createSimplifier<A>(universe: Universe): Simplifier<A> {
   return (d: Disjunction<A>) => simplify(universe.dimensions, d);

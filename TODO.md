@@ -15,8 +15,8 @@
   * FilterRule
   * ForwardRule
   * Figure out how Conjunction attribution can hold RuleSpec and ForwardRuleSpec.
-* Move RuleSpec setOps?
-  * Currently in setOps because disjunctions are labeled with RuleSpecs for attribution/provenance.
+* x Move RuleSpec from setOps?
+  * x Currently in setOps because disjunctions are labeled with RuleSpecs for attribution/provenance.
 * Reserved words
   * Review across the board.
   * Special names "node" and "destination" not allowed in forwardRules.

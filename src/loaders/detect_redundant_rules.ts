@@ -1,7 +1,7 @@
-import {Evaluator} from '../loaders';
-import {RuleSpec, Simplifier} from '../setops';
+import {Evaluator, RuleSpec} from '../loaders';
+import {Simplifier} from '../setops';
 
-import {nopSimplifier} from './create_simplifier';
+import {nopSimplifier} from '../setops/create_simplifier';
 import {Rule} from './rule';
 
 export function detectRedundantRules(

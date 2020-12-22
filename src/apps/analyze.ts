@@ -6,20 +6,20 @@ import path from 'path';
 import {Universe} from '../dimensions';
 
 import {
-  createSimplifier,
   denyOverrides,
   detectRedundantRules,
   Evaluator,
   firstApplicable,
+  formatRuleSpecSet,
   loadRulesFile,
+  RuleSpec,
+  ruleSpecSetFormatter,
 } from '../loaders';
 
 import {
+  createSimplifier,
   FormatAttribution,
-  formatRules,
   FormattingOptions,
-  RuleSpec,
-  ruleSpecSetFormatter,
   simplify,
 } from '../setops';
 
@@ -125,7 +125,7 @@ function main() {
     if (args.r) {
       console.log('============ Redundant Rules Report ============');
       const policySpecs = detectRedundantRules(evaluator, policy, simplifier);
-      console.log(`Redundant ${formatRules(new Set(policySpecs))}`);
+      console.log(`Redundant ${formatRuleSpecSet(new Set(policySpecs))}`);
     }
   } catch (e) {
     handleError(e);

@@ -1,6 +1,7 @@
-import {ActionType, Disjunction, RuleSpec, Simplifier} from '../setops';
+import {ActionType, RuleSpec} from '../loaders';
+import {Disjunction, Simplifier} from '../setops';
 
-import {nopSimplifier} from './create_simplifier';
+import {nopSimplifier} from '../setops/create_simplifier';
 import {Rule} from './rule';
 
 interface RuleGroup {

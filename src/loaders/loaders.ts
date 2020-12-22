@@ -7,15 +7,14 @@ import path from 'path';
 import {Universe} from '../dimensions';
 
 import {
-  Conjunction,
-  DimensionedRange,
   RuleSpec,
   RuleSpecSet,
   ruleSpecType,
   ruleSpecSetType,
   ruleSpecNoIdSetType,
-} from '../setops';
+} from '../loaders';
 
+import {Conjunction, DimensionedRange} from '../setops';
 import {PeekableSequence, validate} from '../utilities';
 
 import {Rule} from './rule';

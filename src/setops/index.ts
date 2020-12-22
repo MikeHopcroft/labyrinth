@@ -1,6 +1,6 @@
 export * from './conjunction';
+export * from './create_simplifier';
 export * from './dimensioned_range';
 export * from './disjunction';
 export * from './formatting';
-export * from './ruleSpec';
 export * from './simplifier';

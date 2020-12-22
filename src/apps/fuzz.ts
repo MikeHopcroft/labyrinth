@@ -14,21 +14,21 @@ import {
 } from '../fuzzer';
 
 import {
-  createSimplifier,
   denyOverrides,
   detectRedundantRules,
   Evaluator,
   firstApplicable,
+  formatRuleSpecSet,
   parseRuleSpec,
+  RuleSpec,
+  ruleSpecSetFormatter,
 } from '../loaders';
 
 import {
+  createSimplifier,
   FormatAttribution,
-  formatRules,
   FormattingOptions,
-  RuleSpec,
-  ruleSpecSetFormatter,
-  simplify,
+  simplify
 } from '../setops';
 
 import {firewallSpec} from '../specs';
@@ -180,7 +180,7 @@ function main() {
     if (args.r) {
       console.log('============ Redundant Rules Report ============');
       const policySpecs = detectRedundantRules(evaluator, rules1, simplifier);
-      console.log(`Redundant ${formatRules(new Set(policySpecs))}`);
+      console.log(`Redundant ${formatRuleSpecSet(new Set(policySpecs))}`);
     }
   } catch (e) {
     handleError(e);

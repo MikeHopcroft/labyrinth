@@ -1,5 +1,4 @@
-import {nopSimplifier} from '../loaders';
-
+import {nopSimplifier} from './create_simplifier';
 import {Conjunction} from './conjunction';
 import {FormattingOptions} from './formatting';
 import {Simplifier} from './simplifier';

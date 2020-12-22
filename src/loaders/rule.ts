@@ -1,6 +1,6 @@
 import {Conjunction, FormattingOptions} from '../setops';
 
-import {ActionType, RuleSpec} from '../setops';
+import {ActionType, RuleSpec} from './ruleSpec';
 
 export interface Rule {
   spec: RuleSpec;

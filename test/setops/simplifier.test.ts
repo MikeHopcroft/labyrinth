@@ -4,17 +4,17 @@ import 'mocha';
 import {Universe, UniverseSpec} from '../../src/dimensions';
 
 import {
-  createSimplifier,
+  ActionType,
   denyOverrides,
   parseRuleSpec,
   Rule,
+  RuleSpecEx,
 } from '../../src/loaders';
 
 import {
-  ActionType,
   createConjunctionInfo,
-  RuleSpecEx,
-  simplify,
+  createSimplifier,
+  simplify
 } from '../../src/setops';
 
 const universeSpec: UniverseSpec = {

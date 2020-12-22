@@ -3,7 +3,7 @@ import DRange from 'drange';
 import {Universe} from '../dimensions';
 import {Random} from './random';
 
-import {ActionType, RuleSpec, RuleSpecEx, RuleSpecSet} from '../setops';
+import {ActionType, RuleSpec, RuleSpecEx, RuleSpecSet} from '../loaders';
 
 export function createRandomPolicy(
   universe: Universe,
