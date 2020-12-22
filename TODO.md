@@ -1,8 +1,18 @@
 # TODO
 
+* Graph scenarios
+  * What routes can get to a node?
+  * What routes exist from node a to node b?
+  * How can traffic get to a node (i.e. what are earlier hops)?
+  * TraceRt
+* Formatting for the UniverseDisjunction
+* Graph unit test
+  * Split flow and then merge. Verify the simplifer runs.
+* Graph application
 * Rename rules/types
 * Rename RuleSpec, etc to FilterRuleSpec, etc.
 * Graph loader
+  * YAML load/parse
   * Internet node
   * Spec should be able to specify entry point
 * Graph formatter

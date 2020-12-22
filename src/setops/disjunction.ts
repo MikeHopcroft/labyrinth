@@ -52,7 +52,10 @@ export class Disjunction<A> {
     return this.conjunctions.length === 1 && this.conjunctions[0].isUniverse();
   }
 
-  intersect(other: Disjunction<A>): Disjunction<A> {
+  intersect(
+    other: Disjunction<A>,
+    simplifier: Simplifier<A> = nopSimplifier
+  ): Disjunction<A> {
     let terms: Conjunction<A>[] = [];
     for (const t1 of this.conjunctions) {
       for (const t2 of other.conjunctions) {
@@ -71,10 +74,13 @@ export class Disjunction<A> {
     // TODO: consider simplification strategies here.
     // TODO: consider standalone simplifaction routine.
 
-    return new Disjunction(terms);
+    return simplifier(new Disjunction(terms));
   }
 
-  union(other: Disjunction<A>): Disjunction<A> {
+  union(
+    other: Disjunction<A>,
+    simplifier: Simplifier<A> = nopSimplifier
+  ): Disjunction<A> {
     let terms = [...this.conjunctions];
     for (const t of other.conjunctions) {
       if (t.isEmpty()) {
@@ -94,7 +100,7 @@ export class Disjunction<A> {
       //   Remove duplicates
     }
 
-    return new Disjunction(terms);
+    return simplifier(new Disjunction(terms));
   }
 
   equivalent(
@@ -131,6 +137,10 @@ export class Disjunction<A> {
   }
 
   format(options: FormattingOptions<A> = {}): string {
+    if (this.isUniverse()) {
+      const prefix = options.prefix || '';
+      return `${prefix}(universe)`;
+    }
     const lines = this.conjunctions.map(c => c.format(options));
     return lines.join('\n\n');
   }

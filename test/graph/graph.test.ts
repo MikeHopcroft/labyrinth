@@ -147,7 +147,6 @@ describe('Graph', () => {
     });
   });
 
-
   it('simple', () => {
     const spec: GraphSpec = {
       nodes: [
@@ -214,6 +213,68 @@ describe('Graph', () => {
 
     const graph = new Graph(universe, spec, simplifier);
     console.log(graph.format());
+
+    assert.fail();
+  });
+
+  it('confluence', () => {
+    const spec: GraphSpec = {
+      nodes: [
+        {
+          name: 'internet',
+          key: 'internet',
+          rules: [
+            {
+              destination: 'gateway'
+            },
+          ]
+        },
+        {
+          name: 'gateway',
+          key: 'gateway',
+          rules: [
+            {
+              destination: 'subnet1',
+              destinationIp: '10.0.0.0/8'
+            },
+            {
+              destination: 'subnet2',
+              destinationIp: '10.0.0.0/7'
+            },
+          ]
+        },
+        {
+          name: 'subnet1',
+          key: 'subnet1',
+          rules: [
+            {
+              destination: 'final',
+            },
+          ]
+        },
+        {
+          name: 'subnet2',
+          key: 'subnet2',
+          rules: [
+            {
+              destination: 'final',
+            },
+          ]
+        },
+        {
+          name: 'final',
+          key: 'final',
+          rules: [
+          ]
+        },
+      ]
+    }
+
+    const graph = new Graph(universe, spec, simplifier);
+    console.log(graph.format());
+
+    // TODO: the union operation in Node.forwardRoutes() should
+    // simplify which will combine 11.0.0.0/8 and 10.0.0.0/8.
 
     assert.fail();
   });

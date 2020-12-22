@@ -60,7 +60,7 @@ export class Node {
     // Union up incoming routes.
     for (const edge of this.in) {
       // TODO: consider simplification here.
-      this.routes = this.routes.union(edge.routes);
+      this.routes = this.routes.union(edge.routes, graph.simplifier);
     }
 
     // Construct outgoing routes
