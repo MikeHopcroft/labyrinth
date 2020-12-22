@@ -130,7 +130,7 @@ export class Disjunction<A> {
     );
   }
 
-  format(options: FormattingOptions<A> = {}) {
+  format(options: FormattingOptions<A> = {}): string {
     const lines = this.conjunctions.map(c => c.format(options));
     return lines.join('\n\n');
   }

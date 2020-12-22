@@ -1,8 +1,11 @@
 import * as t from 'io-ts';
 
-const forwardRuleSpecType = t.type({
-  destination: t.string,
-});
+const forwardRuleSpecType = t.intersection([
+  t.type({
+    destination: t.string,
+  }),
+  t.record(t.string, t.string),
+]);
 export type ForwardRuleSpec = t.TypeOf<typeof forwardRuleSpecType>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

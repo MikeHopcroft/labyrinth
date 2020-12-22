@@ -1,90 +1,9 @@
 import {Universe} from '../dimensions';
-import {Conjunction, Disjunction, Simplifier} from '../setops';
+import {Simplifier} from '../setops';
 
-import {ForwardRuleSpecEx, GraphSpec, NodeSpec} from './types';
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//
-//
-///////////////////////////////////////////////////////////////////////////////
-export interface ForwardRule {
-  conjunction: Conjunction<ForwardRuleSpecEx>;
-  destination: string;
-}
-
-function parseForwardRuleSpec(
-  universe: Universe,
-  spec: ForwardRuleSpecEx
-): ForwardRule {
-  const {destination, ...rest} = spec;
-  // TODO: finish implementations
-  // const conjunction = parseConjunction(universe, rest, spec);
-  throw 0;
-}
-
-export interface Edge {
-  from: string;
-  to: string;
-  routes: Disjunction<ForwardRuleSpecEx>;
-}
-
-export class Node {
-  name: string;
-  key: string;
-
-  rules: ForwardRule[];
-
-  inDegree = 0;
-  in: Array<Edge> = [];
-  out: Array<Edge> = [];
-
-  constructor(universe: Universe, spec: NodeSpec) {
-    this.name = spec.name;
-    this.key = spec.key;
-    this.rules = spec.rules.map(r => parseForwardRuleSpec(universe, r));
-  }
-
-  mark() {
-    this.inDegree++;
-  }
-
-  addIncoming(edge: Edge): boolean {
-    this.in.push(edge);
-    return this.inDegree === this.in.length;
-  }
-
-  forwardMarks(graph: Graph) {
-    const destinations = new Set<string>(this.rules.map(() => 'out'));
-    for (const key of destinations) {
-      graph.node(key).mark();
-    }
-  }
-
-  forwardRoutes(graph: Graph) {
-    // Construct outgoing routes
-    const keyToRoute = new Map<string, Disjunction<ForwardRuleSpecEx>>();
-    let remaining = Disjunction.universe<ForwardRuleSpecEx>();
-    for (const rule of this.rules) {
-      const allowed = Disjunction.create([rule.conjunction]);
-      const current = allowed.intersect(remaining);
-      remaining = remaining.subtract(allowed, graph.simplifier);
-
-      let routes = keyToRoute.get(rule.destination);
-      if (routes) {
-        routes = routes.union(current);
-      } else {
-        routes = current;
-      }
-      keyToRoute.set(rule.destination, current);
-    }
-
-    // Add an edge for each outgoing route.
-    for (const [to, routes] of keyToRoute.entries()) {
-      graph.addEdge({from: this.key, to, routes});
-    }
-  }
-}
+import {Edge} from './edge';
+import {Node} from './node';
+import {ForwardRuleSpecEx, GraphSpec} from './types';
 
 export class Graph {
   simplifier: Simplifier<ForwardRuleSpecEx>;
@@ -103,7 +22,7 @@ export class Graph {
     for (const nodeSpec of graphSpec.nodes) {
       const node = new Node(universe, nodeSpec);
       if (this.keyToNode.has(node.key)) {
-        const message = `Duplicate node key "${node.key}"`;
+        const message = `Duplicate node key "${node.key}".`;
         throw new TypeError(message);
       }
       this.keyToNode.set(node.key, node);
@@ -122,14 +41,20 @@ export class Graph {
     }
 
     if (this.ready.length === 0) {
-      const message = 'Graph contains a cycle.';
+      const message = 'Cycle detected at graph root.';
       throw new TypeError(message);
     }
 
     // Forward propagate routes
+    let processed = 0;
     while (this.ready.length > 0) {
       const node = this.ready.pop()!;
       node.forwardRoutes(this);
+      ++processed;
+    }
+    if (processed !== this.keyToNode.size) {
+      const message = 'Graph contains a cycle.';
+      throw new TypeError(message);
     }
   }
 
@@ -152,5 +77,23 @@ export class Graph {
 
   nodes(): IterableIterator<Node> {
     return this.keyToNode.values();
+  }
+
+  format() {
+    for (const node of this.keyToNode.values()) {
+      console.log(`Node: ${node.key}:`);
+      console.log('  Incoming:');
+      // console.log(`  ${node.routes.conjunctions.length} routes`);
+      console.log(node.routes.format({prefix: '    '}));
+      console.log();
+    for (const edge of node.in) {
+        console.log(`  From ${edge.from}:`);
+        // console.log('foo');
+        // console.log(`"${edge.routes.format({prefix: '    '})}"`);
+        console.log(edge.routes.format({prefix: '    '}));
+        console.log();
+      }
+      console.log();
+    }
   }
 }

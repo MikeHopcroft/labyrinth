@@ -255,35 +255,15 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {action, id, priority, source, ...rest} = spec;
   const conjunction = parseConjunction(universe, rest, spec);
-  // let conjunction = Conjunction.create([], new Set([spec]));
-
-  // for (const key of Object.getOwnPropertyNames(rest)) {
-  //   const dimension = universe.get(key);
-
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   let value = (rest as any)[key];
-  //   if (typeof value === 'number') {
-  //     value = value.toString();
-  //   } else if (typeof value !== 'string') {
-  //     const message = `${key}: expected a string value.`;
-  //     throw new TypeError(message);
-  //   }
-  //   conjunction = conjunction.intersect(
-  //     Conjunction.create(
-  //       [new DimensionedRange(dimension, dimension.parse(value))],
-  //       new Set<RuleSpec>()
-  //     )
-  //   );
-  // }
 
   return {action, priority, conjunction, spec};
 }
 
-export function parseConjunction(
+export function parseConjunction<A>(
   universe: Universe,
   fields: {},
-  spec: RuleSpec
-): Conjunction<RuleSpec> {
+  spec: A
+): Conjunction<A> {
   let conjunction = Conjunction.create([], new Set([spec]));
 
   for (const key of Object.getOwnPropertyNames(fields)) {
@@ -300,7 +280,7 @@ export function parseConjunction(
     conjunction = conjunction.intersect(
       Conjunction.create(
         [new DimensionedRange(dimension, dimension.parse(value))],
-        new Set<RuleSpec>()
+        new Set<A>()
       )
     );
   }

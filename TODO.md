@@ -1,5 +1,14 @@
 # TODO
 
+* Rename rules/types
+* Rename RuleSpec, etc to FilterRuleSpec, etc.
+* Graph loader
+  * Internet node
+  * Spec should be able to specify entry point
+* Graph formatter
+  * Line number attribution
+  * Node attribution
+  * Tracing routes
 * Prove lemma about intersection of minimal forms in documentation.
 * Add l-shaped region diagram to simplifier documentation
 * Document current simplifier algorithm and future directions
