@@ -52,10 +52,12 @@ export class Graph {
       node.forwardRoutes(this);
       ++processed;
     }
-    if (processed !== this.keyToNode.size) {
-      const message = 'Graph contains a cycle.';
-      throw new TypeError(message);
-    }
+    // if (processed !== this.keyToNode.size) {
+    //   const message = 'Graph contains a cycle.';
+    //   throw new TypeError(message);
+    // }
+
+    // PROBLEM: which node to detect cycles from?
   }
 
   addEdge(edge: Edge) {

@@ -12,6 +12,7 @@ export class Node {
 
   rules: ForwardRule[];
 
+  live = false;
   forwarded = false;
   inDegree = 0;
   in: Array<Edge> = [];
@@ -83,7 +84,29 @@ export class Node {
 
     // Add an edge for each outgoing route.
     for (const [to, routes] of keyToRoute.entries()) {
-      graph.addEdge({from: this.key, to, routes});
+      const edge: Edge = {from: this.key, to, routes};
+      this.out.push(edge);
+      graph.addEdge(edge);
     }
+  }
+
+  // PROBLEM: don't have edges until after forward propagation
+  detectCycles(graph: Graph, path: string[]): boolean {
+    path.push(this.key);
+    if (this.live) {
+      return true;
+    }
+    this.live = true;
+
+    for (const edge of this.out) {
+      if (graph.node(edge.to).detectCycles(graph, path)) {
+        return true;
+      }
+    }
+
+    this.live = false;
+    path.pop();
+
+    return false;
   }
 }

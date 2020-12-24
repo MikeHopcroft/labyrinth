@@ -17,6 +17,7 @@ describe('Graph', () => {
           {
             name: 'internet',
             key: 'internet',
+            local: 'internet',
             rules: [
               {
                 destination: 'bad_key'
@@ -39,6 +40,7 @@ describe('Graph', () => {
           {
             name: 'internet',
             key: 'internet',
+            local: 'internet',
             rules: [
               {
                 destination: 'bad_key'
@@ -48,6 +50,7 @@ describe('Graph', () => {
           {
             name: 'internet',
             key: 'internet',
+            local: 'internet',
             rules: [
               {
                 destination: 'bad_key'
@@ -71,6 +74,7 @@ describe('Graph', () => {
             {
               name: 'internet',
               key: 'internet',
+              local: 'internet',
               rules: [
                 {
                   destination: 'a'
@@ -80,6 +84,7 @@ describe('Graph', () => {
             {
               name: 'a',
               key: 'a',
+              local: 'internet',
               rules: [
                 {
                   destination: 'b'
@@ -89,6 +94,7 @@ describe('Graph', () => {
             {
               name: 'b',
               key: 'b',
+              local: 'internet',
               rules: [
                 {
                   destination: 'a'
@@ -111,6 +117,7 @@ describe('Graph', () => {
             {
               name: 'internet',
               key: 'internet',
+              local: 'internet',
               rules: [
                 {
                   destination: 'a'
@@ -120,6 +127,7 @@ describe('Graph', () => {
             {
               name: 'a',
               key: 'a',
+              local: 'internet',
               rules: [
                 {
                   destination: 'b'
@@ -129,6 +137,7 @@ describe('Graph', () => {
             {
               name: 'b',
               key: 'b',
+              local: 'internet',
               rules: [
                 {
                   destination: 'internet'
@@ -153,6 +162,7 @@ describe('Graph', () => {
         {
           name: 'internet',
           key: 'internet',
+          local: 'internet',
           rules: [
             {
               destination: 'gateway'
@@ -162,6 +172,7 @@ describe('Graph', () => {
         {
           name: 'gateway',
           key: 'gateway',
+          local: 'internet',
           rules: [
             {
               destination: 'subnet1',
@@ -176,6 +187,7 @@ describe('Graph', () => {
         {
           name: 'subnet1',
           key: 'subnet1',
+          local: '10.0.0.0/8',
           rules: [
             {
               destination: 'subnet2',
@@ -189,6 +201,7 @@ describe('Graph', () => {
         {
           name: 'subnet2',
           key: 'subnet2',
+          local: '10.0.0.0/7',
           rules: [
             {
               destination: 'server',
@@ -199,12 +212,14 @@ describe('Graph', () => {
         {
           name: 'subnet3',
           key: 'subnet3',
+          local: '10.0.0.0/9',
           rules: [
           ]
         },
         {
           name: 'server',
           key: 'server',
+          local: '11.0.0.1',
           rules: [
           ]
         },
@@ -223,6 +238,7 @@ describe('Graph', () => {
         {
           name: 'internet',
           key: 'internet',
+          local: 'internet',
           rules: [
             {
               destination: 'gateway'
@@ -232,6 +248,7 @@ describe('Graph', () => {
         {
           name: 'gateway',
           key: 'gateway',
+          local: 'internet',
           rules: [
             {
               destination: 'subnet1',
@@ -246,6 +263,7 @@ describe('Graph', () => {
         {
           name: 'subnet1',
           key: 'subnet1',
+          local: '10.0.0.0/8',
           rules: [
             {
               destination: 'final',
@@ -255,6 +273,7 @@ describe('Graph', () => {
         {
           name: 'subnet2',
           key: 'subnet2',
+          local: '10.0.0.0/7',
           rules: [
             {
               destination: 'final',
@@ -264,6 +283,7 @@ describe('Graph', () => {
         {
           name: 'final',
           key: 'final',
+          local: '10.0.0.1',
           rules: [
           ]
         },

@@ -20,6 +20,7 @@ export const ForwardRuleSpecReservedWords = new Set<string>([
 const nodeSpecType = t.type({
   name: t.string,
   key: t.string,
+  local: t.string,
   rules: t.array(forwardRuleSpecType),
 });
 export type NodeSpec = t.TypeOf<typeof nodeSpecType>;

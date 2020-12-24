@@ -63,18 +63,6 @@ This is the default convention, but we can specify it explicitly with
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -m=d)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -m=d
-Mode is denyOverrides.
-
-============ Policy Report ============
-Allowed routes:
-  destination ip: 171.64.64.0/20
-  protocol: except tcp, udp
-
-  destination ip: 171.64.64.0/20
-  destination port: except 445
-
-  destination ip: 128.30.0.0/15
-
 
 ~~~
 
@@ -98,21 +86,6 @@ We can examine the same `data/policy.txt` file with the `First-Applicable` conve
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -m=f)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -m=f
-Mode is firstApplicable.
-
-============ Policy Report ============
-Allowed routes:
-  source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
-
-  source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  protocol: except tcp, udp
-
-  source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  destination port: except 445
-
 
 ~~~
 
@@ -128,21 +101,6 @@ It is often helpful to know which rules let to a certain conjunction in the `Pol
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -a)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -a
-Mode is denyOverrides.
-
-============ Policy Report ============
-Allowed routes:
-  policy rules: 10, 13-14
-  destination ip: 171.64.64.0/20
-  protocol: except tcp, udp
-
-  policy rules: 10, 13-14
-  destination ip: 171.64.64.0/20
-  destination port: except 445
-
-  policy rules: 17
-  destination ip: 128.30.0.0/15
-
 
 ~~~
 

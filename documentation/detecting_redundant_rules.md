@@ -36,20 +36,6 @@ We can use the `-r` or `--redundant` flag to produce a `Redundant Rules Report`:
 [//]: # (spawn node build\src\apps\analyze.js data\redundant.txt -r)
 ~~~
 $ node build\src\apps\analyze.js data\redundant.txt -r
-Mode is denyOverrides.
-
-============ Policy Report ============
-Allowed routes:
-  destination ip: 171.64.64.0/20
-  protocol: except tcp, udp
-
-  destination ip: 171.64.64.0/20
-  destination port: except 445
-
-  destination ip: 128.30.0.0/15
-
-============ Redundant Rules Report ============
-Redundant policy rules: 7, 11, 17
 
 ~~~
 
@@ -65,23 +51,6 @@ Note that, for `data/redundant.txt`, we get a different answer, when we use `Fir
 [//]: # (spawn node build\src\apps\analyze.js data\redundant.txt -r -m=f)
 ~~~
 $ node build\src\apps\analyze.js data\redundant.txt -r -m=f
-Mode is firstApplicable.
-
-============ Policy Report ============
-Allowed routes:
-  source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  destination port: except 445
-
-  source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  protocol: except tcp, udp
-
-  source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
-
-============ Redundant Rules Report ============
-Redundant policy rules: 11, 17
 
 ~~~
 

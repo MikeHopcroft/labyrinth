@@ -1,5 +1,11 @@
 # TODO
 
+* Fix cycle detection
+  * Really need dedicated DFS with markers
+  * Print out cycle.
+* Graph from-to reachability
+  * Constructor takes start node and adds to the queue
+  *Initial IPs are specified in local field
 * Graph scenarios
   * What routes can get to a node?
   * What routes exist from node a to node b?
