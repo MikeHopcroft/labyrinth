@@ -28,7 +28,7 @@ describe('Graph', () => {
       }
       assert.throws(
         () => {
-          const graph = new Graph(universe, spec, simplifier);
+          const graph = new Graph(universe, spec, simplifier, 'internet');
         },
         'Unknown node "bad_key".'
       );
@@ -61,7 +61,7 @@ describe('Graph', () => {
       }
       assert.throws(
         () => {
-          const graph = new Graph(universe, spec, simplifier);
+          const graph = new Graph(universe, spec, simplifier, 'internet');
         },
         'Duplicate node key "internet".'
       );
@@ -105,7 +105,7 @@ describe('Graph', () => {
         }
         assert.throws(
           () => {
-            const graph = new Graph(universe, spec, simplifier);
+            const graph = new Graph(universe, spec, simplifier, 'internet');
           },
           'Graph contains a cycle.'
         );
@@ -148,7 +148,7 @@ describe('Graph', () => {
         }
         assert.throws(
           () => {
-            const graph = new Graph(universe, spec, simplifier);
+            const graph = new Graph(universe, spec, simplifier, 'internet');
           },
           'Cycle detected at graph root.'
         );
@@ -226,7 +226,7 @@ describe('Graph', () => {
       ]
     }
 
-    const graph = new Graph(universe, spec, simplifier);
+    const graph = new Graph(universe, spec, simplifier, 'internet');
     console.log(graph.format());
 
     assert.fail();
@@ -290,7 +290,7 @@ describe('Graph', () => {
       ]
     }
 
-    const graph = new Graph(universe, spec, simplifier);
+    const graph = new Graph(universe, spec, simplifier, 'internet');
     console.log(graph.format());
 
     // TODO: the union operation in Node.forwardRoutes() should

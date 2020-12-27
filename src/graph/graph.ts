@@ -14,7 +14,8 @@ export class Graph {
   constructor(
     universe: Universe,
     graphSpec: GraphSpec,
-    simplifier: Simplifier<ForwardRuleSpecEx>
+    simplifier: Simplifier<ForwardRuleSpecEx>,
+    origin: string
   ) {
     this.simplifier = simplifier;
 
@@ -34,16 +35,17 @@ export class Graph {
     }
 
     // Enqueue nodes ready for route forwarding.
-    for (const node of this.keyToNode.values()) {
-      if (node.inDegree === 0) {
-        this.ready.push(node);
-      }
-    }
+    // for (const node of this.keyToNode.values()) {
+    //   if (node.inDegree === 0) {
+    //     this.ready.push(node);
+    //   }
+    // }
+    this.ready.push(this.node(origin));
 
-    if (this.ready.length === 0) {
-      const message = 'Cycle detected at graph root.';
-      throw new TypeError(message);
-    }
+    // if (this.ready.length === 0) {
+    //   const message = 'Cycle detected at graph root.';
+    //   throw new TypeError(message);
+    // }
 
     // Forward propagate routes
     let processed = 0;
@@ -58,6 +60,12 @@ export class Graph {
     // }
 
     // PROBLEM: which node to detect cycles from?
+    const path: string[] = [];
+    if (this.node(origin).detectCycles(this, path)) {
+      const message = `Cycle detected: ${path.join(',')}`;
+      console.log(message);
+      throw new TypeError(message);
+    }
   }
 
   addEdge(edge: Edge) {
