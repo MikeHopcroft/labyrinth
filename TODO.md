@@ -1,5 +1,13 @@
 # TODO
 
+* forwardRuleSpecType
+  * Solution to avoid name clashes between rule fields and built-in fields. E.g. `destination`, `id`, and `source` in forwardRuleSpecType.
+  * In forwardRuleSpecType, field name `source` might be confusing when positioned near destination. Might consider `provenence` or some other word.
+  * Why does forwardRuleSpecType need a unique id?
+* Transition from Travis to GitHub actions.
+  * Implement action
+  * Badges
+
 * Fix cycle detection
   * Really need dedicated DFS with markers
   * Print out cycle.
