@@ -1,5 +1,15 @@
 # TODO
 
+* Pusblish npm package
+  * labyrinth-analysis?
+  * labyrinth-nsg
+  * labyrinth-nsa
+  * labyrinth-security
+* Labyrinth-app/visualizer
+  * Repo
+  * Next project
+  * Skeleton
+  * Monaco editor hosting
 * forwardRuleSpecType
   * Solution to avoid name clashes between rule fields and built-in fields. E.g. `destination`, `id`, and `source` in forwardRuleSpecType.
   * In forwardRuleSpecType, field name `source` might be confusing when positioned near destination. Might consider `provenence` or some other word.
