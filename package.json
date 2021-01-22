@@ -1,4 +1,5 @@
 {
+  "name": "labyrinth-nsg",
   "version": "0.0.1",
   "description": "Network security analysis tools",
   "main": "build/src/index.js",
