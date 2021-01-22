@@ -22,4 +22,3 @@ export function parseForwardRuleSpec(
   const conjunction = parseConjunction<ForwardRuleSpecEx>(universe, rest, spec);
   return {conjunction, destination};
 }
-

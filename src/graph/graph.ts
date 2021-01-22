@@ -96,7 +96,7 @@ export class Graph {
       // console.log(`  ${node.routes.conjunctions.length} routes`);
       console.log(node.routes.format({prefix: '    '}));
       console.log();
-    for (const edge of node.in) {
+      for (const edge of node.in) {
         console.log(`  From ${edge.from}:`);
         // console.log('foo');
         // console.log(`"${edge.routes.format({prefix: '    '})}"`);

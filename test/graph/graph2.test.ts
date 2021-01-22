@@ -7,7 +7,7 @@ import {
   ForwardRuleSpecEx,
   Graph,
   GraphBuilder,
-  NodeSpec
+  NodeSpec,
 } from '../../src/graph2';
 
 import {createSimplifier} from '../../src/setops';
@@ -25,18 +25,15 @@ describe('Graph2', () => {
           key: 'internet',
           rules: [
             {
-              destination: 'bad_key'
+              destination: 'bad_key',
             },
-          ]
+          ],
         },
       ];
       const builder = new GraphBuilder(universe, simplifier, nodes);
-      assert.throws(
-        () => {
-          const graph = builder.buildGraph();
-        },
-        'Unknown node "bad_key".'
-      );
+      assert.throws(() => {
+        const graph = builder.buildGraph();
+      }, 'Unknown node "bad_key".');
     });
 
     it('duplicate node key', () => {
@@ -46,26 +43,23 @@ describe('Graph2', () => {
           key: 'internet',
           rules: [
             {
-              destination: 'bad_key'
+              destination: 'bad_key',
             },
-          ]
+          ],
         },
         {
           name: 'internet',
           key: 'internet',
           rules: [
             {
-              destination: 'bad_key'
+              destination: 'bad_key',
             },
-          ]
+          ],
         },
-      ]
-      assert.throws(
-        () => {
-          const builder = new GraphBuilder(universe, simplifier, nodes);
-        },
-        'Duplicate node key "internet".'
-      );
+      ];
+      assert.throws(() => {
+        const builder = new GraphBuilder(universe, simplifier, nodes);
+      }, 'Duplicate node key "internet".');
     });
   });
 
@@ -77,36 +71,36 @@ describe('Graph2', () => {
           key: 'internet',
           rules: [
             {
-              destination: 'a'
+              destination: 'a',
             },
-          ]
+          ],
         },
         {
           name: 'a',
           key: 'a',
           rules: [
             {
-              destination: 'b'
+              destination: 'b',
             },
-          ]
+          ],
         },
         {
           name: 'b',
           key: 'b',
           rules: [
             {
-              destination: 'c'
+              destination: 'c',
             },
-          ]
+          ],
         },
         {
           name: 'c',
           key: 'c',
           rules: [
             {
-              destination: 'a'
+              destination: 'a',
             },
-          ]
+          ],
         },
       ];
       const builder = new GraphBuilder(universe, simplifier, nodes);
@@ -126,36 +120,36 @@ describe('Graph2', () => {
           endpoint: true,
           rules: [
             {
-              destination: 'a'
+              destination: 'a',
             },
-          ]
+          ],
         },
         {
           name: 'a',
           key: 'a',
           rules: [
             {
-              destination: 'b'
+              destination: 'b',
             },
-          ]
+          ],
         },
         {
           name: 'b',
           key: 'b',
           rules: [
             {
-              destination: 'c'
+              destination: 'c',
             },
-          ]
+          ],
         },
         {
           name: 'c',
           key: 'c',
           rules: [
             {
-              destination: 'internet'
+              destination: 'internet',
             },
-          ]
+          ],
         },
       ];
       const builder = new GraphBuilder(universe, simplifier, nodes);
@@ -175,9 +169,9 @@ describe('Graph2', () => {
           endpoint: true,
           rules: [
             {
-              destination: 'gateway'
+              destination: 'gateway',
             },
-          ]
+          ],
         },
         {
           name: 'gateway',
@@ -185,13 +179,13 @@ describe('Graph2', () => {
           rules: [
             {
               destination: 'subnet1',
-              destinationIp: '10.0.0.0/8'
+              destinationIp: '10.0.0.0/8',
             },
             {
               destination: 'subnet2',
-              destinationIp: '10.0.0.0/7'
+              destinationIp: '10.0.0.0/7',
             },
-          ]
+          ],
         },
         {
           name: 'subnet1',
@@ -199,12 +193,12 @@ describe('Graph2', () => {
           rules: [
             {
               destination: 'subnet2',
-              destinationPort: '80'
+              destinationPort: '80',
             },
             {
               destination: 'subnet3',
             },
-          ]
+          ],
         },
         {
           name: 'subnet2',
@@ -212,22 +206,20 @@ describe('Graph2', () => {
           rules: [
             {
               destination: 'server',
-              protocol: 'tcp'
+              protocol: 'tcp',
             },
-          ]
+          ],
         },
         {
           name: 'subnet3',
           key: 'subnet3',
-          rules: [
-          ]
+          rules: [],
         },
         {
           name: 'server',
           key: 'server',
           endpoint: true,
-          rules: [
-          ]
+          rules: [],
         },
       ];
 

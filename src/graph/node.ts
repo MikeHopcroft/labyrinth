@@ -45,7 +45,7 @@ export class Node {
   }
 
   forwardMarks(graph: Graph) {
-    const destinations = new Set<string>(this.rules.map((r) => r.destination));
+    const destinations = new Set<string>(this.rules.map(r => r.destination));
     for (const key of destinations) {
       graph.node(key).mark();
     }

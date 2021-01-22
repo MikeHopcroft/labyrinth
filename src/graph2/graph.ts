@@ -1,10 +1,10 @@
-import { flow } from 'fp-ts/lib/function';
-import { Universe } from '../dimensions';
-import { Disjunction, Simplifier } from '../setops';
+import {flow} from 'fp-ts/lib/function';
+import {Universe} from '../dimensions';
+import {Disjunction, Simplifier} from '../setops';
 
-import { Edge } from './edge';
-import { Node } from './node';
-import { ForwardRuleSpecEx, NodeSpec } from './types';
+import {Edge} from './edge';
+import {Node} from './node';
+import {ForwardRuleSpecEx, NodeSpec} from './types';
 
 interface Path {
   node: number;
@@ -24,8 +24,8 @@ interface FlowNode {
 }
 
 interface FlowEdge {
-  edge: Edge,
-  to: number
+  edge: Edge;
+  to: number;
 }
 
 type Cycle = Path[];
@@ -60,9 +60,9 @@ export class Graph {
 
     // Index edges by `from` field.
     for (const [i, node] of this.nodes.entries()) {
-      const outboundEdges = node.outboundEdges.map((edge) => ({
+      const outboundEdges = node.outboundEdges.map(edge => ({
         edge,
-        to: this.nodeIndex(edge.to)
+        to: this.nodeIndex(edge.to),
       }));
       this.outboundFrom.push(outboundEdges);
     }
@@ -83,11 +83,11 @@ export class Graph {
   analyze(startKey: string, outbound: boolean): FlowAnalysis {
     const cycles: Cycle[] = [];
 
-    const flows: FlowNode[] = this.nodes.map((node) => ({
+    const flows: FlowNode[] = this.nodes.map(node => ({
       node,
       paths: [],
       routes: Disjunction.emptySet<ForwardRuleSpecEx>(),
-      active: false
+      active: false,
     }));
 
     const index = this.nodeIndex(startKey);
@@ -95,7 +95,7 @@ export class Graph {
       node: index,
       routes: Disjunction.universe<ForwardRuleSpecEx>(),
       previous: undefined,
-      length: 0
+      length: 0,
     };
     const edges = outbound ? this.outboundFrom : this.inboundTo;
     this.propagate(index, path, flows, edges, cycles);
@@ -135,7 +135,7 @@ export class Graph {
               length: path.length + 1,
               node: edge.to,
               previous: path,
-              routes
+              routes,
             },
             flowNodes,
             flowEdges,
@@ -156,7 +156,7 @@ export class Graph {
       p = p.previous;
     }
     if (!p) {
-      const message = "Internal error creating cycle";
+      const message = 'Internal error creating cycle';
       throw new TypeError(message);
     }
     cycle.unshift(p);
@@ -190,10 +190,10 @@ export class Graph {
     lines.push(`${key}:`);
 
     if (flowNode.paths.length === 0) {
-      lines.push(`  paths:`);
+      lines.push('  paths:');
       lines.push('    (entry point)');
     } else {
-      lines.push(`  paths:`);
+      lines.push('  paths:');
       for (const path of flowNode.paths) {
         lines.push(`    ${this.formatPath(path, outbound)}`);
       }
@@ -232,7 +232,7 @@ export class GraphBuilder {
   constructor(
     universe: Universe,
     simplifier: Simplifier<ForwardRuleSpecEx>,
-    nodeSpecs: NodeSpec[],
+    nodeSpecs: NodeSpec[]
   ) {
     this.universe = universe;
     this.simplifier = simplifier;

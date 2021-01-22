@@ -25,7 +25,7 @@ const nodeSpecType = t.intersection([
   }),
   t.partial({
     endpoint: t.boolean,
-  })
+  }),
 ]);
 
 export type NodeSpec = t.TypeOf<typeof nodeSpecType>;

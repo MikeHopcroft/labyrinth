@@ -20,20 +20,17 @@ describe('Graph', () => {
             local: 'internet',
             rules: [
               {
-                destination: 'bad_key'
+                destination: 'bad_key',
               },
-            ]
+            ],
           },
-        ]
-      }
-      assert.throws(
-        () => {
-          const graph = new Graph(universe, spec, simplifier, 'internet');
-        },
-        'Unknown node "bad_key".'
-      );
+        ],
+      };
+      assert.throws(() => {
+        const graph = new Graph(universe, spec, simplifier, 'internet');
+      }, 'Unknown node "bad_key".');
     });
-  
+
     it('duplicate node key', () => {
       const spec: GraphSpec = {
         nodes: [
@@ -43,9 +40,9 @@ describe('Graph', () => {
             local: 'internet',
             rules: [
               {
-                destination: 'bad_key'
+                destination: 'bad_key',
               },
-            ]
+            ],
           },
           {
             name: 'internet',
@@ -53,20 +50,17 @@ describe('Graph', () => {
             local: 'internet',
             rules: [
               {
-                destination: 'bad_key'
+                destination: 'bad_key',
               },
-            ]
+            ],
           },
-        ]
-      }
-      assert.throws(
-        () => {
-          const graph = new Graph(universe, spec, simplifier, 'internet');
-        },
-        'Duplicate node key "internet".'
-      );
+        ],
+      };
+      assert.throws(() => {
+        const graph = new Graph(universe, spec, simplifier, 'internet');
+      }, 'Duplicate node key "internet".');
     });
-  
+
     describe('cycle detection', () => {
       it('incomplete propagation', () => {
         const spec: GraphSpec = {
@@ -77,9 +71,9 @@ describe('Graph', () => {
               local: 'internet',
               rules: [
                 {
-                  destination: 'a'
+                  destination: 'a',
                 },
-              ]
+              ],
             },
             {
               name: 'a',
@@ -87,9 +81,9 @@ describe('Graph', () => {
               local: 'internet',
               rules: [
                 {
-                  destination: 'b'
+                  destination: 'b',
                 },
-              ]
+              ],
             },
             {
               name: 'b',
@@ -97,20 +91,17 @@ describe('Graph', () => {
               local: 'internet',
               rules: [
                 {
-                  destination: 'a'
+                  destination: 'a',
                 },
-              ]
+              ],
             },
-          ]
-        }
-        assert.throws(
-          () => {
-            const graph = new Graph(universe, spec, simplifier, 'internet');
-          },
-          'Graph contains a cycle.'
-        );
+          ],
+        };
+        assert.throws(() => {
+          const graph = new Graph(universe, spec, simplifier, 'internet');
+        }, 'Graph contains a cycle.');
       });
-  
+
       it('cycle prevents propagation', () => {
         const spec: GraphSpec = {
           nodes: [
@@ -120,9 +111,9 @@ describe('Graph', () => {
               local: 'internet',
               rules: [
                 {
-                  destination: 'a'
+                  destination: 'a',
                 },
-              ]
+              ],
             },
             {
               name: 'a',
@@ -130,9 +121,9 @@ describe('Graph', () => {
               local: 'internet',
               rules: [
                 {
-                  destination: 'b'
+                  destination: 'b',
                 },
-              ]
+              ],
             },
             {
               name: 'b',
@@ -140,18 +131,15 @@ describe('Graph', () => {
               local: 'internet',
               rules: [
                 {
-                  destination: 'internet'
+                  destination: 'internet',
                 },
-              ]
+              ],
             },
-          ]
-        }
-        assert.throws(
-          () => {
-            const graph = new Graph(universe, spec, simplifier, 'internet');
-          },
-          'Cycle detected at graph root.'
-        );
+          ],
+        };
+        assert.throws(() => {
+          const graph = new Graph(universe, spec, simplifier, 'internet');
+        }, 'Cycle detected at graph root.');
       });
     });
   });
@@ -165,9 +153,9 @@ describe('Graph', () => {
           local: 'internet',
           rules: [
             {
-              destination: 'gateway'
+              destination: 'gateway',
             },
-          ]
+          ],
         },
         {
           name: 'gateway',
@@ -176,13 +164,13 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'subnet1',
-              destinationIp: '10.0.0.0/8'
+              destinationIp: '10.0.0.0/8',
             },
             {
               destination: 'subnet2',
-              destinationIp: '10.0.0.0/7'
+              destinationIp: '10.0.0.0/7',
             },
-          ]
+          ],
         },
         {
           name: 'subnet1',
@@ -191,12 +179,12 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'subnet2',
-              destinationPort: '80'
+              destinationPort: '80',
             },
             {
               destination: 'subnet3',
             },
-          ]
+          ],
         },
         {
           name: 'subnet2',
@@ -205,26 +193,24 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'server',
-              protocol: 'tcp'
+              protocol: 'tcp',
             },
-          ]
+          ],
         },
         {
           name: 'subnet3',
           key: 'subnet3',
           local: '10.0.0.0/9',
-          rules: [
-          ]
+          rules: [],
         },
         {
           name: 'server',
           key: 'server',
           local: '11.0.0.1',
-          rules: [
-          ]
+          rules: [],
         },
-      ]
-    }
+      ],
+    };
 
     const graph = new Graph(universe, spec, simplifier, 'internet');
     console.log(graph.format());
@@ -241,9 +227,9 @@ describe('Graph', () => {
           local: 'internet',
           rules: [
             {
-              destination: 'gateway'
+              destination: 'gateway',
             },
-          ]
+          ],
         },
         {
           name: 'gateway',
@@ -252,13 +238,13 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'subnet1',
-              destinationIp: '10.0.0.0/8'
+              destinationIp: '10.0.0.0/8',
             },
             {
               destination: 'subnet2',
-              destinationIp: '10.0.0.0/7'
+              destinationIp: '10.0.0.0/7',
             },
-          ]
+          ],
         },
         {
           name: 'subnet1',
@@ -268,7 +254,7 @@ describe('Graph', () => {
             {
               destination: 'final',
             },
-          ]
+          ],
         },
         {
           name: 'subnet2',
@@ -278,17 +264,16 @@ describe('Graph', () => {
             {
               destination: 'final',
             },
-          ]
+          ],
         },
         {
           name: 'final',
           key: 'final',
           local: '10.0.0.1',
-          rules: [
-          ]
+          rules: [],
         },
-      ]
-    }
+      ],
+    };
 
     const graph = new Graph(universe, spec, simplifier, 'internet');
     console.log(graph.format());
@@ -298,5 +283,4 @@ describe('Graph', () => {
 
     assert.fail();
   });
-
 });
