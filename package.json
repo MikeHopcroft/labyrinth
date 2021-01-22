@@ -1,5 +1,5 @@
 {
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Network security analysis tools",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -8,7 +8,16 @@
   ],
   "author": "Michael Hopcroft",
   "license": "MIT",
-  "keywords": ["network", "security", "flow", "graph", "analysis", "analyzer", "router", "firewall"],
+  "keywords": [
+    "network",
+    "security",
+    "flow",
+    "graph",
+    "analysis",
+    "analyzer",
+    "router",
+    "firewall"
+  ],
   "repository": "https://github.com/MikeHopcroft/labyrinth",
   "scripts": {
     "docs": "node node_modules/prepress/build/src/apps/prepress.js documentation/src documentation",
