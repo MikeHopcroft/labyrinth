@@ -13,6 +13,11 @@ const UniverseSpecType = t.type({
 });
 export type UniverseSpec = t.TypeOf<typeof UniverseSpecType>;
 
+export function loadYamlUniverseSpec(text: string): UniverseSpec {
+  const root = yaml.safeLoad(text);
+  return validate(UniverseSpecType, root);
+}
+
 export class Universe {
   readonly dimensions: Dimension[] = [];
 

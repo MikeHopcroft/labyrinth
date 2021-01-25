@@ -6,14 +6,14 @@ import {Edge} from './edge';
 import {Node} from './node';
 import {ForwardRuleSpecEx, NodeSpec} from './types';
 
-interface Path {
+export interface Path {
   node: number;
   routes: Disjunction<ForwardRuleSpecEx>;
   previous: Path | undefined;
   length: number;
 }
 
-interface FlowNode {
+export interface FlowNode {
   node: Node;
   paths: Path[];
   routes: Disjunction<ForwardRuleSpecEx>;
@@ -115,9 +115,16 @@ export class Graph {
     if (path.length > 0) {
       flowNode.paths.push(path);
     }
-    if (flowNode.active && !flowNode.node.isEndpoint) {
-      // Found a cycle.
-      cycles.push(this.extractCycle(path!));
+
+    if (flowNode.active) {
+      if (flowNode.node.isEndpoint) {
+        // We've reach an endpoint.
+        // Replace its route with the incoming path.
+        flowNode.routes = path.routes;
+      } else {
+        // Found a cycle.
+        cycles.push(this.extractCycle(path!));
+      }
     } else {
       // If we're not at an endpoint or we're at the first node,
       // visit adjancent nodes.

@@ -17,7 +17,7 @@ export const ForwardRuleSpecReservedWords = new Set<string>([
   'source',
 ]);
 
-const nodeSpecType = t.intersection([
+export const nodeSpecType = t.intersection([
   t.type({
     name: t.string,
     key: t.string,

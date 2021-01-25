@@ -6,6 +6,7 @@ import {ForwardRule, parseForwardRuleSpec} from './forward_rule';
 import {ForwardRuleSpecEx, NodeSpec} from './types';
 
 export class Node {
+  spec: NodeSpec;
   name: string;
   key: string;
   rules: ForwardRule[];
@@ -18,6 +19,7 @@ export class Node {
     simplifier: Simplifier<ForwardRuleSpecEx>,
     spec: NodeSpec
   ) {
+    this.spec = spec;
     this.name = spec.name;
     this.key = spec.key;
     this.isEndpoint = !!spec.endpoint;
