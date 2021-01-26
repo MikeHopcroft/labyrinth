@@ -28,7 +28,7 @@ interface FlowEdge {
   to: number;
 }
 
-type Cycle = Path[];
+export type Cycle = Path[];
 
 interface FlowAnalysis {
   cycles: Cycle[];
@@ -110,6 +110,12 @@ export class Graph {
     flowEdges: FlowEdge[][],
     cycles: Path[][]
   ) {
+    console.log(`============ propagate(index=${index}, pathlength=${path.length}) ===============`)
+    console.log(JSON.stringify(path, null, 2));
+    // if (path.routes.isEmpty()) {
+    //   return;
+    // }
+
     const flowNode = flowNodes[index];
     flowNode.routes = flowNode.routes.union(path.routes, this.simplifier);
     if (path.length > 0) {
@@ -123,7 +129,7 @@ export class Graph {
         flowNode.routes = path.routes;
       } else {
         // Found a cycle.
-        cycles.push(this.extractCycle(path!));
+        cycles.push(this.extractCycle(path, path.routes));
       }
     } else {
       // If we're not at an endpoint or we're at the first node,
@@ -136,25 +142,27 @@ export class Graph {
             this.simplifier
           );
 
-          this.propagate(
-            edge.to,
-            {
-              length: path.length + 1,
-              node: edge.to,
-              previous: path,
-              routes,
-            },
-            flowNodes,
-            flowEdges,
-            cycles
-          );
+          if (!routes.isEmpty()) {
+            this.propagate(
+              edge.to,
+              {
+                length: path.length + 1,
+                node: edge.to,
+                previous: path,
+                routes,
+              },
+              flowNodes,
+              flowEdges,
+              cycles
+            );
+          }
         }
         flowNode.active = false;
       }
     }
   }
 
-  extractCycle(path: Path): Path[] {
+  extractCycle(path: Path, routes: Disjunction<ForwardRuleSpecEx>): Path[] {
     const cycle = [path];
     const end = path.node;
     let p = path.previous;
@@ -166,7 +174,12 @@ export class Graph {
       const message = 'Internal error creating cycle';
       throw new TypeError(message);
     }
-    cycle.unshift(p);
+    // DESIGN NOTE: use the routes from the incoming flow, instead
+    // of the routes already at p. Those routes were the ones at
+    // the start of the cycle. We want to record only the routes
+    // that are valid for the entire cycle.
+    cycle.unshift({...p, routes});
+    // cycle.unshift(p);
 
     return cycle;
   }
