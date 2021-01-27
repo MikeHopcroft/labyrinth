@@ -117,7 +117,9 @@ export class Graph {
     // }
 
     const flowNode = flowNodes[index];
-    flowNode.routes = flowNode.routes.union(path.routes, this.simplifier);
+    if (path.length > 0) {
+      flowNode.routes = flowNode.routes.union(path.routes, this.simplifier);
+    }
     if (path.length > 0) {
       flowNode.paths.push(path);
     }
@@ -129,6 +131,8 @@ export class Graph {
         flowNode.routes = path.routes;
       } else {
         // Found a cycle.
+        // Consider marking the path object as a cycle
+        // as an alternative to returning cycles.
         cycles.push(this.extractCycle(path, path.routes));
       }
     } else {
