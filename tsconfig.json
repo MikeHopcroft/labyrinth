@@ -12,6 +12,6 @@
   ],
   "exclude": [
     "src/deprecated/**/*",
-    "src/junk/**/*"
+    "junk/**/*"
   ]
 }

@@ -1,8 +1,9 @@
 # TODO
 
 * Top
-  * Delete graph
-  * Ranme graph2 to graph
+  * x Delete graph
+  * x Ranme graph2 to graph
+  * x Fix linter errors
   * Finish authoring unit tests
   * Graph analysis utility
 * Azure configuration import

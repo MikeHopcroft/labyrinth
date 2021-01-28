@@ -2,14 +2,7 @@ import {assert} from 'chai';
 import 'mocha';
 
 import {Universe} from '../../src/dimensions';
-
-import {
-  ForwardRuleSpecEx,
-  Graph,
-  GraphBuilder,
-  NodeSpec,
-} from '../../src/graph';
-
+import {ForwardRuleSpecEx, GraphBuilder, NodeSpec} from '../../src/graph';
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 
@@ -32,7 +25,7 @@ describe('Graph2', () => {
       ];
       const builder = new GraphBuilder(universe, simplifier, nodes);
       assert.throws(() => {
-        const graph = builder.buildGraph();
+        builder.buildGraph();
       }, 'Unknown node "bad_key".');
     });
 
@@ -58,7 +51,7 @@ describe('Graph2', () => {
         },
       ];
       assert.throws(() => {
-        const builder = new GraphBuilder(universe, simplifier, nodes);
+        new GraphBuilder(universe, simplifier, nodes);
       }, 'Duplicate node key "internet".');
     });
   });
@@ -105,7 +98,7 @@ describe('Graph2', () => {
       ];
       const builder = new GraphBuilder(universe, simplifier, nodes);
       const graph = builder.buildGraph();
-      const {cycles, flows} = graph.analyze('internet', true);
+      const {cycles} = graph.analyze('internet', true);
       assert.equal(cycles.length, 1);
       const c = graph.formatCycle(cycles[0]);
       assert.equal(c, 'a => b => c => a');
@@ -154,7 +147,7 @@ describe('Graph2', () => {
       ];
       const builder = new GraphBuilder(universe, simplifier, nodes);
       const graph = builder.buildGraph();
-      const {cycles, flows} = graph.analyze('internet', true);
+      const {cycles} = graph.analyze('internet', true);
       assert.equal(cycles.length, 0);
     });
   });
@@ -231,8 +224,8 @@ describe('Graph2', () => {
       // const {cycles, flows} = graph.analyze('subnet3', false);
 
       assert.equal(cycles.length, 0);
-      for (const [i, flow] of flows.entries()) {
-        console.log(graph.formatFlow(flows[i], outbound));
+      for (const flow of flows) {
+        console.log(graph.formatFlow(flow, outbound));
       }
       console.log();
     });

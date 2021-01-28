@@ -1,4 +1,3 @@
-import {flow} from 'fp-ts/lib/function';
 import {Universe} from '../dimensions';
 import {Disjunction, Simplifier} from '../setops';
 
@@ -59,7 +58,7 @@ export class Graph {
     }
 
     // Index edges by `from` field.
-    for (const [i, node] of this.nodes.entries()) {
+    for (const node of this.nodes) {
       const outboundEdges = node.outboundEdges.map(edge => ({
         edge,
         to: this.nodeIndex(edge.to),
@@ -110,7 +109,9 @@ export class Graph {
     flowEdges: FlowEdge[][],
     cycles: Path[][]
   ) {
-    console.log(`============ propagate(index=${index}, pathlength=${path.length}) ===============`)
+    console.log(
+      `============ propagate(index=${index}, pathlength=${path.length}) ===============`
+    );
     console.log(JSON.stringify(path, null, 2));
     // if (path.routes.isEmpty()) {
     //   return;
@@ -138,7 +139,7 @@ export class Graph {
     } else {
       // If we're not at an endpoint or we're at the first node,
       // visit adjancent nodes.
-      if (!flowNode.node.isEndpoint || path.length == 0) {
+      if (!flowNode.node.isEndpoint || path.length === 0) {
         flowNode.active = true;
         for (const edge of flowEdges[index]) {
           const routes = path.routes.intersect(
@@ -207,7 +208,6 @@ export class Graph {
 
   formatFlow(flowNode: FlowNode, outbound: boolean): string {
     const key = flowNode.node.key;
-    const pathCount = flowNode.paths.length;
     const routes = flowNode.routes.format({prefix: '    '});
 
     const lines: string[] = [];
