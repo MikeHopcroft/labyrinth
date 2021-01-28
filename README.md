@@ -1,6 +1,6 @@
-# Labyrinth
+# Labyrinth NSG
 
-`Labyrinth` is an experimental tool for analyzing network security rules.
+`Labyrinth NSG` is an experimental tool for analyzing network security rules.
 It provides a command-line tool for the following scenarios:
 * **Policy Explanation** - given a set of rules, explain the allowable network routes.
 * **Contract Validation** - determine whether a set of rules constituting a policy satisfies another set of rules defining a contract.

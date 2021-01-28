@@ -1,15 +1,35 @@
 # TODO
 
-* Pusblish npm package
-  * labyrinth-analysis?
-  * labyrinth-nsg
-  * labyrinth-nsa
-  * labyrinth-security
-* Labyrinth-app/visualizer
-  * Repo
-  * Next project
-  * Skeleton
-  * Monaco editor hosting
+* Top
+  * Delete graph
+  * Ranme graph2 to graph
+  * Finish authoring unit tests
+  * Graph analysis utility
+* Azure configuration import
+  * Library
+  * Command-line transformer
+* Graph analysis command-line utility
+  * -f=node, --from=node
+  * -t=node, --to=node
+  * Special handling for -f=a -t=b
+* Global cycle detection
+  * Walk graph from each node
+  * Canonical names for cycles to eliminate duplicates
+  * Keep one instance of each cycle
+    * Instance traverse should start at node on cycle
+* Add firewall rules to NodeSpec
+  * inbound or filters
+  * outbound or filters
+* x Pusblish npm package
+  * x labyrinth-analysis?
+  * x labyrinth-nsg
+  * x labyrinth-nsa
+  * x labyrinth-security
+* x Labyrinth-app/visualizer
+  * x Repo
+  * x Next project
+  * x Skeleton
+  * x Monaco editor hosting
 * forwardRuleSpecType
   * Solution to avoid name clashes between rule fields and built-in fields. E.g. `destination`, `id`, and `source` in forwardRuleSpecType.
   * In forwardRuleSpecType, field name `source` might be confusing when positioned near destination. Might consider `provenence` or some other word.
@@ -18,12 +38,12 @@
   * Implement action
   * Badges
 
-* Fix cycle detection
-  * Really need dedicated DFS with markers
-  * Print out cycle.
-* Graph from-to reachability
-  * Constructor takes start node and adds to the queue
-  *Initial IPs are specified in local field
+* x Fix cycle detection
+  * x Really need dedicated DFS with markers
+  * x Print out cycle.
+* x Graph from-to reachability
+  * x Constructor takes start node and adds to the queue
+  * x Initial IPs are specified in local field
 * Graph scenarios
   * What routes can get to a node?
   * What routes exist from node a to node b?
@@ -35,14 +55,14 @@
 * Graph application
 * Rename rules/types
 * Rename RuleSpec, etc to FilterRuleSpec, etc.
-* Graph loader
-  * YAML load/parse
-  * Internet node
-  * Spec should be able to specify entry point
+* x Graph loader
+  * x YAML load/parse
+  * x Internet node
+  * x Spec should be able to specify entry point
 * Graph formatter
   * Line number attribution
   * Node attribution
-  * Tracing routes
+  * x Tracing routes
 * Prove lemma about intersection of minimal forms in documentation.
 * Add l-shaped region diagram to simplifier documentation
 * Document current simplifier algorithm and future directions
