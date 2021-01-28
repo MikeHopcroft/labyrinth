@@ -1,6 +1,6 @@
 export * from './dimensions';
 export * from './fuzzer';
-export * from './graph2';
+export * from './graph';
 export * from './rules';
 export * from './setops';
 export * from './specs';

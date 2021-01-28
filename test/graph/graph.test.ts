@@ -8,7 +8,7 @@ import {
   Graph,
   GraphBuilder,
   NodeSpec,
-} from '../../src/graph2';
+} from '../../src/graph';
 
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
