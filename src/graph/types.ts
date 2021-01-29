@@ -19,21 +19,13 @@ export const ForwardRuleSpecReservedWords = new Set<string>([
 
 export const nodeSpecType = t.intersection([
   t.type({
-    name: t.string,
     key: t.string,
     rules: t.array(forwardRuleSpecType),
   }),
   t.partial({
+    name: t.string,
     endpoint: t.boolean,
   }),
 ]);
 
 export type NodeSpec = t.TypeOf<typeof nodeSpecType>;
-
-// // TODO: consider option to represent edges in graph spec.
-// // This would allow one to save routes for later analysis.
-
-// const graphSpecType = t.type({
-//   nodes: t.array(nodeSpecType),
-// });
-// export type GraphSpec = t.TypeOf<typeof graphSpecType>;

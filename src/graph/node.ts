@@ -20,7 +20,7 @@ export class Node {
     spec: NodeSpec
   ) {
     this.spec = spec;
-    this.name = spec.name;
+    this.name = spec.name ?? spec.key;
     this.key = spec.key;
     this.isEndpoint = !!spec.endpoint;
     this.rules = spec.rules.map(r => parseForwardRuleSpec(universe, r));

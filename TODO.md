@@ -1,11 +1,20 @@
 # TODO
 
 * Top
+  * x Make value of NodeSpec.name default to key if not provided
+  * Revisit addition of id and source fields to ruleSpec
+    * Can the user ever supply the id?
+    * Can id be part of the Rule, instead of the RuleSpec?
+    * Does the source always have to come from the loader?
   * Decide whether to keep world.ts
   * x Delete graph
   * x Ranme graph2 to graph
   * x Fix linter errors
   * Finish authoring unit tests
+    * Is there some better verification strategy than comparing strings from serialization? This seems brittle.
+    * Test a node that is part of two cycles.
+      * Can we get the routes of one cycle, separated from those of the other?
+      * Might have to repropogate routes along cycle nodes, after detection.
   * Graph analysis utility
     * x -f, -t
     * -c: cycle detection
