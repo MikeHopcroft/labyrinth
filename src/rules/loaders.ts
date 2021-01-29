@@ -1,4 +1,3 @@
-// import * as csv from 'fast-csv';
 import csv from 'csv-parse/lib/sync';
 import fs from 'fs';
 import yaml from 'js-yaml';

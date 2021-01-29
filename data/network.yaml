@@ -1,0 +1,60 @@
+- name: internet
+  key: internet
+  endpoint: true
+  rules:
+    - destination: gateway
+      destinationIp: 10.0.0.0/15
+- name: gateway
+  key: gateway
+  rules:
+    - destination: internet
+      destinationIp: except 10.0.0.0/15
+    - destination: router
+- name: router
+  key: router
+  rules:
+    # Demo step 1: second route to server1
+    # - destination: server1
+    #   destinationIp: 10.0.0.1
+    - destination: subnet1
+      destinationIp: 10.0.0.0/16
+    - destination: subnet2
+      destinationIp: 10.1.0.0/16
+    - destination: gateway
+- name: subnet1
+  key: subnet1
+  rules:
+    - destination: router
+      destinationIp: except 10.0.0.0/16
+    - destination: server1
+- name: server1
+  key: server1
+  endpoint: true
+  rules:
+    - destination: subnet1
+      destinationIp: except loopback
+- name: subnet2
+  key: subnet2
+  rules:
+    # Demo step 2: route to gateway introduces a cycle
+    # - destination: gateway
+    #   destinationIp: 10.1.1.1
+    - destination: router
+      destinationIp: except 10.1.0.0/16
+    - destination: server2
+- name: server2
+  key: server2
+  endpoint: true
+  rules:
+    - destination: subnet2
+      destinationIp: except loopback
+# Demo step 3: router3 is not reachable from any other node
+# - name: router3
+#   key: router3
+#   rules:
+#     - destination: server3
+#       protocol: tcp
+# - name: server3
+#   key: server3
+#   endpoint: true
+#   rules: []

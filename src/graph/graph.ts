@@ -109,10 +109,10 @@ export class Graph {
     flowEdges: FlowEdge[][],
     cycles: Path[][]
   ) {
-    console.log(
-      `============ propagate(index=${index}, pathlength=${path.length}) ===============`
-    );
-    console.log(JSON.stringify(path, null, 2));
+    // console.log(
+    //   `============ propagate(index=${index}, pathlength=${path.length}) ===============`
+    // );
+    // console.log(JSON.stringify(path, null, 2));
     // if (path.routes.isEmpty()) {
     //   return;
     // }

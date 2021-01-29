@@ -1,18 +1,25 @@
 # TODO
 
 * Top
+  * Decide whether to keep world.ts
   * x Delete graph
   * x Ranme graph2 to graph
   * x Fix linter errors
   * Finish authoring unit tests
   * Graph analysis utility
+    * x -f, -t
+    * -c: cycle detection
+    * -p: partition detection
+    * Fit and finish
+    * Documentation
+    * stdio input for use with pipe
 * Azure configuration import
   * Library
   * Command-line transformer
-* Graph analysis command-line utility
-  * -f=node, --from=node
-  * -t=node, --to=node
-  * Special handling for -f=a -t=b
+* x Graph analysis command-line utility
+  * x -f=node, --from=node
+  * x -t=node, --to=node
+  * x Special handling for -f=a -t=b
 * Global cycle detection
   * Walk graph from each node
   * Canonical names for cycles to eliminate duplicates
