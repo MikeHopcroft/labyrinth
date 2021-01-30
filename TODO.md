@@ -1,6 +1,7 @@
 # TODO
 
 * Top
+  * Consider better naming scheme for concepts like routes, paths, flows, etc.
   * x Make value of NodeSpec.name default to key if not provided
   * Revisit addition of id and source fields to ruleSpec
     * Can the user ever supply the id?
@@ -16,7 +17,8 @@
       * Can we get the routes of one cycle, separated from those of the other?
       * Might have to repropogate routes along cycle nodes, after detection.
   * Graph analysis utility
-    * x -f, -t
+    * x -f: from, -t: to
+    * x -v:verbose mode
     * -c: cycle detection
     * -p: partition detection
     * Fit and finish

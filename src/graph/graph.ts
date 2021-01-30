@@ -1,3 +1,4 @@
+import { version } from 'os';
 import {Universe} from '../dimensions';
 import {Disjunction, Simplifier} from '../setops';
 
@@ -206,7 +207,7 @@ export class Graph {
     return cycle.map(step => this.nodes[step.node].key).join(' => ');
   }
 
-  formatFlow(flowNode: FlowNode, outbound: boolean): string {
+  formatFlow(flowNode: FlowNode, outbound: boolean, verbose = false): string {
     const key = flowNode.node.key;
     const routes = flowNode.routes.format({prefix: '    '});
 
@@ -220,6 +221,9 @@ export class Graph {
       lines.push('  paths:');
       for (const path of flowNode.paths) {
         lines.push(`    ${this.formatPath(path, outbound)}`);
+        if (verbose) {
+          lines.push(path.routes.format({prefix: '      '}))
+        }
       }
     }
     lines.push('');

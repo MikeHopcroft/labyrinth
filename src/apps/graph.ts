@@ -29,6 +29,8 @@ function main() {
     return fail('Partition detection not implemented.');
   }
 
+  const verbose = !!args.v;
+
   try {
     // Initialize universe.
     const universe = args.u
@@ -71,7 +73,7 @@ function main() {
 
       for (const flow of flows) {
         if (!args.t || args.t === flow.node.key)
-          console.log(graph.formatFlow(flow, outbound));
+          console.log(graph.formatFlow(flow, outbound, verbose));
           console.log();
         }
     } else if (args.t) {
@@ -93,7 +95,7 @@ function main() {
 
       console.log(`Routes to ${args.t}:`);
       for (const flow of flows) {
-        console.log(graph.formatFlow(flow, outbound));
+        console.log(graph.formatFlow(flow, outbound, verbose));
         console.log();
       }
     }
@@ -155,6 +157,12 @@ function showUsage() {
                         - destination ip
                         - destination port
                         - protocol\n`,
+          type: Boolean,
+        },
+        {
+          name: 'verbose',
+          alias: 'v',
+          description: 'Display routes for each path.',
           type: Boolean,
         },
         {

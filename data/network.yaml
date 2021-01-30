@@ -14,8 +14,8 @@
   key: router
   rules:
     # Demo step 1: second route to server1
-    # - destination: server1
-    #   destinationIp: 10.0.0.1
+    - destination: server1
+      destinationIp: 10.0.0.1
     - destination: subnet1
       destinationIp: 10.0.0.0/16
     - destination: subnet2
