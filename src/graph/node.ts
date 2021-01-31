@@ -39,7 +39,9 @@ export class Node {
       this.filters = Disjunction.universe<RuleSpec>();
     }
 
-    this.rules = spec.rules.map(r => parseForwardRuleSpec(universe, r));
+    this.rules = spec.rules.map(r => 
+      parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
+    );
 
     this.createEdges(simplifier);
   }
@@ -52,7 +54,10 @@ export class Node {
     let remaining: Disjunction<AnyRuleSpec> = this.filters;
     for (const rule of this.rules) {
       const allowed = Disjunction.create<AnyRuleSpec>([rule.conjunction]);
-      const current = allowed.intersect(remaining, simplifier);
+      const current = allowed.intersect(
+        remaining,
+        simplifier
+      ).intersect(rule.filters);
       remaining = remaining.subtract(allowed, simplifier);
 
       let routes = keyToRoute.get(rule.destination);

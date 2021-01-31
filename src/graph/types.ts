@@ -6,7 +6,10 @@ const forwardRuleSpecType = t.intersection([
   t.type({
     destination: t.string,
   }),
-  t.record(t.string, t.string),
+  t.partial({
+    filters: t.array(ruleSpecNoIdType),
+  }),
+  t.record(t.string, t.any),
 ]);
 export type ForwardRuleSpec = t.TypeOf<typeof forwardRuleSpecType>;
 

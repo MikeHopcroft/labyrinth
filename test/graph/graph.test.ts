@@ -898,10 +898,6 @@ describe('Graph', () => {
       const graph = builder.buildGraph();
       const outbound = true;
 
-      // console.log(paths(graph, 'main1', 'a', outbound));
-      // console.log(paths(graph, 'main1', 'b', outbound));
-      // console.log(paths(graph, 'main1', 'c', outbound));
-
       assert.equal(
         paths(graph, 'main1', 'a', outbound),
         trim(`
@@ -914,6 +910,120 @@ describe('Graph', () => {
             routes:
               destination ip: 10.0.0.0/8
               destination port: except 1
+        `)
+      );
+
+      assert.equal(
+        paths(graph, 'main1', 'b', outbound),
+        trim(`
+          b:
+            paths:
+              (no paths)
+
+            routes:
+              (no routes)
+        `)
+      );
+
+      assert.equal(
+        paths(graph, 'main1', 'c', outbound),
+        trim(`
+          c:
+            paths:
+              main1 => main2 => c
+                destination ip: 11.0.0.0/8
+                destination port: except 1
+
+            routes:
+              destination ip: 11.0.0.0/8
+              destination port: except 1
+        `)
+      );
+    });
+
+    it('inbound and outbound', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'main1',
+          endpoint: true,
+          rules: [
+            {
+              destination: 'main2'
+            },
+          ],
+        },
+        {
+          key: 'main2',
+          filters: [
+            {
+              action: ActionType.ALLOW,
+              priority: 0,
+            },
+            {
+              action: ActionType.DENY,
+              priority: 1,
+              destinationPort: '1'
+            }
+          ],
+          rules: [
+            {
+              destination: 'a',
+              destinationIp: '10.0.0.0/8',
+              filters: [
+                {
+                  action: ActionType.ALLOW,
+                  priority: 0,
+                },
+                {
+                  action: ActionType.DENY,
+                  priority: 1,
+                  destinationPort: '2'
+                }
+              ],
+            },
+            {
+              destination: 'b',
+              destinationIp: '10.0.0.0/8',
+            },
+            {
+              destination: 'c',
+              destinationIp: '10.0.0.0/7',
+            },
+          ],
+        },
+        {
+          key: 'a',
+          endpoint: true,
+          rules: [],
+        },
+        {
+          key: 'b',
+          endpoint: true,
+          rules: [],
+        },
+        {
+          key: 'c',
+          endpoint: true,
+          rules: [],
+        },
+      ];
+
+      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const graph = builder.buildGraph();
+      const outbound = true;
+
+      assert.equal(
+        paths(graph, 'main1', 'a', outbound),
+        trim(`
+          a:
+            paths:
+              main1 => main2 => a
+                destination ip: 10.0.0.0/8
+                destination port: except 1-2
+
+            routes:
+              destination ip: 10.0.0.0/8
+              destination port: except 1-2
         `)
       );
 

@@ -12,6 +12,12 @@
   rules:
     - destination: a
       destinationIp: 10.0.0.0/8
+      filters:
+        - action: allow
+          priority: 0
+        - action: deny
+          priority: 1
+          destinationPort: '2'
     - destination: b
       destinationIp: 10.0.0.0/8
     - destination: c
