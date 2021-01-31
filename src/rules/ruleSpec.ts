@@ -20,10 +20,13 @@ export enum ActionType {
 // tslint:disable-next-line:variable-name
 const ActionTypeType = createEnum<ActionType>(ActionType, 'ActionType');
 
-export const ruleSpecNoIdType = t.type({
-  action: ActionTypeType,
-  priority: t.number,
-});
+export const ruleSpecNoIdType = t.intersection([
+  t.type({
+    action: ActionTypeType,
+    priority: t.number,
+  }),
+  t.record(t.string, t.any),
+]);
 
 export const ruleSpecType = t.intersection([
   ruleSpecNoIdType,

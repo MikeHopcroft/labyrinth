@@ -1,7 +1,7 @@
 import {loadYamlUniverseSpec, Universe, UniverseSpec} from '../dimensions';
 
 import {
-  ForwardRuleSpecEx,
+  AnyRuleSpec,
   Graph,
   GraphBuilder,
   loadYamlNodeSpecs,
@@ -13,7 +13,7 @@ import {createSimplifier, Simplifier} from '../setops';
 export interface World {
   graph: Graph;
   universe: Universe;
-  simplifier: Simplifier<ForwardRuleSpecEx>;
+  simplifier: Simplifier<AnyRuleSpec>;
 }
 
 export function createWorldFromYaml(
@@ -30,7 +30,7 @@ export function createWorld(
   nodes: NodeSpec[]
 ): World {
   const universe = new Universe(universeSpec);
-  const simplifier = createSimplifier<ForwardRuleSpecEx>(universe);
+  const simplifier = createSimplifier<AnyRuleSpec>(universe);
   const builder = new GraphBuilder(universe, simplifier, nodes);
   const graph = builder.buildGraph();
 

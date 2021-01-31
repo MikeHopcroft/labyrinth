@@ -1,9 +1,9 @@
 import {Disjunction} from '../setops';
 
-import {ForwardRuleSpecEx} from './types';
+import {AnyRuleSpec} from './types';
 
 export interface Edge {
   from: string;
   to: string;
-  routes: Disjunction<ForwardRuleSpecEx>;
+  routes: Disjunction<AnyRuleSpec>;
 }

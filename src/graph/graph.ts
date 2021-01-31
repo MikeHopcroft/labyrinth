@@ -1,14 +1,13 @@
-import { version } from 'os';
 import {Universe} from '../dimensions';
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
 import {Node} from './node';
-import {ForwardRuleSpecEx, NodeSpec} from './types';
+import {AnyRuleSpec, NodeSpec} from './types';
 
 export interface Path {
   node: number;
-  routes: Disjunction<ForwardRuleSpecEx>;
+  routes: Disjunction<AnyRuleSpec>;
   previous: Path | undefined;
   length: number;
 }
@@ -16,7 +15,7 @@ export interface Path {
 export interface FlowNode {
   node: Node;
   paths: Path[];
-  routes: Disjunction<ForwardRuleSpecEx>;
+  routes: Disjunction<AnyRuleSpec>;
 
   // Used for cycle detection.
   // True when this FlowNode is currently on the inorder search stack.
@@ -36,14 +35,14 @@ interface FlowAnalysis {
 }
 
 export class Graph {
-  simplifier: Simplifier<ForwardRuleSpecEx>;
+  simplifier: Simplifier<AnyRuleSpec>;
   nodes: Node[];
   keyToIndex = new Map<string, number>();
   inboundTo: FlowEdge[][];
   outboundFrom: FlowEdge[][] = [];
 
   constructor(
-    simplifier: Simplifier<ForwardRuleSpecEx>,
+    simplifier: Simplifier<AnyRuleSpec>,
     nodes: IterableIterator<Node>
   ) {
     this.simplifier = simplifier;
@@ -86,14 +85,14 @@ export class Graph {
     const flows: FlowNode[] = this.nodes.map(node => ({
       node,
       paths: [],
-      routes: Disjunction.emptySet<ForwardRuleSpecEx>(),
+      routes: Disjunction.emptySet<AnyRuleSpec>(),
       active: false,
     }));
 
     const index = this.nodeIndex(startKey);
     const path: Path = {
       node: index,
-      routes: Disjunction.universe<ForwardRuleSpecEx>(),
+      routes: Disjunction.universe<AnyRuleSpec>(),
       previous: undefined,
       length: 0,
     };
@@ -168,7 +167,7 @@ export class Graph {
     }
   }
 
-  extractCycle(path: Path, routes: Disjunction<ForwardRuleSpecEx>): Path[] {
+  extractCycle(path: Path, routes: Disjunction<AnyRuleSpec>): Path[] {
     const cycle = [path];
     const end = path.node;
     let p = path.previous;
@@ -263,12 +262,12 @@ export class Graph {
 
 export class GraphBuilder {
   universe: Universe;
-  simplifier: Simplifier<ForwardRuleSpecEx>;
+  simplifier: Simplifier<AnyRuleSpec>;
   keyToNode = new Map<string, Node>();
 
   constructor(
     universe: Universe,
-    simplifier: Simplifier<ForwardRuleSpecEx>,
+    simplifier: Simplifier<AnyRuleSpec>,
     nodeSpecs: NodeSpec[]
   ) {
     this.universe = universe;

@@ -1,6 +1,17 @@
 # TODO
 
 * Top
+  * Prepress docs seem broken - don't have command output
+  * Rearchitect ruleSpecNoIdType
+    * Seems id and source are only used for attribution
+      * Not accessed by set logic
+      * Written by loaders
+      * Examined by formatter
+    * Why do rules have an `id` field?
+    * Original design had loader add the `id` and `source` fields. parseRuleSpec().
+      * Could we make `id` and `source` optional to eliminate the ruleSpecNoIdType?
+    * This tends to make the code less modular, since the loader for an enclosing type must know how to add the extra fields to each ruleSpecNoIdType.
+    * Consider moving ruleSpec.ts to types.ts.
   * Consider better naming scheme for concepts like routes, paths, flows, etc.
   * x Make value of NodeSpec.name default to key if not provided
   * Revisit addition of id and source fields to ruleSpec
@@ -42,7 +53,7 @@
   * Keep one instance of each cycle
     * Instance traverse should start at node on cycle
 * Add firewall rules to NodeSpec
-  * inbound or filters
+  * x inbound or filters
   * outbound or filters
 * x Pusblish npm package
   * x labyrinth-analysis?
