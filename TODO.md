@@ -12,10 +12,15 @@
   * x Ranme graph2 to graph
   * x Fix linter errors
   * Finish authoring unit tests
-    * Is there some better verification strategy than comparing strings from serialization? This seems brittle.
-    * Test a node that is part of two cycles.
-      * Can we get the routes of one cycle, separated from those of the other?
-      * Might have to repropogate routes along cycle nodes, after detection.
+    * Graph cycle tests should compare verbose text output
+    * Backward propagation
+    * x graph.analyze passed unknown node key.
+    * x Not all unreachable nodes are "(entry point)"
+    * x Upstream route shadows downstream route
+    * x Is there some better verification strategy than comparing strings from serialization? This seems brittle.
+    * x Test a node that is part of two cycles.
+      * x Can we get the routes of one cycle, separated from those of the other?
+      * x Might have to repropogate routes along cycle nodes, after detection.
   * Graph analysis utility
     * x -f: from, -t: to
     * x -v:verbose mode

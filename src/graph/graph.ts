@@ -203,8 +203,13 @@ export class Graph {
     return this.nodes[this.nodeIndex(key)];
   }
 
-  formatCycle(cycle: Cycle): string {
-    return cycle.map(step => this.nodes[step.node].key).join(' => ');
+  formatCycle(cycle: Cycle, verbose=false): string {
+    const lines: string[] = [];
+    lines.push(cycle.map(step => this.nodes[step.node].key).join(' => '));
+    if (verbose) {
+      lines.push(cycle[0].routes.format({prefix: '  '}));
+    }
+    return lines.join('\n');
   }
 
   formatFlow(flowNode: FlowNode, outbound: boolean, verbose = false): string {
@@ -216,7 +221,7 @@ export class Graph {
 
     if (flowNode.paths.length === 0) {
       lines.push('  paths:');
-      lines.push('    (entry point)');
+      lines.push('    (no paths)');
     } else {
       lines.push('  paths:');
       for (const path of flowNode.paths) {
@@ -228,7 +233,11 @@ export class Graph {
     }
     lines.push('');
     lines.push('  routes:');
-    lines.push(routes);
+    if (routes === '') {
+      lines.push('    (no routes)');
+    } else {
+      lines.push(routes);
+    }
 
     return lines.join('\n');
   }
@@ -299,30 +308,4 @@ export class GraphBuilder {
   buildGraph(): Graph {
     return new Graph(this.simplifier, this.keyToNode.values());
   }
-
-  // node(key: string): Node {
-  //   return this.index.node(key);
-  // }
-
-  // nodes(): IterableIterator<Node> {
-  //   return this.index.nodes.values();
-  // }
-
-  // format() {
-  //   for (const node of this.index.nodes) {
-  //     console.log(`Node: ${node.key}:`);
-  //     // console.log('  Incoming:');
-  //     // // console.log(`  ${node.routes.conjunctions.length} routes`);
-  //     // console.log(node.routes.format({ prefix: '    ' }));
-  //     // console.log();
-  //     // for (const edge of node.in) {
-  //     //   console.log(`  From ${edge.from}:`);
-  //     //   // console.log('foo');
-  //     //   // console.log(`"${edge.routes.format({prefix: '    '})}"`);
-  //     //   console.log(edge.routes.format({ prefix: '    ' }));
-  //     //   console.log();
-  //     // }
-  //     console.log();
-  //   }
-  // }
 }

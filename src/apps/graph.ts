@@ -53,7 +53,7 @@ function main() {
       if (cycles.length > 0) {
         console.log(`Cycles reachable from ${args.f}:`);
         for (const cycle of cycles) {
-          console.log('  ' + graph.formatCycle(cycle));
+          console.log('  ' + graph.formatCycle(cycle, verbose));
           console.log();
         }
         console.log();
