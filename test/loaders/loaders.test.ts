@@ -129,7 +129,7 @@ describe('Rules', () => {
       // could be in a different order. Really need to do a set
       // equivalence test.
       const expected =
-        'source ip: 2.2.2.0/25, 2.2.2.129-2.2.2.255\n\nsource ip: 1.1.1.1\nsource port: except 80';
+        'source ip: 2.2.2.0/25, 2.2.2.129-2.2.2.255\n\nsource ip: 1.1.1.1\nsource port: except http';
       assert.equal(observed, expected);
     });
   });

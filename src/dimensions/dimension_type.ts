@@ -98,35 +98,48 @@ export class DimensionType {
 
     // Initalize table of symbol definitions.
     for (const {symbol, range} of spec.values) {
-      ///////////////////////////////////////////////////////////////////
-      // TODO: Disallow `*`, `any`, `-`, `,`
-      // What about numbers and ip addresses?
-      // Should at least unit test behavior.
-      // Also unit test cycle detection and symbol chain.
-      ///////////////////////////////////////////////////////////////////
-      if (!this.isValidSymbol(symbol)) {
-        const message = `Dimension "${this.name}": illegal symbol "${symbol}".`;
-        throw new TypeError(message);
-      }
-      if (this.symbolToDefinition.has(symbol)) {
-        const message = `Dimension "${this.name}": attempt to redefine symbol "${symbol}".`;
-        throw new TypeError(message);
-      }
-      this.symbolToDefinition.set(symbol, {
-        value: range,
-        open: false,
-      });
+      this.defineSymbol(symbol, range);
     }
 
     // Use this.lookup() to evaluate symbol definitions in topological
     // sort order.
     for (const symbol of this.symbolToDefinition.keys()) {
       const range = this.lookup(symbol);
-      this.symbolToRange.set(symbol, range);
+      this.indexRange(symbol, range);
+    }
+  }
 
-      // TODO: what if multiple symbols define the same range?
-      const rangeText = range.toString().slice(2, -2); // Trim off "[ " and " ]"
-      this.rangeToSymbol.set(rangeText, symbol);
+  indexRange(symbol: string, range: DRange) {
+    this.symbolToRange.set(symbol, range);
+
+    // TODO: what if multiple symbols define the same range?
+    const rangeText = range.toString().slice(2, -2); // Trim off "[ " and " ]"
+    this.rangeToSymbol.set(rangeText, symbol);
+  }
+
+  defineSymbol(symbol: string, value: string, indexRange = false) {
+    ///////////////////////////////////////////////////////////////////
+    // TODO: Disallow `*`, `any`, `-`, `,`
+    // What about numbers and ip addresses?
+    // Should at least unit test behavior.
+    // Also unit test cycle detection and symbol chain.
+    ///////////////////////////////////////////////////////////////////
+    if (!this.isValidSymbol(symbol)) {
+      const message = `Dimension "${this.name}": illegal symbol "${symbol}".`;
+      throw new TypeError(message);
+    }
+    if (this.symbolToDefinition.has(symbol)) {
+      const message = `Dimension "${this.name}": attempt to redefine symbol "${symbol}".`;
+      throw new TypeError(message);
+    }
+    this.symbolToDefinition.set(symbol, {
+      value,
+      open: false,
+    });
+
+    if (indexRange) {
+      const range = this.lookup(symbol);
+      this.indexRange(symbol, range);
     }
   }
 

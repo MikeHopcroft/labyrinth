@@ -15,7 +15,11 @@ export function denyOverrides(
 ): Disjunction<RuleSpec> {
   // Sort rules by ascending priority.
   const sorted = [...rules].sort((a: Rule, b: Rule) => {
-    return a.priority - b.priority;
+    // Changed to match Azure behavior
+    // Higher priority numbers are overriden by lower priority numbers.
+    return b.priority - a.priority;
+    // // Original
+    // return a.priority - b.priority;
   });
 
   // Group rules by priority and allow/deny status.

@@ -78,4 +78,14 @@ export class Universe {
     }
     return dimension;
   }
+
+  defineSymbol(
+    dimensionKey: string,
+    symbol: string, value:
+    string,
+    indexRange = false
+  ) {
+    const dimensionType = this.get(dimensionKey).type;
+    dimensionType.defineSymbol(symbol, value, indexRange);
+  }
 }

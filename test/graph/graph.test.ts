@@ -805,7 +805,7 @@ describe('Graph', () => {
         
           routes:
             destination ip: 10.0.0.0/8
-            destination port: 80
+            destination port: http
         
             destination ip: 11.0.0.0/8
         subnet3:
@@ -814,7 +814,7 @@ describe('Graph', () => {
         
           routes:
             destination ip: 10.0.0.0/8
-            destination port: except 80
+            destination port: except http
         server:
           paths:
             internet => gateway => subnet1 => subnet2 => server
@@ -822,7 +822,7 @@ describe('Graph', () => {
         
           routes:
             destination ip: 10.0.0.0/8
-            destination port: 80
+            destination port: http
             protocol: tcp
         
             destination ip: 11.0.0.0/8
@@ -853,14 +853,14 @@ describe('Graph', () => {
           key: 'main2',
           filters: [
             {
-              action: ActionType.ALLOW,
+              action: ActionType.DENY,
               priority: 0,
+              destinationPort: '1'
             },
             {
-              action: ActionType.DENY,
+              action: ActionType.ALLOW,
               priority: 1,
-              destinationPort: '1'
-            }
+            },
           ],
           rules: [
             {
@@ -956,14 +956,14 @@ describe('Graph', () => {
           key: 'main2',
           filters: [
             {
-              action: ActionType.ALLOW,
+              action: ActionType.DENY,
               priority: 0,
+              destinationPort: '1'
             },
             {
-              action: ActionType.DENY,
+              action: ActionType.ALLOW,
               priority: 1,
-              destinationPort: '1'
-            }
+            },
           ],
           rules: [
             {
@@ -971,14 +971,14 @@ describe('Graph', () => {
               destinationIp: '10.0.0.0/8',
               filters: [
                 {
-                  action: ActionType.ALLOW,
+                  action: ActionType.DENY,
                   priority: 0,
+                  destinationPort: '2'
                 },
                 {
-                  action: ActionType.DENY,
+                  action: ActionType.ALLOW,
                   priority: 1,
-                  destinationPort: '2'
-                }
+                },
               ],
             },
             {

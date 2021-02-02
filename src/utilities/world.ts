@@ -1,38 +1,42 @@
-import {loadYamlUniverseSpec, Universe, UniverseSpec} from '../dimensions';
+export const abc = 1;
 
-import {
-  AnyRuleSpec,
-  Graph,
-  GraphBuilder,
-  loadYamlNodeSpecs,
-  NodeSpec,
-} from '../graph';
+// This file causes an import cycle.
 
-import {createSimplifier, Simplifier} from '../setops';
+// import {loadYamlUniverseSpec, Universe, UniverseSpec} from '../dimensions';
 
-export interface World {
-  graph: Graph;
-  universe: Universe;
-  simplifier: Simplifier<AnyRuleSpec>;
-}
+// import {
+//   AnyRuleSpec,
+//   Graph,
+//   GraphBuilder,
+//   loadYamlNodeSpecs,
+//   NodeSpec,
+// } from '../graph';
 
-export function createWorldFromYaml(
-  universeYamlText: string,
-  configYamlText: string
-): World {
-  const graphSpec = loadYamlNodeSpecs(configYamlText);
-  const universeSpec = loadYamlUniverseSpec(universeYamlText);
-  return createWorld(universeSpec, graphSpec);
-}
+// import {createSimplifier, Simplifier} from '../setops';
 
-export function createWorld(
-  universeSpec: UniverseSpec,
-  nodes: NodeSpec[]
-): World {
-  const universe = new Universe(universeSpec);
-  const simplifier = createSimplifier<AnyRuleSpec>(universe);
-  const builder = new GraphBuilder(universe, simplifier, nodes);
-  const graph = builder.buildGraph();
+// export interface World {
+//   graph: Graph;
+//   universe: Universe;
+//   simplifier: Simplifier<AnyRuleSpec>;
+// }
 
-  return {graph, universe, simplifier};
-}
+// export function createWorldFromYaml(
+//   universeYamlText: string,
+//   configYamlText: string
+// ): World {
+//   const graphSpec = loadYamlNodeSpecs(configYamlText);
+//   const universeSpec = loadYamlUniverseSpec(universeYamlText);
+//   return createWorld(universeSpec, graphSpec);
+// }
+
+// export function createWorld(
+//   universeSpec: UniverseSpec,
+//   nodes: NodeSpec[]
+// ): World {
+//   const universe = new Universe(universeSpec);
+//   const simplifier = createSimplifier<AnyRuleSpec>(universe);
+//   const builder = new GraphBuilder(universe, simplifier, nodes);
+//   const graph = builder.buildGraph();
+
+//   return {graph, universe, simplifier};
+// }

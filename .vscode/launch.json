@@ -37,6 +37,19 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "convert",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/build/src/apps/convert.js",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/build/**/*.js"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "fuzz",
       "skipFiles": [
         "<node_internals>/**"
