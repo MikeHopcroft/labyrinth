@@ -1,3 +1,12 @@
+import * as yaml from 'js-yaml';
+
 import {convert} from '../converter';
 
-convert('junk/resource-graph.json');
+const graph = convert(
+  'junk/resource-graph.json',
+  'junk/resource-graph.yaml'
+);
+
+console.log('====================================');
+console.log(yaml.dump(graph));
+

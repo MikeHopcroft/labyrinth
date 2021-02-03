@@ -80,12 +80,47 @@ export class Universe {
   }
 
   defineSymbol(
-    dimensionKey: string,
-    symbol: string, value:
-    string,
+    key: string,
+    symbol: string,
+    range: string,
     indexRange = false
   ) {
-    const dimensionType = this.get(dimensionKey).type;
-    dimensionType.defineSymbol(symbol, value, indexRange);
+    const dimensionType = this.keyToDimensionType.get(key);
+    if (dimensionType === undefined) {
+      const message = `Unknown dimension type "${key}".`;
+      throw new TypeError(message);
+    }
+    dimensionType.defineSymbol(symbol, range, indexRange);
   }
 }
+
+/*
+symbols:
+  - dimension: ip
+    symbol: vnet
+    range: 1.2.3.4
+  - dimension: ip
+    symbol: AzureLoadBalancer
+    range: 4.5.6.7
+  - dimension: ip
+    symbol: Internet
+    range: internet
+  - dimension: protocol
+    symbol: Tcp
+    range: '6'
+
+
+symbols:
+  - dimension: destinationIp
+    symbol: vnet
+    value: 1.2.3.4
+  - dimension: destinationIp
+    symbol: AzureLoadBalancer
+    value: 4.5.6.7
+  - dimension: destinationIp
+    symbol: Internet
+    value: internet
+  - dimension: protocol
+    symbol: Tcp
+    value: '6'
+*/

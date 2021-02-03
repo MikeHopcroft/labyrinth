@@ -4,7 +4,7 @@ import minimist from 'minimist';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {AnyRuleSpec, GraphBuilder, loadYamlNodeSpecsFile} from '../graph';
+import {AnyRuleSpec, GraphBuilder, loadYamlGraphSpecFile} from '../graph';
 import {createSimplifier} from '../setops';
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
@@ -39,8 +39,10 @@ function main() {
     const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
     // Load network graph.
-    const nodes = loadYamlNodeSpecsFile(args._[0]);
-    const builder = new GraphBuilder(universe, simplifier, nodes);
+    // const nodes = loadYamlNodeSpecsFile(args._[0]);
+    const spec = loadYamlGraphSpecFile(args._[0]);
+    const nodes = spec.nodes;
+    const builder = new GraphBuilder(universe, simplifier, spec);
     const graph = builder.buildGraph();
 
     if (args.f) {

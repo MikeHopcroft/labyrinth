@@ -50,6 +50,20 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "graph",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/build/src/apps/graph.js",
+      "args": ["junk/resource-graph.yaml", "-f=Internet"],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": [
+        "${workspaceFolder}/build/**/*.js"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "fuzz",
       "skipFiles": [
         "<node_internals>/**"

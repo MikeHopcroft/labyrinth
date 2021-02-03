@@ -3,7 +3,7 @@ import 'mocha';
 import { ActionType } from '../../src';
 
 import {Universe} from '../../src/dimensions';
-import {AnyRuleSpec, Graph, GraphBuilder, NodeSpec} from '../../src/graph';
+import {AnyRuleSpec, Graph, GraphBuilder, GraphSpec, NodeSpec} from '../../src/graph';
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 
@@ -43,6 +43,17 @@ function trim(text: string) {
   }
 }
 
+// Convenience function.
+// Creates a GraphSpec with no symbols from a NodeSpec[].
+function graphBuilder(nodes: NodeSpec[]): GraphBuilder {
+  const spec: GraphSpec = {
+    symbols: [],
+    nodes
+  };
+
+  return new GraphBuilder(universe, simplifier, spec);
+}
+
 describe('Graph', () => {
   describe('errors', () => {
     it('unknown destination', () => {
@@ -57,7 +68,7 @@ describe('Graph', () => {
           ],
         },
       ];
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       assert.throws(
         () => {
           builder.buildGraph();
@@ -89,7 +100,7 @@ describe('Graph', () => {
       ];
       assert.throws(
         () => {
-          new GraphBuilder(universe, simplifier, nodes);
+          const builder = graphBuilder(nodes);
         },
         'Duplicate node key "internet".'
       );
@@ -111,7 +122,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
 
       assert.throws(
@@ -163,7 +174,7 @@ describe('Graph', () => {
           ],
         },
       ];
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const {cycles} = graph.analyze('internet', true);
       assert.equal(cycles.length, 1);
@@ -248,7 +259,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const {cycles} = graph.analyze('main1', true);
       assert.equal(cycles.length, 2);
@@ -341,7 +352,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const {cycles} = graph.analyze('main1', true);
       // for (const c of cycles) {
@@ -397,7 +408,7 @@ describe('Graph', () => {
           ],
         },
       ];
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const {cycles} = graph.analyze('internet', true);
       assert.equal(cycles.length, 0);
@@ -443,7 +454,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
 
@@ -528,7 +539,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
 
@@ -604,7 +615,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
 
@@ -661,7 +672,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
 
@@ -768,14 +779,14 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
       const {cycles, flows} = graph.analyze('internet', outbound);
 
       assert.equal(cycles.length, 0);
 
-      const observed= flows.map(
+      const observed = flows.map(
         flow => graph.formatFlow(flow, outbound)
       ).join('\n');
 
@@ -894,7 +905,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
 
@@ -1008,7 +1019,7 @@ describe('Graph', () => {
         },
       ];
 
-      const builder = new GraphBuilder(universe, simplifier, nodes);
+      const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
 

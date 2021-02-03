@@ -1,6 +1,8 @@
 # TODO
 
 * Top
+  * Should be able to specify dimension values as strings or numbers, e.g. "port: 6" or "port: '6'".
+  * Rename ruleSpec.ts to rule_spec.ts
   * Prepress docs seem broken - don't have command output
   * Rearchitect ruleSpecNoIdType
     * Seems id and source are only used for attribution

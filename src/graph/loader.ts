@@ -4,15 +4,26 @@ import yaml from 'js-yaml';
 
 import {validate} from '../utilities';
 
-import {NodeSpec, nodeSpecType} from './types';
+import {GraphSpec, graphSpecType, NodeSpec, nodeSpecType} from './types';
 
-export function loadYamlNodeSpecsFile(filename: string): NodeSpec[] {
+// export function loadYamlNodeSpecsFile(filename: string): NodeSpec[] {
+//   const text = fs.readFileSync(filename, 'utf8');
+//   return loadYamlNodeSpecs(text);
+// }
+
+// export function loadYamlNodeSpecs(text: string): NodeSpec[] {
+//   const root = yaml.safeLoad(text);
+//   const nodes = validate(t.array(nodeSpecType), root);
+//   return nodes;
+// }
+
+export function loadYamlGraphSpecFile(filename: string): GraphSpec {
   const text = fs.readFileSync(filename, 'utf8');
-  return loadYamlNodeSpecs(text);
+  return loadYamlGraphSpec(text);
 }
 
-export function loadYamlNodeSpecs(text: string): NodeSpec[] {
+export function loadYamlGraphSpec(text: string): GraphSpec {
   const root = yaml.safeLoad(text);
-  const nodes = validate(t.array(nodeSpecType), root) as NodeSpec[];
-  return nodes;
+  const graph = validate(graphSpecType, root);
+  return graph;
 }

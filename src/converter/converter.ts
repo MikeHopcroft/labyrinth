@@ -1,17 +1,22 @@
 import fs from 'fs';
+import * as yaml from 'js-yaml';
 
-import {Universe} from '../dimensions';
+// import {Universe} from '../dimensions';
+
+import {
+  ForwardRuleSpecEx,
+  GraphSpec,
+  NodeSpec,
+  SymbolDefinitionSpec
+} from '../graph';
 
 import {
   ActionType,
-  denyOverrides,
-  parseRuleSpec,
-  Rule,
   RuleSpec,
 } from '../rules';
 
-import {firewallSpec} from '../specs';
-import {createSimplifier, Simplifier} from '../setops';
+// import {firewallSpec} from '../specs';
+// import {createSimplifier, Simplifier} from '../setops';
 
 import {
   AnyAzureObject,
@@ -27,15 +32,35 @@ import {
   AzureVirtualNetwork,
 } from './azure_types';
 
-export function convert(filename: string) {
+export function convert(infile: string, outfile: string): GraphSpec {
   const idToItem = new Map<string, AnyAzureObject>();
   const idToAlias = new Map<string, string>();
+  const nodes: NodeSpec[] = [];
 
-  patchFirewallSpec();
-  const universe = new Universe(firewallSpec);
-  const simplifier: Simplifier<RuleSpec> = createSimplifier<RuleSpec>(universe);
+  // TODO: create real Azure UniverseSpec, instead of adding symbols here.
+  const symbols: SymbolDefinitionSpec[] = [
+    {
+      dimension: 'ip',
+      symbol: 'AzureLoadBalancer',
+      range: '168.63.129.16',
+    },
+    {
+      dimension: 'ip',
+      symbol: 'Internet',
+      range: 'internet',
+    },
+    {
+      dimension: 'protocol',
+      symbol: 'Tcp',
+      range: 'tcp',
+    },
+  ];
 
-  const text = fs.readFileSync(filename, 'utf8');
+  // patchFirewallSpec();
+  // const universe = new Universe(firewallSpec);
+  // const simplifier: Simplifier<RuleSpec> = createSimplifier<RuleSpec>(universe);
+
+  const text = fs.readFileSync(infile, 'utf8');
   const root = JSON.parse(text) as AnyAzureObject[];
 
   //
@@ -67,55 +92,192 @@ export function convert(filename: string) {
     }
   }
 
-  //
-  // Convert each VNet
-  //
+  convertResourceGroup();
 
-  for (const item of idToItem.values()) {
-    console.log(`${item.name}: ${item.type}`);
-    const vnet = asAzureVirtualNetwork(item);
-    if (vnet) {
-      convertVNet(vnet);
-    }
-  }
+  // for (const item of idToItem.values()) {
+  //   console.log(`${item.name}: ${item.type}`);
+  //   const vnet = asAzureVirtualNetwork(item);
+  //   if (vnet) {
+  //     convertVNet(vnet);
+  //   }
+  // }
+
+  const graph = {symbols, nodes};
+  const yamlText = yaml.dump(graph);
+  fs.writeFileSync(outfile, yamlText, 'utf8');
 
   console.log('done');
+  return graph;
 
-  function convertVNet(vnet: AzureVirtualNetwork) {
+  function convertResourceGroup() {
+    const alias = 'Internet';
+
+    const rules: ForwardRuleSpecEx[] = [
+    ];
+
+    //
+    // Convert each VNet
+    //
+    for (const item of idToItem.values()) {
+      console.log(`${item.name}: ${item.type}`);
+      const vnet = asAzureVirtualNetwork(item);
+      if (vnet) {
+        const addresses = vnet.properties.addressSpace.addressPrefixes.join(', ');
+        const child = convertVNet(vnet, alias);
+        rules.push({
+          destination: child,
+          destinationIp: addresses,
+        });
+      }
+    }
+
+    nodes.push({
+      key: alias,
+      endpoint: true,
+      rules
+    });
+  }
+
+  function convertVNet(vnet: AzureVirtualNetwork, parent: string): string {
     const addresses = vnet.properties.addressSpace.addressPrefixes.join(', ');
+    const alias = getAlias(vnet);
+    // const router = alias + '/router';
+
+    defineSymbol('ip', vnet.name, addresses);
+    // universe.defineSymbol('ip', vnet.name, addresses, true);
+
+    const rules: ForwardRuleSpecEx[] = [
+      // Traffice leaving subnet
+      {
+        destination: parent,
+        destinationIp: `except ${addresses}`,
+      },
+    ];
+
     console.log(`  VNet: ${getAlias(vnet)}`);
     console.log(`    address prefixes: [${addresses}]`);
-    universe.defineSymbol('destinationIp', vnet.name, addresses, true);
+
     for (const subnet of vnet.properties.subnets) {
-      convertSubnet(vnet, subnet);
+      const child = convertSubnet(vnet, subnet, alias);
+
+      // Traffic to child of subnet
+      rules.push({
+        destination: child,
+        destinationIp: subnet.properties.addressPrefix,
+      });
     }
+
+    nodes.push({
+      key: alias,
+      rules,
+    });
+
+    return alias;
   }
   
-  function convertSubnet(vnet: AzureVirtualNetwork, subnet: AzureSubnet) {
-    console.log(`    Subnet: ${getAlias(subnet)}`);
+  function convertSubnet(
+    vnet: AzureVirtualNetwork,
+    subnet: AzureSubnet,
+    parent: string
+  ): string {
+    const alias = getAlias(subnet);
+    console.log(`    Subnet: ${alias}`);
     console.log(`      addressPrefix: ${subnet.properties.addressPrefix}`);
     console.log(`      ipConfigurations:`);
-    for (const ipConfig of subnet.properties.ipConfigurations) {
-      convertIpConfiguration(dereference<AzureIPConfiguration>(ipConfig));
+
+    const inboundKey = alias + '/inbound';
+    const outboundKey = alias + '/outbound';
+    const routerKey = alias + '/router';
+
+    const rules: ForwardRuleSpecEx[] = [
+      // Traffice leaving subnet
+      {
+        destination: outboundKey,
+        destinationIp: `except ${subnet.properties.addressPrefix}`,
+      },
+    ];
+
+    for (const ref of subnet.properties.ipConfigurations) {
+      const ipConfig = dereference<AzureIPConfiguration>(ref);
+      const child = convertIpConfiguration(ipConfig, routerKey);
+
+      // Traffic to child of subnet
+      rules.push({
+        destination: child,
+        destinationIp: ipConfig.properties.privateIPAddress,
+      });
     }
-    convertNSG(
+
+    const routerNode: NodeSpec = {
+      key: routerKey,
+      rules,
+    }
+    nodes.push(routerNode);
+
+    const {inbound, outbound} = convertNSG(
       vnet,
       dereference<AzureNetworkSecurityGroup>(
         subnet.properties.networkSecurityGroup
       )
     );
+
+    const inboundNode: NodeSpec = {
+      key: inboundKey,
+      filters: inbound,
+      rules: [
+        {
+          destination: routerKey
+        }
+      ],
+    };
+    nodes.push(inboundNode);
+
+    const outboundNode: NodeSpec = {
+      key: outboundKey,
+      filters: outbound,
+      rules: [
+        {
+          destination: parent
+        }
+      ],
+    };
+    nodes.push(outboundNode);
+
+    // convertNSG(
+    //   vnet,
+    //   dereference<AzureNetworkSecurityGroup>(
+    //     subnet.properties.networkSecurityGroup
+    //   )
+    // );
+
+    return inboundKey;
   }
 
-  function convertIpConfiguration(config: AzureIPConfiguration) {
-    console.log(`        ${getAlias(config)} (${config.properties.privateIPAddress})`);
+  function convertIpConfiguration(
+    config: AzureIPConfiguration,
+    parent: string
+  ) {
+    const key = getAlias(config);
+    console.log(`        ${key} (${config.properties.privateIPAddress})`);
+    const spec: NodeSpec = {
+      key,
+      endpoint: true,
+      rules: [
+        {
+          destination: parent
+        },
+      ]
+    };
+    nodes.push(spec);
+    return key;
   }
 
   function convertNSG(
     vnet: AzureVirtualNetwork,
     nsg: AzureNetworkSecurityGroup
-  ) {
-    const inbound: Rule[] = [];
-    const outbound: Rule[] = [];
+  ): {inbound: RuleSpec[], outbound: RuleSpec[]} {
+    const inbound: RuleSpec[] = [];
+    const outbound: RuleSpec[] = [];
 
     console.log(`      Network Security Group: ${getAlias(nsg)}`);
     console.log('        Default rules');
@@ -139,21 +301,24 @@ export function convert(filename: string) {
       }
     }
 
-    const x = denyOverrides(inbound, simplifier);
-    console.log();
-    console.log('        CONSOLIDATED INBOUND:');
-    console.log(x.format({prefix: '          '}));
+    // const x = denyOverrides(inbound, simplifier);
+    // console.log();
+    // console.log('        CONSOLIDATED INBOUND:');
+    // console.log(x.format({prefix: '          '}));
 
-    const y = denyOverrides(outbound, simplifier);
-    console.log();
-    console.log('        CONSOLIDATED OUTBOUND:');
-    console.log(y.format({prefix: '          '}));
+    // const y = denyOverrides(outbound, simplifier);
+    // console.log();
+    // console.log('        CONSOLIDATED OUTBOUND:');
+    // console.log(y.format({prefix: '          '}));
+
+    // return {inbound: x, outbound: y};
+    return {inbound, outbound};
   }
 
   function convertRule(
     vnet: AzureVirtualNetwork,
     rule: AzureSecurityRule
-  ): Rule {
+  ): RuleSpec {
     const action = (
       rule.properties.access === 'Allow' ? 
       ActionType.ALLOW : 
@@ -182,7 +347,7 @@ export function convert(filename: string) {
       priority,
       // TODO: set id and source fields correctly.
       id: 1,
-      source: filename,
+      source: infile,
     }
 
     if (sourceIp) {
@@ -201,11 +366,22 @@ export function convert(filename: string) {
       spec.protocol = protocol;
     }
 
-    const r = parseRuleSpec(universe, spec);
-    console.log(r.conjunction.format({prefix: '            '}));
+    // const r = parseRuleSpec(universe, spec);
+    // console.log(r.conjunction.format({prefix: '            '}));
 
-    return r;
+    // return r;
+    return spec;
   }
+
+  function defineSymbol(dimension: string, symbol: string, range: string) {
+    symbols.push({dimension, symbol, range});
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  //
+  // Graph construction functions
+  //
+  /////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////////
   //
@@ -228,26 +404,26 @@ export function convert(filename: string) {
     return idToAlias.get(item.id) ?? '(unknown)';
   }
 
-  // TODO: Replace the patchFirewallSpec() hack with a real Azure UniverseSpec.
-  // May need some way to specify the ip addresses for the AzureLoadBalancer.
-  // Consider a factory that generates the spec from a smaller temple with
-  // values for tags.
-  function patchFirewallSpec() {
-    firewallSpec.types[0].values.push({
-      symbol: 'Internet',
-      range: '0.0.0.0-255.255.255.255',
-    });
+  // // TODO: Replace the patchFirewallSpec() hack with a real Azure UniverseSpec.
+  // // May need some way to specify the ip addresses for the AzureLoadBalancer.
+  // // Consider a factory that generates the spec from a smaller temple with
+  // // values for tags.
+  // function patchFirewallSpec() {
+  //   firewallSpec.types[0].values.push({
+  //     symbol: 'Internet',
+  //     range: '0.0.0.0-255.255.255.255',
+  //   });
   
-    firewallSpec.types[2].values.push({
-      symbol: 'Tcp',
-      range: '6',
-    });
+  //   firewallSpec.types[2].values.push({
+  //     symbol: 'Tcp',
+  //     range: '6',
+  //   });
 
-    firewallSpec.types[0].values.push({
-      symbol: 'AzureLoadBalancer',
-      // TODO: get real load-balancer ip address.
-      // Random, made-up ip address for load balancer.
-      range: '5.6.7.8',
-    });
-  }
+  //   firewallSpec.types[0].values.push({
+  //     symbol: 'AzureLoadBalancer',
+  //     // TODO: get real load-balancer ip address.
+  //     // Random, made-up ip address for load balancer.
+  //     range: '5.6.7.8',
+  //   });
+  // }
 }

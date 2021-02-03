@@ -40,3 +40,18 @@ export const nodeSpecType = t.intersection([
 export type NodeSpec = t.TypeOf<typeof nodeSpecType>;
 
 export type AnyRuleSpec = RuleSpecEx | ForwardRuleSpecEx;
+
+export const symbolDefinitionSpec = t.type({
+  dimension: t.string,
+  symbol: t.string,
+  range: t.string
+});
+
+export type SymbolDefinitionSpec = t.TypeOf<typeof symbolDefinitionSpec>;
+
+export const graphSpecType = t.type({
+  symbols: t.array(symbolDefinitionSpec),
+  nodes: t.array(nodeSpecType),
+});
+
+export type GraphSpec = t.TypeOf<typeof graphSpecType>;

@@ -3,7 +3,7 @@ import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
 import {Node} from './node';
-import {AnyRuleSpec, NodeSpec} from './types';
+import {AnyRuleSpec, GraphSpec, NodeSpec} from './types';
 
 export interface Path {
   node: number;
@@ -268,11 +268,16 @@ export class GraphBuilder {
   constructor(
     universe: Universe,
     simplifier: Simplifier<AnyRuleSpec>,
-    nodeSpecs: NodeSpec[]
+    graphSpec: GraphSpec,
   ) {
     this.universe = universe;
     this.simplifier = simplifier;
 
+    for (const {symbol, dimension, range} of graphSpec.symbols) {
+      universe.defineSymbol(dimension, symbol, range, true);
+    }
+
+    const nodeSpecs = graphSpec.nodes;
     for (const spec of nodeSpecs) {
       this.addNode(spec);
     }
