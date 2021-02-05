@@ -1,5 +1,12 @@
 import {Universe} from '../dimensions';
-import {denyOverrides, parseRuleSpec} from '../rules';
+
+import {
+  ActionType,
+  denyOverrides,
+  parseConjunction,
+  parseRuleSpec
+} from '../rules';
+
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
@@ -7,11 +14,24 @@ import {ForwardRule, parseForwardRuleSpec} from './forward_rule';
 import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
 
+const initialRangeSpec: RuleSpec = {
+  action: ActionType.ALLOW,
+  priority: 0,
+
+  // TODO: pick an id that won't conflict with other ids.
+  id: 0,
+  // TODO: pick a source that won't conflict with other sources.
+  source: '(graph)'
+  // TODO: ALTERNATIVE: allow `spec` parameter of parseConjunction to be optional.
+  // Then we won't need a spec. Does code rely on set being non-empty?
+};
+
 export class Node {
   spec: NodeSpec;
   name: string;
   key: string;
   filters: Disjunction<RuleSpec>;
+  range: Disjunction<RuleSpec>;
   rules: ForwardRule[];
   isEndpoint: boolean;
 
@@ -26,6 +46,18 @@ export class Node {
     this.name = spec.name ?? spec.key;
     this.key = spec.key;
     this.isEndpoint = !!spec.endpoint;
+
+    if (spec.range) {
+      this.range = Disjunction.create<RuleSpec>([
+        parseConjunction<RuleSpec>(
+          universe,
+          spec.range,
+          initialRangeSpec
+        ),
+      ]);
+    } else {
+      this.range = Disjunction.universe<RuleSpec>();
+    }
 
     if (this.spec.filters) {
       const rules = this.spec.filters.map(r => {

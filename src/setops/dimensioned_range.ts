@@ -78,7 +78,10 @@ export class DimensionedRange {
     const name = this.dimension.name;
     const value = this.dimension.type.formatter(this.range);
     const complement = this.dimension.type.formatter(this.complement().range);
-    if (value.length < complement.length) {
+
+    // TODO: 7 is equal to the length of 'except '. Figure out a less
+    // brittle way to do this length check.
+    if (value.length < complement.length + 7) {
       return `${prefix}${name}: ${value}`;
     } else {
       return `${prefix}${name}: except ${complement}`;

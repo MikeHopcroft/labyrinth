@@ -74,10 +74,11 @@ function main() {
       }
 
       for (const flow of flows) {
-        if (!args.t || args.t === flow.node.key)
+        if (!args.t || args.t === flow.node.key) {
           console.log(graph.formatFlow(flow, outbound, verbose));
           console.log();
         }
+      }
     } else if (args.t) {
       const outbound = false;
       if (!nodes.find(node => node.key === args.t)) {

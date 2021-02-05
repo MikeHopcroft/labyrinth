@@ -79,7 +79,10 @@ export class Graph {
     }
   }
 
-  analyze(startKey: string, outbound: boolean): FlowAnalysis {
+  analyze(
+    startKey: string,
+    outbound: boolean,
+  ): FlowAnalysis {
     const cycles: Cycle[] = [];
 
     const flows: FlowNode[] = this.nodes.map(node => ({
@@ -92,7 +95,7 @@ export class Graph {
     const index = this.nodeIndex(startKey);
     const path: Path = {
       node: index,
-      routes: Disjunction.universe<AnyRuleSpec>(),
+      routes: this.nodes[index].range,
       previous: undefined,
       length: 0,
     };
@@ -109,14 +112,6 @@ export class Graph {
     flowEdges: FlowEdge[][],
     cycles: Path[][]
   ) {
-    // console.log(
-    //   `============ propagate(index=${index}, pathlength=${path.length}) ===============`
-    // );
-    // console.log(JSON.stringify(path, null, 2));
-    // if (path.routes.isEmpty()) {
-    //   return;
-    // }
-
     const flowNode = flowNodes[index];
     if (path.length > 0) {
       flowNode.routes = flowNode.routes.union(path.routes, this.simplifier);
@@ -184,7 +179,6 @@ export class Graph {
     // the start of the cycle. We want to record only the routes
     // that are valid for the entire cycle.
     cycle.unshift({...p, routes});
-    // cycle.unshift(p);
 
     return cycle;
   }
@@ -273,9 +267,7 @@ export class GraphBuilder {
     this.universe = universe;
     this.simplifier = simplifier;
 
-    for (const {symbol, dimension, range} of graphSpec.symbols) {
-      universe.defineSymbol(dimension, symbol, range, true);
-    }
+    universe.defineSymbols(graphSpec.symbols);
 
     const nodeSpecs = graphSpec.nodes;
     for (const spec of nodeSpecs) {

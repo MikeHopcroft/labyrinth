@@ -137,7 +137,11 @@ export function parseNumberOrSymbol(
   }
 }
 
-function parseIp(dimension: DimensionType, text: string): DRange {
+// DESIGN NOTE: the parse parameter of parseDRange() takes a DimensionType
+// as its first parameter. parseNumber uses this DimensionType to ensure
+// the value is in range. parseIp() ignores its DimensionType parameter
+// because it does not range check ip addresses.
+export function parseIp(dimension: DimensionType, text: string): DRange {
   const trimmed = text.trim();
   const parts = trimmed.split('/');
 

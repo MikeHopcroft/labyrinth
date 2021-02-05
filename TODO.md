@@ -1,6 +1,40 @@
 # TODO
 
 * Top
+  * Range filtering for backwards propagation.
+    * Need to intersect with range from the end of the path.
+    * Without this fix, back proppagation is broken.
+    * It will miss routes.
+  * Rework the handling of VirtualNetwork in convertRule().
+    * Should be able to rely on the symbol table, instead of hard-coding the evaluation of VirtualNetwork inline.
+    * Depends on whether VirtualNetwork is relative to the VNet or the Resource group. The current implementation assumes VirtualNetwork is relative to the containing VNet.
+  * Cleanup indexSymbol() and indexRange()
+  * Review naming conventions and interations with
+    * Azure object names
+    * Aliases for Azure object names
+    * Dimension names
+    * Other rule fields
+  * node.ts
+    * TODO: pick an id that won't conflict with other ids.
+    * TODO: pick a source that won't conflict with other sources.
+    * TODO: ALTERNATIVE: allow `spec` parameter of parseConjunction to be optional. Then we won't need a spec. Does code rely on set being non-empty?
+    * TODO: sort out correct `id` and `source`.
+    * TODO: sort out RuleSpec vs RuleSpecEx
+  * universe.ts
+    * TODO: POTENTIAL CIRCULAR REFERENCE?
+  * converter.ts
+    * TODO: set id and source fields correctly.
+    * TODO: consider using symbol table here instead of vnet.name.
+    * TODO: sourcePortRanges, sourceAddressPrefixes, etc. The are alternate Azure fields. Need to understand interaction with primary Azure fields.
+    * TODO: use addressRangeText in convertVNet()
+  * Flag to allow sourceIp spoofing
+  * Flag to suppress display of interior nodes (display only endpoints)
+  * x Formatter should show "Internet" instead of "except VNet"
+  * Is "Internet" scoped relative to a single VNET or the union of all VNETs in a resource group?
+  * Verify correct behavior for symbolic lookup that leads to `except except`.
+    * a = except 1
+    * b = except a
+    * Also c = except except 2
   * Should be able to specify dimension values as strings or numbers, e.g. "port: 6" or "port: '6'".
   * Rename ruleSpec.ts to rule_spec.ts
   * Prepress docs seem broken - don't have command output

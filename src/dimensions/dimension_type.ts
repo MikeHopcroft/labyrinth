@@ -101,15 +101,26 @@ export class DimensionType {
       this.defineSymbol(symbol, range);
     }
 
-    // Use this.lookup() to evaluate symbol definitions in topological
-    // sort order.
+    // DESIGN NOTE: symbols are actually indexed in topological sort order
+    // because this.indexSymbol() calls this.lookup() which calls this.parser()
+    // which calls parseDRange() which recursively invokves this.parser().
+    // The topological sort order allows us to define each symbol at its first
+    // use. This is important for symbol reference chains, e.g. the definitions
+    //   a = b
+    //   b = c
+    //   c = 1
+    // result in
+    //   a = 1
+    //   b = 1
+    //   c = 1
+    //
     for (const symbol of this.symbolToDefinition.keys()) {
-      const range = this.lookup(symbol);
-      this.indexRange(symbol, range);
+      this.indexSymbol(symbol);
     }
   }
 
-  indexRange(symbol: string, range: DRange) {
+  indexSymbol(symbol: string) {
+    const range = this.lookup(symbol);
     this.symbolToRange.set(symbol, range);
 
     // TODO: what if multiple symbols define the same range?
@@ -117,7 +128,7 @@ export class DimensionType {
     this.rangeToSymbol.set(rangeText, symbol);
   }
 
-  defineSymbol(symbol: string, value: string, indexRange = false) {
+  defineSymbol(symbol: string, value: string) {
     ///////////////////////////////////////////////////////////////////
     // TODO: Disallow `*`, `any`, `-`, `,`
     // What about numbers and ip addresses?
@@ -136,11 +147,6 @@ export class DimensionType {
       value,
       open: false,
     });
-
-    if (indexRange) {
-      const range = this.lookup(symbol);
-      this.indexRange(symbol, range);
-    }
   }
 
   isValidSymbol(text: string): boolean {

@@ -2,6 +2,8 @@ import fs from 'fs';
 import * as t from 'io-ts';
 import yaml from 'js-yaml';
 
+// TODO: POTENTIAL CIRCULAR REFERENCE?
+import {SymbolDefinitionSpec} from '../graph';
 import {validate} from '../utilities';
 
 import {Dimension, DimensionSpecType, IdGenerator} from './dimension';
@@ -79,48 +81,18 @@ export class Universe {
     return dimension;
   }
 
-  defineSymbol(
-    key: string,
-    symbol: string,
-    range: string,
-    indexRange = false
-  ) {
-    const dimensionType = this.keyToDimensionType.get(key);
-    if (dimensionType === undefined) {
-      const message = `Unknown dimension type "${key}".`;
-      throw new TypeError(message);
+  defineSymbols(symbols: SymbolDefinitionSpec[]) {
+    for (const {dimension, symbol, range} of symbols) {
+      const dimensionType = this.keyToDimensionType.get(dimension);
+      if (dimensionType === undefined) {
+        const message = `Unknown dimension type "${dimension}".`;
+        throw new TypeError(message);
+      }
+      dimensionType.defineSymbol(symbol, range);
     }
-    dimensionType.defineSymbol(symbol, range, indexRange);
+    for (const {dimension, symbol} of symbols) {
+      const dimensionType = this.keyToDimensionType.get(dimension)!;
+      dimensionType.indexSymbol(symbol);
+    }
   }
 }
-
-/*
-symbols:
-  - dimension: ip
-    symbol: vnet
-    range: 1.2.3.4
-  - dimension: ip
-    symbol: AzureLoadBalancer
-    range: 4.5.6.7
-  - dimension: ip
-    symbol: Internet
-    range: internet
-  - dimension: protocol
-    symbol: Tcp
-    range: '6'
-
-
-symbols:
-  - dimension: destinationIp
-    symbol: vnet
-    value: 1.2.3.4
-  - dimension: destinationIp
-    symbol: AzureLoadBalancer
-    value: 4.5.6.7
-  - dimension: destinationIp
-    symbol: Internet
-    value: internet
-  - dimension: protocol
-    symbol: Tcp
-    value: '6'
-*/

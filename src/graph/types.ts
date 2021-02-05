@@ -33,7 +33,8 @@ export const nodeSpecType = t.intersection([
   t.partial({
     name: t.string,
     endpoint: t.boolean,
-    filters: t.array(ruleSpecNoIdType)
+    filters: t.array(ruleSpecNoIdType),
+    range: t.record(t.string, t.any),
   }),
 ]);
 
