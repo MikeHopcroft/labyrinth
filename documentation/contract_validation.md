@@ -7,6 +7,11 @@ Let's compare `data/policy.txt` with itself:
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\policy.txt)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -c=data\policy.txt
+Mode is denyOverrides.
+
+============ Contract Validation Report ============
+The policy and contract are equivalent
+
 
 ~~~
 
@@ -41,6 +46,27 @@ This contract differs from the policy in that the CIDR block on line 10 has been
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\contract1.txt)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -c=data\contract1.txt
+Mode is denyOverrides.
+
+============ Contract Validation Report ============
+All routes in policy are also in contract.
+
+Routes in contract that are not in policy:
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.80.0-171.64.127.255
+
+Routes common to policy and contract:
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: except 445
+
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/20
+
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  protocol: except tcp, udp
+
 
 ~~~
 
@@ -79,6 +105,31 @@ We expect that `data/contract2.txt` will exclude some of the routes that were al
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt
+Mode is denyOverrides.
+
+============ Contract Validation Report ============
+Routes in policy that are not in contract:
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: 593
+  protocol: tcp, udp
+
+Routes in contract that are not in policy:
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.80.0-171.64.127.255
+
+Routes common to policy and contract:
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: except 445, 593
+
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/20
+
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  protocol: except tcp, udp
+
 
 ~~~
 
@@ -87,6 +138,29 @@ We can also compare the first contract with the second:
 [//]: # (spawn node build\src\apps\analyze.js data\contract1.txt -c=data\contract2.txt)
 ~~~
 $ node build\src\apps\analyze.js data\contract1.txt -c=data\contract2.txt
+Mode is denyOverrides.
+
+============ Contract Validation Report ============
+Routes in policy that are not in contract:
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: 593
+  protocol: tcp, udp
+
+All routes in contract are also in policy.
+
+Routes common to policy and contract:
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: except 445, 593
+
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/18
+
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  protocol: except tcp, udp
+
 
 ~~~
 
@@ -97,6 +171,41 @@ You can use the `-a` or `--attribution` option with contract validation:
 [//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt -a)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt -a
+Mode is denyOverrides.
+
+============ Contract Validation Report ============
+Routes in policy that are not in contract:
+  policy rules: 7, 13-14, 17
+  contract rules: 7, 10, 13-16, 19
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: 593
+  protocol: tcp, udp
+
+Routes in contract that are not in policy:
+  contract rules: 7, 10
+  policy rules: 7, 10, 13-14, 17
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.80.0-171.64.127.255
+
+Routes common to policy and contract:
+  policy rules: 7, 13-14, 17
+  contract rules: 7, 13-16, 19
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  destination port: except 445, 593
+
+  policy rules: 7, 10
+  contract rules: 7, 10
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/20
+
+  policy rules: 7, 13-14, 17
+  contract rules: 7, 13-16, 19
+  source ip: except 10.0.0.0/8
+  destination ip: 128.30.0.0/15
+  protocol: except tcp, udp
+
 
 ~~~
 
