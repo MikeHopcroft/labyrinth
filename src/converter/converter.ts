@@ -302,6 +302,11 @@ export function convert(infile: string, outfile: string): GraphSpec {
       ]
     };
     nodes.push(spec);
+
+    // TODO: enable this code after sorting out illegal symbol errors.
+    // Problem is that Azure names have slashes.
+    // defineSymbol('ip', key, config.properties.privateIPAddress);
+
     return key;
   }
 

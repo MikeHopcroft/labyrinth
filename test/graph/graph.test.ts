@@ -11,10 +11,10 @@ const universe = new Universe(firewallSpec);
 const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
 function paths(graph: Graph, from: string, to: string, outbound: boolean) {
-  const {flows} = graph.analyze(from, outbound);
+  const {flows} = graph.analyze(from, outbound, true);
   const filtered = flows.filter(flow => flow.node.key === to);
   return filtered.map(
-    flow => graph.formatFlow(flow, outbound, true)
+    flow => graph.formatFlow(flow, outbound, {showPaths: true, verbose: true})
   ).join('\n');
 }
 
@@ -462,16 +462,16 @@ describe('Graph', () => {
         paths(graph, 'a', 'd', outbound),
         trim(`
           d:
+            routes:
+              source port: 1
+              destination port: 2
+              protocol: tcp
+
             paths:
               a => b => c => d
                 source port: 1
                 destination port: 2
                 protocol: tcp
-
-            routes:
-              source port: 1
-              destination port: 2
-              protocol: tcp
         `)
       );
 
@@ -479,11 +479,11 @@ describe('Graph', () => {
         paths(graph, 'd', 'a', outbound),
         trim(`
           a:
-            paths:
-              (no paths)
-
             routes:
               (no routes)
+
+            paths:
+              (no paths)
         `)
       );
     });
@@ -547,18 +547,18 @@ describe('Graph', () => {
         paths(graph, 'a', 'd', outbound),
         trim(`
           d:
+            routes:
+              source port: 1
+              destination ip: 10.0.0.0/8
+              destination port: 2
+              protocol: tcp
+
             paths:
               a => b => c => d
                 source port: 1
                 destination ip: 10.0.0.0/8
                 destination port: 2
                 protocol: tcp
-          
-            routes:
-              source port: 1
-              destination ip: 10.0.0.0/8
-              destination port: 2
-              protocol: tcp
         `)
       );
 
@@ -566,12 +566,12 @@ describe('Graph', () => {
         paths(graph, 'd', 'a', outbound),
         trim(`
           a:
+            routes:
+              destination ip: except 10.0.0.0/8
+
             paths:
               d => c => b => a
                 destination ip: except 10.0.0.0/8
-          
-            routes:
-              destination ip: except 10.0.0.0/8
         `)
       );
     });
@@ -623,14 +623,14 @@ describe('Graph', () => {
         paths(graph, 'main1', 'main2', outbound),
         trim(`
           main2:
+            routes:
+              destination ip: 10.0.0.0/7
+
             paths:
               main1 => left => main2
                 destination ip: 10.0.0.0/8
               main1 => right => main2
                 destination ip: 11.0.0.0/8
-          
-            routes:
-              destination ip: 10.0.0.0/7
         `)
       );
     });
@@ -680,12 +680,12 @@ describe('Graph', () => {
         paths(graph, 'main', 'a', outbound),
         trim(`
           a:
+            routes:
+              destination ip: 10.0.0.0/8
+
             paths:
               main => a
                 destination ip: 10.0.0.0/8
-
-            routes:
-              destination ip: 10.0.0.0/8
         `)
       );
 
@@ -693,11 +693,11 @@ describe('Graph', () => {
         paths(graph, 'main', 'b', outbound),
         trim(`
           b:
-            paths:
-              (no paths)
-
             routes:
               (no routes)
+
+            paths:
+              (no paths)
         `)
       );
 
@@ -705,12 +705,12 @@ describe('Graph', () => {
         paths(graph, 'main', 'c', outbound),
         trim(`
           c:
+            routes:
+              destination ip: 11.0.0.0/8
+
             paths:
               main => c
                 destination ip: 11.0.0.0/8
-
-            routes:
-              destination ip: 11.0.0.0/8
         `)
       );
 
@@ -787,50 +787,46 @@ describe('Graph', () => {
       assert.equal(cycles.length, 0);
 
       const observed = flows.map(
-        flow => graph.formatFlow(flow, outbound)
+        flow => graph.formatFlow(flow, outbound, {showPaths: true})
       ).join('\n');
 
       const expected = trim(`
         internet:
-          paths:
-            (no paths)
-        
           routes:
             (no routes)
-        gateway:
+
           paths:
-            internet => gateway
-        
+            (no paths)
+        gateway:
           routes:
             (universe)
-        subnet1:
+
           paths:
-            internet => gateway => subnet1
-        
+            internet => gateway
+        subnet1:
           routes:
             destination ip: 10.0.0.0/8
+
+          paths:
+            internet => gateway => subnet1
         subnet2:
+          routes:
+            destination ip: 10.0.0.0/8
+            destination port: http
+        
+            destination ip: 11.0.0.0/8
+
           paths:
             internet => gateway => subnet1 => subnet2
             internet => gateway => subnet2
-        
-          routes:
-            destination ip: 10.0.0.0/8
-            destination port: http
-        
-            destination ip: 11.0.0.0/8
         subnet3:
-          paths:
-            internet => gateway => subnet1 => subnet3
-        
           routes:
             destination ip: 10.0.0.0/8
             destination port: except http
-        server:
+
           paths:
-            internet => gateway => subnet1 => subnet2 => server
-            internet => gateway => subnet2 => server
-        
+            internet => gateway => subnet1 => subnet3
+        server:
           routes:
             destination ip: 10.0.0.0/8
             destination port: http
@@ -838,6 +834,10 @@ describe('Graph', () => {
         
             destination ip: 11.0.0.0/8
             protocol: tcp
+
+          paths:
+            internet => gateway => subnet1 => subnet2 => server
+            internet => gateway => subnet2 => server
       `);
 
       assert.equal(observed, expected);
@@ -913,14 +913,14 @@ describe('Graph', () => {
         paths(graph, 'main1', 'a', outbound),
         trim(`
           a:
+            routes:
+              destination ip: 10.0.0.0/8
+              destination port: except 1
+
             paths:
               main1 => main2 => a
                 destination ip: 10.0.0.0/8
                 destination port: except 1
-
-            routes:
-              destination ip: 10.0.0.0/8
-              destination port: except 1
         `)
       );
 
@@ -928,11 +928,11 @@ describe('Graph', () => {
         paths(graph, 'main1', 'b', outbound),
         trim(`
           b:
-            paths:
-              (no paths)
-
             routes:
               (no routes)
+
+            paths:
+              (no paths)
         `)
       );
 
@@ -940,14 +940,14 @@ describe('Graph', () => {
         paths(graph, 'main1', 'c', outbound),
         trim(`
           c:
+            routes:
+              destination ip: 11.0.0.0/8
+              destination port: except 1
+
             paths:
               main1 => main2 => c
                 destination ip: 11.0.0.0/8
                 destination port: except 1
-
-            routes:
-              destination ip: 11.0.0.0/8
-              destination port: except 1
         `)
       );
     });
@@ -1027,14 +1027,14 @@ describe('Graph', () => {
         paths(graph, 'main1', 'a', outbound),
         trim(`
           a:
+            routes:
+              destination ip: 10.0.0.0/8
+              destination port: except 1-2
+
             paths:
               main1 => main2 => a
                 destination ip: 10.0.0.0/8
                 destination port: except 1-2
-
-            routes:
-              destination ip: 10.0.0.0/8
-              destination port: except 1-2
         `)
       );
 
@@ -1042,11 +1042,11 @@ describe('Graph', () => {
         paths(graph, 'main1', 'b', outbound),
         trim(`
           b:
-            paths:
-              (no paths)
-
             routes:
               (no routes)
+
+            paths:
+              (no paths)
         `)
       );
 
@@ -1054,14 +1054,14 @@ describe('Graph', () => {
         paths(graph, 'main1', 'c', outbound),
         trim(`
           c:
+            routes:
+              destination ip: 11.0.0.0/8
+              destination port: except 1
+
             paths:
               main1 => main2 => c
                 destination ip: 11.0.0.0/8
                 destination port: except 1
-
-            routes:
-              destination ip: 11.0.0.0/8
-              destination port: except 1
         `)
       );
     });

@@ -34,6 +34,11 @@ interface FlowAnalysis {
   flows: FlowNode[];
 }
 
+export interface GraphFormattingOptions {
+  showPaths?: boolean,
+  verbose?: boolean,
+}
+
 export class Graph {
   simplifier: Simplifier<AnyRuleSpec>;
   nodes: Node[];
@@ -82,6 +87,7 @@ export class Graph {
   analyze(
     startKey: string,
     outbound: boolean,
+    modelSpoofing = false
   ): FlowAnalysis {
     const cycles: Cycle[] = [];
 
@@ -93,9 +99,15 @@ export class Graph {
     }));
 
     const index = this.nodeIndex(startKey);
+    const range = (
+      modelSpoofing ? 
+      Disjunction.universe<AnyRuleSpec>() : 
+      this.nodes[index].range
+    );
+
     const path: Path = {
       node: index,
-      routes: this.nodes[index].range,
+      routes: range,
       previous: undefined,
       length: 0,
     };
@@ -205,31 +217,38 @@ export class Graph {
     return lines.join('\n');
   }
 
-  formatFlow(flowNode: FlowNode, outbound: boolean, verbose = false): string {
+  formatFlow(
+    flowNode: FlowNode,
+    outbound: boolean,
+    options: GraphFormattingOptions
+  ): string {
     const key = flowNode.node.key;
     const routes = flowNode.routes.format({prefix: '    '});
 
     const lines: string[] = [];
     lines.push(`${key}:`);
 
-    if (flowNode.paths.length === 0) {
-      lines.push('  paths:');
-      lines.push('    (no paths)');
-    } else {
-      lines.push('  paths:');
-      for (const path of flowNode.paths) {
-        lines.push(`    ${this.formatPath(path, outbound)}`);
-        if (verbose) {
-          lines.push(path.routes.format({prefix: '      '}))
-        }
-      }
-    }
-    lines.push('');
     lines.push('  routes:');
     if (routes === '') {
       lines.push('    (no routes)');
     } else {
       lines.push(routes);
+    }
+
+    if (options.showPaths) {
+      lines.push('');
+      if (flowNode.paths.length === 0) {
+        lines.push('  paths:');
+        lines.push('    (no paths)');
+      } else {
+        lines.push('  paths:');
+        for (const path of flowNode.paths) {
+          lines.push(`    ${this.formatPath(path, outbound)}`);
+          if (options.verbose) {
+            lines.push(path.routes.format({prefix: '      '}))
+          }
+        }
+      }
     }
 
     return lines.join('\n');

@@ -4,7 +4,14 @@ import minimist from 'minimist';
 import path from 'path';
 
 import {Universe} from '../dimensions';
-import {AnyRuleSpec, GraphBuilder, loadYamlGraphSpecFile} from '../graph';
+
+import {
+  AnyRuleSpec,
+  Graph,
+  GraphBuilder,
+  loadYamlGraphSpecFile
+} from '../graph';
+
 import {createSimplifier} from '../setops';
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
@@ -25,11 +32,12 @@ function main() {
     return fail('Cycle detection not implemented.');
   }
 
-  if (args.p) {
-    return fail('Partition detection not implemented.');
-  }
-
+  const modelSpoofing = !!args.s;
+  const showRouters = !!args.r;
   const verbose = !!args.v;
+  const showPaths = verbose || !!args.p;
+
+  const options = {modelSpoofing, showPaths, showRouters, verbose};
 
   try {
     // Initialize universe.
@@ -46,11 +54,20 @@ function main() {
     const graph = builder.buildGraph();
 
     if (args.f) {
-      const outbound = true;
+      /////////////////////////////////////////////////////////////////////////
+      //
+      // Paths from args.f
+      //
+      /////////////////////////////////////////////////////////////////////////
       if (!nodes.find(node => node.key === args.f)) {
         return fail(`Unknown start node ${args.f}`);
       }
-      const {cycles, flows} = graph.analyze(args.f, outbound);
+
+      const outbound = true;
+      const {cycles, flows} = graph.analyze(args.f, outbound, modelSpoofing);
+
+      summarizeOptions(options);
+      listEndpoints(graph, showRouters);
 
       if (cycles.length > 0) {
         console.log(`Cycles reachable from ${args.f}:`);
@@ -70,22 +87,37 @@ function main() {
       if (args.t) {
         console.log(`Routes from ${args.f} to ${args.t}:`);
       } else {
-        console.log(`Routes from ${args.f}:`);
+        console.log(`Nodes reachable from ${args.f}:`);
       }
+      console.log();
 
       for (const flow of flows) {
-        if (!args.t || args.t === flow.node.key) {
-          console.log(graph.formatFlow(flow, outbound, verbose));
+        if (
+          args.f !== flow.node.spec.key && (
+            args.r || 
+            flow.node.isEndpoint ||
+            args.t === flow.node.key
+          )
+        ) {
+          console.log(graph.formatFlow(flow, outbound, options));
           console.log();
         }
       }
     } else if (args.t) {
-      const outbound = false;
+      /////////////////////////////////////////////////////////////////////////
+      //
+      // Paths to args.t
+      //
+      /////////////////////////////////////////////////////////////////////////
       if (!nodes.find(node => node.key === args.t)) {
         return fail(`Unknown end node ${args.t}`);
       }
 
-      const {cycles, flows} = graph.analyze(args.t, outbound);
+      const outbound = false;
+      const {cycles, flows} = graph.analyze(args.t, outbound, modelSpoofing);
+
+      summarizeOptions(options);
+      listEndpoints(graph, showRouters);
 
       if (cycles.length > 0) {
         console.log(`Cycles on paths to ${args.t}:`);
@@ -96,10 +128,19 @@ function main() {
         console.log();
       }
 
-      console.log(`Routes to ${args.t}:`);
+      console.log(`Nodes that can reach ${args.t}:`);
+      console.log();
+
       for (const flow of flows) {
-        console.log(graph.formatFlow(flow, outbound, verbose));
-        console.log();
+        if (
+          args.t !== flow.node.spec.key && (
+            args.r || 
+            flow.node.isEndpoint
+          )
+        ) {
+          console.log(graph.formatFlow(flow, outbound, options));
+          console.log();
+        }
       }
     }
   } catch (e) {
@@ -175,9 +216,21 @@ function showUsage() {
           type: Boolean,
         },
         {
-          name: 'partitions',
+          name: 'paths',
           alias: 'p',
-          description: 'Find all partitions of the graph.',
+          description: 'Displays paths for each route.',
+          type: Boolean,
+        },
+        {
+          name: 'routers',
+          alias: 'r',
+          description: 'Display routers along paths.',
+          type: Boolean,
+        },
+        {
+          name: 'spoofing',
+          alias: 's',
+          description: 'Model source address spoofing.',
           type: Boolean,
         },
       ],
@@ -185,6 +238,64 @@ function showUsage() {
   ];
 
   console.log(commandLineUsage(usage));
+}
+
+function listEndpoints(graph: Graph, showRouters: boolean) {
+  if (showRouters) {
+    console.log('Nodes:');
+    for (const node of graph.nodes) {
+      console.log(`  ${
+        node.key
+      }: ${
+        node.range.format().slice(11)
+      }${
+        node.isEndpoint ? ' (endpoint)': ''
+      }`);
+    }
+  } else {
+    console.log('Endpoints:');
+    for (const node of graph.nodes) {
+      if (node.isEndpoint) {
+        console.log(`  ${node.key}: ${node.range.format().slice(11)}`);
+      }
+    }
+  }
+  console.log();
+}
+
+function summarizeOptions(options: {
+  modelSpoofing: boolean,
+  showPaths: boolean,
+  showRouters: boolean,
+  verbose: boolean
+}) {
+  console.log('Options summary:');
+
+  if (options.modelSpoofing) {
+    console.log('  Modeling source ip address spoofing (-s).');
+  } else {
+    console.log('  Not modeling source ip address spoofing (use -s flag to enable).');
+  }
+
+  if (options.showRouters) {
+    console.log('  Displaying endpoints and routing nodes. (-r)');
+  } else {
+    console.log('  Displaying endpoints only (use -r flag to display routing nodes). ');
+  }
+
+  if (options.showPaths) {
+    console.log('  Displaying paths (-p or -v).');
+  } else {
+    console.log('  Not displaying paths (use -s or -v flags to enable).');
+  }
+
+  if (options.showPaths) {
+    console.log('  Verbose mode (-v).');
+  } else {
+    console.log('  Brief mode (use -v flag to enable verbose mode).');
+  }
+
+  console.log();
 }
 
 main();

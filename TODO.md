@@ -1,13 +1,47 @@
 # TODO
 
+* Questions
+  * Is the VirtualNetwork service tag defined in relation to the parent subnet or the resource group (which may have multiple VNETs)?
+  * Can two VNets in the same resource group have overlaping ranges?
+  * Does Azure apply rules not listed in the resource graph (e.g. deny spoofing of Azure addresses)?
+  * What structures should we investigate next?
+    * Peered VNETs
+    * NSGs on VNETS
+    * NSGs on subnets - is this even possible
+    * On-prem network integration
+    * Other packet authentication schemes
+    * Load balancers
+    * NAT
 * Top
+  * Terminology: routes => headers? Some other name?
+  * Create service tags for all named nodes
+    * Needs a fix to illegal symbol problem due to slashes in Azure names.
+    * Not sure that legal symbol check is necessary for name-value pairs.
+    * It seems it is there for dimension names which need to be javascript keys.
+  * List endpoints
+  * Consider removing router from subnet implementation
+    * Just use inbound and outbound nodes
+  * Graph documentation
+  * Publish and integrate into labyrinth-visualizer
+  * Figure out prepress problem
+  * Command-line args for
+    * x Display paths (-p)
+    * x Display routes on paths (-v)
+    * x Display interior nodes (-r)
+    * x Route filtering by startpoint range.
   * Range filtering for backwards propagation.
     * Need to intersect with range from the end of the path.
-    * Without this fix, back proppagation is broken.
+    * Without this fix, back propagation is broken.
     * It will miss routes.
+    * Consider using backwards propagation solution for forward propagation.
+      * Idea is to filter paths after they are created.
   * Rework the handling of VirtualNetwork in convertRule().
     * Should be able to rely on the symbol table, instead of hard-coding the evaluation of VirtualNetwork inline.
     * Depends on whether VirtualNetwork is relative to the VNet or the Resource group. The current implementation assumes VirtualNetwork is relative to the containing VNet.
+  * Validation
+    * Should we ensure that the Azure resource graph is correct
+      * subnet ranges don't overlap
+      * vnet ranges don't overlap
   * Cleanup indexSymbol() and indexRange()
   * Review naming conventions and interations with
     * Azure object names
