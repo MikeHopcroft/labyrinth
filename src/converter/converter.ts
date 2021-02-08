@@ -6,27 +6,23 @@ import {
   createIpFormatter,
   DimensionType,
   formatDRange,
-  parseIp
+  parseIp,
 } from '../dimensions';
 
 import {
   ForwardRuleSpecEx,
   GraphSpec,
   NodeSpec,
-  SymbolDefinitionSpec
+  SymbolDefinitionSpec,
 } from '../graph';
 
-import {
-  ActionType,
-  RuleSpec,
-} from '../rules';
+import {ActionType, RuleSpec} from '../rules';
 
 import {
   AnyAzureObject,
   asAzureNetworkInterface,
   asAzureVirtualNetwork,
   AzureIPConfiguration,
-  AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   AzureObjectBase,
   AzureReference,
@@ -46,7 +42,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
   // This DimensionType is needed to parse IP addresses.
   // TODO: is there a lower-level API for parsing that doesn't
   // require a DimensionType?
-  const ipDimensionType = new DimensionType(   {
+  const ipDimensionType = new DimensionType({
     name: 'ip address',
     key: 'ip',
     parser: 'ip',
@@ -152,7 +148,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
       range: {
         sourceIp: 'Internet',
       },
-      rules
+      rules,
     });
   }
 
@@ -201,7 +197,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
 
     return alias;
   }
-  
+
   function convertSubnet(
     vnet: AzureVirtualNetwork,
     subnet: AzureSubnet,
@@ -210,7 +206,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
     const alias = getAlias(subnet);
     console.log(`    Subnet: ${alias}`);
     console.log(`      addressPrefix: ${subnet.properties.addressPrefix}`);
-    console.log(`      ipConfigurations:`);
+    console.log('      ipConfigurations:');
 
     // TODO: come up with safer naming scheme. Want to avoid collisions
     // with other names.
@@ -243,7 +239,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
         sourceIp: subnet.properties.addressPrefix,
       },
       rules,
-    }
+    };
     nodes.push(routerNode);
 
     const {inbound, outbound} = convertNSG(
@@ -260,8 +256,8 @@ export function convert(infile: string, outfile: string): GraphSpec {
       // TODO: is this correct? The router moves packets in both directions.
       rules: [
         {
-          destination: routerKey
-        }
+          destination: routerKey,
+        },
       ],
     };
     nodes.push(inboundNode);
@@ -274,8 +270,8 @@ export function convert(infile: string, outfile: string): GraphSpec {
       },
       rules: [
         {
-          destination: parent
-        }
+          destination: parent,
+        },
       ],
     };
     nodes.push(outboundNode);
@@ -297,9 +293,9 @@ export function convert(infile: string, outfile: string): GraphSpec {
       },
       rules: [
         {
-          destination: parent
+          destination: parent,
         },
-      ]
+      ],
     };
     nodes.push(spec);
 
@@ -313,7 +309,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
   function convertNSG(
     vnet: AzureVirtualNetwork,
     nsg: AzureNetworkSecurityGroup
-  ): {inbound: RuleSpec[], outbound: RuleSpec[]} {
+  ): {inbound: RuleSpec[]; outbound: RuleSpec[]} {
     const inbound: RuleSpec[] = [];
     const outbound: RuleSpec[] = [];
 
@@ -346,11 +342,8 @@ export function convert(infile: string, outfile: string): GraphSpec {
     vnet: AzureVirtualNetwork,
     rule: AzureSecurityRule
   ): RuleSpec {
-    const action = (
-      rule.properties.access === 'Allow' ? 
-      ActionType.ALLOW : 
-      ActionType.DENY
-    );
+    const action =
+      rule.properties.access === 'Allow' ? ActionType.ALLOW : ActionType.DENY;
     const priority = rule.properties.priority;
 
     // TODO: sourcePortRanges, sourceAddressPrefixes, etc.
@@ -378,7 +371,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
       // TODO: set id and source fields correctly.
       id: 1,
       source: infile,
-    }
+    };
 
     if (sourceIp) {
       spec.sourceIp = sourceIp;

@@ -4,7 +4,7 @@ import {
   ActionType,
   denyOverrides,
   parseConjunction,
-  parseRuleSpec
+  parseRuleSpec,
 } from '../rules';
 
 import {Disjunction, Simplifier} from '../setops';
@@ -21,7 +21,7 @@ const initialRangeSpec: RuleSpec = {
   // TODO: pick an id that won't conflict with other ids.
   id: 0,
   // TODO: pick a source that won't conflict with other sources.
-  source: '(graph)'
+  source: '(graph)',
   // TODO: ALTERNATIVE: allow `spec` parameter of parseConjunction to be optional.
   // Then we won't need a spec. Does code rely on set being non-empty?
 };
@@ -49,11 +49,7 @@ export class Node {
 
     if (spec.range) {
       this.range = Disjunction.create<RuleSpec>([
-        parseConjunction<RuleSpec>(
-          universe,
-          spec.range,
-          initialRangeSpec
-        ),
+        parseConjunction<RuleSpec>(universe, spec.range, initialRangeSpec),
       ]);
     } else {
       this.range = Disjunction.universe<RuleSpec>();
@@ -71,7 +67,7 @@ export class Node {
       this.filters = Disjunction.universe<RuleSpec>();
     }
 
-    this.rules = spec.rules.map(r => 
+    this.rules = spec.rules.map(r =>
       parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
     );
 
@@ -86,10 +82,9 @@ export class Node {
     let remaining: Disjunction<AnyRuleSpec> = this.filters;
     for (const rule of this.rules) {
       const allowed = Disjunction.create<AnyRuleSpec>([rule.conjunction]);
-      const current = allowed.intersect(
-        remaining,
-        simplifier
-      ).intersect(rule.filters);
+      const current = allowed
+        .intersect(remaining, simplifier)
+        .intersect(rule.filters);
       remaining = remaining.subtract(allowed, simplifier);
 
       let routes = keyToRoute.get(rule.destination);

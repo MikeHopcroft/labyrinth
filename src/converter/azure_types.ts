@@ -5,7 +5,7 @@
 // The resource graph is an AzureObjectBase[].
 //
 //
-// Here's one way to get the resource graph for the resource group 
+// Here's one way to get the resource graph for the resource group
 // called "labyringth-sample"
 //
 // # Install the CLI extension
@@ -20,8 +20,12 @@ export interface AzureObjectBase {
   name: string;
   resourceGroup: string;
   type: string;
-};
+}
 
+// DESIGN NOTE: the unused type parameter T is for the benefit of
+// a generic function that dereferences an AzureReference<T> into
+// a T.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AzureReference<T> {
   id: string;
   resourceGroup: string;
@@ -32,20 +36,20 @@ export interface AzureIPConfiguration extends AzureObjectBase {
   properties: {
     privateIPAddress: string;
     // TODO: publicIPAddresses, subnet
-  }
+  };
 }
 
 export interface AzureNetworkInterface extends AzureObjectBase {
   type: 'microsoft.network/networkinterfaces';
   properties: {
     ipConfigurations: AzureIPConfiguration[];
-  }
+  };
 }
 
 export function asAzureNetworkInterface(
   item: AnyAzureObject
 ): AzureNetworkInterface | null {
-  return item.type === 'microsoft.network/networkinterfaces' ? item: null;
+  return item.type === 'microsoft.network/networkinterfaces' ? item : null;
 }
 
 export interface AzureNetworkSecurityGroup extends AzureObjectBase {
@@ -54,16 +58,15 @@ export interface AzureNetworkSecurityGroup extends AzureObjectBase {
     defaultSecurityRules: AzureSecurityRule[];
     securityRules: AzureSecurityRule[];
     subnets: AzureReference<AzureSubnet>[];
-  }
+  };
 }
 
 export interface AzureSecurityRule extends AzureObjectBase {
-  type: (
-    'Microsoft.Network/networkSecurityGroups/defaultSecurityRules' |
-    'Microsoft.Network/networkSecurityGroups/securityRules'
-  );
+  type:
+    | 'Microsoft.Network/networkSecurityGroups/defaultSecurityRules'
+    | 'Microsoft.Network/networkSecurityGroups/securityRules';
   properties: {
-    access: "Allow" | "Deny";
+    access: 'Allow' | 'Deny';
     destinationAddressPrefix: string;
     destinationAddressPrefixes: string[];
     destinationPortRange: string;
@@ -75,7 +78,7 @@ export interface AzureSecurityRule extends AzureObjectBase {
     sourceAddressPrefixes: string[];
     sourcePortRange: string;
     sourcePortRanges: string[];
-  }
+  };
 }
 
 export interface AzureSubnet extends AzureObjectBase {
@@ -102,14 +105,13 @@ export interface AzureVirtualNetwork extends AzureObjectBase {
 export function asAzureVirtualNetwork(
   item: AnyAzureObject
 ): AzureVirtualNetwork | null {
-  return item.type === 'microsoft.network/virtualnetworks' ? item: null;
+  return item.type === 'microsoft.network/virtualnetworks' ? item : null;
 }
 
-export type AnyAzureObject = (
-  AzureIPConfiguration |
-  AzureNetworkInterface |
-  AzureNetworkSecurityGroup |
-  AzureSecurityRule |
-  AzureSubnet |
-  AzureVirtualNetwork
-);
+export type AnyAzureObject =
+  | AzureIPConfiguration
+  | AzureNetworkInterface
+  | AzureNetworkSecurityGroup
+  | AzureSecurityRule
+  | AzureSubnet
+  | AzureVirtualNetwork;

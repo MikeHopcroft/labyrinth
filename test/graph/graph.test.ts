@@ -1,9 +1,15 @@
 import {assert} from 'chai';
 import 'mocha';
-import { ActionType } from '../../src';
+import {ActionType} from '../../src';
 
 import {Universe} from '../../src/dimensions';
-import {AnyRuleSpec, Graph, GraphBuilder, GraphSpec, NodeSpec} from '../../src/graph';
+import {
+  AnyRuleSpec,
+  Graph,
+  GraphBuilder,
+  GraphSpec,
+  NodeSpec,
+} from '../../src/graph';
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 
@@ -13,9 +19,11 @@ const simplifier = createSimplifier<AnyRuleSpec>(universe);
 function paths(graph: Graph, from: string, to: string, outbound: boolean) {
   const {flows} = graph.analyze(from, outbound, true);
   const filtered = flows.filter(flow => flow.node.key === to);
-  return filtered.map(
-    flow => graph.formatFlow(flow, outbound, {showPaths: true, verbose: true})
-  ).join('\n');
+  return filtered
+    .map(flow =>
+      graph.formatFlow(flow, outbound, {showPaths: true, verbose: true})
+    )
+    .join('\n');
 }
 
 function trim(text: string) {
@@ -24,11 +32,11 @@ function trim(text: string) {
     return text;
   } else {
     if (lines[0].trim() === '') {
-      lines.shift();  // Remove leading blank line
+      lines.shift(); // Remove leading blank line
     }
 
     if (lines[lines.length - 1].trim() === '') {
-      lines.pop();    // Remove trailing blank line
+      lines.pop(); // Remove trailing blank line
     }
 
     const indent = lines[0].length - lines[0].trimStart().length;
@@ -48,7 +56,7 @@ function trim(text: string) {
 function graphBuilder(nodes: NodeSpec[]): GraphBuilder {
   const spec: GraphSpec = {
     symbols: [],
-    nodes
+    nodes,
   };
 
   return new GraphBuilder(universe, simplifier, spec);
@@ -69,12 +77,9 @@ describe('Graph', () => {
         },
       ];
       const builder = graphBuilder(nodes);
-      assert.throws(
-        () => {
-          builder.buildGraph();
-        },
-        'Unknown node "bad_key".'
-      );
+      assert.throws(() => {
+        builder.buildGraph();
+      }, 'Unknown node "bad_key".');
     });
 
     it('duplicate node key', () => {
@@ -98,12 +103,9 @@ describe('Graph', () => {
           ],
         },
       ];
-      assert.throws(
-        () => {
-          const builder = graphBuilder(nodes);
-        },
-        'Duplicate node key "internet".'
-      );
+      assert.throws(() => {
+        graphBuilder(nodes);
+      }, 'Duplicate node key "internet".');
     });
 
     it('unknown start point', () => {
@@ -125,12 +127,9 @@ describe('Graph', () => {
       const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
 
-      assert.throws(
-        () => {
-          graph.analyze('bad_key', true);
-        },
-        'Unknown node "bad_key".'
-      );
+      assert.throws(() => {
+        graph.analyze('bad_key', true);
+      }, 'Unknown node "bad_key".');
     });
   });
 
@@ -206,11 +205,11 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'left1',
-              destinationPort: '1'
+              destinationPort: '1',
             },
             {
               destination: 'right1',
-              destinationPort: '2'
+              destinationPort: '2',
             },
             {
               destination: 'main4',
@@ -264,10 +263,16 @@ describe('Graph', () => {
       const {cycles} = graph.analyze('main1', true);
       assert.equal(cycles.length, 2);
       const c0 = graph.formatCycle(cycles[0], true);
-      assert.equal(c0, 'main2 => main3 => left1 => left2 => main2\n  destination port: 1');
+      assert.equal(
+        c0,
+        'main2 => main3 => left1 => left2 => main2\n  destination port: 1'
+      );
 
       const c1 = graph.formatCycle(cycles[1], true);
-      assert.equal(c1, 'main2 => main3 => right1 => right2 => main2\n  destination port: 2');
+      assert.equal(
+        c1,
+        'main2 => main3 => right1 => right2 => main2\n  destination port: 2'
+      );
       console.log(c1);
     });
 
@@ -287,7 +292,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'right1',
-              destinationPort: '2'
+              destinationPort: '2',
             },
             {
               destination: 'main3',
@@ -299,11 +304,11 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'left1',
-              destinationPort: '1'
+              destinationPort: '1',
             },
             {
               destination: 'main2',
-              destinationPort: '2'  // Intended test case
+              destinationPort: '2', // Intended test case
             },
             {
               destination: 'main4',
@@ -363,8 +368,14 @@ describe('Graph', () => {
       const c0 = graph.formatCycle(cycles[0], true);
       const c1 = graph.formatCycle(cycles[1], true);
 
-      assert.equal(c0, 'main2 => right1 => right2 => main3 => main2\n  destination port: 2');
-      assert.equal(c1, 'main2 => main3 => left1 => left2 => main2\n  destination port: 1');
+      assert.equal(
+        c0,
+        'main2 => right1 => right2 => main3 => main2\n  destination port: 2'
+      );
+      assert.equal(
+        c1,
+        'main2 => main3 => left1 => left2 => main2\n  destination port: 1'
+      );
     });
 
     // Loopback to endpoint is not a cycle
@@ -434,7 +445,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'c',
-              destinationPort: '2'
+              destinationPort: '2',
             },
           ],
         },
@@ -443,7 +454,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'd',
-              protocol: 'tcp'
+              protocol: 'tcp',
             },
           ],
         },
@@ -507,7 +518,7 @@ describe('Graph', () => {
             {
               destination: 'c',
               destinationIp: '10.0.0.0/8',
-              destinationPort: '2'
+              destinationPort: '2',
             },
             {
               destination: 'a',
@@ -520,7 +531,7 @@ describe('Graph', () => {
             {
               destination: 'd',
               destinationIp: '10.0.0.0/8',
-              protocol: 'tcp'
+              protocol: 'tcp',
             },
             {
               destination: 'b',
@@ -713,9 +724,7 @@ describe('Graph', () => {
                 destination ip: 11.0.0.0/8
         `)
       );
-
     });
-
 
     it('complex', () => {
       const nodes: NodeSpec[] = [
@@ -786,9 +795,9 @@ describe('Graph', () => {
 
       assert.equal(cycles.length, 0);
 
-      const observed = flows.map(
-        flow => graph.formatFlow(flow, outbound, {showPaths: true})
-      ).join('\n');
+      const observed = flows
+        .map(flow => graph.formatFlow(flow, outbound, {showPaths: true}))
+        .join('\n');
 
       const expected = trim(`
         internet:
@@ -856,7 +865,7 @@ describe('Graph', () => {
           endpoint: true,
           rules: [
             {
-              destination: 'main2'
+              destination: 'main2',
             },
           ],
         },
@@ -866,7 +875,7 @@ describe('Graph', () => {
             {
               action: ActionType.DENY,
               priority: 0,
-              destinationPort: '1'
+              destinationPort: '1',
             },
             {
               action: ActionType.ALLOW,
@@ -959,7 +968,7 @@ describe('Graph', () => {
           endpoint: true,
           rules: [
             {
-              destination: 'main2'
+              destination: 'main2',
             },
           ],
         },
@@ -969,7 +978,7 @@ describe('Graph', () => {
             {
               action: ActionType.DENY,
               priority: 0,
-              destinationPort: '1'
+              destinationPort: '1',
             },
             {
               action: ActionType.ALLOW,
@@ -984,7 +993,7 @@ describe('Graph', () => {
                 {
                   action: ActionType.DENY,
                   priority: 0,
-                  destinationPort: '2'
+                  destinationPort: '2',
                 },
                 {
                   action: ActionType.ALLOW,
@@ -1065,6 +1074,5 @@ describe('Graph', () => {
         `)
       );
     });
-
   });
 });

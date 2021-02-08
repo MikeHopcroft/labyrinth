@@ -9,7 +9,7 @@ import {
   AnyRuleSpec,
   Graph,
   GraphBuilder,
-  loadYamlGraphSpecFile
+  loadYamlGraphSpecFile,
 } from '../graph';
 
 import {createSimplifier} from '../setops';
@@ -93,11 +93,8 @@ function main() {
 
       for (const flow of flows) {
         if (
-          args.f !== flow.node.spec.key && (
-            args.r || 
-            flow.node.isEndpoint ||
-            args.t === flow.node.key
-          )
+          args.f !== flow.node.spec.key &&
+          (args.r || flow.node.isEndpoint || args.t === flow.node.key)
         ) {
           console.log(graph.formatFlow(flow, outbound, options));
           console.log();
@@ -132,12 +129,7 @@ function main() {
       console.log();
 
       for (const flow of flows) {
-        if (
-          args.t !== flow.node.spec.key && (
-            args.r || 
-            flow.node.isEndpoint
-          )
-        ) {
+        if (args.t !== flow.node.spec.key && (args.r || flow.node.isEndpoint)) {
           console.log(graph.formatFlow(flow, outbound, options));
           console.log();
         }
@@ -244,13 +236,11 @@ function listEndpoints(graph: Graph, showRouters: boolean) {
   if (showRouters) {
     console.log('Nodes:');
     for (const node of graph.nodes) {
-      console.log(`  ${
-        node.key
-      }: ${
-        node.range.format().slice(11)
-      }${
-        node.isEndpoint ? ' (endpoint)': ''
-      }`);
+      console.log(
+        `  ${node.key}: ${node.range.format().slice(11)}${
+          node.isEndpoint ? ' (endpoint)' : ''
+        }`
+      );
     }
   } else {
     console.log('Endpoints:');
@@ -264,23 +254,27 @@ function listEndpoints(graph: Graph, showRouters: boolean) {
 }
 
 function summarizeOptions(options: {
-  modelSpoofing: boolean,
-  showPaths: boolean,
-  showRouters: boolean,
-  verbose: boolean
+  modelSpoofing: boolean;
+  showPaths: boolean;
+  showRouters: boolean;
+  verbose: boolean;
 }) {
   console.log('Options summary:');
 
   if (options.modelSpoofing) {
     console.log('  Modeling source ip address spoofing (-s).');
   } else {
-    console.log('  Not modeling source ip address spoofing (use -s flag to enable).');
+    console.log(
+      '  Not modeling source ip address spoofing (use -s flag to enable).'
+    );
   }
 
   if (options.showRouters) {
     console.log('  Displaying endpoints and routing nodes. (-r)');
   } else {
-    console.log('  Displaying endpoints only (use -r flag to display routing nodes). ');
+    console.log(
+      '  Displaying endpoints only (use -r flag to display routing nodes). '
+    );
   }
 
   if (options.showPaths) {

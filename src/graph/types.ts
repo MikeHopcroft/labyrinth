@@ -45,7 +45,7 @@ export type AnyRuleSpec = RuleSpecEx | ForwardRuleSpecEx;
 export const symbolDefinitionSpec = t.type({
   dimension: t.string,
   symbol: t.string,
-  range: t.string
+  range: t.string,
 });
 
 export type SymbolDefinitionSpec = t.TypeOf<typeof symbolDefinitionSpec>;

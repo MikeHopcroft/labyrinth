@@ -6,6 +6,7 @@
   * Does Azure apply rules not listed in the resource graph (e.g. deny spoofing of Azure addresses)?
   * What structures should we investigate next?
     * Peered VNETs
+    * User-defined routes
     * NSGs on VNETS
     * NSGs on subnets - is this even possible
     * On-prem network integration
@@ -13,22 +14,21 @@
     * Load balancers
     * NAT
 * Top
-  * Terminology: routes => headers? Some other name?
-  * Create service tags for all named nodes
-    * Needs a fix to illegal symbol problem due to slashes in Azure names.
-    * Not sure that legal symbol check is necessary for name-value pairs.
-    * It seems it is there for dimension names which need to be javascript keys.
-  * List endpoints
-  * Consider removing router from subnet implementation
-    * Just use inbound and outbound nodes
   * Graph documentation
+    * Tutorial
+    * Azure resource graph
+    * Bibliography
+    * Algorithm explanation
   * Publish and integrate into labyrinth-visualizer
   * Figure out prepress problem
-  * Command-line args for
-    * x Display paths (-p)
-    * x Display routes on paths (-v)
-    * x Display interior nodes (-r)
-    * x Route filtering by startpoint range.
+    * Prepress docs seem broken - don't have command output
+  * Rename ruleSpec.ts to rule_spec.ts
+  * Decide whether to keep world.ts
+  * x Fix linter errors
+  * Set up GitHub CI
+    * CI badge
+  * Set up NYC code coverage
+    * CC badge
   * Range filtering for backwards propagation.
     * Need to intersect with range from the end of the path.
     * Without this fix, back propagation is broken.
@@ -38,11 +38,26 @@
   * Rework the handling of VirtualNetwork in convertRule().
     * Should be able to rely on the symbol table, instead of hard-coding the evaluation of VirtualNetwork inline.
     * Depends on whether VirtualNetwork is relative to the VNet or the Resource group. The current implementation assumes VirtualNetwork is relative to the containing VNet.
+  * Consider removing router from subnet implementation
+    * Just use inbound and outbound nodes
+  * Unit tests for converter?
+  * 
+  * Terminology: routes => headers? Some other name?
+  * Create service tags for all named nodes
+    * Needs a fix to illegal symbol problem due to slashes in Azure names.
+    * Not sure that legal symbol check is necessary for name-value pairs.
+    * It seems it is there for dimension names which need to be javascript keys.
+  * x List endpoints
+  * Command-line args for
+    * x Display paths (-p)
+    * x Display routes on paths (-v)
+    * x Display interior nodes (-r)
+    * x Route filtering by startpoint range.
   * Validation
     * Should we ensure that the Azure resource graph is correct
       * subnet ranges don't overlap
       * vnet ranges don't overlap
-  * Cleanup indexSymbol() and indexRange()
+  * . Cleanup indexSymbol() and indexRange()
   * Review naming conventions and interations with
     * Azure object names
     * Aliases for Azure object names
@@ -61,8 +76,8 @@
     * TODO: consider using symbol table here instead of vnet.name.
     * TODO: sourcePortRanges, sourceAddressPrefixes, etc. The are alternate Azure fields. Need to understand interaction with primary Azure fields.
     * TODO: use addressRangeText in convertVNet()
-  * Flag to allow sourceIp spoofing
-  * Flag to suppress display of interior nodes (display only endpoints)
+  * x Flag to allow sourceIp spoofing
+  * x Flag to suppress display of interior nodes (display only endpoints)
   * x Formatter should show "Internet" instead of "except VNet"
   * Is "Internet" scoped relative to a single VNET or the union of all VNETs in a resource group?
   * Verify correct behavior for symbolic lookup that leads to `except except`.
@@ -70,8 +85,6 @@
     * b = except a
     * Also c = except except 2
   * Should be able to specify dimension values as strings or numbers, e.g. "port: 6" or "port: '6'".
-  * Rename ruleSpec.ts to rule_spec.ts
-  * Prepress docs seem broken - don't have command output
   * Rearchitect ruleSpecNoIdType
     * Seems id and source are only used for attribution
       * Not accessed by set logic
@@ -88,7 +101,6 @@
     * Can the user ever supply the id?
     * Can id be part of the Rule, instead of the RuleSpec?
     * Does the source always have to come from the loader?
-  * Decide whether to keep world.ts
   * x Delete graph
   * x Ranme graph2 to graph
   * x Fix linter errors
@@ -268,10 +280,6 @@
 * x Documentation generation code from prix-fixe/prepress
 * x Detecting redundant rules
 * x README.md
-* Set up Travis
-  * CI badge
-* Set up NYC
-  * CC badge
 * loaders.ts
   * // TODO: REVIEW: why wouldn't CSV be used for DenyOverride?
 * disjunction.test.ts

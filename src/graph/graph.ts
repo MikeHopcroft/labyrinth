@@ -35,8 +35,8 @@ interface FlowAnalysis {
 }
 
 export interface GraphFormattingOptions {
-  showPaths?: boolean,
-  verbose?: boolean,
+  showPaths?: boolean;
+  verbose?: boolean;
 }
 
 export class Graph {
@@ -99,11 +99,9 @@ export class Graph {
     }));
 
     const index = this.nodeIndex(startKey);
-    const range = (
-      modelSpoofing ? 
-      Disjunction.universe<AnyRuleSpec>() : 
-      this.nodes[index].range
-    );
+    const range = modelSpoofing
+      ? Disjunction.universe<AnyRuleSpec>()
+      : this.nodes[index].range;
 
     const path: Path = {
       node: index,
@@ -208,7 +206,7 @@ export class Graph {
     return this.nodes[this.nodeIndex(key)];
   }
 
-  formatCycle(cycle: Cycle, verbose=false): string {
+  formatCycle(cycle: Cycle, verbose = false): string {
     const lines: string[] = [];
     lines.push(cycle.map(step => this.nodes[step.node].key).join(' => '));
     if (verbose) {
@@ -245,7 +243,7 @@ export class Graph {
         for (const path of flowNode.paths) {
           lines.push(`    ${this.formatPath(path, outbound)}`);
           if (options.verbose) {
-            lines.push(path.routes.format({prefix: '      '}))
+            lines.push(path.routes.format({prefix: '      '}));
           }
         }
       }
@@ -281,7 +279,7 @@ export class GraphBuilder {
   constructor(
     universe: Universe,
     simplifier: Simplifier<AnyRuleSpec>,
-    graphSpec: GraphSpec,
+    graphSpec: GraphSpec
   ) {
     this.universe = universe;
     this.simplifier = simplifier;
