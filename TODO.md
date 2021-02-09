@@ -5,6 +5,8 @@
   * Can two VNets in the same resource group have overlaping ranges?
   * Does Azure apply rules not listed in the resource graph (e.g. deny spoofing of Azure addresses)?
   * What structures should we investigate next?
+    * Access from Internet
+    * Hub & spoke topology - peered VNETs and multiple resource groups
     * Peered VNETs
     * User-defined routes
     * NSGs on VNETS
@@ -14,6 +16,7 @@
     * Load balancers
     * NAT
 * Top
+  * Get clean resource graph
   * Graph documentation
     * Tutorial
     * Azure resource graph
@@ -27,6 +30,7 @@
   * x Fix linter errors
   * Set up GitHub CI
     * CI badge
+    * Figure out why $default-branch doesn't trigger action
   * Set up NYC code coverage
     * CC badge
   * Range filtering for backwards propagation.
