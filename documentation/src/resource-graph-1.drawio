@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e" modified="2021-01-28T06:29:48.880Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code-Insiders/1.53.0-insider Chrome/87.0.4280.141 Electron/11.2.0 Safari/537.36" version="13.10.0" etag="EyxCBV1Jt9i0OIa9Ri3w" type="embed">
+    <diagram id="gGVfy2cnYX6W5Gzd6e65" name="Page-1">
+        <mxGraphModel dx="2258" dy="639" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="Virtual Network: vnet&lt;br&gt;10.0.0.0/23" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="40" y="40" width="760" height="440" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Subnet: jumpbox&lt;br&gt;10.0.0.0.0/25" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="70" y="210" width="190" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Subnet: frontend&lt;br&gt;10.0.0.0.128/25" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="210" width="190" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Subnet: backend&lt;br&gt;10.0.0.1.0/24" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;verticalAlign=top;" vertex="1" parent="1">
+                    <mxGeometry x="570" y="210" width="190" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="6" target="3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="NSG: jumpboxNSG&lt;br&gt;&lt;br&gt;allow tcp 443 from Internet&lt;br&gt;allow tcp 22 from Internet" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="70" y="110" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="7" target="4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="NSG: frontendNSG&lt;br&gt;&lt;br&gt;allow tcp 80 from Internet&lt;br&gt;allow tcp 443 from Internet" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="110" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="NSG: backendNSG&lt;br&gt;&lt;br&gt;allow tcp 443 from 10.0.0.0/25&lt;br&gt;allow tcp 443 from 10.0.0.128/25&lt;br&gt;deny all egress" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="570" y="110" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="endArrow=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="5" target="8">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="660" y="220" as="sourcePoint"/>
+                        <mxPoint x="710" y="170" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="12" value="nic: jumpbox VM" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="120" y="270" width="90" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="nic: frontend VM" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="370" y="270" width="90" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="nic: private endpoint" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+                    <mxGeometry x="630" y="270" width="80" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="16" target="15">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="Azure&lt;br&gt;Blob Storage" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="610" y="520" width="120" height="80" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -39,6 +39,7 @@ Options
   -r, --reduncancy                 Display list of redundant policy rules.      
   -t, --telemetry                  Display telemetry on boolean expression      
                                    complexity.                                  
+  -h, --help                       Display help message.                        
 
 
 ~~~

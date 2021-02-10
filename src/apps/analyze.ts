@@ -209,6 +209,12 @@ function showUsage() {
           description: 'Display telemetry on boolean expression complexity.',
           type: Boolean,
         },
+        {
+          name: 'help',
+          alias: 'h',
+          description: 'Display help message.',
+          type: Boolean,
+        },
       ],
     },
   ];

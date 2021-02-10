@@ -133,6 +133,8 @@ function main() {
           console.log();
         }
       }
+    } else {
+      return fail('Use the -f or -t option to specify a node for analysis.');
     }
   } catch (e) {
     handleError(e);

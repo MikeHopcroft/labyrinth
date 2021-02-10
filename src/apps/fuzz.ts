@@ -218,19 +218,6 @@ function showUsage() {
     {
       header: 'Options',
       optionList: [
-        // {
-        //   name: 'attribution',
-        //   alias: 'a',
-        //   typeLabel: '{underline line|id}',
-        //   description: 'Display rules attribution.',
-        // },
-        // {
-        //   name: 'contract',
-        //   alias: 'c',
-        //   typeLabel: '{underline <contract>}',
-        //   description:
-        //     'Compare the rule set in {underline <contract>} with those in {underline <rules>}.\n',
-        // },
         {
           name: 'mode',
           alias: 'm',
@@ -265,16 +252,16 @@ function showUsage() {
                         - protocol\n`,
           type: Boolean,
         },
-        // {
-        //   name: 'reduncancy',
-        //   alias: 'r',
-        //   description: 'Display list of redundant policy rules.',
-        //   type: Boolean,
-        // },
         {
           name: 'telemetry',
           alias: 't',
           description: 'Display telemetry on boolean expression complexity.',
+          type: Boolean,
+        },
+        {
+          name: 'help',
+          alias: 'h',
+          description: 'Display help message.',
           type: Boolean,
         },
       ],

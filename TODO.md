@@ -22,14 +22,14 @@
     * Azure resource graph
     * Bibliography
     * Algorithm explanation
-  * Publish and integrate into labyrinth-visualizer
-  * Figure out prepress problem
-    * Prepress docs seem broken - don't have command output
+  * x Publish and integrate into labyrinth-visualizer
+  * x Figure out prepress problem
+    * x Prepress docs seem broken - don't have command output
   * Rename ruleSpec.ts to rule_spec.ts
   * Decide whether to keep world.ts
   * x Fix linter errors
   * Set up GitHub CI
-    * CI badge
+    * x CI badge
     * Figure out why $default-branch doesn't trigger action
   * Set up NYC code coverage
     * CC badge
