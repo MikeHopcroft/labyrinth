@@ -16,3 +16,7 @@ It provides a command-line tool for the following scenarios:
 
 If you are interested in learning more about how `labyrinth` works, please read the
 [labyrinth architectural concepts](documentation/architectural_concepts.md).
+
+## Contributing
+
+[Coding Conventions](./documentation/coding_conventions.md)

@@ -47,7 +47,6 @@ function main() {
     const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
     // Load network graph.
-    // const nodes = loadYamlNodeSpecsFile(args._[0]);
     const spec = loadYamlGraphSpecFile(args._[0]);
     const nodes = spec.nodes;
     const builder = new GraphBuilder(universe, simplifier, spec);
