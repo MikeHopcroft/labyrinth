@@ -25,4 +25,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test-coverage
+    - run: npm run test-coverage
+
+    - name: Publish Code Coverage Results
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./build/.coverage-report/lcov.info
+      
