@@ -1,6 +1,7 @@
 # Labyrinth NSG
 
 ![Node.js CI](https://github.com/MikeHopcroft/labyrinth/workflows/Node.js%20CI/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/MikeHopcroft/labyrinth/badge.svg?branch=main)](https://coveralls.io/github/MikeHopcroft/labyrinth?branch=main)
 
 `Labyrinth NSG` is an experimental tool for analyzing network security rules.
 It provides a command-line tool for the following scenarios:
