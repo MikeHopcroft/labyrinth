@@ -23,7 +23,7 @@
   "scripts": {
     "docs": "node node_modules/prepress/build/src/apps/prepress.js documentation/src documentation",
     "test": "mocha 'build/test/**/*.js'",
-    "test-coverage": "nyc npm run test",
+    "test-coverage": "nyc --all npm run test",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
