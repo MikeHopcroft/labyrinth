@@ -27,7 +27,7 @@ describe('Conversion - Azure Simple Vnet', () => {
             id: 1,
             priority: 65000,
             protocol: '*',
-            source: 'TODO-WasFileName',
+            source: 'data/azure/resource-graph-1.json',
             sourceIp: 'VNET-B',
             sourcePort: '*',
           },

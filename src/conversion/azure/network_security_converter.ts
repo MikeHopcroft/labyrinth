@@ -67,7 +67,7 @@ export class NetworkSecurtiyGroupConverter {
       priority,
       // TODO: set id and source fields correctly.
       id: 1,
-      source: 'TODO-WasFileName',
+      source: 'data/azure/resource-graph-1.json',
     };
 
     if (sourceIp) {
