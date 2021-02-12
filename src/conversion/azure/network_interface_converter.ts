@@ -30,7 +30,7 @@ export class NetworkInterfaceConverter extends BaseAzureConverter {
         for (const alias of converter.aliases(config)) {
           aliases.push({
             item: alias.item,
-            alias: `${nic.name}-${alias.alias}`,
+            alias: `${nic.name}/${alias.alias}`,
           });
         }
       }

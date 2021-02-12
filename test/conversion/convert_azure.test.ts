@@ -45,7 +45,7 @@ describe('Conversion - Convert Azure', () => {
     it('Aliases for NIC with single ip', () => {
       const aliases = nicConverter.aliases(input);
       assert.equal(aliases[0].alias, 'testingcreds68');
-      assert.equal(aliases[1].alias, 'testingcreds68-ipconfig1');
+      assert.equal(aliases[1].alias, 'testingcreds68/ipconfig1');
     });
 
     it('Conversion of NIC with single ip is empty', () => {

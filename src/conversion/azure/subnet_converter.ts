@@ -72,7 +72,7 @@ export class SubnetConverter extends BaseAzureConverter {
               if (ipNode.range) {
                 // Traffic to child of subnet
                 rules.push({
-                  destination: ipNode.key,
+                  destination: store.getAlias(ipConfig.id),
                   destinationIp: ipNode.range.sourceIp,
                 });
               }

@@ -25,4 +25,14 @@ export class EntityStore implements IEntityStore<AnyAzureObject> {
 
     return this.idToItem.get(id) as T;
   }
+
+  public getAlias(id: string): string {
+    const result = this.idToAlias.get(id);
+
+    if (!result) {
+      throw new Error(`Failed to find alias for id '${id}`);
+    }
+
+    return result;
+  }
 }

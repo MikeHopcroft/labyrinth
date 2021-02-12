@@ -12,5 +12,6 @@ export interface INodeSpecUniverse {
 }
 
 export interface IEntityStore<TBase> {
+  getAlias(id: string): string;
   getEntity<T extends TBase>(id: string): T;
 }
