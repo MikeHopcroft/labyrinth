@@ -15,6 +15,7 @@ export class AzureConverter {
   private readonly converters: ConverterStore;
   private readonly entityStore: EntityStore;
   private readonly symbolStore: SymbolStore;
+  private readonly vnetConverter: VirtualNetworkConverter;
 
   constructor() {
     this.entityStore = new EntityStore();
@@ -32,8 +33,9 @@ export class AzureConverter {
       }
     );
 
+    this.vnetConverter = new VirtualNetworkConverter(this.symbolStore);
     this.converters = new ConverterStore(
-      new VirtualNetworkConverter(this.symbolStore),
+      this.vnetConverter,
       new NetworkInterfaceConverter(),
       new PublicIpConverter(),
       new LocalIpConverter(),
@@ -68,6 +70,10 @@ export class AzureConverter {
         }
       }
     }
+
+    const range = this.vnetConverter.virtualNetworks().join(',');
+    const internet = `except ${range}`;
+    this.symbolStore.pushHead('ip', 'Internet', internet);
 
     return {
       symbols: this.symbolStore.getSymbolsSpec(),

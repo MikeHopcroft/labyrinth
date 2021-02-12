@@ -13,7 +13,12 @@ export class SymbolStore {
     }
   }
 
-  public defineSymbol(dimension: string, symbol: string, range: string) {
+  public pushHead(dimension: string, symbol: string, range: string) {
+    const spec: SymbolDefinitionSpec = {dimension, symbol, range};
+    this.symbols.unshift(spec);
+  }
+
+  public push(dimension: string, symbol: string, range: string) {
     const spec: SymbolDefinitionSpec = {dimension, symbol, range};
     this.symbols.push(spec);
   }

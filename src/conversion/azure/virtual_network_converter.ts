@@ -17,12 +17,14 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
   private readonly subnetConveter: IAzureConverter;
   private readonly ipFormatter: Formatter;
   private readonly symbols: SymbolStore;
+  private readonly vnets: Map<string, string>;
 
   constructor(symbols: SymbolStore) {
     super('microsoft.network/virtualnetworks');
     this.subnetConveter = new SubnetConverter();
     this.ipFormatter = createIpFormatter(new Map<string, string>());
     this.symbols = symbols;
+    this.vnets = new Map<string, string>();
   }
 
   aliases(input: AnyAzureObject): ItemAlias[] {
@@ -63,10 +65,11 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
       addressRange.add(ip);
     }
     const alias = vnet.name;
+    this.vnets.set(alias, alias);
 
     // Define symbol/service tag for this virtual network.
     const addressRangeText = formatDRange(this.ipFormatter, addressRange);
-    this.symbols.defineSymbol('ip', vnet.name, addressRangeText);
+    this.symbols.push('ip', vnet.name, addressRangeText);
 
     const rules: ForwardRuleSpecEx[] = [
       // Traffic leaving subnet
@@ -107,5 +110,9 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
     });
 
     return nodes;
+  }
+
+  public virtualNetworks(): string[] {
+    return Array.from(this.vnets.keys());
   }
 }
