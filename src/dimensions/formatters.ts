@@ -8,7 +8,7 @@ import * as ip from 'ip';
 //
 // CASE II: called by Javascript replace function in the context of a
 // regular expression that matches individual numbers and start-end ranges.
-type Formatter = (text: string, start?: string, end?: string) => string;
+export type Formatter = (text: string, start?: string, end?: string) => string;
 
 //
 // Creates a DRange formatter, based on a supplied field formatter.
