@@ -44,6 +44,16 @@ data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint
 * Azure importer might replaces `"-"` with `"_"`.
 * Users would have to understand that symbol names weren't exactly the same.
 
+## Formatting Dimension Constraints
+
+When Labyrinth formats dimension contraints, it will try to emit symbols, if possible, before resorting to numeric and ip address literals. The goal is to improve readability. For example, Labyringth will produce `"protcol: tcp, udp"` instead of `"protocol: 6, 17"`.
+
+One challenge with this approach is that there are often multiple symbols that map to the same set of values. Currently Labyrinth chooses the first symbol that represents the set of values being formatted.
+
+This behavior becomes a problem when defining symbols for ranges of IP addresses associated with networking concepts. It is often the case that a VNET, a subnet, and a router are all associated with the same IP address range. In this case the formatter may produce misleading output by naming structures that are not relevant in the context, but happen to share the same IP address range.
+
+We will likely need more user input to decide on the right behavior for formatting.
+
 ## Dimension Keys
 
 Labyrinth currently uses dimension keys in dimension constrain expressions. In the following example, `"sourceIp"`, `"protocol"`, and `"port"` are dimension keys:
