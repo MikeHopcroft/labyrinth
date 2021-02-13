@@ -80,7 +80,8 @@ export function convert(infile: string, outfile: string): GraphSpec {
 
   for (const item of root.values()) {
     idToItem.set(item.id, item);
-    idToAlias.set(item.id, item.name);
+    createAlias(item, item.name);
+    // idToAlias.set(item.id, item.name);
 
     const nic = asAzureNetworkInterface(item);
     const vnet = asAzureVirtualNetwork(item);
@@ -92,13 +93,15 @@ export function convert(infile: string, outfile: string): GraphSpec {
 
         // Generate unique alias for ip configuration from its parent
         // network interface.
-        idToAlias.set(config.id, `${nic.name}/${config.name}`);
+        createAlias(config, `${nic.name}/${config.name}`);
+        // idToAlias.set(config.id, `${nic.name}/${config.name}`);
       }
     } else if (vnet) {
       for (const subnet of vnet.properties.subnets) {
         // Index subnet so that it can be found by reference.
         idToItem.set(subnet.id, subnet);
-        idToAlias.set(subnet.id, subnet.name);
+        createAlias(subnet, subnet.name);
+        // idToAlias.set(subnet.id, subnet.name);
       }
     }
   }
@@ -236,11 +239,17 @@ export function convert(infile: string, outfile: string): GraphSpec {
     const routerNode: NodeSpec = {
       key: routerKey,
       range: {
+        // TODO: consider whether we want to emit symbols or ip literals here.
+        // Emitting symbols increases graph readability, but humans aren't
+        // likely to read the graph directly.
+        // sourceIp: routerKey
         sourceIp: subnet.properties.addressPrefix,
       },
       rules,
     };
     nodes.push(routerNode);
+
+    defineSymbol('ip', routerKey, subnet.properties.addressPrefix);
 
     const {inbound, outbound} = convertNSG(
       vnet,
@@ -298,6 +307,8 @@ export function convert(infile: string, outfile: string): GraphSpec {
       ],
     };
     nodes.push(spec);
+
+    defineSymbol('ip', key, config.properties.privateIPAddress);
 
     // TODO: enable this code after sorting out illegal symbol errors.
     // Problem is that Azure names have slashes.
@@ -421,6 +432,10 @@ export function convert(infile: string, outfile: string): GraphSpec {
     // TODO: verify type field value is correct for type T.
 
     return item as T;
+  }
+
+  function createAlias(item: AzureObjectBase, alias: string) {
+    idToAlias.set(item.id, alias.replace(/-/g, '_'));
   }
 
   function getAlias(item: AzureObjectBase) {
