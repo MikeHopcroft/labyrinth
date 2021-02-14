@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import 'mocha';
-import {SymbolDefinitionSpec} from '../../src';
+import {NodeSpec, SymbolDefinitionSpec} from '../../src';
 import {AnyAzureObject, AzureConverter} from '../../src/conversion';
 
 describe('Conversion - Azure Convert Parity', () => {
@@ -1027,5 +1027,484 @@ describe('Conversion - Azure Convert Parity', () => {
     const converter = new AzureConverter();
     const graph = converter.Convert(input);
     assert.deepEqual(graph.symbols, expected);
+  });
+
+  it('Nodes are correct', () => {
+    const expected = [
+      {
+        key:
+          'data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint',
+        endpoint: true,
+        range: {
+          sourceIp: '10.0.1.4',
+        },
+        rules: [
+          {
+            destination: 'backendSubnet/router',
+            destinationIp: 'backendSubnet/router',
+          },
+        ],
+      },
+      {
+        key: 'frontend/default',
+        endpoint: true,
+        range: {
+          sourceIp: '10.0.0.132',
+        },
+        rules: [
+          {
+            destination: 'frontendSubnet/router',
+            destinationIp: 'frontendSubnet/router',
+          },
+        ],
+      },
+      {
+        key: 'jumpbox/default',
+        endpoint: true,
+        range: {
+          sourceIp: '10.0.0.4',
+        },
+        rules: [
+          {
+            destination: 'jumpboxSubnet/router',
+            destinationIp: 'jumpboxSubnet/router',
+          },
+        ],
+      },
+      {
+        key: 'jumpboxSubnet/router',
+        range: {
+          sourceIp: '10.0.0.0/25',
+        },
+        rules: [
+          {
+            destination: 'jumpboxSubnet/outbound',
+            destinationIp: 'except 10.0.0.0/25',
+          },
+          {
+            destination: 'jumpbox/default',
+            destinationIp: '10.0.0.4',
+          },
+        ],
+      },
+      {
+        key: 'jumpboxSubnet/inbound',
+        filters: [
+          {
+            action: 'allow',
+            priority: 65000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'vnet',
+            sourcePort: '*',
+            destinationIp: 'vnet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 65001,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'AzureLoadBalancer',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 65500,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 1000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'Internet',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '22',
+            protocol: 'Tcp',
+          },
+          {
+            action: 'allow',
+            priority: 1100,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'Internet',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '443',
+            protocol: 'Tcp',
+          },
+        ],
+        rules: [
+          {
+            destination: 'jumpboxSubnet/router',
+          },
+        ],
+      },
+      {
+        key: 'jumpboxSubnet/outbound',
+        filters: [
+          {
+            action: 'allow',
+            priority: 65000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'vnet',
+            sourcePort: '*',
+            destinationIp: 'vnet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 65001,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: 'Internet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 65500,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+        ],
+        range: {
+          sourceIp: '10.0.0.0/25',
+        },
+        rules: [
+          {
+            destination: 'vnet',
+          },
+        ],
+      },
+      {
+        key: 'frontendSubnet/router',
+        range: {
+          sourceIp: '10.0.0.128/25',
+        },
+        rules: [
+          {
+            destination: 'frontendSubnet/outbound',
+            destinationIp: 'except 10.0.0.128/25',
+          },
+          {
+            destination: 'frontend/default',
+            destinationIp: '10.0.0.132',
+          },
+        ],
+      },
+      {
+        key: 'frontendSubnet/inbound',
+        filters: [
+          {
+            action: 'allow',
+            priority: 65000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'vnet',
+            sourcePort: '*',
+            destinationIp: 'vnet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 65001,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'AzureLoadBalancer',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 65500,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 1000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'Internet',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '80',
+            protocol: 'Tcp',
+          },
+          {
+            action: 'allow',
+            priority: 1100,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'Internet',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '443',
+            protocol: 'Tcp',
+          },
+        ],
+        rules: [
+          {
+            destination: 'frontendSubnet/router',
+          },
+        ],
+      },
+      {
+        key: 'frontendSubnet/outbound',
+        filters: [
+          {
+            action: 'allow',
+            priority: 65000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'vnet',
+            sourcePort: '*',
+            destinationIp: 'vnet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 65001,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: 'Internet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 65500,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+        ],
+        range: {
+          sourceIp: '10.0.0.128/25',
+        },
+        rules: [
+          {
+            destination: 'vnet',
+          },
+        ],
+      },
+      {
+        key: 'backendSubnet/router',
+        range: {
+          sourceIp: '10.0.1.0/24',
+        },
+        rules: [
+          {
+            destination: 'backendSubnet/outbound',
+            destinationIp: 'except 10.0.1.0/24',
+          },
+          {
+            destination:
+              'data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint',
+            destinationIp: '10.0.1.4',
+          },
+        ],
+      },
+      {
+        key: 'backendSubnet/inbound',
+        filters: [
+          {
+            action: 'allow',
+            priority: 65000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'vnet',
+            sourcePort: '*',
+            destinationIp: 'vnet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 65001,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'AzureLoadBalancer',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 65500,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 1000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '10.0.0.0/25',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '443',
+            protocol: 'Tcp',
+          },
+          {
+            action: 'allow',
+            priority: 1100,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '10.0.0.128/25',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '443',
+            protocol: 'Tcp',
+          },
+        ],
+        rules: [
+          {
+            destination: 'backendSubnet/router',
+          },
+        ],
+      },
+      {
+        key: 'backendSubnet/outbound',
+        filters: [
+          {
+            action: 'allow',
+            priority: 65000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: 'vnet',
+            sourcePort: '*',
+            destinationIp: 'vnet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'allow',
+            priority: 65001,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: 'Internet',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 65500,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: '*',
+            destinationPort: '*',
+            protocol: '*',
+          },
+          {
+            action: 'deny',
+            priority: 1000,
+            id: 1,
+            source: 'data/azure/resource-graph-1.json',
+            sourceIp: '*',
+            sourcePort: '*',
+            destinationIp: 'Internet',
+            destinationPort: '*',
+            protocol: 'Tcp',
+          },
+        ],
+        range: {
+          sourceIp: '10.0.1.0/24',
+        },
+        rules: [
+          {
+            destination: 'vnet',
+          },
+        ],
+      },
+      {
+        key: 'vnet',
+        range: {
+          sourceIp: '10.0.0.0/23',
+        },
+        rules: [
+          {
+            destination: 'Internet',
+            destinationIp: 'except 10.0.0.0/23',
+          },
+          {
+            destination: 'jumpboxSubnet/inbound',
+            destinationIp: '10.0.0.0/25',
+          },
+          {
+            destination: 'frontendSubnet/inbound',
+            destinationIp: '10.0.0.128/25',
+          },
+          {
+            destination: 'backendSubnet/inbound',
+            destinationIp: '10.0.1.0/24',
+          },
+        ],
+      },
+      {
+        key: 'Internet',
+        endpoint: true,
+        range: {
+          sourceIp: 'Internet',
+        },
+        rules: [
+          {
+            destination: 'vnet',
+            destinationIp: 'vnet',
+          },
+        ],
+      },
+    ] as NodeSpec[];
+
+    const converter = new AzureConverter();
+    const graph = converter.Convert(input);
+    assert.deepEqual(graph.nodes, expected);
   });
 });
