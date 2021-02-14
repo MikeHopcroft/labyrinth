@@ -12,6 +12,18 @@ symbols:
     symbol: vnet
     range: 10.0.0.0/23
 nodes:
+  - key: data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint
+    endpoint: true
+    range:
+      sourceIp: 10.0.1.4
+    rules:
+      - destination: backendSubnet/router
+  - key: frontend/default
+    endpoint: true
+    range:
+      sourceIp: 10.0.0.132
+    rules:
+      - destination: frontendSubnet/router
   - key: jumpbox/default
     endpoint: true
     range:
@@ -108,12 +120,6 @@ nodes:
       sourceIp: 10.0.0.0/25
     rules:
       - destination: vnet
-  - key: frontend/default
-    endpoint: true
-    range:
-      sourceIp: 10.0.0.132
-    rules:
-      - destination: frontendSubnet/router
   - key: frontendSubnet/router
     range:
       sourceIp: 10.0.0.128/25
@@ -204,12 +210,6 @@ nodes:
       sourceIp: 10.0.0.128/25
     rules:
       - destination: vnet
-  - key: data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint
-    endpoint: true
-    range:
-      sourceIp: 10.0.1.4
-    rules:
-      - destination: backendSubnet/router
   - key: backendSubnet/router
     range:
       sourceIp: 10.0.1.0/24
