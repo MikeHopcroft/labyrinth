@@ -14,7 +14,6 @@ import {
 describe('Conversion - Convert Azure', () => {
   describe('NetworkInterface', () => {
     const nicConverter = new NetworkInterfaceConverter();
-    const store = new EntityStore();
     const input = {
       id:
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-cred-testing/providers/Microsoft.Network/networkInterfaces/testingcreds68',
@@ -48,9 +47,26 @@ describe('Conversion - Convert Azure', () => {
       assert.equal(aliases[1].alias, 'testingcreds68/ipconfig1');
     });
 
-    it('Conversion of NIC with single ip is empty', () => {
+    it('Conversion of NIC with single', () => {
+      const store = new EntityStore();
+      const expected = [
+        {
+          endpoint: true,
+          key: 'testingcreds68/ipconfig1',
+          range: {
+            sourceIp: '192.168.200.4',
+          },
+          rules: [],
+        },
+      ];
+
+      for (const data of nicConverter.aliases(input)) {
+        if (data.item) {
+          store.registerEntity(data.item, data.alias);
+        }
+      }
       const alias = nicConverter.convert(input, store);
-      assert.deepEqual(alias, emptyNodeSet);
+      assert.deepEqual(alias, expected);
     });
   });
 
@@ -61,7 +77,7 @@ describe('Conversion - Convert Azure', () => {
 
     it('Public IP Conversion', () => {
       const input = {
-        name: 'testIp',
+        name: 'testPublicIp',
         resourceGroup: 'test',
         id:
           '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/publicIPAddresses/testIp',
@@ -70,6 +86,7 @@ describe('Conversion - Convert Azure', () => {
         },
       } as AzurePublicIp;
 
+      entityStore.registerEntity(input, `test/${input.name}`);
       const result = publicIp.convert(input, entityStore);
 
       assert.equal(result.length, 1);
@@ -80,15 +97,16 @@ describe('Conversion - Convert Azure', () => {
 
     it('Local IP Conversion', () => {
       const input = {
-        name: 'testIp',
+        name: 'testLoacalIp',
         resourceGroup: 'test',
         id:
-          '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Network/publicIPAddresses/testIp',
+          '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/providers/Microsoft.Network/networkInterfaces/frontend/ipConfigurations/testIp',
         properties: {
           privateIPAddress: '192.168.200.4',
         },
       } as AzureLocalIP;
 
+      entityStore.registerEntity(input, `test/${input.name}`);
       const result = localIp.convert(input, entityStore);
 
       assert.equal(result.length, 1);

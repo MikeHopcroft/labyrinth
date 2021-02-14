@@ -16,12 +16,11 @@ export abstract class BaseIpConverter<
 
   convert(
     input: AnyAzureObject,
-    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
     store: IEntityStore<AnyAzureObject>
   ): NodeSpec[] {
     const result: NodeSpec[] = [];
     const ip = this.parseIpAddress(input as T);
-    const key = input.name;
+    const key = store.getAlias(input.id);
 
     result.push({
       key,
