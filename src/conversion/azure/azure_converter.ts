@@ -1,4 +1,4 @@
-import {NodeSpec, SymbolStore} from '../../graph';
+import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
 import {
   AnyAzureObject,
   ConverterStore,
@@ -44,6 +44,7 @@ export class AzureConverter {
   }
 
   public Convert(root: AnyAzureObject[]): INodeSpecUniverse {
+    const KEY_INTERNET = 'Internet';
     const itemsToMap: AnyAzureObject[] = [];
     const nodes: NodeSpec[] = [];
 
@@ -73,7 +74,24 @@ export class AzureConverter {
 
     const range = this.vnetConverter.virtualNetworks().join(',');
     const internet = `except ${range}`;
-    this.symbolStore.pushHead('ip', 'Internet', internet);
+    this.symbolStore.pushHead('ip', KEY_INTERNET, internet);
+
+    const vnetRules: ForwardRuleSpec[] = [];
+    for (const vnet of this.vnetConverter.virtualNetworks()) {
+      vnetRules.push({
+        destination: vnet,
+        destinationIp: vnet,
+      });
+    }
+
+    nodes.push({
+      key: KEY_INTERNET,
+      endpoint: true,
+      range: {
+        sourceIp: KEY_INTERNET,
+      },
+      rules: vnetRules,
+    });
 
     return {
       symbols: this.symbolStore.getSymbolsSpec(),

@@ -67,6 +67,19 @@ describe('Conversion - Azure Simple Vnet', () => {
           },
         ],
       },
+      {
+        endpoint: true,
+        key: 'Internet',
+        range: {
+          sourceIp: 'Internet',
+        },
+        rules: [
+          {
+            destination: 'VNET-B',
+            destinationIp: 'VNET-B',
+          },
+        ],
+      },
     ];
 
     const input = [
