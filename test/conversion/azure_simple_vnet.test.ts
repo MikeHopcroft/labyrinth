@@ -62,7 +62,7 @@ describe('Conversion - Azure Simple Vnet', () => {
             destinationIp: 'except 172.18.0.0/28',
           },
           {
-            destination: 'A/router',
+            destination: 'A/inbound',
             destinationIp: '172.18.0.0/28',
           },
         ],

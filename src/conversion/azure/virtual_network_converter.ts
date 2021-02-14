@@ -82,7 +82,11 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
 
     for (const subnet of vnet.properties.subnets) {
       const subnetNodes = this.subnetConveter.convert(subnet, store);
-      const child = subnetNodes[0].key;
+
+      // 0 - Router
+      // 1 - Inbound
+      // 2 - Outbound
+      const child = subnetNodes[1].key;
 
       for (const subnetNode of subnetNodes) {
         if (subnetNode.rules.length === 0) {
