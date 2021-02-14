@@ -58,7 +58,7 @@ describe('Conversion - Azure Simple Vnet', () => {
         },
         rules: [
           {
-            destination: 'testing-network-testing',
+            destination: 'Internet',
             destinationIp: 'except 172.18.0.0/28',
           },
           {

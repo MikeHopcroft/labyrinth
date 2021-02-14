@@ -74,7 +74,7 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
     const rules: ForwardRuleSpecEx[] = [
       // Traffic leaving subnet
       {
-        destination: vnet.resourceGroup,
+        destination: 'Internet',
         // TODO: use addressRangeText here.
         destinationIp: `except ${addresses}`,
       },
