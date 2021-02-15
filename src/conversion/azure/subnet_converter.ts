@@ -11,7 +11,7 @@ import {
   PublicIpConverter,
 } from '.';
 import {AzureNetworkSecurityGroup, AzureVirtualNetwork} from './schema';
-import {IEntityStore} from '..';
+import {IEntityStore, ItemAlias} from '..';
 
 export class SubnetConverter extends BaseAzureConverter {
   private readonly conveters: ConverterStore;
@@ -28,6 +28,15 @@ export class SubnetConverter extends BaseAzureConverter {
 
   public static getVnetId(id: string): string {
     return path.dirname(path.dirname(id));
+  }
+
+  aliases(input: AnyAzureObject): ItemAlias[] {
+    const aliases: ItemAlias[] = [];
+    aliases.push({
+      item: input,
+      alias: `${input.name}/router`,
+    });
+    return aliases;
   }
 
   convert(

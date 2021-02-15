@@ -4,6 +4,7 @@ import {
   AzureLocalIP,
   AzureNetworkInterface,
   AzurePublicIp,
+  AzureSubnet,
   EntityStore,
   LocalIpConverter,
   NetworkInterfaceConverter,
@@ -117,6 +118,23 @@ describe('Conversion - Convert Azure', () => {
   });
 
   describe('Subnet Conversionss', () => {
+    const converter = new SubnetConverter();
+    const inputSubnet = {
+      id:
+        '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A',
+      name: 'A',
+      properties: {
+        addressPrefix: '172.18.0.0/28',
+        networkSecurityGroup: {
+          id:
+            '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/networkSecurityGroups/TestSecurityGroup',
+          resourceGroup: 'testing-network-testing',
+        },
+      },
+      resourceGroup: 'testing-network-testing',
+      type: 'Microsoft.Network/virtualNetworks/subnets',
+    } as AzureSubnet;
+
     it('Extract VNET Id from Subnet Id', () => {
       const expected =
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B';
@@ -124,6 +142,18 @@ describe('Conversion - Convert Azure', () => {
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A';
       const result = SubnetConverter.getVnetId(input);
       assert.equal(result, expected);
+    });
+
+    it('Subnet aliases should be consistent', () => {
+      const expected = [
+        {
+          item: inputSubnet,
+          alias: 'A/router',
+        },
+      ];
+
+      const result = converter.aliases(inputSubnet);
+      assert.deepEqual(result, expected);
     });
   });
 });
