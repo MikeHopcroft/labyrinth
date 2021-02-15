@@ -1,38 +1,45 @@
 import DRange from 'drange';
+
 import {
   createIpFormatter,
   DimensionType,
   formatDRange,
   Formatter,
+  IEntityStore,
   parseIp,
+  ForwardRuleSpecEx,
+  NodeSpec,
+  SymbolStore,
 } from '../..';
-import {ForwardRuleSpecEx, NodeSpec, SymbolStore} from '../../graph';
-import {IAzureConverter, ItemMoniker} from './contracts';
-import {AnyAzureObject, AzureVirtualNetwork} from './schema';
-import {BaseAzureConverter} from './base_azure_converter';
-import {SubnetConverter} from './subnet_converter';
-import {IEntityStore} from '..';
 
-export class VirtualNetworkConverter extends BaseAzureConverter {
-  private readonly subnetConveter: IAzureConverter;
+import {
+  IAzureConverter,
+  ItemMoniker,
+  AnyAzureObject,
+  AzureVirtualNetwork,
+  parseMonikers,
+  SubnetConverter,
+} from '.';
+
+export class VirtualNetworkConverter implements IAzureConverter {
   private readonly ipFormatter: Formatter;
   private readonly symbols: SymbolStore;
   private readonly vnets: Map<string, string>;
+  readonly supportedType: string;
 
   constructor(symbols: SymbolStore) {
-    super('microsoft.network/virtualnetworks');
-    this.subnetConveter = new SubnetConverter();
+    this.supportedType = 'microsoft.network/virtualnetworks';
     this.ipFormatter = createIpFormatter(new Map<string, string>());
     this.symbols = symbols;
     this.vnets = new Map<string, string>();
   }
 
   monikers(input: AnyAzureObject): ItemMoniker[] {
-    const monikers = super.monikers(input);
+    const monikers = parseMonikers(input);
     const vnet = input as AzureVirtualNetwork;
 
     for (const subnet of vnet.properties.subnets) {
-      for (const alias of this.subnetConveter.monikers(subnet)) {
+      for (const alias of SubnetConverter.monikers(subnet)) {
         monikers.push(alias);
       }
     }
@@ -81,7 +88,7 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
     ];
 
     for (const subnet of vnet.properties.subnets) {
-      const subnetNodes = this.subnetConveter.convert(subnet, store);
+      const subnetNodes = SubnetConverter.convert(subnet, store);
 
       // 0 - Router
       // 1 - Inbound

@@ -1,9 +1,15 @@
 import {
-  BaseAzureConverter,
   IAzureConverter,
   AnyAzureObject,
-  ItemMoniker,
+  parseMonikers,
+  skipProcessingNodeSpecs,
 } from '.';
+
+const DefaultConverter = {
+  supportedType: 'DefaultTypes',
+  monikers: parseMonikers,
+  convert: skipProcessingNodeSpecs,
+} as IAzureConverter;
 
 export class ConverterStore {
   private readonly converters: Map<string, IAzureConverter>;
@@ -11,7 +17,7 @@ export class ConverterStore {
 
   constructor(converters: IterableIterator<IAzureConverter>) {
     this.converters = new Map<string, IAzureConverter>();
-    this.defaultConverter = new DefaultConverter();
+    this.defaultConverter = DefaultConverter;
 
     for (const converter of converters) {
       this.converters.set(converter.supportedType, converter);
@@ -24,20 +30,5 @@ export class ConverterStore {
 
   static create(...converters: IAzureConverter[]) {
     return new ConverterStore(converters.values());
-  }
-}
-
-class DefaultConverter extends BaseAzureConverter {
-  constructor() {
-    super('DefaultTypes*');
-  }
-
-  monikers(input: AnyAzureObject): ItemMoniker[] {
-    const monikers: ItemMoniker[] = [];
-    monikers.push({
-      item: input,
-      alias: '',
-    });
-    return monikers;
   }
 }

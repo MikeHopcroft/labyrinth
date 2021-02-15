@@ -1,15 +1,16 @@
 import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
+
 import {
   AnyAzureObject,
   ConverterStore,
   EntityStore,
+  INodeSpecUniverse,
   LocalIpConverter,
   NetworkInterfaceConverter,
   PublicIpConverter,
   SubnetConverter,
   VirtualNetworkConverter,
-} from '.';
-import {INodeSpecUniverse} from '../contracts';
+} from '..';
 
 export class AzureConverter {
   private readonly converters: ConverterStore;
@@ -36,10 +37,10 @@ export class AzureConverter {
     this.vnetConverter = new VirtualNetworkConverter(this.symbolStore);
     this.converters = ConverterStore.create(
       this.vnetConverter,
-      new NetworkInterfaceConverter(),
-      new PublicIpConverter(),
-      new LocalIpConverter(),
-      new SubnetConverter()
+      NetworkInterfaceConverter,
+      PublicIpConverter,
+      LocalIpConverter,
+      SubnetConverter
     );
   }
 

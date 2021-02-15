@@ -1,5 +1,7 @@
-import {IRules} from '..';
 import {ActionType, RuleSpec} from '../../rules';
+
+import {IRules} from '..';
+
 import {
   AzureNetworkSecurityGroup,
   AzureSecurityRule,

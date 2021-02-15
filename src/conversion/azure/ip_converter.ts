@@ -1,88 +1,88 @@
 import {ForwardRuleSpec, NodeSpec} from '../../graph';
+
+import {IEntityStore} from '..';
+
 import {
   AnyAzureObject,
   AzurePublicIp,
   AzureLocalIP,
-  BaseAzureConverter,
+  ConverterStore,
+  IAzureConverter,
+  parseMonikers,
 } from '.';
-import {IEntityStore} from '..';
 
-export abstract class BaseIpConverter<
-  T extends AnyAzureObject
-> extends BaseAzureConverter {
-  constructor(supprtedType: string) {
-    super(supprtedType);
-  }
+function parseSubnetRules(
+  subnetId: string | undefined,
+  store: IEntityStore<AnyAzureObject>
+): ForwardRuleSpec[] {
+  const rules: ForwardRuleSpec[] = [];
 
-  convert(
-    input: AnyAzureObject,
-    store: IEntityStore<AnyAzureObject>
-  ): NodeSpec[] {
-    const result: NodeSpec[] = [];
-    const ip = this.parseIpAddress(input as T);
-    const key = store.getAlias(input.id);
+  if (subnetId) {
+    const subnet = store.getAlias(subnetId);
 
-    result.push({
-      key,
-      endpoint: true,
-      range: {
-        sourceIp: ip,
-      },
-      rules: this.parseSubnetRules(input as T, store),
+    rules.push({
+      destinationIp: subnet,
+      destination: subnet,
     });
-
-    return result;
   }
 
-  private parseSubnetRules(
-    input: T,
-    store: IEntityStore<AnyAzureObject>
-  ): ForwardRuleSpec[] {
-    const rules: ForwardRuleSpec[] = [];
-
-    const subnetId = this.parseSubnetId(input as T);
-
-    if (subnetId) {
-      const subnet = store.getAlias(subnetId);
-
-      rules.push({
-        destinationIp: subnet,
-        destination: subnet,
-      });
-    }
-
-    return rules;
-  }
-
-  protected abstract parseIpAddress(input: T): string;
-
-  protected abstract parseSubnetId(input: T): string | undefined;
+  return rules;
 }
 
-export class PublicIpConverter extends BaseIpConverter<AzurePublicIp> {
-  constructor() {
-    super('microsoft.network/publicipaddresses');
-  }
+function parseNodeSpecs(
+  input: AnyAzureObject,
+  store: IEntityStore<AnyAzureObject>,
+  ip: string,
+  subnetRules: ForwardRuleSpec[]
+): NodeSpec[] {
+  const result: NodeSpec[] = [];
+  const key = store.getAlias(input.id);
 
-  protected parseIpAddress(input: AzurePublicIp): string {
-    return input.properties.ipAddress;
-  }
+  result.push({
+    key,
+    endpoint: true,
+    range: {
+      sourceIp: ip,
+    },
+    rules: subnetRules,
+  });
 
-  protected parseSubnetId(input: AzurePublicIp): string | undefined {
-    return input.properties.subnet?.id;
-  }
+  return result;
 }
 
-export class LocalIpConverter extends BaseIpConverter<AzureLocalIP> {
-  constructor() {
-    super('Microsoft.Network/networkInterfaces/ipConfigurations');
-  }
-
-  protected parseIpAddress(input: AzureLocalIP): string {
-    return input.properties.privateIPAddress;
-  }
-
-  protected parseSubnetId(input: AzureLocalIP): string | undefined {
-    return input.properties.subnet?.id;
-  }
+function parseLocalIpSpec(
+  input: AnyAzureObject,
+  store: IEntityStore<AnyAzureObject>
+): NodeSpec[] {
+  const localIp = input as AzureLocalIP;
+  const ip = localIp.properties.privateIPAddress;
+  const rules = parseSubnetRules(localIp.properties.subnet?.id, store);
+  return parseNodeSpecs(input, store, ip, rules);
 }
+
+function parsePublicIpSpec(
+  input: AnyAzureObject,
+  store: IEntityStore<AnyAzureObject>
+): NodeSpec[] {
+  const publicIp = input as AzurePublicIp;
+  const ip = publicIp.properties.ipAddress;
+  const rules = parseSubnetRules(publicIp.properties.subnet?.id, store);
+  return parseNodeSpecs(input, store, ip, rules);
+}
+
+export const PublicIpConverter = {
+  supportedType: 'microsoft.network/publicipaddresses',
+  monikers: parseMonikers,
+  convert: parsePublicIpSpec,
+} as IAzureConverter;
+
+export const LocalIpConverter = {
+  supportedType: 'Microsoft.Network/networkInterfaces/ipConfigurations',
+  monikers: parseMonikers,
+  convert: parseLocalIpSpec,
+} as IAzureConverter;
+
+export const IpConverters = ConverterStore.create(
+  PublicIpConverter,
+  LocalIpConverter
+);

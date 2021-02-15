@@ -6,6 +6,7 @@ import {
   AzurePublicIp,
   AzureSubnet,
   EntityStore,
+  getVnetId,
   LocalIpConverter,
   NetworkInterfaceConverter,
   PublicIpConverter,
@@ -14,7 +15,7 @@ import {
 
 describe('Conversion - Convert Azure', () => {
   describe('NetworkInterface', () => {
-    const nicConverter = new NetworkInterfaceConverter();
+    const nicConverter = NetworkInterfaceConverter;
     const input = {
       id:
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-cred-testing/providers/Microsoft.Network/networkInterfaces/testingcreds68',
@@ -74,8 +75,8 @@ describe('Conversion - Convert Azure', () => {
 
   describe('IpAddresses', () => {
     const entityStore = new EntityStore();
-    const publicIp = new PublicIpConverter();
-    const localIp = new LocalIpConverter();
+    const publicIp = PublicIpConverter;
+    const localIp = LocalIpConverter;
 
     it('Public IP Conversion', () => {
       const input = {
@@ -119,7 +120,7 @@ describe('Conversion - Convert Azure', () => {
   });
 
   describe('Subnet Conversionss', () => {
-    const converter = new SubnetConverter();
+    const converter = SubnetConverter;
     const inputSubnet = {
       id:
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A',
@@ -141,7 +142,7 @@ describe('Conversion - Convert Azure', () => {
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B';
       const input =
         '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A';
-      const result = SubnetConverter.getVnetId(input);
+      const result = getVnetId(input);
       assert.equal(result, expected);
     });
 

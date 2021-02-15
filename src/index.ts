@@ -5,3 +5,4 @@ export * from './rules';
 export * from './setops';
 export * from './specs';
 export * from './utilities';
+export * from './conversion';
