@@ -22,19 +22,22 @@ export interface AzureObjectBase {
   type: string;
 }
 
+export interface AzureIdReference {
+  id: string;
+  resourceGroup: string;
+}
+
 // DESIGN NOTE: the unused type parameter T is for the benefit of
 // a generic function that dereferences an AzureReference<T> into
 // a T.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export interface AzureReference<T> {
-  id: string;
-  resourceGroup: string;
-}
+export type AzureReference<T> = AzureIdReference;
 
 export interface AzureLocalIP extends AzureObjectBase {
   type: 'Microsoft.Network/networkInterfaces/ipConfigurations';
   properties: {
     privateIPAddress: string;
+    subnet: AzureIdReference | undefined;
   };
 }
 
@@ -42,6 +45,7 @@ export interface AzurePublicIp extends AzureObjectBase {
   type: 'microsoft.network/publicipaddresses';
   properties: {
     ipAddress: string;
+    subnet: AzureIdReference | undefined;
   };
 }
 

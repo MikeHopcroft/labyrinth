@@ -27,6 +27,7 @@ describe('Conversion - Convert Azure', () => {
             name: 'ipconfig1',
             properties: {
               privateIPAddress: '192.168.200.4',
+              subnet: undefined,
             },
             resourceGroup: 'testing-cred-testing',
             type: 'Microsoft.Network/networkInterfaces/ipConfigurations',
