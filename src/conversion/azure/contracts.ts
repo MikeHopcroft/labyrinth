@@ -1,6 +1,6 @@
+import {IEntityStore, NodeSpec} from '../..';
+
 import {AnyAzureObject} from '.';
-import {IEntityStore, IRules} from '..';
-import {NodeSpec} from '../..';
 
 export interface ItemMoniker {
   readonly item: AnyAzureObject | undefined;
@@ -14,5 +14,4 @@ export interface IAzureConverter {
     input: AnyAzureObject,
     stores: IEntityStore<AnyAzureObject>
   ): NodeSpec[];
-  rules(input: AnyAzureObject, store: IEntityStore<AnyAzureObject>): IRules;
 }

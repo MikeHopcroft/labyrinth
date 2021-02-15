@@ -1,33 +1,15 @@
-import {AnyAzureObject, IAzureConverter, ItemMoniker} from '.';
-import {IEntityStore, IRules} from '..';
-import {NodeSpec} from '../..';
+import {AnyAzureObject, IEntityStore, ItemMoniker, NodeSpec} from '../..';
 
-export abstract class BaseAzureConverter implements IAzureConverter {
-  public readonly supportedType: string;
+export function parseMonikers(item: AnyAzureObject): ItemMoniker[] {
+  return [{item, alias: item.name}];
+}
 
-  protected constructor(supportedType: string) {
-    this.supportedType = supportedType;
-  }
-
-  monikers(item: AnyAzureObject): ItemMoniker[] {
-    return [{item, alias: item.name}];
-  }
-
-  convert(
-    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-    input: AnyAzureObject,
-    // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-    store: IEntityStore<AnyAzureObject>
-  ): NodeSpec[] {
-    const empty: NodeSpec[] = [];
-    return empty;
-  }
-
+export function skipProcessingNodeSpecs(
   // eslint-disable-next-line  @typescript-eslint/no-unused-vars
-  rules(input: AnyAzureObject, store: IEntityStore<AnyAzureObject>): IRules {
-    return {
-      outboundRules: [],
-      inboundRules: [],
-    };
-  }
+  input: AnyAzureObject,
+  // eslint-disable-next-line  @typescript-eslint/no-unused-vars
+  store: IEntityStore<AnyAzureObject>
+): NodeSpec[] {
+  const empty: NodeSpec[] = [];
+  return empty;
 }
