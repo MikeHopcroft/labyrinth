@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import 'mocha';
-import {ActionType} from '../../src';
+import {ActionType} from '../../src/rules';
 import {AnyAzureObject, AzureConverter} from '../../src/conversion';
 
 describe('Conversion - Azure Simple Vnet', () => {

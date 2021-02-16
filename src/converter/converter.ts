@@ -1,6 +1,6 @@
 import DRange from 'drange';
-import fs from 'fs';
 import * as yaml from 'js-yaml';
+import {FileSystem} from '..';
 
 import {
   createIpFormatter,
@@ -71,7 +71,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
   ];
 
   // Read and parse the Azure resource graph file.
-  const text = fs.readFileSync(infile, 'utf8');
+  const text = FileSystem.readUtfFileSync(infile);
   const root = JSON.parse(text) as AnyAzureObject[];
 
   //
@@ -107,7 +107,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
 
   const graph = {symbols, nodes};
   const yamlText = yaml.dump(graph);
-  fs.writeFileSync(outfile, yamlText, 'utf8');
+  FileSystem.writeUtfFileSync(outfile, yamlText);
 
   console.log('done');
   return graph;

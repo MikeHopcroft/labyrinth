@@ -2,11 +2,11 @@ import commandLineUsage from 'command-line-usage';
 import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
+import {FileSystem} from '..';
 import {AnyAzureObject} from '../conversion/azure';
 import {AzureConverter} from '../conversion/azure/azure_converter';
 
 import {fail, handleError, succeed} from '../utilities';
-import fs from 'fs';
 import * as yaml from 'js-yaml';
 
 function main() {
@@ -26,13 +26,12 @@ function main() {
     const outfile = args._[1];
     console.log(`Azure resource graph input file: ${infile}`);
     console.log(`Labyrinth graph output file: ${outfile}`);
-    const text = fs.readFileSync(infile, 'utf8');
+    const text = FileSystem.readUtfFileSync(infile);
     const root = JSON.parse(text) as AnyAzureObject[];
     const converter = new AzureConverter();
     const graph = converter.Convert(root);
     const yamlText = yaml.dump(graph);
-    fs.writeFileSync(outfile, yamlText, 'utf8');
-
+    FileSystem.writeUtfFileSync(outfile, yamlText);
     console.log('Conversion complete.');
   } catch (e) {
     handleError(e);

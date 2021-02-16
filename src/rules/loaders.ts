@@ -1,7 +1,7 @@
 import csv from 'csv-parse/lib/sync';
-import fs from 'fs';
 import yaml from 'js-yaml';
 import path from 'path';
+import {FileSystem} from '..';
 
 import {Universe} from '../dimensions';
 import {Conjunction, DimensionedRange} from '../setops';
@@ -74,7 +74,7 @@ export function loadTxtRulesFile(
   filename: string,
   options: LoaderOptions = {}
 ): Rule[] {
-  const text = fs.readFileSync(filename, 'utf-8');
+  const text = FileSystem.readUtfFileSync(filename);
   return loadTxtRulesString(universe, text, options);
 }
 
@@ -174,7 +174,7 @@ export function loadCsvRulesFile(
   filename: string,
   options: LoaderOptions = {}
 ): Rule[] {
-  const text = fs.readFileSync(filename, 'utf-8');
+  const text = FileSystem.readUtfFileSync(filename);
   return loadCsvRulesString(universe, text, options);
 }
 
@@ -222,7 +222,7 @@ export function loadYamlRulesFile(
   filename: string,
   options: LoaderOptions = {}
 ): Rule[] {
-  const text = fs.readFileSync(filename, 'utf8');
+  const text = FileSystem.readUtfFileSync(filename);
   return loadYamlRulesString(universe, text, options);
 }
 
