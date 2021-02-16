@@ -71,8 +71,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
   ];
 
   // Read and parse the Azure resource graph file.
-  const text = FileSystem.readUtfFileSync(infile);
-  const root = JSON.parse(text) as AnyAzureObject[];
+  const root = FileSystem.readFileSyncAs<AnyAzureObject[]>(infile);
 
   //
   // Index items and aliases in resource graph
