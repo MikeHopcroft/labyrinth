@@ -1,6 +1,5 @@
 import * as t from 'io-ts';
-import yaml from 'js-yaml';
-import {FileSystem} from '..';
+import {FileSystem, YAML} from '..';
 
 // TODO: POTENTIAL CIRCULAR REFERENCE?
 import {SymbolDefinitionSpec} from '../graph';
@@ -16,7 +15,7 @@ const UniverseSpecType = t.type({
 export type UniverseSpec = t.TypeOf<typeof UniverseSpecType>;
 
 export function loadYamlUniverseSpec(text: string): UniverseSpec {
-  const root = yaml.safeLoad(text);
+  const root = YAML.load(text);
   return validate(UniverseSpecType, root);
 }
 
@@ -35,7 +34,7 @@ export class Universe {
   }
 
   static fromYamlString(text: string, reservedWords?: Set<string>): Universe {
-    const root = yaml.safeLoad(text);
+    const root = YAML.load(text);
     const spec = validate(UniverseSpecType, root);
 
     return new Universe(spec, reservedWords);

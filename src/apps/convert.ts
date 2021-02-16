@@ -2,12 +2,11 @@ import commandLineUsage from 'command-line-usage';
 import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
-import {FileSystem} from '..';
+import {FileSystem, YAML} from '..';
 import {AnyAzureObject} from '../conversion/azure';
 import {AzureConverter} from '../conversion/azure/azure_converter';
 
 import {fail, handleError, succeed} from '../utilities';
-import * as yaml from 'js-yaml';
 
 function main() {
   const args = minimist(process.argv.slice(2));
@@ -29,8 +28,7 @@ function main() {
     const root = FileSystem.readFileSyncAs<AnyAzureObject[]>(infile);
     const converter = new AzureConverter();
     const graph = converter.Convert(root);
-    const yamlText = yaml.dump(graph);
-    FileSystem.writeUtfFileSync(outfile, yamlText);
+    YAML.writeNodeGraphAsYamlFile(graph, outfile);
     console.log('Conversion complete.');
   } catch (e) {
     handleError(e);

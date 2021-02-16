@@ -1,6 +1,5 @@
 import DRange from 'drange';
-import * as yaml from 'js-yaml';
-import {FileSystem} from '..';
+import {FileSystem, YAML} from '..';
 
 import {
   createIpFormatter,
@@ -105,8 +104,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
   convertResourceGroup();
 
   const graph = {symbols, nodes};
-  const yamlText = yaml.dump(graph);
-  FileSystem.writeUtfFileSync(outfile, yamlText);
+  YAML.writeNodeGraphAsYamlFile(graph, outfile);
 
   console.log('done');
   return graph;

@@ -1,5 +1,4 @@
-import yaml from 'js-yaml';
-import {FileSystem} from '..';
+import {FileSystem, YAML} from '..';
 
 import {validate} from '../utilities';
 
@@ -11,7 +10,7 @@ export function loadYamlGraphSpecFile(filename: string): GraphSpec {
 }
 
 export function loadYamlGraphSpec(text: string): GraphSpec {
-  const root = yaml.safeLoad(text);
+  const root = YAML.load(text);
   const graph = validate(graphSpecType, root);
   return graph;
 }
