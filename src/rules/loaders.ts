@@ -1,7 +1,6 @@
 import csv from 'csv-parse/lib/sync';
-import yaml from 'js-yaml';
 import path from 'path';
-import {FileSystem} from '..';
+import {FileSystem, YAML} from '..';
 
 import {Universe} from '../dimensions';
 import {Conjunction, DimensionedRange} from '../setops';
@@ -231,7 +230,7 @@ export function loadYamlRulesString(
   text: string,
   options: LoaderOptions = {}
 ): Rule[] {
-  const root = yaml.safeLoad(text);
+  const root = YAML.load(text);
   const spec = validate(ruleSpecNoIdSetType, root) as RuleSpecSet;
   const rules = spec.rules.map((r, i) => {
     if (r.id !== undefined) {
