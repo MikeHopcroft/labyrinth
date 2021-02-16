@@ -1,6 +1,6 @@
-import fs from 'fs';
 import * as t from 'io-ts';
 import yaml from 'js-yaml';
+import {FileSystem} from '..';
 
 // TODO: POTENTIAL CIRCULAR REFERENCE?
 import {SymbolDefinitionSpec} from '../graph';
@@ -30,7 +30,7 @@ export class Universe {
   static fromYamlFile(file: string, reservedWords?: Set<string>): Universe {
     console.log(`Load universe from "${file}".`);
 
-    const text = fs.readFileSync(file, 'utf8');
+    const text = FileSystem.readUtfFileSync(file);
     return Universe.fromYamlString(text, reservedWords);
   }
 
