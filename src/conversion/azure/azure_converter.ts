@@ -12,7 +12,7 @@ import {
   VirtualNetworkConverter,
 } from '..';
 
-export class AzureConverter {
+class AzureConverterImpl {
   private readonly converters: ConverterStore<AnyAzureObject>;
   private readonly entityStore: EntityStore;
   private readonly symbolStore: SymbolStore;
@@ -44,12 +44,12 @@ export class AzureConverter {
     );
   }
 
-  public Convert(root: AnyAzureObject[]): INodeSpecUniverse {
+  public convert(root: IterableIterator<AnyAzureObject>): INodeSpecUniverse {
     const KEY_INTERNET = 'Internet';
     const itemsToMap: AnyAzureObject[] = [];
     const nodes: NodeSpec[] = [];
 
-    for (const item of root.values()) {
+    for (const item of root) {
       const converter = this.converters.asConverter(item);
 
       itemsToMap.push(item);
@@ -93,3 +93,10 @@ export class AzureConverter {
     };
   }
 }
+
+export const AzureConverter = {
+  convert(root: IterableIterator<AnyAzureObject>): INodeSpecUniverse {
+    const converter = new AzureConverterImpl();
+    return converter.convert(root);
+  },
+};

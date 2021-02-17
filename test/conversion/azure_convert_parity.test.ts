@@ -1024,8 +1024,7 @@ describe('Conversion - Azure Convert Parity', () => {
       },
     ] as SymbolDefinitionSpec[];
 
-    const converter = new AzureConverter();
-    const graph = converter.Convert(input);
+    const graph = AzureConverter.convert(input.values());
     assert.deepEqual(graph.symbols, expected);
   });
 
@@ -1503,8 +1502,7 @@ describe('Conversion - Azure Convert Parity', () => {
       },
     ] as NodeSpec[];
 
-    const converter = new AzureConverter();
-    const graph = converter.Convert(input);
+    const graph = AzureConverter.convert(input.values());
     assert.deepEqual(graph.nodes, expected);
   });
 });

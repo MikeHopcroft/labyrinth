@@ -150,8 +150,7 @@ describe('Conversion - Azure Simple Vnet', () => {
       },
     ] as AnyAzureObject[];
 
-    const converter = new AzureConverter();
-    const graph = converter.Convert(input);
+    const graph = AzureConverter.convert(input.values());
     assert.deepEqual(graph.nodes, expected);
   });
 });
