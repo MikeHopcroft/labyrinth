@@ -2,7 +2,7 @@ import {
   BaseAzureConverter,
   IAzureConverter,
   AnyAzureObject,
-  ItemAlias,
+  ItemMoniker,
 } from '.';
 
 export class ConverterStore {
@@ -32,12 +32,12 @@ class DefaultConverter extends BaseAzureConverter {
     super('DefaultTypes*');
   }
 
-  aliases(input: AnyAzureObject): ItemAlias[] {
-    const aliases: ItemAlias[] = [];
-    aliases.push({
+  monikers(input: AnyAzureObject): ItemMoniker[] {
+    const monikers: ItemMoniker[] = [];
+    monikers.push({
       item: input,
       alias: '',
     });
-    return aliases;
+    return monikers;
   }
 }

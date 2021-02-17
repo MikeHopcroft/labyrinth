@@ -1,4 +1,4 @@
-import {AnyAzureObject, IAzureConverter, ItemAlias} from '.';
+import {AnyAzureObject, IAzureConverter, ItemMoniker} from '.';
 import {IEntityStore, IRules} from '..';
 import {NodeSpec} from '../..';
 
@@ -9,7 +9,7 @@ export abstract class BaseAzureConverter implements IAzureConverter {
     this.supportedType = supportedType;
   }
 
-  aliases(item: AnyAzureObject): ItemAlias[] {
+  monikers(item: AnyAzureObject): ItemMoniker[] {
     return [{item, alias: item.name}];
   }
 

@@ -53,7 +53,7 @@ export class AzureConverter {
 
       itemsToMap.push(item);
 
-      for (const index of converter.aliases(item)) {
+      for (const index of converter.monikers(item)) {
         if (index.item) {
           this.entityStore.registerEntity(index.item, index.alias);
         }

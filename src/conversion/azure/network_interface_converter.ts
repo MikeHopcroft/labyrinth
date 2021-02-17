@@ -5,7 +5,7 @@ import {
   ConverterStore,
   AzureNetworkInterface,
   BaseAzureConverter,
-  ItemAlias,
+  ItemMoniker,
   LocalIpConverter,
   PublicIpConverter,
 } from '.';
@@ -21,16 +21,16 @@ export class NetworkInterfaceConverter extends BaseAzureConverter {
     );
   }
 
-  aliases(input: AnyAzureObject): ItemAlias[] {
-    const aliases = super.aliases(input);
+  monikers(input: AnyAzureObject): ItemMoniker[] {
+    const monikers = super.monikers(input);
     const nic = input as AzureNetworkInterface;
 
     for (const config of nic.properties.ipConfigurations) {
       const converter = this.ipConverters.asConverter(config);
 
       if (converter) {
-        for (const alias of converter.aliases(config)) {
-          aliases.push({
+        for (const alias of converter.monikers(config)) {
+          monikers.push({
             item: alias.item,
             alias: `${nic.name}/${alias.alias}`,
           });
@@ -38,7 +38,7 @@ export class NetworkInterfaceConverter extends BaseAzureConverter {
       }
     }
 
-    return aliases;
+    return monikers;
   }
 
   convert(

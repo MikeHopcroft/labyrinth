@@ -43,10 +43,10 @@ describe('Conversion - Convert Azure', () => {
       type: 'microsoft.network/networkinterfaces',
     } as AzureNetworkInterface;
 
-    it('Aliases for NIC with single ip', () => {
-      const aliases = nicConverter.aliases(input);
-      assert.equal(aliases[0].alias, 'testingcreds68');
-      assert.equal(aliases[1].alias, 'testingcreds68/ipconfig1');
+    it('Monikers for NIC with single ip', () => {
+      const monikers = nicConverter.monikers(input);
+      assert.equal(monikers[0].alias, 'testingcreds68');
+      assert.equal(monikers[1].alias, 'testingcreds68/ipconfig1');
     });
 
     it('Conversion of NIC with single', () => {
@@ -62,7 +62,7 @@ describe('Conversion - Convert Azure', () => {
         },
       ];
 
-      for (const data of nicConverter.aliases(input)) {
+      for (const data of nicConverter.monikers(input)) {
         if (data.item) {
           store.registerEntity(data.item, data.alias);
         }
@@ -145,7 +145,7 @@ describe('Conversion - Convert Azure', () => {
       assert.equal(result, expected);
     });
 
-    it('Subnet aliases should be consistent', () => {
+    it('Subnet monikers should be consistent', () => {
       const expected = [
         {
           item: inputSubnet,
@@ -153,7 +153,7 @@ describe('Conversion - Convert Azure', () => {
         },
       ];
 
-      const result = converter.aliases(inputSubnet);
+      const result = converter.monikers(inputSubnet);
       assert.deepEqual(result, expected);
     });
   });

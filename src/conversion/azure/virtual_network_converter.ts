@@ -7,7 +7,7 @@ import {
   parseIp,
 } from '../..';
 import {ForwardRuleSpecEx, NodeSpec, SymbolStore} from '../../graph';
-import {IAzureConverter, ItemAlias} from './contracts';
+import {IAzureConverter, ItemMoniker} from './contracts';
 import {AnyAzureObject, AzureVirtualNetwork} from './schema';
 import {BaseAzureConverter} from './base_azure_converter';
 import {SubnetConverter} from './subnet_converter';
@@ -27,17 +27,17 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
     this.vnets = new Map<string, string>();
   }
 
-  aliases(input: AnyAzureObject): ItemAlias[] {
-    const aliases = super.aliases(input);
+  monikers(input: AnyAzureObject): ItemMoniker[] {
+    const monikers = super.monikers(input);
     const vnet = input as AzureVirtualNetwork;
 
     for (const subnet of vnet.properties.subnets) {
-      for (const alias of this.subnetConveter.aliases(subnet)) {
-        aliases.push(alias);
+      for (const alias of this.subnetConveter.monikers(subnet)) {
+        monikers.push(alias);
       }
     }
 
-    return aliases;
+    return monikers;
   }
 
   convert(
