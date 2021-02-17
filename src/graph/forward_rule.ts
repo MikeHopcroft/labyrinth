@@ -9,27 +9,27 @@ import {
 
 import {Conjunction, Disjunction, Simplifier} from '../setops';
 
-import {ForwardRuleSpecEx} from './types';
+import {ForwardRuleSpec} from './types';
 
 export interface ForwardRule {
   destination: string;
-  conjunction: Conjunction<ForwardRuleSpecEx>;
-  override?: Conjunction<ForwardRuleSpecEx>;
+  conjunction: Conjunction<ForwardRuleSpec>;
+  override?: Conjunction<ForwardRuleSpec>;
   filters: Disjunction<RuleSpec>;
 }
 
 export function parseForwardRuleSpec(
   universe: Universe,
   simplifier: Simplifier<RuleSpec>,
-  spec: ForwardRuleSpecEx
+  spec: ForwardRuleSpec
 ): ForwardRule {
   // Want to ensure that `filters` is not a property of `rest`.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {destination, filters, override, ...rest} = spec;
-  const conjunction = parseConjunction<ForwardRuleSpecEx>(universe, rest, spec);
+  const conjunction = parseConjunction<ForwardRuleSpec>(universe, rest, spec);
 
   const overrideConjunction = spec.override
-    ? parseConjunction<ForwardRuleSpecEx>(universe, spec.override, spec)
+    ? parseConjunction<ForwardRuleSpec>(universe, spec.override, spec)
     : spec.override;
 
   let filtersDisjunction: Disjunction<RuleSpec>;

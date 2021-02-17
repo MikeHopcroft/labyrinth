@@ -10,10 +10,10 @@ import {Rule} from './rule';
 
 import {
   RuleSpec,
+  codecRuleSpec,
+  codecRuleSpecSet,
+  codecRuleSpecNoIdSet,
   RuleSpecSet,
-  ruleSpecType,
-  ruleSpecSetType,
-  ruleSpecNoIdSetType,
 } from './ruleSpec';
 
 interface LoaderOptions {
@@ -139,7 +139,7 @@ export function loadTxtRulesString(
     lineObject.id = lines.position();
     lineObject.source = options.source || '';
 
-    const spec = validate(ruleSpecType, lineObject);
+    const spec = validate(codecRuleSpec, lineObject);
     const rule = parseRuleSpec(universe, spec);
     rules.push(rule);
   }
@@ -206,7 +206,7 @@ export function loadCsvRulesString(
     return {...rule, id, priority: 1, source: options.source || ''};
   });
 
-  const spec = validate(ruleSpecSetType, {rules});
+  const spec = validate(codecRuleSpecSet, {rules});
   return spec.rules.map(r => parseRuleSpec(universe, r));
 }
 
@@ -231,7 +231,7 @@ export function loadYamlRulesString(
   options: LoaderOptions = {}
 ): Rule[] {
   const root = YAML.load(text);
-  const spec = validate(ruleSpecNoIdSetType, root) as RuleSpecSet;
+  const spec = validate(codecRuleSpecNoIdSet, root) as RuleSpecSet;
   const rules = spec.rules.map((r, i) => {
     if (r.id !== undefined) {
       const message = 'Illegal field: "id".';

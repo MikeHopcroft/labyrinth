@@ -9,7 +9,7 @@ import {
 } from '../dimensions';
 
 import {
-  ForwardRuleSpecEx,
+  ForwardRuleSpec,
   GraphSpec,
   NodeSpec,
   SymbolDefinitionSpec,
@@ -118,7 +118,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
     const alias = 'Internet';
 
     // Convert each VNet
-    const rules: ForwardRuleSpecEx[] = [];
+    const rules: ForwardRuleSpec[] = [];
     for (const item of idToItem.values()) {
       console.log(`${item.name}: ${item.type}`);
       const vnet = asAzureVirtualNetwork(item);
@@ -162,7 +162,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
     const addressRangeText = formatDRange(ipFormatter, addressRange);
     defineSymbol('ip', vnet.name, addressRangeText);
 
-    const rules: ForwardRuleSpecEx[] = [
+    const rules: ForwardRuleSpec[] = [
       // Traffic leaving subnet
       {
         destination: parent,
@@ -211,7 +211,7 @@ export function convert(infile: string, outfile: string): GraphSpec {
     const outboundKey = alias + '/outbound';
     const routerKey = alias + '/router';
 
-    const rules: ForwardRuleSpecEx[] = [
+    const rules: ForwardRuleSpec[] = [
       // Traffice leaving subnet
       {
         destination: outboundKey,
