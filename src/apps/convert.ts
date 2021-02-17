@@ -26,8 +26,7 @@ function main() {
     console.log(`Azure resource graph input file: ${infile}`);
     console.log(`Labyrinth graph output file: ${outfile}`);
     const root = FileSystem.readFileSyncAs<AnyAzureObject[]>(infile);
-    const converter = new AzureConverter();
-    const graph = converter.Convert(root);
+    const graph = AzureConverter.convert(root.values());
     YAML.writeNodeGraphAsYamlFile(graph, outfile);
     console.log('Conversion complete.');
   } catch (e) {
