@@ -4,6 +4,7 @@ import {IEntityStore} from '..';
 
 import {
   AnyAzureObject,
+  AzureIPConfiguration,
   AzurePublicIp,
   AzureLocalIP,
   ConverterStore,
@@ -35,54 +36,51 @@ function parseNodeSpecs(
   ip: string,
   subnetRules: ForwardRuleSpec[]
 ): NodeSpec[] {
-  const result: NodeSpec[] = [];
   const key = store.getAlias(input.id);
 
-  result.push({
-    key,
-    endpoint: true,
-    range: {
-      sourceIp: ip,
+  return [
+    {
+      key,
+      endpoint: true,
+      range: {
+        sourceIp: ip,
+      },
+      rules: subnetRules,
     },
-    rules: subnetRules,
-  });
-
-  return result;
+  ];
 }
 
 function parseLocalIpSpec(
-  input: AnyAzureObject,
+  localIp: AzureLocalIP,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
-  const localIp = input as AzureLocalIP;
   const ip = localIp.properties.privateIPAddress;
   const rules = parseSubnetRules(localIp.properties.subnet?.id, store);
-  return parseNodeSpecs(input, store, ip, rules);
+  return parseNodeSpecs(localIp, store, ip, rules);
 }
 
 function parsePublicIpSpec(
-  input: AnyAzureObject,
+  publicIp: AzurePublicIp,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
-  const publicIp = input as AzurePublicIp;
   const ip = publicIp.properties.ipAddress;
   const rules = parseSubnetRules(publicIp.properties.subnet?.id, store);
-  return parseNodeSpecs(input, store, ip, rules);
+  return parseNodeSpecs(publicIp, store, ip, rules);
 }
 
-export const PublicIpConverter = {
+export const PublicIpConverter: IAzureConverter<AzurePublicIp> = {
   supportedType: 'microsoft.network/publicipaddresses',
   monikers: parseMonikers,
   convert: parsePublicIpSpec,
-} as IAzureConverter;
+};
 
-export const LocalIpConverter = {
+export const LocalIpConverter: IAzureConverter<AzureLocalIP> = {
   supportedType: 'Microsoft.Network/networkInterfaces/ipConfigurations',
   monikers: parseMonikers,
   convert: parseLocalIpSpec,
-} as IAzureConverter;
+};
 
-export const IpConverters = ConverterStore.create(
+export const IpConverters = ConverterStore.create<AzureIPConfiguration>(
   PublicIpConverter,
   LocalIpConverter
 );

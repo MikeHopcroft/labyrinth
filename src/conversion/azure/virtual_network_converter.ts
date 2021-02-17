@@ -1,16 +1,15 @@
 import DRange from 'drange';
 
+import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
 import {
-  createIpFormatter,
   DimensionType,
+  createIpFormatter,
   formatDRange,
   Formatter,
-  IEntityStore,
   parseIp,
-  ForwardRuleSpec,
-  NodeSpec,
-  SymbolStore,
-} from '../..';
+} from '../../dimensions';
+
+import {IEntityStore} from '..';
 
 import {
   IAzureConverter,
@@ -21,7 +20,8 @@ import {
   SubnetConverter,
 } from '.';
 
-export class VirtualNetworkConverter implements IAzureConverter {
+export class VirtualNetworkConverter
+  implements IAzureConverter<AzureVirtualNetwork> {
   private readonly ipFormatter: Formatter;
   private readonly symbols: SymbolStore;
   private readonly vnets: Map<string, string>;
@@ -34,9 +34,8 @@ export class VirtualNetworkConverter implements IAzureConverter {
     this.vnets = new Map<string, string>();
   }
 
-  monikers(input: AnyAzureObject): ItemMoniker[] {
-    const monikers = parseMonikers(input);
-    const vnet = input as AzureVirtualNetwork;
+  monikers(vnet: AzureVirtualNetwork): ItemMoniker[] {
+    const monikers = parseMonikers(vnet);
 
     for (const subnet of vnet.properties.subnets) {
       for (const alias of SubnetConverter.monikers(subnet)) {
@@ -48,7 +47,7 @@ export class VirtualNetworkConverter implements IAzureConverter {
   }
 
   convert(
-    input: AnyAzureObject,
+    vnet: AzureVirtualNetwork,
     store: IEntityStore<AnyAzureObject>
   ): NodeSpec[] {
     // This DimensionType is needed to parse IP addresses.
@@ -64,7 +63,6 @@ export class VirtualNetworkConverter implements IAzureConverter {
     });
 
     const nodes: NodeSpec[] = [];
-    const vnet = input as AzureVirtualNetwork;
     const addressRange = new DRange();
     const addresses = vnet.properties.addressSpace.addressPrefixes.join(', ');
     for (const address of vnet.properties.addressSpace.addressPrefixes) {

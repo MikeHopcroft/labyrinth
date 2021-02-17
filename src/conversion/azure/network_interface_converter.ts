@@ -11,9 +11,8 @@ import {
   parseMonikers,
 } from '.';
 
-function parseNetworkAliases(input: AnyAzureObject): ItemMoniker[] {
-  const aliases = parseMonikers(input);
-  const nic = input as AzureNetworkInterface;
+function parseNetworkAliases(nic: AzureNetworkInterface): ItemMoniker[] {
+  const aliases = parseMonikers(nic);
 
   for (const config of nic.properties.ipConfigurations) {
     const converter = IpConverters.asConverter(config);
@@ -32,11 +31,10 @@ function parseNetworkAliases(input: AnyAzureObject): ItemMoniker[] {
 }
 
 function parseNetworkNodeSpecs(
-  input: AnyAzureObject,
+  nic: AzureNetworkInterface,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
   const nodes: NodeSpec[] = [];
-  const nic = input as AzureNetworkInterface;
 
   for (const config of nic.properties.ipConfigurations) {
     const converter = IpConverters.asConverter(config);
@@ -50,8 +48,8 @@ function parseNetworkNodeSpecs(
   return nodes;
 }
 
-export const NetworkInterfaceConverter = {
+export const NetworkInterfaceConverter: IAzureConverter<AzureNetworkInterface> = {
   supportedType: 'microsoft.network/networkinterfaces',
   monikers: parseNetworkAliases,
   convert: parseNetworkNodeSpecs,
-} as IAzureConverter;
+};

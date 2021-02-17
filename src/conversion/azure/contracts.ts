@@ -9,11 +9,8 @@ export interface ItemMoniker {
   readonly alias: string;
 }
 
-export interface IAzureConverter {
+export interface IAzureConverter<T extends AnyAzureObject> {
   readonly supportedType: string;
-  monikers(input: AnyAzureObject): ItemMoniker[];
-  convert(
-    input: AnyAzureObject,
-    stores: IEntityStore<AnyAzureObject>
-  ): NodeSpec[];
+  monikers(input: T): ItemMoniker[];
+  convert(input: T, stores: IEntityStore<AnyAzureObject>): NodeSpec[];
 }

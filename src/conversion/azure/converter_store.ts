@@ -5,18 +5,18 @@ import {
   skipProcessingNodeSpecs,
 } from '.';
 
-const DefaultConverter = {
+const DefaultConverter: IAzureConverter<AnyAzureObject> = {
   supportedType: 'DefaultTypes',
   monikers: parseMonikers,
   convert: skipProcessingNodeSpecs,
-} as IAzureConverter;
+};
 
-export class ConverterStore {
-  private readonly converters: Map<string, IAzureConverter>;
-  private readonly defaultConverter: IAzureConverter;
+export class ConverterStore<T extends AnyAzureObject> {
+  private readonly converters: Map<string, IAzureConverter<T>>;
+  private readonly defaultConverter: IAzureConverter<T>;
 
-  constructor(converters: IterableIterator<IAzureConverter>) {
-    this.converters = new Map<string, IAzureConverter>();
+  constructor(converters: IterableIterator<IAzureConverter<T>>) {
+    this.converters = new Map<string, IAzureConverter<T>>();
     this.defaultConverter = DefaultConverter;
 
     for (const converter of converters) {
@@ -24,11 +24,11 @@ export class ConverterStore {
     }
   }
 
-  asConverter(input: AnyAzureObject): IAzureConverter {
+  asConverter(input: T): IAzureConverter<T> {
     return this.converters.get(input.type) ?? this.defaultConverter;
   }
 
-  static create(...converters: IAzureConverter[]) {
-    return new ConverterStore(converters.values());
+  static create<T extends AnyAzureObject>(...converters: IAzureConverter<T>[]) {
+    return new ConverterStore<T>(converters.values());
   }
 }

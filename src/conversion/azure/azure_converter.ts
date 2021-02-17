@@ -13,7 +13,7 @@ import {
 } from '..';
 
 export class AzureConverter {
-  private readonly converters: ConverterStore;
+  private readonly converters: ConverterStore<AnyAzureObject>;
   private readonly entityStore: EntityStore;
   private readonly symbolStore: SymbolStore;
   private readonly vnetConverter: VirtualNetworkConverter;
@@ -35,7 +35,7 @@ export class AzureConverter {
     );
 
     this.vnetConverter = new VirtualNetworkConverter(this.symbolStore);
-    this.converters = ConverterStore.create(
+    this.converters = ConverterStore.create<AnyAzureObject>(
       this.vnetConverter,
       NetworkInterfaceConverter,
       PublicIpConverter,
