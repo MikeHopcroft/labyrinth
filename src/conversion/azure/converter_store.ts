@@ -20,7 +20,13 @@ export class ConverterStore<T extends AnyAzureObject> {
     this.defaultConverter = DefaultConverter;
 
     for (const converter of converters) {
-      this.converters.set(converter.supportedType, converter);
+      const key = converter.supportedType;
+
+      if (this.converters.has(key)) {
+        throw new TypeError(`Duplicate converter registered for type '${key}'`);
+      }
+
+      this.converters.set(key, converter);
     }
   }
 
