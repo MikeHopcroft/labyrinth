@@ -9,7 +9,7 @@ export class ConverterStore {
   private readonly converters: Map<string, IAzureConverter>;
   private readonly defaultConverter: IAzureConverter;
 
-  constructor(...converters: IAzureConverter[]) {
+  constructor(converters: IterableIterator<IAzureConverter>) {
     this.converters = new Map<string, IAzureConverter>();
     this.defaultConverter = new DefaultConverter();
 
@@ -22,7 +22,8 @@ export class ConverterStore {
     return this.converters.get(input.type) ?? this.defaultConverter;
   }
 
-    return converter;
+  static create(...converters: IAzureConverter[]) {
+    return new ConverterStore(converters.values());
   }
 }
 

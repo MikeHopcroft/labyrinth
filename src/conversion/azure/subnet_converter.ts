@@ -19,7 +19,7 @@ export class SubnetConverter extends BaseAzureConverter {
 
   constructor() {
     super('Microsoft.Network/virtualNetworks/subnets');
-    this.conveters = new ConverterStore(
+    this.conveters = ConverterStore.create(
       new PublicIpConverter(),
       new LocalIpConverter()
     );

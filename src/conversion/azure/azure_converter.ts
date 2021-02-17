@@ -34,7 +34,7 @@ export class AzureConverter {
     );
 
     this.vnetConverter = new VirtualNetworkConverter(this.symbolStore);
-    this.converters = new ConverterStore(
+    this.converters = ConverterStore.create(
       this.vnetConverter,
       new NetworkInterfaceConverter(),
       new PublicIpConverter(),

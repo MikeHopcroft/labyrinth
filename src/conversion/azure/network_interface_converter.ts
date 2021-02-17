@@ -15,7 +15,7 @@ export class NetworkInterfaceConverter extends BaseAzureConverter {
 
   constructor() {
     super('microsoft.network/networkinterfaces');
-    this.ipConverters = new ConverterStore(
+    this.ipConverters = ConverterStore.create(
       new LocalIpConverter(),
       new PublicIpConverter()
     );
