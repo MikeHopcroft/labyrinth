@@ -7,7 +7,7 @@ import {
   Formatter,
   IEntityStore,
   parseIp,
-  ForwardRuleSpecEx,
+  ForwardRuleSpec,
   NodeSpec,
   SymbolStore,
 } from '../..';
@@ -80,7 +80,7 @@ export class VirtualNetworkConverter implements IAzureConverter {
     const addressRangeText = formatDRange(this.ipFormatter, addressRange);
     this.symbols.push('ip', vnet.name, addressRangeText);
 
-    const rules: ForwardRuleSpecEx[] = [
+    const rules: ForwardRuleSpec[] = [
       // Traffic leaving subnet
       {
         destination: 'Internet',

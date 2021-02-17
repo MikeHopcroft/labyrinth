@@ -18,7 +18,7 @@ import {
   ParseToDRange,
 } from './parsers';
 
-export const DimensionTypeSpecType = t.type({
+export const codecDimensionTypeSpec = t.type({
   name: t.string,
   key: t.string,
   parser: t.string,
@@ -31,7 +31,7 @@ export const DimensionTypeSpecType = t.type({
     })
   ),
 });
-export type DimensionTypeSpec = t.TypeOf<typeof DimensionTypeSpecType>;
+export type DimensionTypeSpec = t.TypeOf<typeof codecDimensionTypeSpec>;
 
 export class DimensionType {
   readonly name: string;

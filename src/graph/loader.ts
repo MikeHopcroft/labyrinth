@@ -2,7 +2,7 @@ import {FileSystem, YAML} from '..';
 
 import {validate} from '../utilities';
 
-import {GraphSpec, graphSpecType} from './types';
+import {GraphSpec, codecGraphSpec} from './types';
 
 export function loadYamlGraphSpecFile(filename: string): GraphSpec {
   const text = FileSystem.readUtfFileSync(filename);
@@ -11,6 +11,6 @@ export function loadYamlGraphSpecFile(filename: string): GraphSpec {
 
 export function loadYamlGraphSpec(text: string): GraphSpec {
   const root = YAML.load(text);
-  const graph = validate(graphSpecType, root);
+  const graph = validate(codecGraphSpec, root);
   return graph;
 }

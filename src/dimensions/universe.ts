@@ -5,18 +5,18 @@ import {FileSystem, YAML} from '..';
 import {SymbolDefinitionSpec} from '../graph';
 import {validate} from '../utilities';
 
-import {Dimension, DimensionSpecType, IdGenerator} from './dimension';
-import {DimensionType, DimensionTypeSpecType} from './dimension_type';
+import {Dimension, codecDimensionSpec, IdGenerator} from './dimension';
+import {DimensionType, codecDimensionTypeSpec} from './dimension_type';
 
-const UniverseSpecType = t.type({
-  types: t.array(DimensionTypeSpecType),
-  dimensions: t.array(DimensionSpecType),
+const codecUniverseSpec = t.type({
+  types: t.array(codecDimensionTypeSpec),
+  dimensions: t.array(codecDimensionSpec),
 });
-export type UniverseSpec = t.TypeOf<typeof UniverseSpecType>;
+export type UniverseSpec = t.TypeOf<typeof codecUniverseSpec>;
 
 export function loadYamlUniverseSpec(text: string): UniverseSpec {
   const root = YAML.load(text);
-  return validate(UniverseSpecType, root);
+  return validate(codecUniverseSpec, root);
 }
 
 export class Universe {
@@ -35,7 +35,7 @@ export class Universe {
 
   static fromYamlString(text: string, reservedWords?: Set<string>): Universe {
     const root = YAML.load(text);
-    const spec = validate(UniverseSpecType, root);
+    const spec = validate(codecUniverseSpec, root);
 
     return new Universe(spec, reservedWords);
   }

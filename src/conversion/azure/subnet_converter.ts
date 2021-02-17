@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import {ForwardRuleSpecEx, IEntityStore, ItemMoniker, NodeSpec} from '../..';
+import {ForwardRuleSpec, IEntityStore, ItemMoniker, NodeSpec} from '../..';
 
 import {
   AnyAzureObject,
@@ -43,7 +43,7 @@ function parseSubnetNodeSpecs(
   const outboundKey = alias + '/outbound';
   const routerKey = alias + '/router';
 
-  const rules: ForwardRuleSpecEx[] = [
+  const rules: ForwardRuleSpec[] = [
     // Traffice leaving subnet
     {
       destination: outboundKey,

@@ -1,23 +1,17 @@
 import * as t from 'io-ts';
 
-import {RuleSpecEx, ruleSpecNoIdType} from '../rules';
+import {codecRuleSpecNoId, RuleSpec} from '../rules';
 
-const forwardRuleSpecType = t.intersection([
+const codecForwardRuleSpec = t.intersection([
   t.type({
     destination: t.string,
   }),
   t.partial({
-    filters: t.array(ruleSpecNoIdType),
+    filters: t.array(codecRuleSpecNoId),
   }),
   t.record(t.string, t.any),
 ]);
-export type ForwardRuleSpec = t.TypeOf<typeof forwardRuleSpecType>;
-
-// TODO: is ForwardRuleSpecEx even needed when ForwardRuleSpec
-// contains [x: string]: string? Also, should [others: string]: any
-// really map to any?
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ForwardRuleSpecEx = ForwardRuleSpec & {[others: string]: any};
+export type ForwardRuleSpec = t.TypeOf<typeof codecForwardRuleSpec>;
 
 export const ForwardRuleSpecReservedWords = new Set<string>([
   'destination',
@@ -25,34 +19,34 @@ export const ForwardRuleSpecReservedWords = new Set<string>([
   'source',
 ]);
 
-export const nodeSpecType = t.intersection([
+export const codecNodeSpec = t.intersection([
   t.type({
     key: t.string,
-    rules: t.array(forwardRuleSpecType),
+    rules: t.array(codecForwardRuleSpec),
   }),
   t.partial({
     name: t.string,
     endpoint: t.boolean,
-    filters: t.array(ruleSpecNoIdType),
+    filters: t.array(codecRuleSpecNoId),
     range: t.record(t.string, t.any),
   }),
 ]);
 
-export type NodeSpec = t.TypeOf<typeof nodeSpecType>;
+export type NodeSpec = t.TypeOf<typeof codecNodeSpec>;
 
-export type AnyRuleSpec = RuleSpecEx | ForwardRuleSpecEx;
+export type AnyRuleSpec = RuleSpec | ForwardRuleSpec;
 
-export const symbolDefinitionSpec = t.type({
+export const codecSymbolDefinition = t.type({
   dimension: t.string,
   symbol: t.string,
   range: t.string,
 });
 
-export type SymbolDefinitionSpec = t.TypeOf<typeof symbolDefinitionSpec>;
+export type SymbolDefinitionSpec = t.TypeOf<typeof codecSymbolDefinition>;
 
-export const graphSpecType = t.type({
-  symbols: t.array(symbolDefinitionSpec),
-  nodes: t.array(nodeSpecType),
+export const codecGraphSpec = t.type({
+  symbols: t.array(codecSymbolDefinition),
+  nodes: t.array(codecNodeSpec),
 });
 
-export type GraphSpec = t.TypeOf<typeof graphSpecType>;
+export type GraphSpec = t.TypeOf<typeof codecGraphSpec>;
