@@ -19,11 +19,8 @@ export class ConverterStore {
   }
 
   asConverter(input: AnyAzureObject): IAzureConverter {
-    let converter = this.converters.get(input.type);
-
-    if (!converter) {
-      converter = this.defaultConverter;
-    }
+    return this.converters.get(input.type) ?? this.defaultConverter;
+  }
 
     return converter;
   }
