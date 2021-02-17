@@ -51,25 +51,18 @@ export class AzureConverter {
     for (const item of root.values()) {
       const converter = this.converters.asConverter(item);
 
-      if (converter) {
-        itemsToMap.push(item);
+      itemsToMap.push(item);
 
-        for (const index of converter.aliases(item)) {
-          if (index.item) {
-            this.entityStore.registerEntity(index.item, index.alias);
-          }
+      for (const index of converter.aliases(item)) {
+        if (index.item) {
+          this.entityStore.registerEntity(index.item, index.alias);
         }
       }
     }
 
-    for (const item of itemsToMap.values()) {
+    for (const item of itemsToMap) {
       const converter = this.converters.asConverter(item);
-
-      if (converter) {
-        for (const itemNode of converter.convert(item, this.entityStore)) {
-          nodes.push(itemNode);
-        }
-      }
+      nodes.push(...converter.convert(item, this.entityStore));
     }
 
     const range = this.vnetConverter.virtualNetworks().join(',');

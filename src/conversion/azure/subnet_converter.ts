@@ -14,12 +14,12 @@ import {AzureNetworkSecurityGroup, AzureVirtualNetwork} from './schema';
 import {IEntityStore, ItemAlias} from '..';
 
 export class SubnetConverter extends BaseAzureConverter {
-  private readonly conveters: ConverterStore;
+  private readonly converters: ConverterStore;
   private readonly nsgConverter: NetworkSecurtiyGroupConverter;
 
   constructor() {
     super('Microsoft.Network/virtualNetworks/subnets');
-    this.conveters = ConverterStore.create(
+    this.converters = ConverterStore.create(
       new PublicIpConverter(),
       new LocalIpConverter()
     );
@@ -67,25 +67,21 @@ export class SubnetConverter extends BaseAzureConverter {
     if (subnet.properties.ipConfigurations) {
       for (const ip of subnet.properties.ipConfigurations) {
         const ipConfig = store.getEntity<AzureIPConfiguration>(ip.id);
-        const converter = this.conveters.asConverter(ipConfig);
+        const converter = this.converters.asConverter(ipConfig);
 
-        if (converter) {
-          const ipNodes = converter.convert(ipConfig, store);
+        const ipNodes = converter.convert(ipConfig, store);
 
-          for (const ipNode of ipNodes) {
-            if (ipNode) {
-              ipNode.rules.push({
-                destination: routerKey,
-              });
-              //nodes.push(ipNode);
-              if (ipNode.range) {
-                // Traffic to child of subnet
-                rules.push({
-                  destination: store.getAlias(ipConfig.id),
-                  destinationIp: ipNode.range.sourceIp,
-                });
-              }
-            }
+        for (const ipNode of ipNodes) {
+          ipNode.rules.push({
+            destination: routerKey,
+          });
+
+          if (ipNode.range) {
+            // Traffic to child of subnet
+            rules.push({
+              destination: store.getAlias(ipConfig.id),
+              destinationIp: ipNode.range.sourceIp,
+            });
           }
         }
       }

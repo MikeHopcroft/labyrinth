@@ -9,13 +9,8 @@ export abstract class BaseAzureConverter implements IAzureConverter {
     this.supportedType = supportedType;
   }
 
-  aliases(input: AnyAzureObject): ItemAlias[] {
-    const aliases: ItemAlias[] = [];
-    aliases.push({
-      item: input,
-      alias: input.name,
-    });
-    return aliases;
+  aliases(item: AnyAzureObject): ItemAlias[] {
+    return [{item, alias: item.name}];
   }
 
   convert(
