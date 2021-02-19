@@ -1,7 +1,11 @@
 {
     "temp-dir" : "build/.coverage",
     "report-dir" : "build/.coverage-report",
-    "reporter" : "lcov",
+    "reporter" : [
+        "text-summary",
+        "lcov"
+    ],
+    "all" : true,
     "exclude" : [ 
         "build/.coverage/**", 
         "build/.coverage-report/**" 

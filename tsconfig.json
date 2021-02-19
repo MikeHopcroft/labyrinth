@@ -3,6 +3,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "rootDir": ".",
+    "sourceMap" : true,
     "outDir": "build"
   },
   "include": [
