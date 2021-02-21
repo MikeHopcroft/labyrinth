@@ -75,7 +75,7 @@ const universeRange3 = new DimensionedRange(dimension3, dimension3.type.domain);
 
 const ignore = new Set<RuleSpec>();
 
-describe('Conjunction', () => {
+describe('Setops - Conjunction', () => {
   describe('create()', () => {
     // Dimension order check
     it('parameter validation', () => {
@@ -154,7 +154,52 @@ describe('Conjunction', () => {
     assert.equal(r2.dimensions[4].range.toString(), '[ 10-20 ]');
   });
 
-  // complement()
+  it('overrideDimensions()', () => {
+    const c1 = Conjunction.create([range0, range1, range2, range3], ignore);
+    const c2 = Conjunction.create([range1b, range3b, range4], ignore);
+
+    const r1 = c1.overrideDimensions(c2);
+    assert.equal(r1.dimensions.length, 5);
+    assert.equal(r1.dimensions[0].range.toString(), '[ 10-20 ]');
+    assert.equal(r1.dimensions[1].range.toString(), '[ 15-30 ]');
+    assert.equal(r1.dimensions[2].range.toString(), '[ 240-260 ]');
+    assert.equal(r1.dimensions[3].range.toString(), '[ 1000-1250 ]');
+    assert.equal(r1.dimensions[4].range.toString(), '[ 10-20 ]');
+  });
+
+  it('clearOverrides()', () => {
+    const c1 = Conjunction.create([range0, range1, range2, range3], ignore);
+    const c2 = Conjunction.create([range1b, range3b], ignore);
+
+    const r1 = c1.clearOverrides(c2);
+    assert.equal(r1.dimensions.length, 2);
+    assert.equal(r1.dimensions[0].range.toString(), '[ 10-20 ]');
+    assert.equal(r1.dimensions[1].range.toString(), '[ 240-260 ]');
+  });
+
+  // // TODO: Remove this deprecated code.
+  // it('createRestoreOverride()', () => {
+  //   const original = Conjunction.create([range0, range1, range2, range3], ignore);
+  //   const override = Conjunction.create([range1b, range4], ignore);
+
+  //   const r1 = original.overrideDimensions(override);
+  //   assert.equal(r1.dimensions.length, 5);
+  //   assert.equal(r1.dimensions[0].range.toString(), '[ 10-20 ]');
+  //   assert.equal(r1.dimensions[1].range.toString(), '[ 15-30 ]');
+  //   assert.equal(r1.dimensions[2].range.toString(), '[ 240-260 ]');
+  //   assert.equal(r1.dimensions[3].range.toString(), '[ 1240-1260 ]');
+  //   assert.equal(r1.dimensions[4].range.toString(), '[ 10-20 ]');
+
+  //   const restore = Conjunction.createRestoreOverride(override, original);
+
+  //   const r2 = r1.overrideDimensions(restore);
+  //   assert.equal(r2.dimensions.length, 4);
+  //   assert.equal(r2.dimensions[0].range.toString(), '[ 10-20 ]');
+  //   assert.equal(r2.dimensions[1].range.toString(), '[ 10-20 ]');
+  //   assert.equal(r2.dimensions[2].range.toString(), '[ 240-260 ]');
+  //   assert.equal(r2.dimensions[3].range.toString(), '[ 1240-1260 ]');
+  // });
+
   it('complement()', () => {
     const c1 = Conjunction.create([range1, range2, range3], ignore);
     const notC1 = c1.complement();

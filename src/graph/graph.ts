@@ -18,7 +18,7 @@ export interface FlowNode {
   routes: Disjunction<AnyRuleSpec>;
 
   // Used for cycle detection.
-  // True when this FlowNode is currently on the inorder search stack.
+  // True when this FlowNode is currently on the preorder search stack.
   active: boolean;
 }
 

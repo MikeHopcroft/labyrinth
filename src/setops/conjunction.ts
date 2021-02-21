@@ -53,6 +53,7 @@ export class Conjunction<A> {
 
   // TODO: REVIEW: what is use case for constructor other than call from Factory?
   // Can the two be combined?
+  // Called directly by intersect() and overrideDimensions().
   private constructor(dimensions: DimensionedRange[], rules: Set<A>) {
     this.dimensions = dimensions;
     this.rules = rules;
@@ -128,6 +129,135 @@ export class Conjunction<A> {
       return Disjunction.create(terms);
     }
   }
+
+  // Create a copy of `this` Conjunction<A> where dimensions that appear
+  // in `other` replace the dimensions in `this`. Used for network address
+  // translation.
+  overrideDimensions(override: Conjunction<A>): Conjunction<A> {
+    const rules = combineSets([this.rules, override.rules]);
+    let i1 = 0;
+    let i2 = 0;
+    const dimensions: DimensionedRange[] = [];
+    while (i1 < this.dimensions.length && i2 < override.dimensions.length) {
+      const d1 = this.dimensions[i1];
+      const d2 = override.dimensions[i2];
+
+      let d: DimensionedRange;
+      if (d1.dimension.id < d2.dimension.id) {
+        // Copy d1.
+        d = d1;
+        i1++;
+      } else if (d1.dimension.id > d2.dimension.id) {
+        // Copy d2.
+        d = d2;
+        i2++;
+      } else {
+        // Override d1 with d2.
+        d = d2;
+        i1++;
+        i2++;
+      }
+
+      if (d.isEmpty()) {
+        // If any dimension is empty, return the empty set.
+        return new Conjunction([d], rules);
+      } else if (d.isUniverse()) {
+        // Filter out universe dimensions.
+        continue;
+      } else {
+        dimensions.push(d);
+      }
+    }
+
+    // Copy over any remaining dimensions.
+    while (i1 < this.dimensions.length) {
+      dimensions.push(this.dimensions[i1++]);
+    }
+    while (i2 < override.dimensions.length) {
+      dimensions.push(override.dimensions[i2++]);
+    }
+
+    return new Conjunction(dimensions, rules);
+  }
+
+  // Create a copy of `this` Conjunction<A> where dimensions that appear
+  // in `other` are filtered out. Used for undoing network address
+  // translation during back propagation.
+  clearOverrides(override: Conjunction<A>): Conjunction<A> {
+    const rules = combineSets([this.rules, override.rules]);
+    let i1 = 0;
+    let i2 = 0;
+    const dimensions: DimensionedRange[] = [];
+    while (i1 < this.dimensions.length && i2 < override.dimensions.length) {
+      const d1 = this.dimensions[i1];
+      const d2 = override.dimensions[i2];
+
+      if (d1.dimension.id < d2.dimension.id) {
+        // Copy d1.
+        dimensions.push(d1);
+        i1++;
+      } else if (d1.dimension.id > d2.dimension.id) {
+        // Skip d2.
+        i2++;
+      } else {
+        // Filter out d1.
+        i1++;
+        i2++;
+      }
+    }
+
+    // Copy over any remaining dimensions.
+    while (i1 < this.dimensions.length) {
+      dimensions.push(this.dimensions[i1++]);
+    }
+
+    return new Conjunction(dimensions, rules);
+  }
+
+  // // TODO: Remove this deprecated this code
+  // // Combine an override with an orginal value to create a new override
+  // // that restores original values that were overridden. USed for network
+  // // address translation.
+  // static createRestoreOverride<A>(
+  //   override: Conjunction<A>,
+  //   original: Conjunction<A>
+  // ): Conjunction<A> {
+  //   //
+  //   // Combine override with orginal to create new override that restores.
+  //   //
+
+  //   let i1 = 0;
+  //   let i2 = 0;
+  //   const dimensions: DimensionedRange[] = [];
+  //   while (i1 < override.dimensions.length && i2 < original.dimensions.length) {
+  //     const d1 = override.dimensions[i1];
+  //     const d2 = original.dimensions[i2];
+
+  //     if (d1.dimension.id < d2.dimension.id) {
+  //       // Restore dimension's universe from original.
+  //       dimensions.push(DimensionedRange.universe(d1.dimension));
+  //       i1++;
+  //     } else if (d1.dimension.id > d2.dimension.id) {
+  //       // Skip dimension in original.
+  //       i2++;
+  //     } else {
+  //       // Restore this dimension from the original.
+  //       dimensions.push(d2);
+  //       i1++;
+  //       i2++;
+  //     }
+  //   }
+
+  //   // Copy over any remaining dimensions.
+  //   while (i1 < override.dimensions.length) {
+  //     const d1 = override.dimensions[i1];
+  //     dimensions.push(DimensionedRange.universe(d1.dimension));
+  //     i1++;
+  //   }
+
+  //   const rules = new Set<A>();
+  //   return new Conjunction(dimensions, rules);
+  // }
 
   format(options: FormattingOptions<A> = {}): string {
     const prefix = options.prefix || '';
