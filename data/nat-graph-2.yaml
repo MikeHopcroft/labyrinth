@@ -28,6 +28,23 @@ nodes:
   - key: loadBalancer
     # 10.0.0.3
     rules:
+      ## MOCKUP for load balancing
+      # - conditions:
+      #     rules
+      #   override:
+      #     sourceIp: 10.0.0.3
+      #     destinationPort: 22
+      #   destinations:
+      #     - name: serverA
+      #       condition:
+      #         destinationPort: 2201
+      #       override:
+      #         destinationIp: 20.0.0.1
+      #     - name: serverB
+      #       condition:
+      #         destinationPort: 2202
+      #       override:
+      #         destinationIp: 20.0.0.2
       - destination: serverA
         destinationPort: 2201
         override:

@@ -120,12 +120,6 @@ export class Node {
         // Don't merge routes that have overrides because the overrides
         // may be different. We need to know the specific overrides during
         // back propagation.
-        // console.log(`At node ${this.key}:`);
-        // console.log('  Before override:');
-        // console.log(current.format({prefix: '    '}));
-        // const routes = current.overrideDimensions(rule.override);
-        // console.log('  After override:');
-        // console.log(routes.format({prefix: '    '}));
         const edge: Edge = {
           from: this.key,
           to: rule.destination,

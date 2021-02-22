@@ -1,27 +1,39 @@
 import {assert} from 'chai';
 import 'mocha';
-import {ActionType} from '../../src';
 
 import {Universe} from '../../src/dimensions';
+
 import {
   AnyRuleSpec,
   Graph,
   GraphBuilder,
+  GraphFormattingOptions,
   GraphSpec,
   NodeSpec,
 } from '../../src/graph';
+
+import {ActionType} from '../../src/rules';
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 
 const universe = new Universe(firewallSpec);
 const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
-function paths(graph: Graph, from: string, to: string, outbound: boolean) {
-  const {flows} = graph.analyze(from, outbound, true);
+function paths(
+  graph: Graph,
+  from: string,
+  to: string,
+  options: GraphFormattingOptions
+) {
+  const {flows} = graph.analyze(from, !!options.outbound, true);
   const filtered = flows.filter(flow => flow.node.key === to);
   return filtered
     .map(flow =>
-      graph.formatFlow(flow, outbound, {showPaths: true, verbose: true})
+      graph.formatFlow(flow, !!options.outbound, {
+        showPaths: true,
+        verbose: true,
+        ...options,
+      })
     )
     .join('\n');
 }
@@ -63,7 +75,7 @@ function graphBuilder(nodes: NodeSpec[]): GraphBuilder {
 }
 
 describe('Graph', () => {
-  describe('errors', () => {
+  describe('Errors', () => {
     it('unknown destination', () => {
       const nodes: NodeSpec[] = [
         {
@@ -133,8 +145,8 @@ describe('Graph', () => {
     });
   });
 
-  describe('cycles', () => {
-    it('simple cycle', () => {
+  describe('Cycles', () => {
+    it('Simple cycle', () => {
       const nodes: NodeSpec[] = [
         {
           name: 'internet',
@@ -181,7 +193,7 @@ describe('Graph', () => {
       assert.equal(c, 'a => b => c => a');
     });
 
-    it('double cycle variant one', () => {
+    it('Double cycle variant one', () => {
       const nodes: NodeSpec[] = [
         // Main line
         {
@@ -276,7 +288,7 @@ describe('Graph', () => {
       console.log(c1);
     });
 
-    it('double cycle variant two', () => {
+    it('Double cycle variant two', () => {
       const nodes: NodeSpec[] = [
         // Main line
         {
@@ -379,7 +391,7 @@ describe('Graph', () => {
     });
 
     // Loopback to endpoint is not a cycle
-    it('loopback to endpoint is not a cycle', () => {
+    it('Loopback to endpoint is not a cycle', () => {
       const nodes: NodeSpec[] = [
         {
           name: 'internet',
@@ -427,8 +439,8 @@ describe('Graph', () => {
   });
 
   // Forward propagate
-  describe('forward propagate', () => {
-    it('linear unidirectional', () => {
+  describe('Forward propagate', () => {
+    it('Linear unidirectional', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'a',
@@ -470,7 +482,7 @@ describe('Graph', () => {
       const outbound = true;
 
       assert.equal(
-        paths(graph, 'a', 'd', outbound),
+        paths(graph, 'a', 'd', {outbound}),
         trim(`
           d:
             routes:
@@ -487,7 +499,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'd', 'a', outbound),
+        paths(graph, 'd', 'a', {outbound}),
         trim(`
           a:
             routes:
@@ -499,7 +511,7 @@ describe('Graph', () => {
       );
     });
 
-    it('linear bidirectional', () => {
+    it('Linear bidirectional', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'a',
@@ -555,7 +567,7 @@ describe('Graph', () => {
       const outbound = true;
 
       assert.equal(
-        paths(graph, 'a', 'd', outbound),
+        paths(graph, 'a', 'd', {outbound}),
         trim(`
           d:
             routes:
@@ -574,7 +586,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'd', 'a', outbound),
+        paths(graph, 'd', 'a', {outbound}),
         trim(`
           a:
             routes:
@@ -587,7 +599,7 @@ describe('Graph', () => {
       );
     });
 
-    it('confluence', () => {
+    it('Confluence', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'main1',
@@ -631,7 +643,7 @@ describe('Graph', () => {
       const outbound = true;
 
       assert.equal(
-        paths(graph, 'main1', 'main2', outbound),
+        paths(graph, 'main1', 'main2', {outbound}),
         trim(`
           main2:
             routes:
@@ -646,7 +658,7 @@ describe('Graph', () => {
       );
     });
 
-    it('upstream shadows downstream', () => {
+    it('Upstream shadows downstream', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'main',
@@ -688,7 +700,7 @@ describe('Graph', () => {
       const outbound = true;
 
       assert.equal(
-        paths(graph, 'main', 'a', outbound),
+        paths(graph, 'main', 'a', {outbound}),
         trim(`
           a:
             routes:
@@ -701,7 +713,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'main', 'b', outbound),
+        paths(graph, 'main', 'b', {outbound}),
         trim(`
           b:
             routes:
@@ -713,7 +725,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'main', 'c', outbound),
+        paths(graph, 'main', 'c', {outbound}),
         trim(`
           c:
             routes:
@@ -726,7 +738,7 @@ describe('Graph', () => {
       );
     });
 
-    it('complex', () => {
+    it('Complex', () => {
       const nodes: NodeSpec[] = [
         {
           name: 'internet',
@@ -853,12 +865,109 @@ describe('Graph', () => {
     });
   });
 
+  describe('Backward propagate', () => {
+    it('Linear with two NATs', () => {
+      const nodes = [
+        {
+          key: 'client',
+          endpoint: true,
+          range: {
+            sourceIp: '192.0.2.53',
+          },
+          rules: [
+            {
+              destination: 'publicIp',
+              destinationIp: '203.0.113.1',
+            },
+          ],
+        },
+        {
+          key: 'publicIp',
+          rules: [
+            {
+              destination: 'firewall',
+              destinationIp: '203.0.113.1',
+              override: {
+                destinationIp: '10.0.0.2',
+                sourceIp: '10.0.0.1',
+              },
+            },
+          ],
+        },
+        {
+          key: 'firewall',
+          filters: [
+            {
+              action: ActionType.ALLOW,
+              priority: 0,
+              destinationPort: 'http, https',
+            },
+          ],
+          rules: [
+            {
+              destination: 'loadBalancer',
+            },
+          ],
+        },
+        {
+          key: 'loadBalancer',
+          rules: [
+            {
+              destination: 'serverA',
+              override: {
+                destinationIp: '20.0.0.1',
+                sourceIp: '10.0.0.3',
+              },
+            },
+          ],
+        },
+        {
+          key: 'serverA',
+          range: {
+            sourceIp: '20.0.0.1',
+          },
+          endpoint: true,
+          rules: [],
+        },
+        {
+          key: 'serverB',
+          range: {
+            sourceIp: '20.0.0.2',
+          },
+          endpoint: true,
+          rules: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const backProject = true;
+      const outbound = true;
+
+      assert.equal(
+        paths(graph, 'client', 'serverA', {outbound, backProject}),
+        trim(`
+          serverA:
+            routes:
+              source ip: 10.0.0.3
+              destination ip: 20.0.0.1
+              destination port: http, https
+          
+            paths:
+              client => publicIp => firewall => loadBalancer => serverA
+                destination ip: 203.0.113.1
+                destination port: http, https
+        `)
+      );
+    });
+  });
+
   // Backward propagation
   // server => subnet => server | internet
   // Builder - add, remove, update
 
   describe('Filters', () => {
-    it('inbound', () => {
+    it('Inbound', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'main1',
@@ -919,7 +1028,7 @@ describe('Graph', () => {
       const outbound = true;
 
       assert.equal(
-        paths(graph, 'main1', 'a', outbound),
+        paths(graph, 'main1', 'a', {outbound}),
         trim(`
           a:
             routes:
@@ -934,7 +1043,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'main1', 'b', outbound),
+        paths(graph, 'main1', 'b', {outbound}),
         trim(`
           b:
             routes:
@@ -946,7 +1055,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'main1', 'c', outbound),
+        paths(graph, 'main1', 'c', {outbound}),
         trim(`
           c:
             routes:
@@ -961,7 +1070,7 @@ describe('Graph', () => {
       );
     });
 
-    it('inbound and outbound', () => {
+    it('Inbound and outbound', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'main1',
@@ -1033,7 +1142,7 @@ describe('Graph', () => {
       const outbound = true;
 
       assert.equal(
-        paths(graph, 'main1', 'a', outbound),
+        paths(graph, 'main1', 'a', {outbound}),
         trim(`
           a:
             routes:
@@ -1048,7 +1157,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'main1', 'b', outbound),
+        paths(graph, 'main1', 'b', {outbound}),
         trim(`
           b:
             routes:
@@ -1060,7 +1169,7 @@ describe('Graph', () => {
       );
 
       assert.equal(
-        paths(graph, 'main1', 'c', outbound),
+        paths(graph, 'main1', 'c', {outbound}),
         trim(`
           c:
             routes:

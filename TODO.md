@@ -16,13 +16,18 @@
     * Load balancers
     * NAT
 * Top
+  * Cleanup
+    * In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
+    * In graph.test.ts, make path() take GraphFormattingOptions parameter.
   * Graph
     * Rename routes to something else: headers?
       * Edge.routes
       * Formatting
       * React App
     * Group dimension constraints under: condition? constraints? dimensions?
-    * Change type of destination from string to string[] - for load balancing
+    * Load balancing
+      * Change type of destination from string to string[] - for load balancing. This is not enough - need to override fields specific to each machine in the pool.
+      * Want some sort of mode to run rules in parallel.
     * Better design for RuleSpec/RuleSpecNoId/RuleSpecEx
     * Analogous changes for ForwardRuleSpec/ForwardRuleSpecEx
     * io-ts: t.any is deprecated - use t.unknown
