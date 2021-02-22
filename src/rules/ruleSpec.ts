@@ -20,6 +20,13 @@ export enum ActionType {
 // tslint:disable-next-line:variable-name
 const ActionTypeType = createEnum<ActionType>(ActionType, 'ActionType');
 
+// Type of a set of dimension constraints.
+// The keys in this object must be dimension keys from the associated Universe.
+// The values should be strings with range expressions.
+// TODO: investigate why t.record(t.string, t.string) doesn't work.
+export const constraintType = t.record(t.string, t.unknown);
+export type Contraint = t.TypeOf<typeof constraintType>;
+
 export const ruleSpecNoIdType = t.intersection([
   t.type({
     action: ActionTypeType,

@@ -16,6 +16,17 @@
     * Load balancers
     * NAT
 * Top
+  * Graph
+    * Rename routes to something else: headers?
+      * Edge.routes
+      * Formatting
+      * React App
+    * Group dimension constraints under: condition? constraints? dimensions?
+    * Change type of destination from string to string[] - for load balancing
+    * Better design for RuleSpec/RuleSpecNoId/RuleSpecEx
+    * Analogous changes for ForwardRuleSpec/ForwardRuleSpecEx
+    * io-ts: t.any is deprecated - use t.unknown
+    * Constraint, RuleSpec, ForwardRuleSpec: investigate why t.record(t.string, t.string) doesn't work.
   * NAT
     * x overrideDimensions()
     * x clearOverrides()
@@ -23,8 +34,8 @@
     * Update forwardRuleSpec
     * Update Path
     * Update Graph.analyze()
+    * Load balancer needs destination to be string[] instead of string.
   * Prettier CR/LF differences between Windows and Ubuntu
-  * io-ts: t.any is deprecated - use t.unknown
   * Get clean resource graph
   * Graph documentation
     * Tutorial

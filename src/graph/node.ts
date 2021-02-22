@@ -75,7 +75,7 @@ export class Node {
   }
 
   // Constructs outgoing edges
-  createEdges(simplifier: Simplifier<AnyRuleSpec>) {
+  createEdgesOld(simplifier: Simplifier<AnyRuleSpec>) {
     // NOTE that multiple rules may forward to the same node.
     // Use keyToRoute map to combine those routes going a single node.
     const keyToRoute = new Map<string, Disjunction<AnyRuleSpec>>();
@@ -94,6 +94,55 @@ export class Node {
         routes = current;
       }
       keyToRoute.set(rule.destination, current);
+    }
+
+    // Add an edge for each node in keyToRoute.
+    for (const [to, routes] of keyToRoute.entries()) {
+      const edge: Edge = {from: this.key, to, routes};
+      this.outboundEdges.push(edge);
+    }
+  }
+
+  // Constructs outgoing edges
+  createEdges(simplifier: Simplifier<AnyRuleSpec>) {
+    // NOTE that multiple rules may forward to the same node.
+    // Use keyToRoute map to combine those routes going a single node.
+    const keyToRoute = new Map<string, Disjunction<AnyRuleSpec>>();
+    let remaining: Disjunction<AnyRuleSpec> = this.filters;
+    for (const rule of this.rules) {
+      const allowed = Disjunction.create<AnyRuleSpec>([rule.conjunction]);
+      const current = allowed
+        .intersect(remaining, simplifier)
+        .intersect(rule.filters);
+      remaining = remaining.subtract(allowed, simplifier);
+
+      if (rule.override) {
+        // Don't merge routes that have overrides because the overrides
+        // may be different. We need to know the specific overrides during
+        // back propagation.
+        // console.log(`At node ${this.key}:`);
+        // console.log('  Before override:');
+        // console.log(current.format({prefix: '    '}));
+        // const routes = current.overrideDimensions(rule.override);
+        // console.log('  After override:');
+        // console.log(routes.format({prefix: '    '}));
+        const edge: Edge = {
+          from: this.key,
+          to: rule.destination,
+          override: rule.override,
+          routes: current,
+        };
+        this.outboundEdges.push(edge);
+      } else {
+        // Merge routes that don't have overrides.
+        let routes = keyToRoute.get(rule.destination);
+        if (routes) {
+          routes = routes.union(current, simplifier);
+        } else {
+          routes = current;
+        }
+        keyToRoute.set(rule.destination, current);
+      }
     }
 
     // Add an edge for each node in keyToRoute.

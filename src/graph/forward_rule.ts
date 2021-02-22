@@ -12,9 +12,10 @@ import {Conjunction, Disjunction, Simplifier} from '../setops';
 import {ForwardRuleSpecEx} from './types';
 
 export interface ForwardRule {
-  conjunction: Conjunction<ForwardRuleSpecEx>;
-  filters: Disjunction<RuleSpec>;
   destination: string;
+  conjunction: Conjunction<ForwardRuleSpecEx>;
+  override?: Conjunction<ForwardRuleSpecEx>;
+  filters: Disjunction<RuleSpec>;
 }
 
 export function parseForwardRuleSpec(
@@ -24,21 +25,37 @@ export function parseForwardRuleSpec(
 ): ForwardRule {
   // Want to ensure that `filters` is not a property of `rest`.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {destination, filters, ...rest} = spec;
+  const {destination, filters, override, ...rest} = spec;
   const conjunction = parseConjunction<ForwardRuleSpecEx>(universe, rest, spec);
 
-  let filters2: Disjunction<RuleSpec>;
+  const overrideConjunction = spec.override
+    ? parseConjunction<ForwardRuleSpecEx>(universe, spec.override, spec)
+    : spec.override;
+
+  let filtersDisjunction: Disjunction<RuleSpec>;
   if (spec.filters) {
     const rules = spec.filters.map(r => {
       // TODO: sort out correct `id` and `source`.
       return parseRuleSpec(universe, {...r, id: 1, source: 'source'});
     });
 
-    filters2 = denyOverrides(rules, simplifier as Simplifier<RuleSpec>);
+    filtersDisjunction = denyOverrides(
+      rules,
+      simplifier as Simplifier<RuleSpec>
+    );
   } else {
     // TODO: sort out RuleSpec vs RuleSpecEx
-    filters2 = Disjunction.universe<RuleSpec>();
+    filtersDisjunction = Disjunction.universe<RuleSpec>();
   }
 
-  return {conjunction, destination, filters: filters2};
+  if (overrideConjunction) {
+    return {
+      conjunction,
+      destination,
+      filters: filtersDisjunction,
+      override: overrideConjunction,
+    };
+  } else {
+    return {conjunction, destination, filters: filtersDisjunction};
+  }
 }
