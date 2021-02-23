@@ -56,7 +56,7 @@ class AzureConverterImpl {
 
       for (const index of converter.monikers(item)) {
         if (index.item) {
-          this.entityStore.registerEntity(index.item, index.alias);
+          this.entityStore.registerEntity(index.item, index.name);
         }
       }
     }

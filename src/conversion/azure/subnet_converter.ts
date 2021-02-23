@@ -24,7 +24,7 @@ function parseSubnetMonikers(input: AnyAzureObject): ItemMoniker[] {
   const monikers: ItemMoniker[] = [];
   monikers.push({
     item: input,
-    alias: `${input.name}/router`,
+    name: `${input.name}/router`,
   });
   return monikers;
 }

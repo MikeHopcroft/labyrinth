@@ -46,8 +46,8 @@ describe('Conversion - Convert Azure', () => {
 
     it('Monikers for NIC with single ip', () => {
       const monikers = nicConverter.monikers(input);
-      assert.equal(monikers[0].alias, 'testingcreds68');
-      assert.equal(monikers[1].alias, 'testingcreds68/ipconfig1');
+      assert.equal(monikers[0].name, 'testingcreds68');
+      assert.equal(monikers[1].name, 'testingcreds68/ipconfig1');
     });
 
     it('Conversion of NIC with single', () => {
@@ -65,7 +65,7 @@ describe('Conversion - Convert Azure', () => {
 
       for (const data of nicConverter.monikers(input)) {
         if (data.item) {
-          store.registerEntity(data.item, data.alias);
+          store.registerEntity(data.item, data.name);
         }
       }
       const alias = nicConverter.convert(input, store);
@@ -150,7 +150,7 @@ describe('Conversion - Convert Azure', () => {
       const expected = [
         {
           item: inputSubnet,
-          alias: 'A/router',
+          name: 'A/router',
         },
       ];
 

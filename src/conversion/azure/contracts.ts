@@ -6,7 +6,7 @@ import {AnyAzureObject} from '.';
 
 export interface ItemMoniker {
   readonly item: AnyAzureObject | undefined;
-  readonly alias: string;
+  readonly name: string;
 }
 
 export interface IAzureConverter<T extends AnyAzureObject> {

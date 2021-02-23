@@ -21,7 +21,7 @@ function parseNetworkAliases(nic: AzureNetworkInterface): ItemMoniker[] {
       for (const alias of converter.monikers(config)) {
         aliases.push({
           item: alias.item,
-          alias: `${nic.name}/${alias.alias}`,
+          name: `${nic.name}/${alias.name}`,
         });
       }
     }

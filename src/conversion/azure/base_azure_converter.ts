@@ -5,7 +5,7 @@ import {IEntityStore, ItemMoniker} from '..';
 import {AnyAzureObject} from '../azure';
 
 export function parseMonikers(item: AnyAzureObject): ItemMoniker[] {
-  return [{item, alias: item.name}];
+  return [{item, name: item.name}];
 }
 
 export function skipProcessingNodeSpecs(
