@@ -28,16 +28,20 @@ const initialRangeSpec: RuleSpec = {
   // Then we won't need a spec. Does code rely on set being non-empty?
 };
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Node is the static graph representation of a NodeSpec. Its primary data
+// structure is a set of outboundEdges, computed by interpreting the `filters`
+// and `rules` fields of a NodeSpec.
+//
+///////////////////////////////////////////////////////////////////////////////
 export class Node {
-  spec: NodeSpec;
-  name: string;
-  key: string;
-  filters: Disjunction<RuleSpec>;
-  range: Disjunction<RuleSpec>;
-  rules: ForwardRule[];
-  isEndpoint: boolean;
+  readonly key: string;
+  readonly spec: NodeSpec;
+  readonly range: Disjunction<RuleSpec>;
+  readonly isEndpoint: boolean;
 
-  outboundEdges: Array<Edge> = [];
+  readonly outboundEdges: Array<Edge> = [];
 
   constructor(
     universe: Universe,
@@ -45,7 +49,6 @@ export class Node {
     spec: NodeSpec
   ) {
     this.spec = spec;
-    this.name = spec.name ?? spec.key;
     this.key = spec.key;
     this.isEndpoint = !!spec.endpoint;
 
@@ -57,32 +60,37 @@ export class Node {
       this.range = Disjunction.universe<RuleSpec>();
     }
 
+    let filters: Disjunction<RuleSpec>;
     if (this.spec.filters) {
       const rules = this.spec.filters.map(r => {
         // TODO: sort out correct `id` and `source`.
         return parseRuleSpec(universe, {...r, id: 1, source: 'source'});
       });
 
-      this.filters = denyOverrides(rules, simplifier as Simplifier<RuleSpec>);
+      filters = denyOverrides(rules, simplifier as Simplifier<RuleSpec>);
     } else {
       // TODO: sort out RuleSpec vs RuleSpecEx
-      this.filters = Disjunction.universe<RuleSpec>();
+      filters = Disjunction.universe<RuleSpec>();
     }
 
-    this.rules = spec.rules.map(r =>
+    const forwardRules = spec.rules.map(r =>
       parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
     );
 
-    this.createEdges(simplifier);
+    this.createEdges(simplifier, filters, forwardRules);
   }
 
   // Constructs outgoing edges
-  createEdges(simplifier: Simplifier<AnyRuleSpec>) {
+  createEdges(
+    simplifier: Simplifier<AnyRuleSpec>,
+    filters: Disjunction<RuleSpec>,
+    forwardRules: ForwardRule[]
+  ) {
     // NOTE that multiple rules may forward to the same node.
     // Use keyToRoute map to combine those routes going a single node.
     const keyToRoute = new Map<string, Disjunction<AnyRuleSpec>>();
-    let remaining: Disjunction<AnyRuleSpec> = this.filters;
-    for (const rule of this.rules) {
+    let remaining: Disjunction<AnyRuleSpec> = filters;
+    for (const rule of forwardRules) {
       const allowed = Disjunction.create<AnyRuleSpec>([rule.conjunction]);
       const current = allowed
         .intersect(remaining, simplifier)
