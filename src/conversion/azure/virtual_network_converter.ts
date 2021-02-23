@@ -24,15 +24,14 @@ export class VirtualNetworkConverter
   implements IAzureConverter<AzureVirtualNetwork> {
   private readonly ipFormatter: Formatter;
   private readonly symbols: SymbolStore;
-  // TODO:Set<T>. Issue: do you want to check for duplicates?
-  private readonly vnets: Map<string, string>;
+  private readonly vnets: Set<string>;
   readonly supportedType: string;
 
   constructor(symbols: SymbolStore) {
     this.supportedType = 'microsoft.network/virtualnetworks';
     this.ipFormatter = createIpFormatter(new Map<string, string>());
     this.symbols = symbols;
-    this.vnets = new Map<string, string>();
+    this.vnets = new Set<string>();
   }
 
   monikers(vnet: AzureVirtualNetwork): ItemMoniker[] {
@@ -71,7 +70,7 @@ export class VirtualNetworkConverter
       addressRange.add(ip);
     }
     const alias = vnet.name;
-    this.vnets.set(alias, alias);
+    this.vnets.add(alias);
 
     // Define symbol/service tag for this virtual network.
     const addressRangeText = formatDRange(this.ipFormatter, addressRange);
@@ -128,7 +127,6 @@ export class VirtualNetworkConverter
   }
 
   public virtualNetworks(): string[] {
-    // TODO: [...this.vnets.keys()]
-    return Array.from(this.vnets.keys());
+    return [...this.vnets.values()];
   }
 }
