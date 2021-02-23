@@ -26,6 +26,8 @@ function parseSubnetMonikers(input: AnyAzureObject): ItemMoniker[] {
   return monikers;
 }
 
+// This name is confusing. It doesn't parse and the items processed are not
+// NodeSpecs.
 function parseSubnetNodeSpecs(
   subnet: AzureSubnet,
   store: IEntityStore<AnyAzureObject>

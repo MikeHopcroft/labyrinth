@@ -20,6 +20,8 @@ function parseSubnetRules(
     const subnet = store.getAlias(subnetId);
 
     rules.push({
+      // Assuming we have defined service tags for subnets.
+      // Who defines the service tag (symbol store entry) for `subnet`?
       destinationIp: subnet,
       destination: subnet,
     });
@@ -28,6 +30,7 @@ function parseSubnetRules(
   return rules;
 }
 
+// This name is confusing because NodeSpecs are being generated, not parsed.
 function parseNodeSpecs(
   input: AnyAzureObject,
   store: IEntityStore<AnyAzureObject>,
@@ -57,11 +60,13 @@ function parseLocalIpSpec(
   return parseNodeSpecs(localIp, store, ip, rules);
 }
 
+// Consider 'convert' instead of 'parse'
 function parsePublicIpSpec(
   publicIp: AzurePublicIp,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
   const ip = publicIp.properties.ipAddress;
+  // Verify ? behavior.
   const rules = parseSubnetRules(publicIp.properties.subnet?.id, store);
   return parseNodeSpecs(publicIp, store, ip, rules);
 }

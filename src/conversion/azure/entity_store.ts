@@ -11,6 +11,8 @@ export class EntityStore implements IEntityStore<AnyAzureObject> {
   }
 
   public registerEntity(entity: AnyAzureObject, alias: string) {
+    // Consider checking for duplicate keys.
+    // Either throw or ignore if values are same?
     this.idToItem.set(entity.id, entity);
 
     if (alias !== '') {

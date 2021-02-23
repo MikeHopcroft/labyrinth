@@ -6,6 +6,7 @@ export interface IRules {
   readonly inboundRules: RuleSpec[];
 }
 
+// Can we come up with a better name?
 export interface INodeSpecUniverse {
   symbols: SymbolDefinitionSpec[];
   nodes: NodeSpec[];
