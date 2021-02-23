@@ -55,7 +55,6 @@ function main() {
 
     // Load network graph.
     const spec = loadYamlGraphSpecFile(args._[0]);
-    console.log(JSON.stringify(spec, null, 2));
     const nodes = spec.nodes;
     const builder = new GraphBuilder(universe, simplifier, spec);
     const graph = builder.buildGraph();

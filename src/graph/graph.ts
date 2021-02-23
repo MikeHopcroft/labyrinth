@@ -5,24 +5,30 @@ import {Edge} from './edge';
 import {Node} from './node';
 import {AnyRuleSpec, GraphSpec, NodeSpec} from './types';
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Path represents a sequence of FlowEdges, paired with the flows (routes)
+// along those edges.
+//
+///////////////////////////////////////////////////////////////////////////////
 export interface Path {
-  // Index of node that this path goes to.
-  node: number;
-
   // Last edge in this path.
-  edge?: FlowEdge;
+  edge: FlowEdge;
 
-  // Number of edges along this path.
-  // length: number;
-
-  // Previous step on the path. Undefined if this is the path
-  // that supplies the initial routes to the first node.
+  // Previous step on the path. Undefined when this is the first step.
   previous: Path | undefined;
 
   // Routes that flow along this path.
   routes: Disjunction<AnyRuleSpec>;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// FlowNode groups a Node with the paths and flows (routes) computed during
+// forward propagation. FlowNode also includes an `active` mark, which is used
+// to detect cycles during forward propagation.
+//
+///////////////////////////////////////////////////////////////////////////////
 export interface FlowNode {
   node: Node;
   paths: Path[];
@@ -33,31 +39,51 @@ export interface FlowNode {
   active: boolean;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// FlowEdge groups an Edge with the index of its `to` Node. FlowEdge exists to
+// reduce the number of node lookups from Graph.keyToIndex.
+//
+///////////////////////////////////////////////////////////////////////////////
 interface FlowEdge {
   edge: Edge;
   to: number;
 }
 
+// Type alias `Cycle` defined to allow easier redefinition of Cycle type it we
+// choose, in the future, to use a data structure other than a Path[].
 export type Cycle = Path[];
 
+// Graph.analyze() returns a collection of FlowNodes (Nodes grouped with their
+// flows and paths) and a set of Cycles.
 interface FlowAnalysis {
   cycles: Cycle[];
   flows: FlowNode[];
 }
 
 export interface GraphFormattingOptions {
+  // When formatting paths, back-project to show pre-NAT flows.
   backProject?: boolean;
+
+  // The value of the `outbound` parameter passed to Graph.analyze().
+  // Specifies whether paths should be formatted in forward order or reverse.
   outbound?: boolean;
+
+  // Specifies whether Graph.formatFlow() should display information about
+  // individual paths.
   showPaths?: boolean;
+
+  // Specifies whether Graph.formatPath() should display flows (routes) for
+  // each path.
   verbose?: boolean;
 }
 
 export class Graph {
-  simplifier: Simplifier<AnyRuleSpec>;
-  nodes: Node[];
-  keyToIndex = new Map<string, number>();
-  inboundTo: FlowEdge[][];
-  outboundFrom: FlowEdge[][] = [];
+  private readonly simplifier: Simplifier<AnyRuleSpec>;
+  readonly nodes: Node[];
+  private readonly keyToIndex = new Map<string, number>();
+  private readonly inboundTo: FlowEdge[][];
+  private readonly outboundFrom: FlowEdge[][] = [];
 
   constructor(
     simplifier: Simplifier<AnyRuleSpec>,
@@ -102,9 +128,7 @@ export class Graph {
     outbound: boolean,
     modelSpoofing = false
   ): FlowAnalysis {
-    const cycles: Cycle[] = [];
-
-    const flows: FlowNode[] = this.nodes.map(node => ({
+    const flowNodes: FlowNode[] = this.nodes.map(node => ({
       node,
       paths: [],
       routes: Disjunction.emptySet<AnyRuleSpec>(),
@@ -112,70 +136,75 @@ export class Graph {
     }));
 
     const index = this.nodeIndex(startKey);
-    const range = modelSpoofing
+    const initialFlow = modelSpoofing
       ? Disjunction.universe<AnyRuleSpec>()
       : this.nodes[index].range;
 
-    const path: Path = {
-      node: index,
-      routes: range,
-      previous: undefined,
-      // length: 0,
-    };
-    const edges = outbound ? this.outboundFrom : this.inboundTo;
-    this.propagate(index, path, flows, edges, cycles);
+    const initialPath = undefined;
+    const flowEdges = outbound ? this.outboundFrom : this.inboundTo;
+    const cycles: Cycle[] = [];
 
-    return {cycles, flows};
+    this.propagate(
+      index,
+      initialFlow,
+      initialPath,
+      flowNodes,
+      flowEdges,
+      cycles
+    );
+
+    return {cycles, flows: flowNodes};
   }
 
-  propagate(
-    index: number,
-    path: Path,
+  private propagate(
+    fromIndex: number,
+    flow: Disjunction<AnyRuleSpec>,
+    path: Path | undefined,
     flowNodes: FlowNode[],
     flowEdges: FlowEdge[][],
     cycles: Path[][]
   ) {
-    const flowNode = flowNodes[index];
-    if (path.previous) {
-      flowNode.routes = flowNode.routes.union(path.routes, this.simplifier);
+    const flowNode = flowNodes[fromIndex];
+
+    if (path) {
+      // If we're not at the start node, combine the inbound flow with existing
+      // flow and add the path to the node's collection of existing paths.
+      flowNode.routes = flowNode.routes.union(flow, this.simplifier);
       flowNode.paths.push(path);
     }
 
     if (flowNode.active) {
+      // We've encountered the active path.
       if (flowNode.node.isEndpoint) {
-        // We've reached an endpoint.
+        // We've cycled back to an endpoint.
+        // This is not a cycle since an endpoint is not a router.
         // Replace its route with the incoming path.
-        flowNode.routes = path.routes;
+        flowNode.routes = flow;
       } else {
         // Found a cycle.
         // Consider marking the path object as a cycle
         // as an alternative to returning cycles.
-        cycles.push(this.extractCycle(path, path.routes));
+        // NOTE: `path` cannot be undefined when flowNode.active.
+        cycles.push(this.extractCycle(path!, flow));
       }
     } else {
       // If we're not at an endpoint or we're at the first node,
-      // visit adjancent nodes.
-      if (!flowNode.node.isEndpoint || !path.previous) {
+      // visit adjacent nodes.
+      if (!flowNode.node.isEndpoint || !path) {
         flowNode.active = true;
-        for (const edge of flowEdges[index]) {
-          let routes = path.routes.intersect(edge.edge.routes, this.simplifier);
+        for (const edge of flowEdges[fromIndex]) {
+          let routes = flow.intersect(edge.edge.routes, this.simplifier);
 
           if (edge.edge.override) {
-            // console.log(`At flow node ${flowNode.node.key}:`);
-            // console.log('  Before override:');
-            // console.log(routes.format({prefix: '    '}));
             routes = routes.overrideDimensions(edge.edge.override);
-            // console.log('  After override:');
-            // console.log(routes.format({prefix: '    '}));
           }
 
           if (!routes.isEmpty()) {
             this.propagate(
               edge.to,
+              routes,
               {
                 edge,
-                // length: path.length + 1,
-                node: edge.to,
                 previous: path,
                 routes,
               },
@@ -190,11 +219,11 @@ export class Graph {
     }
   }
 
-  extractCycle(path: Path, routes: Disjunction<AnyRuleSpec>): Path[] {
+  private extractCycle(path: Path, routes: Disjunction<AnyRuleSpec>): Path[] {
     const cycle = [path];
-    const end = path.node;
+    const end = path.edge.to;
     let p = path.previous;
-    while (p && p.node !== end) {
+    while (p && p.edge.to !== end) {
       cycle.unshift(p);
       p = p.previous;
     }
@@ -228,7 +257,7 @@ export class Graph {
     return routes;
   }
 
-  nodeIndex(key: string): number {
+  private nodeIndex(key: string): number {
     const index = this.keyToIndex.get(key);
     if (index === undefined) {
       const message = `Unknown node "${key}".`;
@@ -243,7 +272,7 @@ export class Graph {
 
   formatCycle(cycle: Cycle, verbose = false): string {
     const lines: string[] = [];
-    lines.push(cycle.map(step => this.nodes[step.node].key).join(' => '));
+    lines.push(cycle.map(step => this.nodes[step.edge.to].key).join(' => '));
     if (verbose) {
       lines.push(cycle[0].routes.format({prefix: '  '}));
     }
@@ -297,12 +326,18 @@ export class Graph {
 
     if (outbound) {
       while (p) {
-        keys.unshift(this.nodes[p.node].key);
+        keys.unshift(p.edge.edge.to);
+        if (!p.previous) {
+          keys.unshift(p.edge.edge.from);
+        }
         p = p.previous;
       }
     } else {
       while (p) {
-        keys.push(this.nodes[p.node].key);
+        keys.push(p.edge.edge.to);
+        if (!p.previous) {
+          keys.push(p.edge.edge.from);
+        }
         p = p.previous;
       }
     }

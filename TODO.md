@@ -18,7 +18,10 @@
 * Top
   * Cleanup
     * In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
+    * Consider deprecating GraphBuilder.
     * In graph.test.ts, make path() take GraphFormattingOptions parameter.
+    * COMMENT: This is not a cycle since and endpoint is not a router.
+      * This is only true by convention. Do we need separate node types here?
   * Graph
     * Rename routes to something else: headers?
       * Edge.routes
