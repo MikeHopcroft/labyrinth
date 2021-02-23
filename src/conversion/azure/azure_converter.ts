@@ -12,6 +12,28 @@ import {
   VirtualNetworkConverter,
 } from '..';
 
+class AzureUniverse {
+  readonly symbols: SymbolStore;
+
+  constructor() {
+    // TODO: This should not really be defined here instead there should be an Azure
+    // Universe similar to the firewall spec, however there are a few others changes
+    // to make this an easy merge without a lot of duplication
+    this.symbols = new SymbolStore(
+      {
+        dimension: 'ip',
+        symbol: 'AzureLoadBalancer',
+        range: '168.63.129.16',
+      },
+      {
+        dimension: 'protocol',
+        symbol: 'Tcp',
+        range: 'tcp',
+      }
+    );
+  }
+}
+
 class AzureConverterImpl {
   private readonly converters: ConverterStore<AnyAzureObject>;
 
@@ -24,20 +46,7 @@ class AzureConverterImpl {
 
   constructor() {
     this.entityStore = new EntityStore();
-
-    this.symbolStore = new SymbolStore(
-      {
-        dimension: 'ip',
-        symbol: 'AzureLoadBalancer',
-        range: '168.63.129.16',
-      },
-      {
-        dimension: 'protocol',
-        symbol: 'Tcp',
-        range: 'tcp',
-      }
-    );
-
+    this.symbolStore = new AzureUniverse().symbols;
     this.vnetConverter = new VirtualNetworkConverter(this.symbolStore);
     this.converters = ConverterStore.create<AnyAzureObject>(
       this.vnetConverter,
