@@ -20,8 +20,10 @@ const initialRangeSpec: RuleSpec = {
 
   // TODO: pick an id that won't conflict with other ids.
   id: 0,
+
   // TODO: pick a source that won't conflict with other sources.
   source: '(graph)',
+
   // TODO: ALTERNATIVE: allow `spec` parameter of parseConjunction to be optional.
   // Then we won't need a spec. Does code rely on set being non-empty?
 };
@@ -87,13 +89,27 @@ export class Node {
         .intersect(rule.filters);
       remaining = remaining.subtract(allowed, simplifier);
 
-      let routes = keyToRoute.get(rule.destination);
-      if (routes) {
-        routes = routes.union(current, simplifier);
+      if (rule.override) {
+        // Don't merge routes that have overrides because the overrides
+        // may be different. We need to know the specific overrides during
+        // back propagation.
+        const edge: Edge = {
+          from: this.key,
+          to: rule.destination,
+          override: rule.override,
+          routes: current,
+        };
+        this.outboundEdges.push(edge);
       } else {
-        routes = current;
+        // Merge routes that don't have overrides.
+        let routes = keyToRoute.get(rule.destination);
+        if (routes) {
+          routes = routes.union(current, simplifier);
+        } else {
+          routes = current;
+        }
+        keyToRoute.set(rule.destination, current);
       }
-      keyToRoute.set(rule.destination, current);
     }
 
     // Add an edge for each node in keyToRoute.

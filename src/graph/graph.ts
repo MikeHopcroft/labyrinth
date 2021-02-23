@@ -6,10 +6,18 @@ import {Node} from './node';
 import {AnyRuleSpec, GraphSpec, NodeSpec} from './types';
 
 export interface Path {
+  // Index of node that this path goes to.
   node: number;
-  routes: Disjunction<AnyRuleSpec>;
+
+  // Last edge in this path.
+  edge?: FlowEdge;
+
+  // Previous step on the path. Undefined if this is the path
+  // that supplies the initial routes to the first node.
   previous: Path | undefined;
-  length: number;
+
+  // Routes that flow along this path.
+  routes: Disjunction<AnyRuleSpec>;
 }
 
 export interface FlowNode {
@@ -35,6 +43,8 @@ interface FlowAnalysis {
 }
 
 export interface GraphFormattingOptions {
+  backProject?: boolean;
+  outbound?: boolean;
   showPaths?: boolean;
   verbose?: boolean;
 }
@@ -107,7 +117,6 @@ export class Graph {
       node: index,
       routes: range,
       previous: undefined,
-      length: 0,
     };
     const edges = outbound ? this.outboundFrom : this.inboundTo;
     this.propagate(index, path, flows, edges, cycles);
@@ -123,16 +132,14 @@ export class Graph {
     cycles: Path[][]
   ) {
     const flowNode = flowNodes[index];
-    if (path.length > 0) {
+    if (path.previous) {
       flowNode.routes = flowNode.routes.union(path.routes, this.simplifier);
-    }
-    if (path.length > 0) {
       flowNode.paths.push(path);
     }
 
     if (flowNode.active) {
       if (flowNode.node.isEndpoint) {
-        // We've reach an endpoint.
+        // We've reached an endpoint.
         // Replace its route with the incoming path.
         flowNode.routes = path.routes;
       } else {
@@ -144,19 +151,20 @@ export class Graph {
     } else {
       // If we're not at an endpoint or we're at the first node,
       // visit adjancent nodes.
-      if (!flowNode.node.isEndpoint || path.length === 0) {
+      if (!flowNode.node.isEndpoint || !path.previous) {
         flowNode.active = true;
         for (const edge of flowEdges[index]) {
-          const routes = path.routes.intersect(
-            edge.edge.routes,
-            this.simplifier
-          );
+          let routes = path.routes.intersect(edge.edge.routes, this.simplifier);
+
+          if (edge.edge.override) {
+            routes = routes.overrideDimensions(edge.edge.override);
+          }
 
           if (!routes.isEmpty()) {
             this.propagate(
               edge.to,
               {
-                length: path.length + 1,
+                edge,
                 node: edge.to,
                 previous: path,
                 routes,
@@ -191,6 +199,23 @@ export class Graph {
     cycle.unshift({...p, routes});
 
     return cycle;
+  }
+
+  backPropagate(path: Path): Disjunction<AnyRuleSpec> {
+    let routes = Disjunction.universe<AnyRuleSpec>();
+    let step: Path | undefined = path;
+    while (step) {
+      if (step.edge) {
+        const override = step.edge.edge.override;
+        if (override) {
+          routes = routes.clearOverrides(override);
+        }
+        routes = routes.intersect(step.edge.edge.routes);
+      }
+      step = step.previous;
+    }
+
+    return routes;
   }
 
   nodeIndex(key: string): number {
@@ -242,7 +267,11 @@ export class Graph {
         lines.push('  paths:');
         for (const path of flowNode.paths) {
           lines.push(`    ${this.formatPath(path, outbound)}`);
-          if (options.verbose) {
+
+          if (options.backProject) {
+            const routes = this.backPropagate(path);
+            lines.push(routes.format({prefix: '      '}));
+          } else if (options.verbose) {
             lines.push(path.routes.format({prefix: '      '}));
           }
         }

@@ -16,15 +16,34 @@
     * Load balancers
     * NAT
 * Top
+  * Cleanup
+    * In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
+    * In graph.test.ts, make path() take GraphFormattingOptions parameter.
+  * Graph
+    * Remove GraphBuilder.
+    * Rename routes to something else: headers?
+      * Edge.routes
+      * Formatting
+      * React App
+    * Group dimension constraints under: condition? constraints? dimensions?
+    * x Load balancing
+      * x Change type of destination from string to string[] - for load balancing.
+          * x This is not enough - need to override fields specific to each machine in the pool.
+          * x Decided on a different approach - introduced pool field.
+      * x Want some sort of mode to run rules in parallel. Pool field.
+    * Better design for RuleSpec/RuleSpecNoId/RuleSpecEx
+    * Analogous changes for ForwardRuleSpec/ForwardRuleSpecEx
+    * io-ts: t.any is deprecated - use t.unknown
+    * Constraint, RuleSpec, ForwardRuleSpec: investigate why t.record(t.string, t.string) doesn't work.
   * NAT
     * x overrideDimensions()
     * x clearOverrides()
-    * Remove createRestoreOverride()
-    * Update forwardRuleSpec
-    * Update Path
-    * Update Graph.analyze()
-  * Prettier CR/LF differences between Windows and Ubuntu
-  * io-ts: t.any is deprecated - use t.unknown
+    * x Remove createRestoreOverride()
+    * x Update forwardRuleSpec
+    * x Update Path
+    * x Update Graph.analyze()
+    * x Load balancer needs destination to be string[] instead of string. Used pool field instead.
+  * x Prettier CR/LF differences between Windows and Ubuntu
   * Get clean resource graph
   * Graph documentation
     * Tutorial
