@@ -16,7 +16,7 @@ import {
   ItemMoniker,
   AnyAzureObject,
   AzureVirtualNetwork,
-  parseMonikers,
+  extractMonikers,
   SubnetConverter,
 } from '.';
 
@@ -35,7 +35,7 @@ export class VirtualNetworkConverter
   }
 
   monikers(vnet: AzureVirtualNetwork): ItemMoniker[] {
-    const monikers = parseMonikers(vnet);
+    const monikers = extractMonikers(vnet);
 
     for (const subnet of vnet.properties.subnets) {
       for (const alias of SubnetConverter.monikers(subnet)) {

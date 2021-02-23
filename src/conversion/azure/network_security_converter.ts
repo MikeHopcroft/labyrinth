@@ -62,7 +62,7 @@ function convertRule(
   return spec;
 }
 
-function parseRules(
+function createNetworkSecurityGroupRules(
   nsg: AzureNetworkSecurityGroup,
   vnet: AzureVirtualNetwork
 ): IRules {
@@ -94,5 +94,5 @@ function parseRules(
 }
 
 export const NSG = {
-  parseRules,
+  parseRules: createNetworkSecurityGroupRules,
 };

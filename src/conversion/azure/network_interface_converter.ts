@@ -8,11 +8,13 @@ import {
   IAzureConverter,
   IpConverters,
   ItemMoniker,
-  parseMonikers,
+  extractMonikers,
 } from '.';
 
-function parseNetworkAliases(nic: AzureNetworkInterface): ItemMoniker[] {
-  const aliases = parseMonikers(nic);
+function extractNetworkInterfaceMonikers(
+  nic: AzureNetworkInterface
+): ItemMoniker[] {
+  const aliases = extractMonikers(nic);
 
   for (const config of nic.properties.ipConfigurations) {
     const converter = IpConverters.asConverter(config);
@@ -30,7 +32,7 @@ function parseNetworkAliases(nic: AzureNetworkInterface): ItemMoniker[] {
   return aliases;
 }
 
-function parseNetworkNodeSpecs(
+function createNetworkInterfaceNodeSpecs(
   nic: AzureNetworkInterface,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
@@ -50,6 +52,6 @@ function parseNetworkNodeSpecs(
 
 export const NetworkInterfaceConverter: IAzureConverter<AzureNetworkInterface> = {
   supportedType: 'microsoft.network/networkinterfaces',
-  monikers: parseNetworkAliases,
-  convert: parseNetworkNodeSpecs,
+  monikers: extractNetworkInterfaceMonikers,
+  convert: createNetworkInterfaceNodeSpecs,
 };

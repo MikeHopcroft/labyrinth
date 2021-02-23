@@ -20,7 +20,7 @@ export interface IAzureConverter<T extends AnyAzureObject> {
   convert(input: T, stores: IEntityStore<AnyAzureObject>): NodeSpec[];
 }
 
-export function parseMonikers(item: AnyAzureObject): ItemMoniker[] {
+export function extractMonikers(item: AnyAzureObject): ItemMoniker[] {
   return [{item, name: item.name}];
 }
 
@@ -39,6 +39,6 @@ function skipProcessingNodeSpecs(
 
 export const DefaultConverter: IAzureConverter<AnyAzureObject> = {
   supportedType: 'DefaultTypes',
-  monikers: parseMonikers,
+  monikers: extractMonikers,
   convert: skipProcessingNodeSpecs,
 };

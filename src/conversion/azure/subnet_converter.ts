@@ -20,7 +20,7 @@ export function getVnetId(id: string): string {
   return path.dirname(path.dirname(id));
 }
 
-function parseSubnetMonikers(input: AnyAzureObject): ItemMoniker[] {
+function extractSubnetMonikers(input: AnyAzureObject): ItemMoniker[] {
   const monikers: ItemMoniker[] = [];
   monikers.push({
     item: input,
@@ -29,8 +29,7 @@ function parseSubnetMonikers(input: AnyAzureObject): ItemMoniker[] {
   return monikers;
 }
 
-// Consider 'convert' instead of 'parse'
-function parseSubnetNodeSpecs(
+function createSubnetNodeSpecs(
   subnet: AzureSubnet,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
@@ -120,6 +119,6 @@ function parseSubnetNodeSpecs(
 
 export const SubnetConverter: IAzureConverter<AzureSubnet> = {
   supportedType: 'Microsoft.Network/virtualNetworks/subnets',
-  monikers: parseSubnetMonikers,
-  convert: parseSubnetNodeSpecs,
+  monikers: extractSubnetMonikers,
+  convert: createSubnetNodeSpecs,
 };

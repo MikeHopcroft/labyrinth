@@ -9,10 +9,10 @@ import {
   AzureLocalIP,
   ConverterStore,
   IAzureConverter,
-  parseMonikers,
+  extractMonikers,
 } from '.';
 
-function parseSubnetRules(
+function createSubnetRules(
   subnetId: string | undefined,
   store: IEntityStore<AnyAzureObject>
 ): ForwardRuleSpec[] {
@@ -31,8 +31,7 @@ function parseSubnetRules(
   return rules;
 }
 
-// TODO: Rename and don't use parse
-function parseNodeSpecs(
+function createIpNodeSpecs(
   input: AnyAzureObject,
   store: IEntityStore<AnyAzureObject>,
   ip: string,
@@ -52,36 +51,35 @@ function parseNodeSpecs(
   ];
 }
 
-function parseLocalIpSpec(
+function createLocalIpNodeSpec(
   localIp: AzureLocalIP,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
   const ip = localIp.properties.privateIPAddress;
-  const rules = parseSubnetRules(localIp.properties.subnet?.id, store);
-  return parseNodeSpecs(localIp, store, ip, rules);
+  const rules = createSubnetRules(localIp.properties.subnet?.id, store);
+  return createIpNodeSpecs(localIp, store, ip, rules);
 }
 
-// TODO: Rename and don't use parse
-function parsePublicIpSpec(
+function createPublicIpNodeSpec(
   publicIp: AzurePublicIp,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
   const ip = publicIp.properties.ipAddress;
   // TODO: Verify ? operator behavior
-  const rules = parseSubnetRules(publicIp.properties.subnet?.id, store);
-  return parseNodeSpecs(publicIp, store, ip, rules);
+  const rules = createSubnetRules(publicIp.properties.subnet?.id, store);
+  return createIpNodeSpecs(publicIp, store, ip, rules);
 }
 
 export const PublicIpConverter: IAzureConverter<AzurePublicIp> = {
   supportedType: 'microsoft.network/publicipaddresses',
-  monikers: parseMonikers,
-  convert: parsePublicIpSpec,
+  monikers: extractMonikers,
+  convert: createPublicIpNodeSpec,
 };
 
 export const LocalIpConverter: IAzureConverter<AzureLocalIP> = {
   supportedType: 'Microsoft.Network/networkInterfaces/ipConfigurations',
-  monikers: parseMonikers,
-  convert: parseLocalIpSpec,
+  monikers: extractMonikers,
+  convert: createLocalIpNodeSpec,
 };
 
 export const IpConverters = ConverterStore.create<AzureIPConfiguration>(
