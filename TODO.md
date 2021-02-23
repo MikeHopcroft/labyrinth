@@ -16,6 +16,15 @@
     * Load balancers
     * NAT
 * Top
+  * NAT
+    * x overrideDimensions()
+    * x clearOverrides()
+    * Remove createRestoreOverride()
+    * Update forwardRuleSpec
+    * Update Path
+    * Update Graph.analyze()
+  * Prettier CR/LF differences between Windows and Ubuntu
+  * io-ts: t.any is deprecated - use t.unknown
   * Get clean resource graph
   * Graph documentation
     * Tutorial
