@@ -11,6 +11,7 @@ import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
 import {ForwardRule, parseForwardRuleSpec} from './forward_rule';
+import {PoolRule, parsePoolRuleSpec} from './pool_rule';
 import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
 
@@ -75,15 +76,17 @@ export class Node {
     const forwardRules = spec.rules.map(r =>
       parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
     );
-
-    this.createEdges(simplifier, filters, forwardRules);
+    const poolRules = (spec.pool || []).map(r =>
+      parsePoolRuleSpec(universe, r)
+    );
+    this.createForwardEdges(simplifier, filters, forwardRules, poolRules);
   }
 
-  // Constructs outgoing edges
-  createEdges(
+  createForwardEdges(
     simplifier: Simplifier<AnyRuleSpec>,
     filters: Disjunction<RuleSpec>,
-    forwardRules: ForwardRule[]
+    forwardRules: ForwardRule[],
+    poolRules: PoolRule[]
   ) {
     // NOTE that multiple rules may forward to the same node.
     // Use keyToRoute map to combine those routes going a single node.
@@ -122,6 +125,21 @@ export class Node {
     // Add an edge for each node in keyToRoute.
     for (const [to, routes] of keyToRoute.entries()) {
       const edge: Edge = {from: this.key, to, routes};
+      this.outboundEdges.push(edge);
+    }
+
+    this.createPoolEdges(remaining, poolRules);
+  }
+
+  createPoolEdges(filters: Disjunction<AnyRuleSpec>, poolRules: PoolRule[]) {
+    for (const rule of poolRules) {
+      const edge: Edge = {
+        from: this.key,
+        to: rule.destination,
+        override: rule.override,
+        routes: filters,
+      };
+      // console.log(JSON.stringify(edge, null, 2));
       this.outboundEdges.push(edge);
     }
   }
