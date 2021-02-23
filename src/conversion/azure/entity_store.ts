@@ -11,6 +11,8 @@ export class EntityStore implements IEntityStore<AnyAzureObject> {
   }
 
   public registerEntity(entity: AnyAzureObject, alias: string) {
+    // TODO: Are duplicates allowed? Should it be enforced until
+    // we have data which demonstrates this must be supported
     this.idToItem.set(entity.id, entity);
 
     if (alias !== '') {

@@ -24,6 +24,7 @@ export class VirtualNetworkConverter
   implements IAzureConverter<AzureVirtualNetwork> {
   private readonly ipFormatter: Formatter;
   private readonly symbols: SymbolStore;
+  // TODO:Set<T>. Issue: do you want to check for duplicates?
   private readonly vnets: Map<string, string>;
   readonly supportedType: string;
 
@@ -74,11 +75,13 @@ export class VirtualNetworkConverter
 
     // Define symbol/service tag for this virtual network.
     const addressRangeText = formatDRange(this.ipFormatter, addressRange);
+    // TODO This function signature (for push) always confuses me. My bad.
     this.symbols.push('ip', vnet.name, addressRangeText);
 
     const rules: ForwardRuleSpec[] = [
       // Traffic leaving subnet
       {
+        // TODO KEY_INTERNET
         destination: 'Internet',
         // TODO: use addressRangeText here.
         destinationIp: `except ${addresses}`,
@@ -88,12 +91,15 @@ export class VirtualNetworkConverter
     for (const subnet of vnet.properties.subnets) {
       const subnetNodes = SubnetConverter.convert(subnet, store);
 
+      // TODO: Still need to figure out how to make this less brittle.
+      // Or just add WARNING comments on both ends.
       // 0 - Router
       // 1 - Inbound
       // 2 - Outbound
       const child = subnetNodes[1].key;
 
       for (const subnetNode of subnetNodes) {
+        // TODO: Do we really want to patch the subnet rules here vs passing the vnet down?
         if (subnetNode.rules.length === 0) {
           subnetNode.rules.push({
             destination: alias,
@@ -122,6 +128,7 @@ export class VirtualNetworkConverter
   }
 
   public virtualNetworks(): string[] {
+    // TODO: [...this.vnets.keys()]
     return Array.from(this.vnets.keys());
   }
 }

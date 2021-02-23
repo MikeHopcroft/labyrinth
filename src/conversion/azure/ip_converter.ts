@@ -22,6 +22,7 @@ function parseSubnetRules(
     const subnet = store.getAlias(subnetId);
 
     rules.push({
+      // TODO: Review the usage of desinationIp which requires a symbol
       destinationIp: subnet,
       destination: subnet,
     });
@@ -30,6 +31,7 @@ function parseSubnetRules(
   return rules;
 }
 
+// TODO: Rename and don't use parse
 function parseNodeSpecs(
   input: AnyAzureObject,
   store: IEntityStore<AnyAzureObject>,
@@ -59,11 +61,13 @@ function parseLocalIpSpec(
   return parseNodeSpecs(localIp, store, ip, rules);
 }
 
+// TODO: Rename and don't use parse
 function parsePublicIpSpec(
   publicIp: AzurePublicIp,
   store: IEntityStore<AnyAzureObject>
 ): NodeSpec[] {
   const ip = publicIp.properties.ipAddress;
+  // TODO: Verify ? operator behavior
   const rules = parseSubnetRules(publicIp.properties.subnet?.id, store);
   return parseNodeSpecs(publicIp, store, ip, rules);
 }

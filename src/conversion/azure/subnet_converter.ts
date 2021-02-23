@@ -29,6 +29,7 @@ function parseSubnetMonikers(input: AnyAzureObject): ItemMoniker[] {
   return monikers;
 }
 
+// Consider 'convert' instead of 'parse'
 function parseSubnetNodeSpecs(
   subnet: AzureSubnet,
   store: IEntityStore<AnyAzureObject>
