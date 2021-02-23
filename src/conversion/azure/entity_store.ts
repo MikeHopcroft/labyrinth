@@ -1,5 +1,5 @@
 import {IEntityStore} from '..';
-import {AnyAzureObject} from './schema';
+import {AnyAzureObject} from './types';
 
 export class EntityStore implements IEntityStore<AnyAzureObject> {
   private readonly idToItem: Map<string, AnyAzureObject>;
