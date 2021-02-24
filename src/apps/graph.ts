@@ -34,6 +34,7 @@ function main() {
 
   const backProject = !!args.b;
   const modelSpoofing = !!args.s;
+  const outbound = !!args.f;
   const showRouters = !!args.r;
   const verbose = !!args.v;
   const showPaths = backProject || verbose || !!args.p;
@@ -41,6 +42,7 @@ function main() {
   const options = {
     backProject,
     modelSpoofing,
+    outbound,
     showPaths,
     showRouters,
     verbose,
@@ -69,8 +71,11 @@ function main() {
         return fail(`Unknown start node ${args.f}`);
       }
 
-      const outbound = true;
-      const {cycles, flows} = graph.analyze(args.f, outbound, modelSpoofing);
+      const {cycles, flows} = graph.analyze(
+        args.f,
+        options.outbound,
+        modelSpoofing
+      );
 
       summarizeOptions(options);
       listEndpoints(graph, showRouters);
@@ -102,7 +107,7 @@ function main() {
           args.f !== flow.node.spec.key &&
           (args.r || flow.node.isEndpoint || args.t === flow.node.key)
         ) {
-          console.log(graph.formatFlow(flow, outbound, options));
+          console.log(graph.formatFlow(flow, options));
           console.log();
         }
       }
@@ -116,8 +121,11 @@ function main() {
         return fail(`Unknown end node ${args.t}`);
       }
 
-      const outbound = false;
-      const {cycles, flows} = graph.analyze(args.t, outbound, modelSpoofing);
+      const {cycles, flows} = graph.analyze(
+        args.t,
+        options.outbound,
+        modelSpoofing
+      );
 
       summarizeOptions(options);
       listEndpoints(graph, showRouters);
@@ -136,7 +144,7 @@ function main() {
 
       for (const flow of flows) {
         if (args.t !== flow.node.spec.key && (args.r || flow.node.isEndpoint)) {
-          console.log(graph.formatFlow(flow, outbound, options));
+          console.log(graph.formatFlow(flow, options));
           console.log();
         }
       }

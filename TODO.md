@@ -16,15 +16,17 @@
     * Load balancers
     * NAT
 * Top
+  * Offline
+    * Problems loading reference 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to load schema from 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to connect to https://schemastore.azurewebsites.net/schemas/json/tsconfig.json. Error: getaddrinfo ENOTFOUND schemastore.azurewebsites.net schemastore.azurewebsites.net:443
   * Cleanup
     * Get rid of initialRangeSpec (in node.ts)
-    * In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
-    * Consider deprecating GraphBuilder.
+    * x In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
     * In graph.test.ts, make path() take GraphFormattingOptions parameter.
     * COMMENT: This is not a cycle since and endpoint is not a router.
       * This is only true by convention. Do we need separate node types here?
   * Graph
-    * Remove GraphBuilder. Maybe not. GraphBuilder does the expensive part of creating Nodes. Perhaps rename to NodeBuilder?
+    * Consider deprecating GraphBuilder.
+      * Maybe not. GraphBuilder does the expensive part of creating Nodes. Perhaps rename to NodeBuilder?
     * Rename routes to something else: headers?
       * Edge.routes
       * Formatting
