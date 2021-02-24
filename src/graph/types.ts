@@ -34,6 +34,8 @@ export const ForwardRuleSpecReservedWords = new Set<string>([
   'source',
 ]);
 
+export type AnyRuleSpec = RuleSpecEx | ForwardRuleSpecEx;
+
 export const nodeSpecType = t.intersection([
   t.type({
     key: t.string,
@@ -49,8 +51,6 @@ export const nodeSpecType = t.intersection([
 ]);
 
 export type NodeSpec = t.TypeOf<typeof nodeSpecType>;
-
-export type AnyRuleSpec = RuleSpecEx | ForwardRuleSpecEx;
 
 export const symbolDefinitionSpec = t.type({
   dimension: t.string,
