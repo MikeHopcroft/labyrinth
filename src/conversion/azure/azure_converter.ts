@@ -68,23 +68,20 @@ class AzureConverterImpl {
     // like AzureSubnets and AzureIPConfiguration.
     //
 
-    for (const item of root) {
-      const converter = this.converters.asConverter(item);
+    for (const azureObject of root) {
+      const converter = this.converters.asConverter(azureObject);
 
-      itemsToMap.push(item);
-
-      for (const index of converter.monikers(item)) {
-        if (index.item) {
-          this.entityStore.registerEntity(index.item, index.name);
-        }
+      // Have to push here since iterators do not appear to be able to be
+      // reset. We could move back to taking an Array instead...
+      itemsToMap.push(azureObject);
+      for (const moniker of converter.monikers(azureObject)) {
+        this.entityStore.registerEntity(moniker.item, moniker.name);
       }
     }
 
     //
     // Step 2: convert all AzureObjects to NodeSpecs.
     //
-
-    // [...root]?
     for (const item of itemsToMap) {
       const converter = this.converters.asConverter(item);
       nodes.push(...converter.convert(item, this.entityStore));

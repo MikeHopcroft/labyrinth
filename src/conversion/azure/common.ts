@@ -5,7 +5,7 @@ import {IEntityStore} from '..';
 import {AnyAzureObject} from '.';
 
 export interface ItemMoniker {
-  readonly item: AnyAzureObject | undefined;
+  readonly item: AnyAzureObject;
   readonly name: string;
 }
 
