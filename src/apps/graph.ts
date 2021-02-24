@@ -32,12 +32,19 @@ function main() {
     return fail('Cycle detection not implemented.');
   }
 
+  const backProject = !!args.b;
   const modelSpoofing = !!args.s;
   const showRouters = !!args.r;
   const verbose = !!args.v;
-  const showPaths = verbose || !!args.p;
+  const showPaths = backProject || verbose || !!args.p;
 
-  const options = {modelSpoofing, showPaths, showRouters, verbose};
+  const options = {
+    backProject,
+    modelSpoofing,
+    showPaths,
+    showRouters,
+    verbose,
+  };
 
   try {
     // Initialize universe.
@@ -226,6 +233,12 @@ function showUsage() {
           description: 'Model source address spoofing.',
           type: Boolean,
         },
+        {
+          name: 'back-project',
+          alias: 'b',
+          description: 'Backproject routes through NAT rewrites.',
+          type: Boolean,
+        },
       ],
     },
   ];
@@ -255,6 +268,7 @@ function listEndpoints(graph: Graph, showRouters: boolean) {
 }
 
 function summarizeOptions(options: {
+  backProject: boolean;
   modelSpoofing: boolean;
   showPaths: boolean;
   showRouters: boolean;
@@ -288,6 +302,14 @@ function summarizeOptions(options: {
     console.log('  Verbose mode (-v).');
   } else {
     console.log('  Brief mode (use -v flag to enable verbose mode).');
+  }
+
+  if (options.backProject) {
+    console.log('Backprojecting paths past NAT rewrites. (-b)');
+  } else {
+    console.log(
+      'Paths are forward propagated (use -b flag to enable backprojection).'
+    );
   }
 
   console.log();

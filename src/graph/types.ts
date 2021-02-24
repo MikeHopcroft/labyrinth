@@ -1,6 +1,12 @@
 import * as t from 'io-ts';
 
-import {RuleSpecEx, ruleSpecNoIdType} from '../rules';
+import {constraintType, RuleSpecEx, ruleSpecNoIdType} from '../rules';
+
+const poolRuleSpecType = t.type({
+  destination: t.string,
+  override: constraintType,
+});
+export type PoolRuleSpec = t.TypeOf<typeof poolRuleSpecType>;
 
 const forwardRuleSpecType = t.intersection([
   t.type({
@@ -8,6 +14,7 @@ const forwardRuleSpecType = t.intersection([
   }),
   t.partial({
     filters: t.array(ruleSpecNoIdType),
+    override: constraintType,
   }),
   t.record(t.string, t.any),
 ]);
@@ -21,7 +28,9 @@ export type ForwardRuleSpecEx = ForwardRuleSpec & {[others: string]: any};
 
 export const ForwardRuleSpecReservedWords = new Set<string>([
   'destination',
+  'filters',
   'id',
+  'override',
   'source',
 ]);
 
@@ -34,6 +43,7 @@ export const nodeSpecType = t.intersection([
     name: t.string,
     endpoint: t.boolean,
     filters: t.array(ruleSpecNoIdType),
+    pool: t.array(poolRuleSpecType),
     range: t.record(t.string, t.any),
   }),
 ]);

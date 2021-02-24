@@ -103,6 +103,24 @@ export class Disjunction<A> {
     return simplifier(new Disjunction(terms));
   }
 
+  // Create a copy of `this` Disjunction<A> where dimensions that appear
+  // in `other` replace the dimensions in `this`. Used for network address
+  // translation.
+  overrideDimensions(override: Conjunction<A>): Disjunction<A> {
+    const terms = this.conjunctions.map(term =>
+      term.overrideDimensions(override)
+    );
+    return new Disjunction(terms);
+  }
+
+  // Create a copy of `this` Disjunction<A> where dimensions that appear
+  // in `other` are filtered out. Used for undoing network address
+  // translation during back propagation.
+  clearOverrides(override: Conjunction<A>): Disjunction<A> {
+    const terms = this.conjunctions.map(term => term.clearOverrides(override));
+    return new Disjunction(terms);
+  }
+
   equivalent(
     other: Disjunction<A>,
     simplifier: Simplifier<A> = nopSimplifier

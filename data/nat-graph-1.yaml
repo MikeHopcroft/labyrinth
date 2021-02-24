@@ -1,0 +1,60 @@
+symbols: []
+nodes:
+  - key: client
+    endpoint: true
+    range:
+      sourceIp: 192.0.2.53
+    rules:
+      - destination: publicIp
+        destinationIp: 203.0.113.1
+  - key: publicIp
+    # External ip: 203.0.113.1
+    # Internal ip: 10.0.0.1
+    rules:
+      - destination: firewall
+        destinationIp: 203.0.113.1
+        override:
+          destinationIp: 10.0.0.2
+          sourceIp: 10.0.0.1
+  - key: firewall
+    # 10.0.0.2
+    filters:
+      - action: allow
+        priority: 0
+        destinationPort: http, https, 2201-2202
+    rules:
+      - destination: loadBalancer
+  - key: loadBalancer
+    # 10.0.0.3
+    rules:
+      - destination: serverA
+        destinationPort: 2201
+        override:
+          destinationIp: 20.0.0.1
+          sourceIp: 10.0.0.3
+          destinationPort: 22
+      - destination: serverB
+        destinationPort: 2202
+        override:
+          destinationIp: 20.0.0.2
+          sourceIp: 10.0.0.3
+          destinationPort: 22
+    pool:
+      - destination: serverA
+        override:
+          destinationIp: 20.0.0.1
+          sourceIp: 10.0.0.3
+      - destination: serverB
+        override:
+          destinationIp: 20.0.0.2
+          sourceIp: 10.0.0.3
+  - key: serverA
+    range:
+      sourceIp: 20.0.0.1
+    endpoint: true
+    rules: []
+  - key: serverB
+    range:
+      sourceIp: 20.0.0.2
+    endpoint: true
+    rules: []

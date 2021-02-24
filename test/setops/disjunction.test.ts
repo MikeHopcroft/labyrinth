@@ -44,7 +44,7 @@ const emptyRange1 = new DimensionedRange(dimension1, new DRange());
 
 const ignore = new Set<RuleSpec>();
 
-describe('Disjunction', () => {
+describe('SetOps - Disjunction', () => {
   describe('create()', () => {
     it('X + 1 = 1', () => {
       const c = Conjunction.create([range1], ignore);
