@@ -29,7 +29,7 @@ function paths(
   const filtered = flows.filter(flow => flow.node.key === to);
   return filtered
     .map(flow =>
-      graph.formatFlow(flow, !!options.outbound, {
+      graph.formatFlow(flow, {
         showPaths: true,
         verbose: true,
         ...options,
@@ -808,7 +808,7 @@ describe('Graph', () => {
       assert.equal(cycles.length, 0);
 
       const observed = flows
-        .map(flow => graph.formatFlow(flow, outbound, {showPaths: true}))
+        .map(flow => graph.formatFlow(flow, {outbound, showPaths: true}))
         .join('\n');
 
       const expected = trim(`

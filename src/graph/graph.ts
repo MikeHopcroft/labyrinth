@@ -282,11 +282,9 @@ export class Graph {
     return lines.join('\n');
   }
 
-  formatFlow(
-    flowNode: FlowNode,
-    outbound: boolean,
-    options: GraphFormattingOptions
-  ): string {
+  formatFlow(flowNode: FlowNode, options: GraphFormattingOptions): string {
+    const outbound = !!options.outbound;
+
     const key = flowNode.node.key;
     const routes = flowNode.routes.format({prefix: '    '});
 
