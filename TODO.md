@@ -24,7 +24,7 @@
     * COMMENT: This is not a cycle since and endpoint is not a router.
       * This is only true by convention. Do we need separate node types here?
   * Graph
-    * Remove GraphBuilder.
+    * Remove GraphBuilder. Maybe not. GraphBuilder does the expensive part of creating Nodes. Perhaps rename to NodeBuilder?
     * Rename routes to something else: headers?
       * Edge.routes
       * Formatting
