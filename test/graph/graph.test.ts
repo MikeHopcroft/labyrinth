@@ -900,7 +900,7 @@ describe('Graph', () => {
             {
               action: ActionType.ALLOW,
               priority: 0,
-              destinationPort: 'http, https',
+              destinationPort: 'http, https, 2201-2202',
             },
           ],
           rules: [
@@ -914,8 +914,35 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'serverA',
+              destinationPort: 2201,
               override: {
                 destinationIp: '20.0.0.1',
+                sourceIp: '10.0.0.3',
+                destinationPort: 22,
+              },
+            },
+            {
+              destination: 'serverB',
+              destinationPort: 2202,
+              override: {
+                destinationIp: '20.0.0.2',
+                sourceIp: '10.0.0.3',
+                destinationPort: 22,
+              },
+            },
+          ],
+          pool: [
+            {
+              destination: 'serverA',
+              override: {
+                destinationIp: '20.0.0.1',
+                sourceIp: '10.0.0.3',
+              },
+            },
+            {
+              destination: 'serverB',
+              override: {
+                destinationIp: '20.0.0.2',
                 sourceIp: '10.0.0.3',
               },
             },
@@ -951,20 +978,38 @@ describe('Graph', () => {
             routes:
               source ip: 10.0.0.3
               destination ip: 20.0.0.1
-              destination port: http, https
+              destination port: ssh, http, https
           
             paths:
               client => publicIp => firewall => loadBalancer => serverA
+                destination ip: 203.0.113.1
+                destination port: 2201
+              client => publicIp => firewall => loadBalancer => serverA
+                destination ip: 203.0.113.1
+                destination port: http, https
+        `)
+      );
+
+      assert.equal(
+        paths(graph, 'client', 'serverB', {outbound, backProject}),
+        trim(`
+          serverB:
+            routes:
+              source ip: 10.0.0.3
+              destination ip: 20.0.0.2
+              destination port: ssh, http, https
+          
+            paths:
+              client => publicIp => firewall => loadBalancer => serverB
+                destination ip: 203.0.113.1
+                destination port: 2202
+              client => publicIp => firewall => loadBalancer => serverB
                 destination ip: 203.0.113.1
                 destination port: http, https
         `)
       );
     });
   });
-
-  // Backward propagation
-  // server => subnet => server | internet
-  // Builder - add, remove, update
 
   describe('Filters', () => {
     it('Inbound', () => {

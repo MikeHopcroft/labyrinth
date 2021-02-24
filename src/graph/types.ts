@@ -2,6 +2,12 @@ import * as t from 'io-ts';
 
 import {constraintType, RuleSpecEx, ruleSpecNoIdType} from '../rules';
 
+const poolRuleSpecType = t.type({
+  destination: t.string,
+  override: constraintType,
+});
+export type PoolRuleSpec = t.TypeOf<typeof poolRuleSpecType>;
+
 const forwardRuleSpecType = t.intersection([
   t.type({
     destination: t.string,
@@ -37,6 +43,7 @@ export const nodeSpecType = t.intersection([
     name: t.string,
     endpoint: t.boolean,
     filters: t.array(ruleSpecNoIdType),
+    pool: t.array(poolRuleSpecType),
     range: t.record(t.string, t.any),
   }),
 ]);
