@@ -14,7 +14,7 @@ nodes:
       - destination: firewall
         destinationIp: 203.0.113.1
         override:
-          destinationIp: 10.0.0.2
+          destinationIp: 10.0.0.3
           sourceIp: 10.0.0.1
   - key: firewall
     # 10.0.0.2
@@ -30,31 +30,31 @@ nodes:
       - destination: serverA
         destinationPort: 2201
         override:
-          destinationIp: 20.0.0.1
-          sourceIp: 10.0.0.3
+          destinationIp: 20.0.0.2
+          sourceIp: 20.0.0.1
           destinationPort: 22
       - destination: serverB
         destinationPort: 2202
         override:
-          destinationIp: 20.0.0.2
-          sourceIp: 10.0.0.3
+          destinationIp: 20.0.0.3
+          sourceIp: 20.0.0.1
           destinationPort: 22
     pool:
       - destination: serverA
         override:
           destinationIp: 20.0.0.1
-          sourceIp: 10.0.0.3
+          sourceIp: 20.0.0.1
       - destination: serverB
         override:
           destinationIp: 20.0.0.2
-          sourceIp: 10.0.0.3
+          sourceIp: 20.0.0.1
   - key: serverA
     range:
-      sourceIp: 20.0.0.1
+      sourceIp: 20.0.0.2
     endpoint: true
     rules: []
   - key: serverB
     range:
-      sourceIp: 20.0.0.2
+      sourceIp: 20.0.0.3
     endpoint: true
     rules: []

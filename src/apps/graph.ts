@@ -103,9 +103,14 @@ function main() {
       console.log();
 
       for (const flow of flows) {
-        if (
+        if (args.t) {
+          if (args.t === flow.node.key) {
+            console.log(graph.formatFlow(flow, outbound, options));
+            console.log();
+          }
+        } else if (
           args.f !== flow.node.spec.key &&
-          (args.r || flow.node.isEndpoint || args.t === flow.node.key)
+          (args.r || flow.node.isEndpoint)
         ) {
           console.log(graph.formatFlow(flow, options));
           console.log();
