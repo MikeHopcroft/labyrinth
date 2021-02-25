@@ -22,14 +22,16 @@ describe('Conversion - Azure Simple Vnet', () => {
         filters: [
           {
             action: ActionType.ALLOW,
-            destinationIp: 'VNET-B',
-            destinationPort: '*',
+            constraints: {
+              destinationIp: 'VNET-B',
+              destinationPort: '*',
+              protocol: '*',
+              sourceIp: 'VNET-B',
+              sourcePort: '*',
+            },
             id: 1,
             priority: 65000,
-            protocol: '*',
             source: 'data/azure/resource-graph-1.json',
-            sourceIp: 'VNET-B',
-            sourcePort: '*',
           },
         ],
         key: 'A/inbound',

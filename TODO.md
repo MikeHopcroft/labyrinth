@@ -31,7 +31,9 @@
       * Edge.routes
       * Formatting
       * React App
-    * Group dimension constraints under: condition? constraints? dimensions?
+    * RuleSpec and ForwardRuleSpec and NodeSpec
+      * Group dimension constraints under: condition? constraints? dimensions?
+      * Rename NodeSpec.rules to NodeSpec.routingRules? NodeSpec.routes?
     * x Load balancing
       * x Change type of destination from string to string[] - for load balancing.
           * x This is not enough - need to override fields specific to each machine in the pool.

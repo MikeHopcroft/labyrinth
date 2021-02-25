@@ -16,6 +16,8 @@ import {ActionType} from '../../src/rules';
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
 
+import {trim} from '../shared';
+
 const universe = new Universe(firewallSpec);
 const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
@@ -36,31 +38,6 @@ function paths(
       })
     )
     .join('\n');
-}
-
-function trim(text: string) {
-  const lines = text.split(/\n/);
-  if (lines.length < 2) {
-    return text;
-  } else {
-    if (lines[0].trim() === '') {
-      lines.shift(); // Remove leading blank line
-    }
-
-    if (lines[lines.length - 1].trim() === '') {
-      lines.pop(); // Remove trailing blank line
-    }
-
-    const indent = lines[0].length - lines[0].trimStart().length;
-    const trimmed = lines.map(line => {
-      if (line.length < indent) {
-        return line.trimStart();
-      } else {
-        return line.slice(indent);
-      }
-    });
-    return trimmed.join('\n');
-  }
 }
 
 // Convenience function.
@@ -494,8 +471,7 @@ describe('Graph', () => {
               a => b => c => d
                 source port: 1
                 destination port: 2
-                protocol: tcp
-        `)
+                protocol: tcp`)
       );
 
       assert.equal(
@@ -506,8 +482,7 @@ describe('Graph', () => {
               (no routes)
 
             paths:
-              (no paths)
-        `)
+              (no paths)`)
       );
     });
 
@@ -581,8 +556,7 @@ describe('Graph', () => {
                 source port: 1
                 destination ip: 10.0.0.0/8
                 destination port: 2
-                protocol: tcp
-        `)
+                protocol: tcp`)
       );
 
       assert.equal(
@@ -594,8 +568,7 @@ describe('Graph', () => {
 
             paths:
               d => c => b => a
-                destination ip: except 10.0.0.0/8
-        `)
+                destination ip: except 10.0.0.0/8`)
       );
     });
 
@@ -653,8 +626,7 @@ describe('Graph', () => {
               main1 => left => main2
                 destination ip: 10.0.0.0/8
               main1 => right => main2
-                destination ip: 11.0.0.0/8
-        `)
+                destination ip: 11.0.0.0/8`)
       );
     });
 
@@ -708,8 +680,7 @@ describe('Graph', () => {
 
             paths:
               main => a
-                destination ip: 10.0.0.0/8
-        `)
+                destination ip: 10.0.0.0/8`)
       );
 
       assert.equal(
@@ -720,8 +691,7 @@ describe('Graph', () => {
               (no routes)
 
             paths:
-              (no paths)
-        `)
+              (no paths)`)
       );
 
       assert.equal(
@@ -733,8 +703,7 @@ describe('Graph', () => {
 
             paths:
               main => c
-                destination ip: 11.0.0.0/8
-        `)
+                destination ip: 11.0.0.0/8`)
       );
     });
 
@@ -858,8 +827,7 @@ describe('Graph', () => {
 
           paths:
             internet => gateway => subnet1 => subnet2 => server
-            internet => gateway => subnet2 => server
-      `);
+            internet => gateway => subnet2 => server`);
 
       assert.equal(observed, expected);
     });
@@ -900,7 +868,7 @@ describe('Graph', () => {
             {
               action: ActionType.ALLOW,
               priority: 0,
-              destinationPort: 'http, https, 2201-2202',
+              constraints: {destinationPort: 'http, https, 2201-2202'},
             },
           ],
           rules: [
@@ -986,8 +954,7 @@ describe('Graph', () => {
                 destination port: 2201
               client => publicIp => firewall => loadBalancer => serverA
                 destination ip: 203.0.113.1
-                destination port: http, https
-        `)
+                destination port: http, https`)
       );
 
       assert.equal(
@@ -1005,8 +972,7 @@ describe('Graph', () => {
                 destination port: 2202
               client => publicIp => firewall => loadBalancer => serverB
                 destination ip: 203.0.113.1
-                destination port: http, https
-        `)
+                destination port: http, https`)
       );
     });
   });
@@ -1029,7 +995,7 @@ describe('Graph', () => {
             {
               action: ActionType.DENY,
               priority: 0,
-              destinationPort: '1',
+              constraints: {destinationPort: '1'},
             },
             {
               action: ActionType.ALLOW,
@@ -1083,8 +1049,7 @@ describe('Graph', () => {
             paths:
               main1 => main2 => a
                 destination ip: 10.0.0.0/8
-                destination port: except 1
-        `)
+                destination port: except 1`)
       );
 
       assert.equal(
@@ -1095,8 +1060,7 @@ describe('Graph', () => {
               (no routes)
 
             paths:
-              (no paths)
-        `)
+              (no paths)`)
       );
 
       assert.equal(
@@ -1110,8 +1074,7 @@ describe('Graph', () => {
             paths:
               main1 => main2 => c
                 destination ip: 11.0.0.0/8
-                destination port: except 1
-        `)
+                destination port: except 1`)
       );
     });
 
@@ -1132,7 +1095,7 @@ describe('Graph', () => {
             {
               action: ActionType.DENY,
               priority: 0,
-              destinationPort: '1',
+              constraints: {destinationPort: '1'},
             },
             {
               action: ActionType.ALLOW,
@@ -1147,7 +1110,7 @@ describe('Graph', () => {
                 {
                   action: ActionType.DENY,
                   priority: 0,
-                  destinationPort: '2',
+                  constraints: {destinationPort: '2'},
                 },
                 {
                   action: ActionType.ALLOW,
@@ -1197,8 +1160,7 @@ describe('Graph', () => {
             paths:
               main1 => main2 => a
                 destination ip: 10.0.0.0/8
-                destination port: except 1-2
-        `)
+                destination port: except 1-2`)
       );
 
       assert.equal(
@@ -1209,8 +1171,7 @@ describe('Graph', () => {
               (no routes)
 
             paths:
-              (no paths)
-        `)
+              (no paths)`)
       );
 
       assert.equal(
@@ -1224,8 +1185,7 @@ describe('Graph', () => {
             paths:
               main1 => main2 => c
                 destination ip: 11.0.0.0/8
-                destination port: except 1
-        `)
+                destination port: except 1`)
       );
     });
   });

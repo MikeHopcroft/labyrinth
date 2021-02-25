@@ -86,9 +86,11 @@ describe('Simplifier', () => {
       source: 'policy',
       action: ActionType.ALLOW,
       priority: 1,
-      sourceIp: '127.0.0.1',
-      protocol: 'TCP,UDP',
-      sourcePort: '80',
+      constraints: {
+        sourceIp: '127.0.0.1',
+        protocol: 'TCP,UDP',
+        sourcePort: '80',
+      },
     };
     const rule1: Rule = parseRuleSpec(universe, spec);
 
@@ -116,24 +118,30 @@ describe('Simplifier', () => {
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '1',
-          destinationPort: '100',
+          constraints: {
+            sourcePort: '1',
+            destinationPort: '100',
+          },
         },
         {
           id: 2,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '2',
-          destinationPort: '100',
+          constraints: {
+            sourcePort: '2',
+            destinationPort: '100',
+          },
         },
         {
           id: 3,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '3',
-          destinationPort: '200',
+          constraints: {
+            sourcePort: '3',
+            destinationPort: '200',
+          },
         },
       ];
 
@@ -165,14 +173,14 @@ describe('Simplifier', () => {
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '1',
+          constraints: {sourcePort: '1'},
         },
         {
           id: 2,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          destinationPort: '101',
+          constraints: {destinationPort: '101'},
         },
       ];
 
@@ -182,14 +190,14 @@ describe('Simplifier', () => {
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          destinationPort: '101',
+          constraints: {destinationPort: '101'},
         },
         {
           id: 4,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '2',
+          constraints: {sourcePort: '2'},
         },
       ];
 
@@ -233,14 +241,14 @@ describe('Simplifier', () => {
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '1',
+          constraints: {sourcePort: '1'},
         },
         {
           id: 2,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          destinationPort: '101',
+          constraints: {destinationPort: '101'},
         },
       ];
 
@@ -301,36 +309,44 @@ describe('Simplifier', () => {
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '1',
-          destinationPort: '100',
-          protocol: 'TCP',
+          constraints: {
+            sourcePort: '1',
+            destinationPort: '100',
+            protocol: 'TCP',
+          },
         },
         {
           id: 2,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '2',
-          destinationPort: '100',
-          protocol: 'TCP',
+          constraints: {
+            sourcePort: '2',
+            destinationPort: '100',
+            protocol: 'TCP',
+          },
         },
         {
           id: 3,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '1-2',
-          destinationPort: '101',
-          protocol: 'TCP',
+          constraints: {
+            sourcePort: '1-2',
+            destinationPort: '101',
+            protocol: 'TCP',
+          },
         },
         {
           id: 4,
           source: 'policy',
           action: ActionType.ALLOW,
           priority: 1,
-          sourcePort: '1-2',
-          destinationPort: '100-101',
-          protocol: 'UDP',
+          constraints: {
+            sourcePort: '1-2',
+            destinationPort: '100-101',
+            protocol: 'UDP',
+          },
         },
       ];
 

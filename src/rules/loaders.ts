@@ -203,7 +203,8 @@ export function loadCsvRulesString(
       const message = 'Illegal column: "source".';
       throw new TypeError(message);
     }
-    return {...rule, id, priority: 1, source: options.source || ''};
+    const {action, ...constraints} = rule;
+    return {action, constraints, id, priority: 1, source: options.source || ''};
   });
 
   const spec = validate(codecRuleSpecSet, {rules});
@@ -251,15 +252,15 @@ export function loadYamlRulesString(
 // TODO: Consider moving to Rule.constructor().
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {action, id, priority, source, ...rest} = spec;
-  const conjunction = parseConjunction(universe, rest, spec);
+  const {action, id, priority, source, constraints} = spec;
+  const conjunction = parseConjunction(universe, constraints || {}, spec);
 
   return {action, priority, conjunction, spec};
 }
 
 export function parseConjunction<A>(
   universe: Universe,
-  fields: {},
+  fields: Record<string, unknown>,
   spec: A
 ): Conjunction<A> {
   let conjunction = Conjunction.create([], new Set([spec]));

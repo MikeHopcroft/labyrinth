@@ -16,5 +16,8 @@ export function formatRule(
   const prefix = options.prefix || '';
   return `${prefix}action: ${rule.action}\n${prefix}priority: ${
     rule.priority
-  }\n${prefix}${rule.conjunction.format(options)}\n`;
+  }\n${prefix}constraints:\n${rule.conjunction.format({
+    ...options,
+    prefix: prefix + '  ',
+  })}\n`;
 }
