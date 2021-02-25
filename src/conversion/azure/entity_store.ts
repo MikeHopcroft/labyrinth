@@ -1,5 +1,5 @@
 import {IEntityStore} from '..';
-import {AnyAzureObject} from './schema';
+import {AnyAzureObject} from './types';
 
 export class EntityStore implements IEntityStore<AnyAzureObject> {
   private readonly idToItem: Map<string, AnyAzureObject>;
@@ -11,6 +11,10 @@ export class EntityStore implements IEntityStore<AnyAzureObject> {
   }
 
   public registerEntity(entity: AnyAzureObject, alias: string) {
+    if (this.idToItem.has(entity.id)) {
+      throw new TypeError(`Registration of '${entity.id}' happend twice`);
+    }
+
     this.idToItem.set(entity.id, entity);
 
     if (alias !== '') {

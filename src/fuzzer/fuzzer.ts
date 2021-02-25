@@ -1,7 +1,7 @@
 import DRange from 'drange';
 
 import {Universe} from '../dimensions';
-import {ActionType, RuleSpec, RuleSpecEx, RuleSpecSet} from '../rules';
+import {ActionType, RuleSpec, RuleSpecSet} from '../rules';
 
 import {Random} from './random';
 
@@ -24,7 +24,7 @@ export function createRandomRuleSpec(
   universe: Universe,
   random: Random,
   p: number
-): RuleSpecEx {
+): RuleSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const spec: {[others: string]: any} = {};
 

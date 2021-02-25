@@ -1,38 +1,44 @@
 import DRange from 'drange';
+
+import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
 import {
-  createIpFormatter,
   DimensionType,
+  createIpFormatter,
   formatDRange,
   Formatter,
   parseIp,
-} from '../..';
-import {ForwardRuleSpecEx, NodeSpec, SymbolStore} from '../../graph';
-import {IAzureConverter, ItemMoniker} from './contracts';
-import {AnyAzureObject, AzureVirtualNetwork} from './schema';
-import {BaseAzureConverter} from './base_azure_converter';
-import {SubnetConverter} from './subnet_converter';
+} from '../../dimensions';
+
 import {IEntityStore} from '..';
 
-export class VirtualNetworkConverter extends BaseAzureConverter {
-  private readonly subnetConveter: IAzureConverter;
+import {
+  IAzureConverter,
+  ItemMoniker,
+  AnyAzureObject,
+  AzureVirtualNetwork,
+  extractMonikers,
+  SubnetConverter,
+} from '.';
+
+export class VirtualNetworkConverter
+  implements IAzureConverter<AzureVirtualNetwork> {
   private readonly ipFormatter: Formatter;
   private readonly symbols: SymbolStore;
-  private readonly vnets: Map<string, string>;
+  private readonly vnets: Set<string>;
+  readonly supportedType: string;
 
   constructor(symbols: SymbolStore) {
-    super('microsoft.network/virtualnetworks');
-    this.subnetConveter = new SubnetConverter();
+    this.supportedType = 'microsoft.network/virtualnetworks';
     this.ipFormatter = createIpFormatter(new Map<string, string>());
     this.symbols = symbols;
-    this.vnets = new Map<string, string>();
+    this.vnets = new Set<string>();
   }
 
-  monikers(input: AnyAzureObject): ItemMoniker[] {
-    const monikers = super.monikers(input);
-    const vnet = input as AzureVirtualNetwork;
+  monikers(vnet: AzureVirtualNetwork): ItemMoniker[] {
+    const monikers = extractMonikers(vnet);
 
     for (const subnet of vnet.properties.subnets) {
-      for (const alias of this.subnetConveter.monikers(subnet)) {
+      for (const alias of SubnetConverter.monikers(subnet)) {
         monikers.push(alias);
       }
     }
@@ -41,7 +47,7 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
   }
 
   convert(
-    input: AnyAzureObject,
+    vnet: AzureVirtualNetwork,
     store: IEntityStore<AnyAzureObject>
   ): NodeSpec[] {
     // This DimensionType is needed to parse IP addresses.
@@ -57,7 +63,6 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
     });
 
     const nodes: NodeSpec[] = [];
-    const vnet = input as AzureVirtualNetwork;
     const addressRange = new DRange();
     const addresses = vnet.properties.addressSpace.addressPrefixes.join(', ');
     for (const address of vnet.properties.addressSpace.addressPrefixes) {
@@ -65,15 +70,17 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
       addressRange.add(ip);
     }
     const alias = vnet.name;
-    this.vnets.set(alias, alias);
+    this.vnets.add(alias);
 
     // Define symbol/service tag for this virtual network.
     const addressRangeText = formatDRange(this.ipFormatter, addressRange);
+    // TODO This function signature (for push) always confuses me. My bad.
     this.symbols.push('ip', vnet.name, addressRangeText);
 
-    const rules: ForwardRuleSpecEx[] = [
+    const rules: ForwardRuleSpec[] = [
       // Traffic leaving subnet
       {
+        // TODO KEY_INTERNET
         destination: 'Internet',
         // TODO: use addressRangeText here.
         destinationIp: `except ${addresses}`,
@@ -81,14 +88,17 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
     ];
 
     for (const subnet of vnet.properties.subnets) {
-      const subnetNodes = this.subnetConveter.convert(subnet, store);
+      const subnetNodes = SubnetConverter.convert(subnet, store);
 
+      // TODO: Still need to figure out how to make this less brittle.
+      // Or just add WARNING comments on both ends.
       // 0 - Router
       // 1 - Inbound
       // 2 - Outbound
       const child = subnetNodes[1].key;
 
       for (const subnetNode of subnetNodes) {
+        // TODO: Do we really want to patch the subnet rules here vs passing the vnet down?
         if (subnetNode.rules.length === 0) {
           subnetNode.rules.push({
             destination: alias,
@@ -117,6 +127,6 @@ export class VirtualNetworkConverter extends BaseAzureConverter {
   }
 
   public virtualNetworks(): string[] {
-    return Array.from(this.vnets.keys());
+    return [...this.vnets.values()];
   }
 }

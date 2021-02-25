@@ -1,26 +1,25 @@
 import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
+
 import {
   AnyAzureObject,
   ConverterStore,
   EntityStore,
+  INodeSpecUniverse,
   LocalIpConverter,
   NetworkInterfaceConverter,
   PublicIpConverter,
   SubnetConverter,
   VirtualNetworkConverter,
-} from '.';
-import {INodeSpecUniverse} from '../contracts';
+} from '..';
 
-export class AzureConverter {
-  private readonly converters: ConverterStore;
-  private readonly entityStore: EntityStore;
-  private readonly symbolStore: SymbolStore;
-  private readonly vnetConverter: VirtualNetworkConverter;
+class AzureUniverse {
+  readonly symbols: SymbolStore;
 
   constructor() {
-    this.entityStore = new EntityStore();
-
-    this.symbolStore = new SymbolStore(
+    // TODO: This should not really be defined here instead there should be an Azure
+    // Universe similar to the firewall spec, however there are a few others changes
+    // to make this an easy merge without a lot of duplication
+    this.symbols = new SymbolStore(
       {
         dimension: 'ip',
         symbol: 'AzureLoadBalancer',
@@ -32,38 +31,66 @@ export class AzureConverter {
         range: 'tcp',
       }
     );
+  }
+}
 
+class AzureConverterImpl {
+  private readonly converters: ConverterStore<AnyAzureObject>;
+
+  // TODO: Think of better name for EntityStore
+  // TODO: What happens to EntityStore if we move away from using
+  // aliases and monikers?
+  private readonly entityStore: EntityStore;
+  private readonly symbolStore: SymbolStore;
+  private readonly vnetConverter: VirtualNetworkConverter;
+
+  constructor() {
+    this.entityStore = new EntityStore();
+    this.symbolStore = new AzureUniverse().symbols;
     this.vnetConverter = new VirtualNetworkConverter(this.symbolStore);
-    this.converters = ConverterStore.create(
+    this.converters = ConverterStore.create<AnyAzureObject>(
       this.vnetConverter,
-      new NetworkInterfaceConverter(),
-      new PublicIpConverter(),
-      new LocalIpConverter(),
-      new SubnetConverter()
+      NetworkInterfaceConverter,
+      PublicIpConverter,
+      LocalIpConverter,
+      SubnetConverter
     );
   }
 
-  public Convert(root: AnyAzureObject[]): INodeSpecUniverse {
+  public convert(root: IterableIterator<AnyAzureObject>): INodeSpecUniverse {
     const KEY_INTERNET = 'Internet';
     const itemsToMap: AnyAzureObject[] = [];
     const nodes: NodeSpec[] = [];
 
-    for (const item of root.values()) {
-      const converter = this.converters.asConverter(item);
+    //
+    // Step 1: index AzureObjects and sub-objects by alias/moniker.
+    // IAzureConverter.monikers knows how to find and name sub-objects
+    // like AzureSubnets and AzureIPConfiguration.
+    //
 
-      itemsToMap.push(item);
+    for (const azureObject of root) {
+      const converter = this.converters.asConverter(azureObject);
 
-      for (const index of converter.monikers(item)) {
-        if (index.item) {
-          this.entityStore.registerEntity(index.item, index.alias);
-        }
+      // Have to push here since iterators do not appear to be able to be
+      // reset. We could move back to taking an Array instead...
+      itemsToMap.push(azureObject);
+      for (const moniker of converter.monikers(azureObject)) {
+        this.entityStore.registerEntity(moniker.item, moniker.name);
       }
     }
 
+    //
+    // Step 2: convert all AzureObjects to NodeSpecs.
+    //
     for (const item of itemsToMap) {
       const converter = this.converters.asConverter(item);
       nodes.push(...converter.convert(item, this.entityStore));
     }
+
+    //
+    // Step 3: define KEY_INTERNET service tag referenced by generated
+    // NodeSpecs.
+    //
 
     const range = this.vnetConverter.virtualNetworks().join(',');
     const internet = `except ${range}`;
@@ -77,7 +104,11 @@ export class AzureConverter {
       });
     }
 
+    // This will be hooked up differently when we get PublicIp working.
     nodes.push({
+      // You are using KEY_INTERNET in two different ways here. One is
+      // for the node's key and the other is for a service tag. Also,
+      // let's discuss the pros/cons of defining service tags for nodes.
       key: KEY_INTERNET,
       endpoint: true,
       range: {
@@ -92,3 +123,11 @@ export class AzureConverter {
     };
   }
 }
+
+// Consider exposing this as a function, rather than an object.
+export const AzureConverter = {
+  convert(root: IterableIterator<AnyAzureObject>): INodeSpecUniverse {
+    const converter = new AzureConverterImpl();
+    return converter.convert(root);
+  },
+};

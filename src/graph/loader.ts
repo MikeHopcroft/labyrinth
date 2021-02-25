@@ -1,17 +1,16 @@
-import fs from 'fs';
-import yaml from 'js-yaml';
+import {FileSystem, YAML} from '..';
 
 import {validate} from '../utilities';
 
-import {GraphSpec, graphSpecType} from './types';
+import {GraphSpec, codecGraphSpec} from './types';
 
 export function loadYamlGraphSpecFile(filename: string): GraphSpec {
-  const text = fs.readFileSync(filename, 'utf8');
+  const text = FileSystem.readUtfFileSync(filename);
   return loadYamlGraphSpec(text);
 }
 
 export function loadYamlGraphSpec(text: string): GraphSpec {
-  const root = yaml.safeLoad(text);
-  const graph = validate(graphSpecType, root);
+  const root = YAML.load(text);
+  const graph = validate(codecGraphSpec, root);
   return graph;
 }

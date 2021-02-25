@@ -16,12 +16,12 @@ export class IdGenerator {
   }
 }
 
-export const DimensionSpecType = t.type({
+export const codecDimensionSpec = t.type({
   name: t.string,
   key: t.string,
   type: t.string,
 });
-export type DimensionSpec = t.TypeOf<typeof DimensionSpecType>;
+export type DimensionSpec = t.TypeOf<typeof codecDimensionSpec>;
 
 export type DimensionFormatter = (r: DRange) => string;
 

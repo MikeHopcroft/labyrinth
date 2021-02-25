@@ -27,7 +27,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm run test-coverage
+    - run: npm run test
 
     - name: Publish Code Coverage Results
       uses: coverallsapp/github-action@master

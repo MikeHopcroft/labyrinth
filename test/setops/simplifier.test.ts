@@ -8,7 +8,7 @@ import {
   denyOverrides,
   parseRuleSpec,
   Rule,
-  RuleSpecEx,
+  RuleSpec,
 } from '../../src/rules';
 
 import {
@@ -77,11 +77,11 @@ const universeSpec: UniverseSpec = {
 };
 
 const universe = new Universe(universeSpec);
-const simplifier = createSimplifier<RuleSpecEx>(universe);
+const simplifier = createSimplifier<RuleSpec>(universe);
 
 describe('Simplifier', () => {
   it('createConjunctionInfo', () => {
-    const spec: RuleSpecEx = {
+    const spec: RuleSpec = {
       id: 1,
       source: 'policy',
       action: ActionType.ALLOW,

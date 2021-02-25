@@ -1,23 +1,22 @@
-import fs from 'fs';
 import * as t from 'io-ts';
-import yaml from 'js-yaml';
+import {FileSystem, YAML} from '..';
 
 // TODO: POTENTIAL CIRCULAR REFERENCE?
 import {SymbolDefinitionSpec} from '../graph';
 import {validate} from '../utilities';
 
-import {Dimension, DimensionSpecType, IdGenerator} from './dimension';
-import {DimensionType, DimensionTypeSpecType} from './dimension_type';
+import {Dimension, codecDimensionSpec, IdGenerator} from './dimension';
+import {DimensionType, codecDimensionTypeSpec} from './dimension_type';
 
-const UniverseSpecType = t.type({
-  types: t.array(DimensionTypeSpecType),
-  dimensions: t.array(DimensionSpecType),
+const codecUniverseSpec = t.type({
+  types: t.array(codecDimensionTypeSpec),
+  dimensions: t.array(codecDimensionSpec),
 });
-export type UniverseSpec = t.TypeOf<typeof UniverseSpecType>;
+export type UniverseSpec = t.TypeOf<typeof codecUniverseSpec>;
 
 export function loadYamlUniverseSpec(text: string): UniverseSpec {
-  const root = yaml.safeLoad(text);
-  return validate(UniverseSpecType, root);
+  const root = YAML.load(text);
+  return validate(codecUniverseSpec, root);
 }
 
 export class Universe {
@@ -30,13 +29,13 @@ export class Universe {
   static fromYamlFile(file: string, reservedWords?: Set<string>): Universe {
     console.log(`Load universe from "${file}".`);
 
-    const text = fs.readFileSync(file, 'utf8');
+    const text = FileSystem.readUtfFileSync(file);
     return Universe.fromYamlString(text, reservedWords);
   }
 
   static fromYamlString(text: string, reservedWords?: Set<string>): Universe {
-    const root = yaml.safeLoad(text);
-    const spec = validate(UniverseSpecType, root);
+    const root = YAML.load(text);
+    const spec = validate(codecUniverseSpec, root);
 
     return new Universe(spec, reservedWords);
   }
