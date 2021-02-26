@@ -21,6 +21,8 @@
       * node build\src\apps\analyze.js data\policy.txt -m=d
       * node build\src\apps\analyze.js data\policy.yaml -m=d
     * Perhaps codify these examples in unit tests to avoid future regressions?
+    * Consider factoring command-line applications for test-ability.
+      * Perhaps use IFileSystem and main() abstractions from SDS.
   * Offline
     * Problems loading reference 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to load schema from 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to connect to https://schemastore.azurewebsites.net/schemas/json/tsconfig.json. Error: getaddrinfo ENOTFOUND schemastore.azurewebsites.net schemastore.azurewebsites.net:443
   * Cleanup
