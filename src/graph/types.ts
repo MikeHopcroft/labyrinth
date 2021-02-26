@@ -40,7 +40,7 @@ export const codecNodeSpec = t.intersection([
     endpoint: t.boolean,
     filters: t.array(codecRuleSpecNoId),
     pool: t.array(codecPoolRuleSpec),
-    range: t.record(t.string, t.any),
+    range: codecConstraint,
   }),
 ]);
 

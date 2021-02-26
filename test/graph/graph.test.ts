@@ -841,7 +841,7 @@ describe('Graph', () => {
 
   describe('Backward propagate', () => {
     it('Linear with two NATs', () => {
-      const nodes = [
+      const nodes: NodeSpec[] = [
         {
           key: 'client',
           endpoint: true,
@@ -895,23 +895,23 @@ describe('Graph', () => {
             {
               destination: 'serverA',
               constraints: {
-                destinationPort: 2201,
+                destinationPort: '2201',
               },
               override: {
                 destinationIp: '20.0.0.1',
                 sourceIp: '10.0.0.3',
-                destinationPort: 22,
+                destinationPort: '22',
               },
             },
             {
               destination: 'serverB',
               constraints: {
-                destinationPort: 2202,
+                destinationPort: '2202',
               },
               override: {
                 destinationIp: '20.0.0.2',
                 sourceIp: '10.0.0.3',
-                destinationPort: 22,
+                destinationPort: '22',
               },
             },
           ],

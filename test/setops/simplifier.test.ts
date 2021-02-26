@@ -167,7 +167,7 @@ describe('Simplifier', () => {
     });
 
     it('(a+b)(c+d)', () => {
-      const ruleSpecs1 = [
+      const ruleSpecs1: RuleSpec[] = [
         {
           id: 1,
           source: 'policy',
@@ -184,7 +184,7 @@ describe('Simplifier', () => {
         },
       ];
 
-      const ruleSpecs2 = [
+      const ruleSpecs2: RuleSpec[] = [
         {
           id: 3,
           source: 'policy',
@@ -235,7 +235,7 @@ describe('Simplifier', () => {
     });
 
     it('(a+b)(a+b)', () => {
-      const ruleSpecs1 = [
+      const ruleSpecs1: RuleSpec[] = [
         {
           id: 1,
           source: 'policy',
