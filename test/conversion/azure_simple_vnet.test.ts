@@ -1,7 +1,8 @@
 import {assert} from 'chai';
 import 'mocha';
-import {ActionType} from '../../src/rules';
+
 import {AnyAzureObject, AzureConverter} from '../../src/conversion';
+import {ActionType} from '../../src/rules';
 
 describe('Conversion - Azure Simple Vnet', () => {
   it('Single VNet with single default rule', () => {
@@ -11,7 +12,7 @@ describe('Conversion - Azure Simple Vnet', () => {
         range: {
           sourceIp: '172.18.0.0/28',
         },
-        rules: [
+        routes: [
           {
             destination: 'A/outbound',
             constraints: {
@@ -37,7 +38,7 @@ describe('Conversion - Azure Simple Vnet', () => {
           },
         ],
         key: 'A/inbound',
-        rules: [
+        routes: [
           {
             destination: 'A/router',
           },
@@ -49,7 +50,7 @@ describe('Conversion - Azure Simple Vnet', () => {
         range: {
           sourceIp: '172.18.0.0/28',
         },
-        rules: [
+        routes: [
           {
             destination: 'VNET-B',
           },
@@ -60,7 +61,7 @@ describe('Conversion - Azure Simple Vnet', () => {
         range: {
           sourceIp: '172.18.0.0/28',
         },
-        rules: [
+        routes: [
           {
             destination: 'Internet',
             constraints: {
@@ -81,7 +82,7 @@ describe('Conversion - Azure Simple Vnet', () => {
         range: {
           sourceIp: 'Internet',
         },
-        rules: [
+        routes: [
           {
             destination: 'VNET-B',
             constraints: {

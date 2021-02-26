@@ -25,7 +25,7 @@ export type AnyRuleSpec = RuleSpec | RoutingRuleSpec;
 export const codecNodeSpec = t.intersection([
   t.type({
     key: t.string,
-    rules: t.array(codecRoutingRuleSpec),
+    routes: t.array(codecRoutingRuleSpec),
   }),
   t.partial({
     name: t.string,

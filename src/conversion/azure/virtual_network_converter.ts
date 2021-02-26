@@ -99,8 +99,8 @@ export class VirtualNetworkConverter
 
       for (const subnetNode of subnetNodes) {
         // TODO: Do we really want to patch the subnet rules here vs passing the vnet down?
-        if (subnetNode.rules.length === 0) {
-          subnetNode.rules.push({
+        if (subnetNode.routes.length === 0) {
+          subnetNode.routes.push({
             destination: alias,
           });
         }
@@ -120,7 +120,7 @@ export class VirtualNetworkConverter
       range: {
         sourceIp: addressRangeText,
       },
-      rules,
+      routes: rules,
     });
 
     return nodes;

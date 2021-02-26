@@ -59,7 +59,7 @@ function createSubnetNodeSpecs(
       const ipNodes = converter.convert(ipConfig, store);
 
       for (const ipNode of ipNodes) {
-        ipNode.rules.push({
+        ipNode.routes.push({
           destination: routerKey,
         });
         //nodes.push(ipNode);
@@ -79,7 +79,7 @@ function createSubnetNodeSpecs(
     range: {
       sourceIp: subnet.properties.addressPrefix,
     },
-    rules,
+    routes: rules,
   };
   nodes.push(routerNode);
 
@@ -95,7 +95,7 @@ function createSubnetNodeSpecs(
       filters: nsgRules.inboundRules,
       // NOTE: no range because inbound can receive from any sourceIp
       // TODO: is this correct? The router moves packets in both directions.
-      rules: [
+      routes: [
         {
           destination: routerKey,
         },
@@ -109,7 +109,7 @@ function createSubnetNodeSpecs(
       range: {
         sourceIp: subnet.properties.addressPrefix,
       },
-      rules: [],
+      routes: [],
     };
     nodes.push(outboundNode);
   }

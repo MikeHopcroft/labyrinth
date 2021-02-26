@@ -46,7 +46,7 @@ function createIpNodeSpecs(
       range: {
         sourceIp: ip,
       },
-      rules: subnetRules,
+      routes: subnetRules,
     },
   ];
 }

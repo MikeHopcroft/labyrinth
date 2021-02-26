@@ -58,7 +58,7 @@ describe('Graph', () => {
         {
           name: 'internet',
           key: 'internet',
-          rules: [
+          routes: [
             {
               destination: 'bad_key',
             },
@@ -76,7 +76,7 @@ describe('Graph', () => {
         {
           name: 'internet',
           key: 'internet',
-          rules: [
+          routes: [
             {
               destination: 'bad_key',
             },
@@ -85,7 +85,7 @@ describe('Graph', () => {
         {
           name: 'internet',
           key: 'internet',
-          rules: [
+          routes: [
             {
               destination: 'bad_key',
             },
@@ -101,7 +101,7 @@ describe('Graph', () => {
       const nodes: NodeSpec[] = [
         {
           key: 'internet',
-          rules: [
+          routes: [
             {
               destination: 'gateway',
             },
@@ -109,7 +109,7 @@ describe('Graph', () => {
         },
         {
           key: 'gateway',
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -128,7 +128,7 @@ describe('Graph', () => {
         {
           name: 'internet',
           key: 'internet',
-          rules: [
+          routes: [
             {
               destination: 'a',
             },
@@ -137,7 +137,7 @@ describe('Graph', () => {
         {
           name: 'a',
           key: 'a',
-          rules: [
+          routes: [
             {
               destination: 'b',
             },
@@ -146,7 +146,7 @@ describe('Graph', () => {
         {
           name: 'b',
           key: 'b',
-          rules: [
+          routes: [
             {
               destination: 'c',
             },
@@ -155,7 +155,7 @@ describe('Graph', () => {
         {
           name: 'c',
           key: 'c',
-          rules: [
+          routes: [
             {
               destination: 'a',
             },
@@ -175,7 +175,7 @@ describe('Graph', () => {
         // Main line
         {
           key: 'main1',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -183,7 +183,7 @@ describe('Graph', () => {
         },
         {
           key: 'main2',
-          rules: [
+          routes: [
             {
               destination: 'main3',
             },
@@ -191,7 +191,7 @@ describe('Graph', () => {
         },
         {
           key: 'main3',
-          rules: [
+          routes: [
             {
               destination: 'left1',
               constraints: {destinationPort: '1'},
@@ -207,13 +207,13 @@ describe('Graph', () => {
         },
         {
           key: 'main4',
-          rules: [],
+          routes: [],
         },
 
         // Left loop
         {
           key: 'left1',
-          rules: [
+          routes: [
             {
               destination: 'left2',
             },
@@ -221,7 +221,7 @@ describe('Graph', () => {
         },
         {
           key: 'left2',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -231,7 +231,7 @@ describe('Graph', () => {
         // Right loop
         {
           key: 'right1',
-          rules: [
+          routes: [
             {
               destination: 'right2',
             },
@@ -239,7 +239,7 @@ describe('Graph', () => {
         },
         {
           key: 'right2',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -270,7 +270,7 @@ describe('Graph', () => {
         // Main line
         {
           key: 'main1',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -278,7 +278,7 @@ describe('Graph', () => {
         },
         {
           key: 'main2',
-          rules: [
+          routes: [
             {
               destination: 'right1',
               constraints: {destinationPort: '2'},
@@ -290,7 +290,7 @@ describe('Graph', () => {
         },
         {
           key: 'main3',
-          rules: [
+          routes: [
             {
               destination: 'left1',
               constraints: {destinationPort: '1'},
@@ -306,13 +306,13 @@ describe('Graph', () => {
         },
         {
           key: 'main4',
-          rules: [],
+          routes: [],
         },
 
         // Left loop
         {
           key: 'left1',
-          rules: [
+          routes: [
             {
               destination: 'left2',
             },
@@ -320,7 +320,7 @@ describe('Graph', () => {
         },
         {
           key: 'left2',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -330,7 +330,7 @@ describe('Graph', () => {
         // Right loop
         {
           key: 'right1',
-          rules: [
+          routes: [
             {
               destination: 'right2',
             },
@@ -338,7 +338,7 @@ describe('Graph', () => {
         },
         {
           key: 'right2',
-          rules: [
+          routes: [
             {
               destination: 'main3',
             },
@@ -374,7 +374,7 @@ describe('Graph', () => {
           name: 'internet',
           key: 'internet',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'a',
             },
@@ -383,7 +383,7 @@ describe('Graph', () => {
         {
           name: 'a',
           key: 'a',
-          rules: [
+          routes: [
             {
               destination: 'b',
             },
@@ -392,7 +392,7 @@ describe('Graph', () => {
         {
           name: 'b',
           key: 'b',
-          rules: [
+          routes: [
             {
               destination: 'c',
             },
@@ -401,7 +401,7 @@ describe('Graph', () => {
         {
           name: 'c',
           key: 'c',
-          rules: [
+          routes: [
             {
               destination: 'internet',
             },
@@ -422,7 +422,7 @@ describe('Graph', () => {
         {
           key: 'a',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'b',
               constraints: {sourcePort: '1'},
@@ -431,7 +431,7 @@ describe('Graph', () => {
         },
         {
           key: 'b',
-          rules: [
+          routes: [
             {
               destination: 'c',
               constraints: {destinationPort: '2'},
@@ -440,7 +440,7 @@ describe('Graph', () => {
         },
         {
           key: 'c',
-          rules: [
+          routes: [
             {
               destination: 'd',
               constraints: {protocol: 'tcp'},
@@ -450,7 +450,7 @@ describe('Graph', () => {
         {
           key: 'd',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -491,7 +491,7 @@ describe('Graph', () => {
         {
           key: 'a',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'b',
               constraints: {
@@ -503,7 +503,7 @@ describe('Graph', () => {
         },
         {
           key: 'b',
-          rules: [
+          routes: [
             {
               destination: 'c',
               constraints: {
@@ -518,7 +518,7 @@ describe('Graph', () => {
         },
         {
           key: 'c',
-          rules: [
+          routes: [
             {
               destination: 'd',
               constraints: {
@@ -534,7 +534,7 @@ describe('Graph', () => {
         {
           key: 'd',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'c',
               constraints: {destinationIp: 'except 10.0.0.0/8'},
@@ -583,7 +583,7 @@ describe('Graph', () => {
         {
           key: 'main1',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'left',
               constraints: {destinationIp: '10.0.0.0/8'},
@@ -596,7 +596,7 @@ describe('Graph', () => {
         },
         {
           key: 'left',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -604,7 +604,7 @@ describe('Graph', () => {
         },
         {
           key: 'right',
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -613,7 +613,7 @@ describe('Graph', () => {
         {
           key: 'main2',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -641,7 +641,7 @@ describe('Graph', () => {
         {
           key: 'main',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'a',
               constraints: {destinationIp: '10.0.0.0/8'},
@@ -659,17 +659,17 @@ describe('Graph', () => {
         {
           key: 'a',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'b',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'c',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -719,7 +719,7 @@ describe('Graph', () => {
           name: 'internet',
           key: 'internet',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'gateway',
             },
@@ -728,7 +728,7 @@ describe('Graph', () => {
         {
           name: 'gateway',
           key: 'gateway',
-          rules: [
+          routes: [
             {
               destination: 'subnet1',
               constraints: {destinationIp: '10.0.0.0/8'},
@@ -742,7 +742,7 @@ describe('Graph', () => {
         {
           name: 'subnet1',
           key: 'subnet1',
-          rules: [
+          routes: [
             {
               destination: 'subnet2',
               constraints: {destinationPort: '80'},
@@ -755,7 +755,7 @@ describe('Graph', () => {
         {
           name: 'subnet2',
           key: 'subnet2',
-          rules: [
+          routes: [
             {
               destination: 'server',
               constraints: {protocol: 'tcp'},
@@ -765,13 +765,13 @@ describe('Graph', () => {
         {
           name: 'subnet3',
           key: 'subnet3',
-          rules: [],
+          routes: [],
         },
         {
           name: 'server',
           key: 'server',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -848,7 +848,7 @@ describe('Graph', () => {
           range: {
             sourceIp: '192.0.2.53',
           },
-          rules: [
+          routes: [
             {
               destination: 'publicIp',
               constraints: {
@@ -859,7 +859,7 @@ describe('Graph', () => {
         },
         {
           key: 'publicIp',
-          rules: [
+          routes: [
             {
               destination: 'firewall',
               constraints: {
@@ -883,7 +883,7 @@ describe('Graph', () => {
               },
             },
           ],
-          rules: [
+          routes: [
             {
               destination: 'loadBalancer',
             },
@@ -891,7 +891,7 @@ describe('Graph', () => {
         },
         {
           key: 'loadBalancer',
-          rules: [
+          routes: [
             {
               destination: 'serverA',
               constraints: {
@@ -938,7 +938,7 @@ describe('Graph', () => {
             sourceIp: '20.0.0.1',
           },
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'serverB',
@@ -946,7 +946,7 @@ describe('Graph', () => {
             sourceIp: '20.0.0.2',
           },
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -999,7 +999,7 @@ describe('Graph', () => {
         {
           key: 'main1',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -1018,7 +1018,7 @@ describe('Graph', () => {
               priority: 1,
             },
           ],
-          rules: [
+          routes: [
             {
               destination: 'a',
               constraints: {destinationIp: '10.0.0.0/8'},
@@ -1036,17 +1036,17 @@ describe('Graph', () => {
         {
           key: 'a',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'b',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'c',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 
@@ -1099,7 +1099,7 @@ describe('Graph', () => {
         {
           key: 'main1',
           endpoint: true,
-          rules: [
+          routes: [
             {
               destination: 'main2',
             },
@@ -1118,7 +1118,7 @@ describe('Graph', () => {
               priority: 1,
             },
           ],
-          rules: [
+          routes: [
             {
               destination: 'a',
               constraints: {destinationIp: '10.0.0.0/8'},
@@ -1147,17 +1147,17 @@ describe('Graph', () => {
         {
           key: 'a',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'b',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
         {
           key: 'c',
           endpoint: true,
-          rules: [],
+          routes: [],
         },
       ];
 

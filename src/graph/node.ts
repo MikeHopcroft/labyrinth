@@ -74,7 +74,7 @@ export class Node {
       filters = Disjunction.universe<RuleSpec>();
     }
 
-    const forwardRules = spec.rules.map(r =>
+    const forwardRules = spec.routes.map(r =>
       parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
     );
     const poolRules = (spec.pool || []).map(r =>

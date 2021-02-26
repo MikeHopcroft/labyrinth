@@ -43,7 +43,7 @@
       * React App
     * RuleSpec and ForwardRuleSpec and NodeSpec
       * x Group dimension constraints under: condition? constraints? dimensions?
-      * Rename NodeSpec.rules to NodeSpec.routingRules? NodeSpec.routes?
+      * x Rename NodeSpec.rules to NodeSpec.routingRules? NodeSpec.routes?
       * Better design for RuleSpec/RuleSpecNoId/RuleSpecEx
       * Analogous changes for ForwardRuleSpec/ForwardRuleSpecEx
     * x Load balancing

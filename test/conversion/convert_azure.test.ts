@@ -1,5 +1,6 @@
 import {assert} from 'chai';
 import 'mocha';
+
 import {
   AzureLocalIP,
   AzureNetworkInterface,
@@ -12,6 +13,8 @@ import {
   PublicIpConverter,
   SubnetConverter,
 } from '../../src/conversion';
+
+import {NodeSpec} from '../../src/graph';
 
 describe('Conversion - Convert Azure', () => {
   describe('NetworkInterface', () => {
@@ -52,14 +55,14 @@ describe('Conversion - Convert Azure', () => {
 
     it('Conversion of NIC with single', () => {
       const store = new EntityStore();
-      const expected = [
+      const expected: NodeSpec[] = [
         {
           endpoint: true,
           key: 'testingcreds68/ipconfig1',
           range: {
             sourceIp: '192.168.200.4',
           },
-          rules: [],
+          routes: [],
         },
       ];
 

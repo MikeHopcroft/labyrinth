@@ -114,7 +114,7 @@ class AzureConverterImpl {
       range: {
         sourceIp: KEY_INTERNET,
       },
-      rules: vnetRules,
+      routes: vnetRules,
     });
 
     return {

@@ -16,7 +16,7 @@ nodes:
     endpoint: true
     range:
       sourceIp: 10.0.1.4
-    rules:
+    routes:
       - constraints:
           destinationIp: backendSubnet/router
         destination: backendSubnet/router
@@ -24,7 +24,7 @@ nodes:
     endpoint: true
     range:
       sourceIp: 10.0.0.132
-    rules:
+    routes:
       - constraints:
           destinationIp: frontendSubnet/router
         destination: frontendSubnet/router
@@ -32,14 +32,14 @@ nodes:
     endpoint: true
     range:
       sourceIp: 10.0.0.4
-    rules:
+    routes:
       - constraints:
           destinationIp: jumpboxSubnet/router
         destination: jumpboxSubnet/router
   - key: jumpboxSubnet/router
     range:
       sourceIp: 10.0.0.0/25
-    rules:
+    routes:
       - constraints:
           destinationIp: except 10.0.0.0/25
         destination: jumpboxSubnet/outbound
@@ -98,7 +98,7 @@ nodes:
           destinationIp: '*'
           destinationPort: '443'
           protocol: Tcp
-    rules:
+    routes:
       - destination: jumpboxSubnet/router
   - key: jumpboxSubnet/outbound
     filters:
@@ -134,12 +134,12 @@ nodes:
           protocol: '*'
     range:
       sourceIp: 10.0.0.0/25
-    rules:
+    routes:
       - destination: vnet
   - key: frontendSubnet/router
     range:
       sourceIp: 10.0.0.128/25
-    rules:
+    routes:
       - constraints:
           destinationIp: except 10.0.0.128/25
         destination: frontendSubnet/outbound
@@ -198,7 +198,7 @@ nodes:
           destinationIp: '*'
           destinationPort: '443'
           protocol: Tcp
-    rules:
+    routes:
       - destination: frontendSubnet/router
   - key: frontendSubnet/outbound
     filters:
@@ -234,12 +234,12 @@ nodes:
           protocol: '*'
     range:
       sourceIp: 10.0.0.128/25
-    rules:
+    routes:
       - destination: vnet
   - key: backendSubnet/router
     range:
       sourceIp: 10.0.1.0/24
-    rules:
+    routes:
       - constraints:
           destinationIp: except 10.0.1.0/24
         destination: backendSubnet/outbound
@@ -299,7 +299,7 @@ nodes:
           destinationIp: '*'
           destinationPort: '443'
           protocol: Tcp
-    rules:
+    routes:
       - destination: backendSubnet/router
   - key: backendSubnet/outbound
     filters:
@@ -345,12 +345,12 @@ nodes:
           protocol: Tcp
     range:
       sourceIp: 10.0.1.0/24
-    rules:
+    routes:
       - destination: vnet
   - key: vnet
     range:
       sourceIp: 10.0.0.0/23
-    rules:
+    routes:
       - destination: Internet
         constraints:
           destinationIp: except 10.0.0.0/23
@@ -367,7 +367,7 @@ nodes:
     endpoint: true
     range:
       sourceIp: Internet
-    rules:
+    routes:
       - destination: vnet
         constraints:
           destinationIp: vnet
