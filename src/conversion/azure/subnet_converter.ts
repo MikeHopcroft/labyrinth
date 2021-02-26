@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import {ForwardRuleSpec, NodeSpec} from '../../graph';
+import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
 import {IEntityStore} from '..';
 
@@ -43,7 +43,7 @@ function createSubnetNodeSpecs(
   const outboundKey = alias + '/outbound';
   const routerKey = alias + '/router';
 
-  const rules: ForwardRuleSpec[] = [
+  const rules: RoutingRuleSpec[] = [
     // Traffice leaving subnet
     {
       constraints: {destinationIp: `except ${subnet.properties.addressPrefix}`},

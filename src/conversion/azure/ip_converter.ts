@@ -1,4 +1,4 @@
-import {ForwardRuleSpec, NodeSpec} from '../../graph';
+import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
 import {IEntityStore} from '..';
 
@@ -15,8 +15,8 @@ import {
 function createSubnetRules(
   subnetId: string | undefined,
   store: IEntityStore<AnyAzureObject>
-): ForwardRuleSpec[] {
-  const rules: ForwardRuleSpec[] = [];
+): RoutingRuleSpec[] {
+  const rules: RoutingRuleSpec[] = [];
 
   if (subnetId) {
     const subnet = store.getAlias(subnetId);
@@ -35,7 +35,7 @@ function createIpNodeSpecs(
   input: AnyAzureObject,
   store: IEntityStore<AnyAzureObject>,
   ip: string,
-  subnetRules: ForwardRuleSpec[]
+  subnetRules: RoutingRuleSpec[]
 ): NodeSpec[] {
   const key = store.getAlias(input.id);
 

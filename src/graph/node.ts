@@ -10,7 +10,7 @@ import {
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
-import {ForwardRule, parseForwardRuleSpec} from './forward_rule';
+import {RoutingRule, parseForwardRuleSpec} from './routing_rule';
 import {PoolRule, parsePoolRuleSpec} from './pool_rule';
 import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
@@ -86,7 +86,7 @@ export class Node {
   createEdges(
     simplifier: Simplifier<AnyRuleSpec>,
     filters: Disjunction<RuleSpec>,
-    forwardRules: ForwardRule[],
+    forwardRules: RoutingRule[],
     poolRules: PoolRule[]
   ) {
     // NOTE that multiple rules may forward to the same node.

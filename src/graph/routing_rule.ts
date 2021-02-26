@@ -9,31 +9,31 @@ import {
 
 import {Conjunction, Disjunction, Simplifier} from '../setops';
 
-import {ForwardRuleSpec} from './types';
+import {RoutingRuleSpec} from './types';
 
-export interface ForwardRule {
+export interface RoutingRule {
   destination: string;
-  conjunction: Conjunction<ForwardRuleSpec>;
-  override?: Conjunction<ForwardRuleSpec>;
+  conjunction: Conjunction<RoutingRuleSpec>;
+  override?: Conjunction<RoutingRuleSpec>;
   filters: Disjunction<RuleSpec>;
 }
 
 export function parseForwardRuleSpec(
   universe: Universe,
   simplifier: Simplifier<RuleSpec>,
-  spec: ForwardRuleSpec
-): ForwardRule {
+  spec: RoutingRuleSpec
+): RoutingRule {
   // Want to ensure that `filters` is not a property of `rest`.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const {destination, filters, override, constraints} = spec;
-  const conjunction = parseConjunction<ForwardRuleSpec>(
+  const conjunction = parseConjunction<RoutingRuleSpec>(
     universe,
     constraints || {},
     spec
   );
 
   const overrideConjunction = spec.override
-    ? parseConjunction<ForwardRuleSpec>(universe, spec.override, spec)
+    ? parseConjunction<RoutingRuleSpec>(universe, spec.override, spec)
     : spec.override;
 
   let filtersDisjunction: Disjunction<RuleSpec>;

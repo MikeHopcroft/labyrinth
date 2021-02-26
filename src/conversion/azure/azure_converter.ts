@@ -1,4 +1,4 @@
-import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
+import {NodeSpec, RoutingRuleSpec, SymbolStore} from '../../graph';
 
 import {
   AnyAzureObject,
@@ -96,7 +96,7 @@ class AzureConverterImpl {
     const internet = `except ${range}`;
     this.symbolStore.pushHead('ip', KEY_INTERNET, internet);
 
-    const vnetRules: ForwardRuleSpec[] = [];
+    const vnetRules: RoutingRuleSpec[] = [];
     for (const vnet of this.vnetConverter.virtualNetworks()) {
       vnetRules.push({
         destination: vnet,

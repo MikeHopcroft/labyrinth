@@ -47,13 +47,6 @@ export const codecRuleSpec = t.intersection([
 
 export type RuleSpec = t.TypeOf<typeof codecRuleSpec>;
 
-export const RuleSpecReservedWords = new Set<string>([
-  'action',
-  'id',
-  'source',
-  'priority',
-]);
-
 export const codecRuleSpecNoIdSet = t.type({
   rules: t.array(codecRuleSpecNoId),
 });
