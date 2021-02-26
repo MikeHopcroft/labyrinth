@@ -82,7 +82,7 @@ export function loadTxtRulesString(
   text: string,
   options: LoaderOptions = {}
 ): Rule[] {
-  let priority = 0;
+  let nextPriority = 0;
   const lines = new PeekableSequence(text.split(/\r?\n/).values());
 
   skipComments(lines);
@@ -111,7 +111,9 @@ export function loadTxtRulesString(
       break;
     }
 
-    const lineObject: {[key: string]: string | number} = {};
+    const constraints: Record<string, string> = {};
+    let priority: number | undefined = undefined;
+    let action: string | undefined = undefined;
     const fields = lines
       .get()
       .split(/\s+/)
@@ -121,25 +123,36 @@ export function loadTxtRulesString(
       if (key === undefined) {
         const message = `Line ${lines.position()} has more columns than headers.`;
         throw new TypeError(message);
+      } else if (['constraints', 'id', 'source'].includes(key)) {
+        const message = `Illegal column: "${key}".`;
+        throw new TypeError(message);
+      } else if (key === 'action') {
+        action = value;
+      } else if (key === 'priority') {
+        priority = Number(value);
+      } else {
+        constraints[key] = value;
       }
-      lineObject[key] = value;
     }
 
-    if (lineObject.priority === undefined) {
-      lineObject.priority = ++priority;
-    }
-    if (lineObject.action === 'permit') {
-      lineObject.action = 'allow';
+    if (priority === undefined) {
+      priority = ++nextPriority;
     }
 
-    if (lineObject.id !== undefined) {
-      const message = 'Illegal column: "id".';
-      throw new TypeError(message);
+    if (action === 'permit') {
+      action = 'allow';
     }
-    lineObject.id = lines.position();
-    lineObject.source = options.source || '';
 
-    const spec = validate(codecRuleSpec, lineObject);
+    const id = lines.position();
+    const source = options.source || '';
+
+    const spec = validate(codecRuleSpec, {
+      action,
+      priority,
+      constraints,
+      id,
+      source,
+    });
     const rule = parseRuleSpec(universe, spec);
     rules.push(rule);
   }

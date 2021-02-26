@@ -6,13 +6,15 @@ nodes:
       sourceIp: 192.0.2.53
     rules:
       - destination: publicIp
-        destinationIp: 203.0.113.1
+        constraints:
+          destinationIp: 203.0.113.1
   - key: publicIp
     # External ip: 203.0.113.1
     # Internal ip: 10.0.0.1
     rules:
       - destination: firewall
-        destinationIp: 203.0.113.1
+        constraints:
+          destinationIp: 203.0.113.1
         override:
           destinationIp: 10.0.0.3
           sourceIp: 10.0.0.1
@@ -21,20 +23,23 @@ nodes:
     filters:
       - action: allow
         priority: 0
-        destinationPort: http, https, 2201-2202
+        constraints:
+          destinationPort: http, https, 2201-2202
     rules:
       - destination: loadBalancer
   - key: loadBalancer
     # 10.0.0.3
     rules:
       - destination: serverA
-        destinationPort: 2201
+        constraints:
+          destinationPort: 2201
         override:
           destinationIp: 20.0.0.2
           sourceIp: 20.0.0.1
           destinationPort: 22
       - destination: serverB
-        destinationPort: 2202
+        constraints:
+          destinationPort: 2202
         override:
           destinationIp: 20.0.0.3
           sourceIp: 20.0.0.1
