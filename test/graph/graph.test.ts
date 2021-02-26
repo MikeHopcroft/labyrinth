@@ -194,11 +194,11 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'left1',
-              destinationPort: '1',
+              constraints: {destinationPort: '1'},
             },
             {
               destination: 'right1',
-              destinationPort: '2',
+              constraints: {destinationPort: '2'},
             },
             {
               destination: 'main4',
@@ -281,7 +281,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'right1',
-              destinationPort: '2',
+              constraints: {destinationPort: '2'},
             },
             {
               destination: 'main3',
@@ -293,11 +293,11 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'left1',
-              destinationPort: '1',
+              constraints: {destinationPort: '1'},
             },
             {
               destination: 'main2',
-              destinationPort: '2', // Intended test case
+              constraints: {destinationPort: '2'}, // Intended test case
             },
             {
               destination: 'main4',
@@ -425,7 +425,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'b',
-              sourcePort: '1',
+              constraints: {sourcePort: '1'},
             },
           ],
         },
@@ -434,7 +434,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'c',
-              destinationPort: '2',
+              constraints: {destinationPort: '2'},
             },
           ],
         },
@@ -443,7 +443,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'd',
-              protocol: 'tcp',
+              constraints: {protocol: 'tcp'},
             },
           ],
         },
@@ -494,8 +494,10 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'b',
-              destinationIp: '10.0.0.0/8',
-              sourcePort: '1',
+              constraints: {
+                destinationIp: '10.0.0.0/8',
+                sourcePort: '1',
+              },
             },
           ],
         },
@@ -504,8 +506,10 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'c',
-              destinationIp: '10.0.0.0/8',
-              destinationPort: '2',
+              constraints: {
+                destinationIp: '10.0.0.0/8',
+                destinationPort: '2',
+              },
             },
             {
               destination: 'a',
@@ -517,8 +521,10 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'd',
-              destinationIp: '10.0.0.0/8',
-              protocol: 'tcp',
+              constraints: {
+                destinationIp: '10.0.0.0/8',
+                protocol: 'tcp',
+              },
             },
             {
               destination: 'b',
@@ -531,7 +537,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'c',
-              destinationIp: 'except 10.0.0.0/8',
+              constraints: {destinationIp: 'except 10.0.0.0/8'},
             },
           ],
         },
@@ -580,11 +586,11 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'left',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'right',
-              destinationIp: '11.0.0.0/8',
+              constraints: {destinationIp: '11.0.0.0/8'},
             },
           ],
         },
@@ -638,15 +644,15 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'a',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'b',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'c',
-              destinationIp: '10.0.0.0/7',
+              constraints: {destinationIp: '10.0.0.0/7'},
             },
           ],
         },
@@ -725,11 +731,11 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'subnet1',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'subnet2',
-              destinationIp: '10.0.0.0/7',
+              constraints: {destinationIp: '10.0.0.0/7'},
             },
           ],
         },
@@ -739,7 +745,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'subnet2',
-              destinationPort: '80',
+              constraints: {destinationPort: '80'},
             },
             {
               destination: 'subnet3',
@@ -752,7 +758,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'server',
-              protocol: 'tcp',
+              constraints: {protocol: 'tcp'},
             },
           ],
         },
@@ -845,7 +851,9 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'publicIp',
-              destinationIp: '203.0.113.1',
+              constraints: {
+                destinationIp: '203.0.113.1',
+              },
             },
           ],
         },
@@ -854,7 +862,9 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'firewall',
-              destinationIp: '203.0.113.1',
+              constraints: {
+                destinationIp: '203.0.113.1',
+              },
               override: {
                 destinationIp: '10.0.0.2',
                 sourceIp: '10.0.0.1',
@@ -868,7 +878,9 @@ describe('Graph', () => {
             {
               action: ActionType.ALLOW,
               priority: 0,
-              constraints: {destinationPort: 'http, https, 2201-2202'},
+              constraints: {
+                destinationPort: 'http, https, 2201-2202',
+              },
             },
           ],
           rules: [
@@ -882,7 +894,9 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'serverA',
-              destinationPort: 2201,
+              constraints: {
+                destinationPort: 2201,
+              },
               override: {
                 destinationIp: '20.0.0.1',
                 sourceIp: '10.0.0.3',
@@ -891,7 +905,9 @@ describe('Graph', () => {
             },
             {
               destination: 'serverB',
-              destinationPort: 2202,
+              constraints: {
+                destinationPort: 2202,
+              },
               override: {
                 destinationIp: '20.0.0.2',
                 sourceIp: '10.0.0.3',
@@ -1005,15 +1021,15 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'a',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'b',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'c',
-              destinationIp: '10.0.0.0/7',
+              constraints: {destinationIp: '10.0.0.0/7'},
             },
           ],
         },
@@ -1105,7 +1121,7 @@ describe('Graph', () => {
           rules: [
             {
               destination: 'a',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
               filters: [
                 {
                   action: ActionType.DENY,
@@ -1120,11 +1136,11 @@ describe('Graph', () => {
             },
             {
               destination: 'b',
-              destinationIp: '10.0.0.0/8',
+              constraints: {destinationIp: '10.0.0.0/8'},
             },
             {
               destination: 'c',
-              destinationIp: '10.0.0.0/7',
+              constraints: {destinationIp: '10.0.0.0/7'},
             },
           ],
         },

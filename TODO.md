@@ -19,6 +19,8 @@
   * Offline
     * Problems loading reference 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to load schema from 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to connect to https://schemastore.azurewebsites.net/schemas/json/tsconfig.json. Error: getaddrinfo ENOTFOUND schemastore.azurewebsites.net schemastore.azurewebsites.net:443
   * Cleanup
+    * Why t.record(t.string, t.any) vs t.record(t.string, t.string)?
+    * Remove "as NodeSpec[]" from azure_convert_parity.test.ts. Use "const expected: NodeSpec[] = ..."
     * Get rid of initialRangeSpec (in node.ts)
     * x In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
     * In graph.test.ts, make path() take GraphFormattingOptions parameter.

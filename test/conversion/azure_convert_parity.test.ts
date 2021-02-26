@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import 'mocha';
-import {NodeSpec, SymbolDefinitionSpec} from '../../src';
+import {ActionType, NodeSpec, SymbolDefinitionSpec} from '../../src';
 import {AnyAzureObject, AzureConverter} from '../../src/conversion';
 
 describe('Conversion - Azure Convert Parity', () => {
@@ -1040,7 +1040,9 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'backendSubnet/router',
-            destinationIp: 'backendSubnet/router',
+            constraints: {
+              destinationIp: 'backendSubnet/router',
+            },
           },
         ],
       },
@@ -1053,7 +1055,9 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'frontendSubnet/router',
-            destinationIp: 'frontendSubnet/router',
+            constraints: {
+              destinationIp: 'frontendSubnet/router',
+            },
           },
         ],
       },
@@ -1066,7 +1070,9 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'jumpboxSubnet/router',
-            destinationIp: 'jumpboxSubnet/router',
+            constraints: {
+              destinationIp: 'jumpboxSubnet/router',
+            },
           },
         ],
       },
@@ -1078,11 +1084,15 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'jumpboxSubnet/outbound',
-            destinationIp: 'except 10.0.0.0/25',
+            constraints: {
+              destinationIp: 'except 10.0.0.0/25',
+            },
           },
           {
             destination: 'jumpbox/default',
-            destinationIp: '10.0.0.4',
+            constraints: {
+              destinationIp: '10.0.0.4',
+            },
           },
         ],
       },
@@ -1090,7 +1100,7 @@ describe('Conversion - Azure Convert Parity', () => {
         key: 'jumpboxSubnet/inbound',
         filters: [
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'vnet',
               sourcePort: '*',
@@ -1103,7 +1113,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'AzureLoadBalancer',
               sourcePort: '*',
@@ -1116,7 +1126,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1129,7 +1139,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'Internet',
               sourcePort: '*',
@@ -1142,7 +1152,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'Internet',
               sourcePort: '*',
@@ -1165,7 +1175,7 @@ describe('Conversion - Azure Convert Parity', () => {
         key: 'jumpboxSubnet/outbound',
         filters: [
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'vnet',
               sourcePort: '*',
@@ -1178,7 +1188,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1191,7 +1201,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1221,11 +1231,15 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'frontendSubnet/outbound',
-            destinationIp: 'except 10.0.0.128/25',
+            constraints: {
+              destinationIp: 'except 10.0.0.128/25',
+            },
           },
           {
             destination: 'frontend/default',
-            destinationIp: '10.0.0.132',
+            constraints: {
+              destinationIp: '10.0.0.132',
+            },
           },
         ],
       },
@@ -1233,7 +1247,7 @@ describe('Conversion - Azure Convert Parity', () => {
         key: 'frontendSubnet/inbound',
         filters: [
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'vnet',
               sourcePort: '*',
@@ -1246,7 +1260,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'AzureLoadBalancer',
               sourcePort: '*',
@@ -1259,7 +1273,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1272,7 +1286,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'Internet',
               sourcePort: '*',
@@ -1285,7 +1299,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'Internet',
               sourcePort: '*',
@@ -1308,7 +1322,7 @@ describe('Conversion - Azure Convert Parity', () => {
         key: 'frontendSubnet/outbound',
         filters: [
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'vnet',
               sourcePort: '*',
@@ -1321,7 +1335,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1334,7 +1348,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1364,12 +1378,16 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'backendSubnet/outbound',
-            destinationIp: 'except 10.0.1.0/24',
+            constraints: {
+              destinationIp: 'except 10.0.1.0/24',
+            },
           },
           {
             destination:
               'data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint',
-            destinationIp: '10.0.1.4',
+            constraints: {
+              destinationIp: '10.0.1.4',
+            },
           },
         ],
       },
@@ -1377,7 +1395,7 @@ describe('Conversion - Azure Convert Parity', () => {
         key: 'backendSubnet/inbound',
         filters: [
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'vnet',
               sourcePort: '*',
@@ -1390,7 +1408,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'AzureLoadBalancer',
               sourcePort: '*',
@@ -1403,7 +1421,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1416,7 +1434,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: '10.0.0.0/25',
               sourcePort: '*',
@@ -1429,7 +1447,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: '10.0.0.128/25',
               sourcePort: '*',
@@ -1452,7 +1470,7 @@ describe('Conversion - Azure Convert Parity', () => {
         key: 'backendSubnet/outbound',
         filters: [
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: 'vnet',
               sourcePort: '*',
@@ -1465,7 +1483,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'allow',
+            action: ActionType.ALLOW,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1478,7 +1496,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1491,7 +1509,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
           {
-            action: 'deny',
+            action: ActionType.DENY,
             constraints: {
               sourceIp: '*',
               sourcePort: '*',
@@ -1521,19 +1539,27 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'Internet',
-            destinationIp: 'except 10.0.0.0/23',
+            constraints: {
+              destinationIp: 'except 10.0.0.0/23',
+            },
           },
           {
             destination: 'jumpboxSubnet/inbound',
-            destinationIp: '10.0.0.0/25',
+            constraints: {
+              destinationIp: '10.0.0.0/25',
+            },
           },
           {
             destination: 'frontendSubnet/inbound',
-            destinationIp: '10.0.0.128/25',
+            constraints: {
+              destinationIp: '10.0.0.128/25',
+            },
           },
           {
             destination: 'backendSubnet/inbound',
-            destinationIp: '10.0.1.0/24',
+            constraints: {
+              destinationIp: '10.0.1.0/24',
+            },
           },
         ],
       },
@@ -1546,7 +1572,9 @@ describe('Conversion - Azure Convert Parity', () => {
         rules: [
           {
             destination: 'vnet',
-            destinationIp: 'vnet',
+            constraints: {
+              destinationIp: 'vnet',
+            },
           },
         ],
       },

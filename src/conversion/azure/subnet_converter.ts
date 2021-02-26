@@ -46,8 +46,8 @@ function createSubnetNodeSpecs(
   const rules: ForwardRuleSpec[] = [
     // Traffice leaving subnet
     {
+      constraints: {destinationIp: `except ${subnet.properties.addressPrefix}`},
       destination: outboundKey,
-      destinationIp: `except ${subnet.properties.addressPrefix}`,
     },
   ];
 
@@ -67,7 +67,7 @@ function createSubnetNodeSpecs(
           // Traffic to child of subnet
           rules.push({
             destination: store.getAlias(ipConfig.id),
-            destinationIp: ipNode.range.sourceIp,
+            constraints: {destinationIp: ipNode.range.sourceIp},
           });
         }
       }

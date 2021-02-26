@@ -13,10 +13,10 @@ const codecForwardRuleSpec = t.intersection([
     destination: t.string,
   }),
   t.partial({
+    constraints: codecConstraint,
     filters: t.array(codecRuleSpecNoId),
     override: codecConstraint,
   }),
-  t.record(t.string, t.any),
 ]);
 export type ForwardRuleSpec = t.TypeOf<typeof codecForwardRuleSpec>;
 
