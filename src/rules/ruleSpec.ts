@@ -25,14 +25,16 @@ const decodeActionType = decodeEnum<ActionType>(ActionType, 'ActionType');
 // The values should be strings with range expressions.
 // TODO: investigate why t.record(t.string, t.string) doesn't work.
 export const codecConstraint = t.record(t.string, t.unknown);
-export type Contraint = t.TypeOf<typeof codecConstraint>;
+export type Constraint = t.TypeOf<typeof codecConstraint>;
 
 export const codecRuleSpecNoId = t.intersection([
   t.type({
     action: decodeActionType,
     priority: t.number,
   }),
-  t.record(t.string, t.any),
+  t.partial({
+    constraints: codecConstraint,
+  }),
 ]);
 
 export const codecRuleSpec = t.intersection([

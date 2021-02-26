@@ -25,8 +25,12 @@ export function parseForwardRuleSpec(
 ): ForwardRule {
   // Want to ensure that `filters` is not a property of `rest`.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {destination, filters, override, ...rest} = spec;
-  const conjunction = parseConjunction<ForwardRuleSpec>(universe, rest, spec);
+  const {destination, filters, override, constraints} = spec;
+  const conjunction = parseConjunction<ForwardRuleSpec>(
+    universe,
+    constraints || {},
+    spec
+  );
 
   const overrideConjunction = spec.override
     ? parseConjunction<ForwardRuleSpec>(universe, spec.override, spec)

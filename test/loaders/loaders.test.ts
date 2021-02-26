@@ -14,7 +14,7 @@ import {
 
 import {createSimplifier} from '../../src/setops';
 import {firewallSpec} from '../../src/specs';
-import {stripLeadingSpaces} from '../shared';
+import {trim} from '../shared';
 
 const universe = new Universe(firewallSpec);
 const simplifier = createSimplifier<RuleSpec>(universe);
@@ -23,17 +23,18 @@ const policy1Yaml = `
 rules:
   - action: deny
     priority: 1
-    sourceIp: 10.0.0.0/8
+    constraints: {sourceIp: 10.0.0.0/8}
   - action: allow
     priority: 2
-    destinationIp: 171.64.64.0/20
+    constraints: {destinationIp: 171.64.64.0/20}
   - action: deny
     priority: 3
-    destinationPort: 445
-    protocol: tcp, udp
+    constraints:
+      destinationPort: 445
+      protocol: tcp, udp
   - action: allow
     priority: 4
-    destinationIp: 128.30.0.0/15
+    constraints: {destinationIp: 128.30.0.0/15}
 `;
 
 describe('Rules', () => {
@@ -53,23 +54,27 @@ describe('Rules', () => {
       const rules = loadYamlRulesString(universe, policy1Yaml);
       // const observed = rules.map(r => r.conjunction.format()).join('\n\n');
       const observed = rules.map(r => formatRule(r)).join('\n');
-      const expected = stripLeadingSpaces(`\
+      const expected = trim(`\
         action: deny
         priority: 1
-        source ip: 10.0.0.0/8
+        constraints:
+          source ip: 10.0.0.0/8
 
         action: allow
         priority: 2
-        destination ip: 171.64.64.0/20
+        constraints:
+          destination ip: 171.64.64.0/20
 
         action: deny
         priority: 3
-        destination port: 445
-        protocol: tcp, udp
+        constraints:
+          destination port: 445
+          protocol: tcp, udp
 
         action: allow
         priority: 4
-        destination ip: 128.30.0.0/15
+        constraints:
+          destination ip: 128.30.0.0/15
       `);
       // console.log(observed);
       assert.equal(observed, expected);

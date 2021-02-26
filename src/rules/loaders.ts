@@ -82,7 +82,7 @@ export function loadTxtRulesString(
   text: string,
   options: LoaderOptions = {}
 ): Rule[] {
-  let priority = 0;
+  let nextPriority = 0;
   const lines = new PeekableSequence(text.split(/\r?\n/).values());
 
   skipComments(lines);
@@ -111,7 +111,9 @@ export function loadTxtRulesString(
       break;
     }
 
-    const lineObject: {[key: string]: string | number} = {};
+    const constraints: Record<string, string> = {};
+    let priority: number | undefined = undefined;
+    let action: string | undefined = undefined;
     const fields = lines
       .get()
       .split(/\s+/)
@@ -121,25 +123,36 @@ export function loadTxtRulesString(
       if (key === undefined) {
         const message = `Line ${lines.position()} has more columns than headers.`;
         throw new TypeError(message);
+      } else if (['constraints', 'id', 'source'].includes(key)) {
+        const message = `Illegal column: "${key}".`;
+        throw new TypeError(message);
+      } else if (key === 'action') {
+        action = value;
+      } else if (key === 'priority') {
+        priority = Number(value);
+      } else {
+        constraints[key] = value;
       }
-      lineObject[key] = value;
     }
 
-    if (lineObject.priority === undefined) {
-      lineObject.priority = ++priority;
-    }
-    if (lineObject.action === 'permit') {
-      lineObject.action = 'allow';
+    if (priority === undefined) {
+      priority = ++nextPriority;
     }
 
-    if (lineObject.id !== undefined) {
-      const message = 'Illegal column: "id".';
-      throw new TypeError(message);
+    if (action === 'permit') {
+      action = 'allow';
     }
-    lineObject.id = lines.position();
-    lineObject.source = options.source || '';
 
-    const spec = validate(codecRuleSpec, lineObject);
+    const id = lines.position();
+    const source = options.source || '';
+
+    const spec = validate(codecRuleSpec, {
+      action,
+      priority,
+      constraints,
+      id,
+      source,
+    });
     const rule = parseRuleSpec(universe, spec);
     rules.push(rule);
   }
@@ -203,7 +216,8 @@ export function loadCsvRulesString(
       const message = 'Illegal column: "source".';
       throw new TypeError(message);
     }
-    return {...rule, id, priority: 1, source: options.source || ''};
+    const {action, ...constraints} = rule;
+    return {action, constraints, id, priority: 1, source: options.source || ''};
   });
 
   const spec = validate(codecRuleSpecSet, {rules});
@@ -251,15 +265,15 @@ export function loadYamlRulesString(
 // TODO: Consider moving to Rule.constructor().
 export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {action, id, priority, source, ...rest} = spec;
-  const conjunction = parseConjunction(universe, rest, spec);
+  const {action, id, priority, source, constraints} = spec;
+  const conjunction = parseConjunction(universe, constraints || {}, spec);
 
   return {action, priority, conjunction, spec};
 }
 
 export function parseConjunction<A>(
   universe: Universe,
-  fields: {},
+  fields: Record<string, unknown>,
   spec: A
 ): Conjunction<A> {
   let conjunction = Conjunction.create([], new Set([spec]));

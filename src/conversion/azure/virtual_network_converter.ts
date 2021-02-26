@@ -83,7 +83,7 @@ export class VirtualNetworkConverter
         // TODO KEY_INTERNET
         destination: 'Internet',
         // TODO: use addressRangeText here.
-        destinationIp: `except ${addresses}`,
+        constraints: {destinationIp: `except ${addresses}`},
       },
     ];
 
@@ -111,7 +111,7 @@ export class VirtualNetworkConverter
       // Traffic to child of subnet
       rules.push({
         destination: child,
-        destinationIp: subnet.properties.addressPrefix,
+        constraints: {destinationIp: subnet.properties.addressPrefix},
       });
     }
 

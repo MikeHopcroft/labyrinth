@@ -53,12 +53,45 @@ export function* crossProduct(
   }
 }
 
-export function stripLeadingSpaces(text: string) {
-  return (
-    text
-      .split(/\r?\n/)
-      .map(l => l.trimLeft())
-      // .slice(1)  // Originally for removing first \n.
-      .join('\n')
-  );
+///////////////////////////////////////////////////////////////////////////////
+//
+// Function to remove indentation from multi-line template literals.
+// Used to simplify authoring expected text output in unit tests.
+//
+// Example input:
+//
+//   a = `
+//     line one
+//       line two
+//
+//     line three
+//   `;
+//
+// Output: 'line one\n  line two\nline three\n'
+//
+///////////////////////////////////////////////////////////////////////////////
+export function trim(text: string) {
+  const lines = text.split(/\n/);
+  if (lines.length < 2) {
+    return text;
+  } else {
+    if (lines[0].trim() === '') {
+      lines.shift(); // Remove leading blank line
+    }
+
+    if (lines[lines.length - 1].trim() === '') {
+      lines[lines.length - 1] = '';
+      // lines.pop(); // Remove trailing blank line
+    }
+
+    const indent = lines[0].length - lines[0].trimStart().length;
+    const trimmed = lines.map(line => {
+      if (line.length < indent) {
+        return line.trimStart();
+      } else {
+        return line.slice(indent);
+      }
+    });
+    return trimmed.join('\n');
+  }
 }

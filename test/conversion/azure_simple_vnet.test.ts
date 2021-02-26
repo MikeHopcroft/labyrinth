@@ -14,7 +14,9 @@ describe('Conversion - Azure Simple Vnet', () => {
         rules: [
           {
             destination: 'A/outbound',
-            destinationIp: 'except 172.18.0.0/28',
+            constraints: {
+              destinationIp: 'except 172.18.0.0/28',
+            },
           },
         ],
       },
@@ -22,14 +24,16 @@ describe('Conversion - Azure Simple Vnet', () => {
         filters: [
           {
             action: ActionType.ALLOW,
-            destinationIp: 'VNET-B',
-            destinationPort: '*',
+            constraints: {
+              destinationIp: 'VNET-B',
+              destinationPort: '*',
+              protocol: '*',
+              sourceIp: 'VNET-B',
+              sourcePort: '*',
+            },
             id: 1,
             priority: 65000,
-            protocol: '*',
             source: 'data/azure/resource-graph-1.json',
-            sourceIp: 'VNET-B',
-            sourcePort: '*',
           },
         ],
         key: 'A/inbound',
@@ -59,11 +63,15 @@ describe('Conversion - Azure Simple Vnet', () => {
         rules: [
           {
             destination: 'Internet',
-            destinationIp: 'except 172.18.0.0/28',
+            constraints: {
+              destinationIp: 'except 172.18.0.0/28',
+            },
           },
           {
             destination: 'A/inbound',
-            destinationIp: '172.18.0.0/28',
+            constraints: {
+              destinationIp: '172.18.0.0/28',
+            },
           },
         ],
       },
@@ -76,7 +84,9 @@ describe('Conversion - Azure Simple Vnet', () => {
         rules: [
           {
             destination: 'VNET-B',
-            destinationIp: 'VNET-B',
+            constraints: {
+              destinationIp: 'VNET-B',
+            },
           },
         ],
       },

@@ -13,10 +13,10 @@ const codecForwardRuleSpec = t.intersection([
     destination: t.string,
   }),
   t.partial({
+    constraints: codecConstraint,
     filters: t.array(codecRuleSpecNoId),
     override: codecConstraint,
   }),
-  t.record(t.string, t.any),
 ]);
 export type ForwardRuleSpec = t.TypeOf<typeof codecForwardRuleSpec>;
 
@@ -27,6 +27,8 @@ export const ForwardRuleSpecReservedWords = new Set<string>([
   'override',
   'source',
 ]);
+
+export type AnyRuleSpec = RuleSpec | ForwardRuleSpec;
 
 export const codecNodeSpec = t.intersection([
   t.type({
@@ -43,8 +45,6 @@ export const codecNodeSpec = t.intersection([
 ]);
 
 export type NodeSpec = t.TypeOf<typeof codecNodeSpec>;
-
-export type AnyRuleSpec = RuleSpec | ForwardRuleSpec;
 
 export const codecSymbolDefinition = t.type({
   dimension: t.string,

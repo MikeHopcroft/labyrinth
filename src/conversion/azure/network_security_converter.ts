@@ -1,4 +1,5 @@
-import {ActionType, RuleSpec} from '../../rules';
+import {ActionType, Constraint, RuleSpec} from '../../rules';
+import {removeUndefinedProperties} from '../../utilities';
 
 import {IRules} from '..';
 
@@ -43,20 +44,25 @@ function convertRule(
     source: 'data/azure/resource-graph-1.json',
   };
 
+  const constraints: Constraint = {};
   if (sourceIp) {
-    spec.sourceIp = sourceIp;
+    constraints.sourceIp = sourceIp;
   }
   if (sourcePort) {
-    spec.sourcePort = sourcePort;
+    constraints.sourcePort = sourcePort;
   }
   if (destinationIp) {
-    spec.destinationIp = destinationIp;
+    constraints.destinationIp = destinationIp;
   }
   if (destinationPort) {
-    spec.destinationPort = destinationPort;
+    constraints.destinationPort = destinationPort;
   }
   if (protocol) {
-    spec.protocol = protocol;
+    constraints.protocol = protocol;
+  }
+
+  if (removeUndefinedProperties(constraints)) {
+    spec.constraints = constraints;
   }
 
   return spec;

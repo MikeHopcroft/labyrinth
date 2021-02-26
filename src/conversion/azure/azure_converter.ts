@@ -100,7 +100,7 @@ class AzureConverterImpl {
     for (const vnet of this.vnetConverter.virtualNetworks()) {
       vnetRules.push({
         destination: vnet,
-        destinationIp: vnet,
+        constraints: {destinationIp: vnet},
       });
     }
 

@@ -23,7 +23,7 @@ function createSubnetRules(
 
     rules.push({
       // TODO: Review the usage of desinationIp which requires a symbol
-      destinationIp: subnet,
+      constraints: {destinationIp: subnet},
       destination: subnet,
     });
   }

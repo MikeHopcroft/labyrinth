@@ -3,7 +3,7 @@ import 'mocha';
 
 import {crossProduct} from './utilities';
 
-describe('Utilities', () => {
+describe('test/shared', () => {
   it('crossProduct()', () => {
     const values = [
       [1, 2],

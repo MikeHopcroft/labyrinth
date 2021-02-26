@@ -33,14 +33,20 @@ function main() {
   }
 
   const backProject = !!args.b;
+  const fromNode = args.f;
   const modelSpoofing = !!args.s;
+  const outbound = !!args.f;
   const showRouters = !!args.r;
+  const toNode = args.t;
   const verbose = !!args.v;
   const showPaths = backProject || verbose || !!args.p;
+  const universeFile = args.u;
+  const graphFile = args._[0];
 
   const options = {
     backProject,
     modelSpoofing,
+    outbound,
     showPaths,
     showRouters,
     verbose,
@@ -48,35 +54,38 @@ function main() {
 
   try {
     // Initialize universe.
-    const universe = args.u
-      ? Universe.fromYamlFile(args.u)!
+    const universe = universeFile
+      ? Universe.fromYamlFile(universeFile)!
       : new Universe(firewallSpec);
     const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
     // Load network graph.
-    const spec = loadYamlGraphSpecFile(args._[0]);
+    const spec = loadYamlGraphSpecFile(graphFile);
     const nodes = spec.nodes;
     const builder = new GraphBuilder(universe, simplifier, spec);
     const graph = builder.buildGraph();
 
-    if (args.f) {
+    if (fromNode) {
       /////////////////////////////////////////////////////////////////////////
       //
-      // Paths from args.f
+      // Paths originating at fromNode
       //
       /////////////////////////////////////////////////////////////////////////
-      if (!nodes.find(node => node.key === args.f)) {
-        return fail(`Unknown start node ${args.f}`);
+      if (!nodes.find(node => node.key === fromNode)) {
+        return fail(`Unknown start node ${fromNode}`);
       }
 
-      const outbound = true;
-      const {cycles, flows} = graph.analyze(args.f, outbound, modelSpoofing);
+      const {cycles, flows} = graph.analyze(
+        fromNode,
+        options.outbound,
+        modelSpoofing
+      );
 
       summarizeOptions(options);
       listEndpoints(graph, showRouters);
 
       if (cycles.length > 0) {
-        console.log(`Cycles reachable from ${args.f}:`);
+        console.log(`Cycles reachable from ${fromNode}:`);
         for (const cycle of cycles) {
           console.log('  ' + graph.formatCycle(cycle, verbose));
           console.log();
@@ -84,46 +93,54 @@ function main() {
         console.log();
       }
 
-      if (args.t) {
-        if (!nodes.find(node => node.key === args.t)) {
-          return fail(`Unknown end node ${args.t}`);
+      if (toNode) {
+        if (!nodes.find(node => node.key === toNode)) {
+          return fail(`Unknown end node ${toNode}`);
         }
       }
 
-      if (args.t) {
-        console.log(`Routes from ${args.f} to ${args.t}:`);
+      if (toNode) {
+        console.log(`Routes from ${fromNode} to ${toNode}:`);
       } else {
-        console.log(`Nodes reachable from ${args.f}:`);
+        console.log(`Nodes reachable from ${fromNode}:`);
       }
       console.log();
 
       for (const flow of flows) {
-        if (
-          args.f !== flow.node.spec.key &&
-          (args.r || flow.node.isEndpoint || args.t === flow.node.key)
+        if (toNode) {
+          if (toNode === flow.node.key) {
+            console.log(graph.formatFlow(flow, options));
+            console.log();
+          }
+        } else if (
+          fromNode !== flow.node.spec.key &&
+          (showRouters || flow.node.isEndpoint)
         ) {
-          console.log(graph.formatFlow(flow, outbound, options));
+          console.log(graph.formatFlow(flow, options));
           console.log();
         }
       }
-    } else if (args.t) {
+    } else if (toNode) {
       /////////////////////////////////////////////////////////////////////////
       //
-      // Paths to args.t
+      // Paths ending at toNode
       //
       /////////////////////////////////////////////////////////////////////////
-      if (!nodes.find(node => node.key === args.t)) {
-        return fail(`Unknown end node ${args.t}`);
+      if (!nodes.find(node => node.key === toNode)) {
+        return fail(`Unknown end node ${toNode}`);
       }
 
-      const outbound = false;
-      const {cycles, flows} = graph.analyze(args.t, outbound, modelSpoofing);
+      const {cycles, flows} = graph.analyze(
+        toNode,
+        options.outbound,
+        modelSpoofing
+      );
 
       summarizeOptions(options);
       listEndpoints(graph, showRouters);
 
       if (cycles.length > 0) {
-        console.log(`Cycles on paths to ${args.t}:`);
+        console.log(`Cycles on paths to ${toNode}:`);
         for (const cycle of cycles) {
           console.log('  ' + graph.formatCycle(cycle));
           console.log();
@@ -131,12 +148,15 @@ function main() {
         console.log();
       }
 
-      console.log(`Nodes that can reach ${args.t}:`);
+      console.log(`Nodes that can reach ${toNode}:`);
       console.log();
 
       for (const flow of flows) {
-        if (args.t !== flow.node.spec.key && (args.r || flow.node.isEndpoint)) {
-          console.log(graph.formatFlow(flow, outbound, options));
+        if (
+          toNode !== flow.node.spec.key &&
+          (showRouters || flow.node.isEndpoint)
+        ) {
+          console.log(graph.formatFlow(flow, options));
           console.log();
         }
       }

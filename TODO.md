@@ -16,20 +16,33 @@
     * Load balancers
     * NAT
 * Top
+  * Regressions
+    * The following two invocations give the wrong interpretations.
+      * node build\src\apps\analyze.js data\policy.txt -m=d
+      * node build\src\apps\analyze.js data\policy.yaml -m=d
+    * Perhaps codify these examples in unit tests to avoid future regressions?
+    * Consider factoring command-line applications for test-ability.
+      * Perhaps use IFileSystem and main() abstractions from SDS.
+  * Offline
+    * Problems loading reference 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to load schema from 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to connect to https://schemastore.azurewebsites.net/schemas/json/tsconfig.json. Error: getaddrinfo ENOTFOUND schemastore.azurewebsites.net schemastore.azurewebsites.net:443
   * Cleanup
+    * Why t.record(t.string, t.any) vs t.record(t.string, t.string)?
+    * Remove "as NodeSpec[]" from azure_convert_parity.test.ts. Use "const expected: NodeSpec[] = ..."
     * Get rid of initialRangeSpec (in node.ts)
-    * In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
-    * Consider deprecating GraphBuilder.
+    * x In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
     * In graph.test.ts, make path() take GraphFormattingOptions parameter.
     * COMMENT: This is not a cycle since and endpoint is not a router.
       * This is only true by convention. Do we need separate node types here?
   * Graph
-    * Remove GraphBuilder.
+    * Consider deprecating GraphBuilder.
+      * Maybe not. GraphBuilder does the expensive part of creating Nodes. Perhaps rename to NodeBuilder?
     * Rename routes to something else: headers?
       * Edge.routes
       * Formatting
       * React App
-    * Group dimension constraints under: condition? constraints? dimensions?
+    * RuleSpec and ForwardRuleSpec and NodeSpec
+      * Group dimension constraints under: condition? constraints? dimensions?
+      * Rename NodeSpec.rules to NodeSpec.routingRules? NodeSpec.routes?
     * x Load balancing
       * x Change type of destination from string to string[] - for load balancing.
           * x This is not enough - need to override fields specific to each machine in the pool.
