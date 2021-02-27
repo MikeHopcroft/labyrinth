@@ -60,6 +60,7 @@ function createSubnetNodeSpecs(
 
       for (const ipNode of ipNodes) {
         ipNode.rules.push({
+          // TODO: this should probably go to inboundKey
           destination: routerKey,
         });
         //nodes.push(ipNode);
