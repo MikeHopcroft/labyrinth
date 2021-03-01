@@ -18,7 +18,7 @@ export interface RoutingRule {
   filters: Disjunction<RuleSpec>;
 }
 
-export function parseForwardRuleSpec(
+export function parseRoutingRuleSpec(
   universe: Universe,
   simplifier: Simplifier<RuleSpec>,
   spec: RoutingRuleSpec

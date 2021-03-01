@@ -10,8 +10,8 @@ import {
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
-import {RoutingRule, parseForwardRuleSpec} from './routing_rule';
 import {PoolRule, parsePoolRuleSpec} from './pool_rule';
+import {RoutingRule, parseRoutingRuleSpec} from './routing_rule';
 import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
 
@@ -75,7 +75,7 @@ export class Node {
     }
 
     const forwardRules = spec.routes.map(r =>
-      parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
+      parseRoutingRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
     );
     const poolRules = (spec.pool || []).map(r =>
       parsePoolRuleSpec(universe, r)
