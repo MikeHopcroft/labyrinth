@@ -7,8 +7,8 @@ import {
   AzureObjectType,
   AzurePublicIp,
   AzureSubnet,
-  AzureVirtualNetwork
-} from "./azure_types";
+  AzureVirtualNetwork,
+} from './azure_types';
 
 // TODO: relate AzureObjectBase and AzureIdReference
 
@@ -49,8 +49,9 @@ class AzureObjectIndex<T extends AzureObjectBase> {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function* walk(root: any): IterableIterator<AzureObjectBase> {
-  if (root && typeof(root) === 'object') {
+  if (root && typeof root === 'object') {
     // NOTE: cannot use destructuring here because `root` is `any`.
     const id = root.id;
     const name = root.name;
@@ -60,8 +61,9 @@ function* walk(root: any): IterableIterator<AzureObjectBase> {
     if (id && name && resourceGroup && type) {
       yield root;
     }
-    for (var key in root) {
-      if (!root.hasOwnProperty(key)) {
+    for (const key in root) {
+      // https://eslint.org/docs/rules/no-prototype-builtins
+      if (!Object.prototype.hasOwnProperty.call(root, key)) {
         continue;
       }
 
@@ -70,7 +72,7 @@ function* walk(root: any): IterableIterator<AzureObjectBase> {
   }
 }
 
-class ResourceGraph {
+export class ResourceGraph {
   private readonly localIPs = new AzureObjectIndex<AzureLocalIP>(
     AzureObjectType.LOCAL_IP
   );
@@ -112,7 +114,7 @@ function go() {
   const text = fs.readFileSync('data/azure/resource-graph-1.json', 'utf8');
   const root = JSON.parse(text);
   for (const node of walk(root)) {
-    console.log(node.type + ":");
+    console.log(node.type + ':');
   }
 }
 

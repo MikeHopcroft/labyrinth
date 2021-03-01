@@ -1,0 +1,149 @@
+symbols:
+  - dimension: ip
+    symbol: Internet
+    range: 'except ericmaiip,ericmaivnetloadbalancervnet'
+  - dimension: ip
+    symbol: AzureLoadBalancer
+    range: 168.63.129.16
+  - dimension: protocol
+    symbol: Tcp
+    range: tcp
+  - dimension: ip
+    symbol: ericmaiip
+    range: 13.66.93.198
+  - dimension: ip
+    symbol: ericmaivnetloadbalancervnet
+    range: 172.16.0.0/24
+nodes:
+  - key: ericmai-lb/bepool
+    filters:
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: ericmaivnetloadbalancervnet
+        sourcePort: '*'
+        destinationIp: ericmaivnetloadbalancervnet
+        destinationPort: '*'
+        protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: AzureLoadBalancer
+        sourcePort: '*'
+        destinationIp: '*'
+        destinationPort: '*'
+        protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: '*'
+        sourcePort: '*'
+        destinationIp: '*'
+        destinationPort: '*'
+        protocol: '*'
+    rules:
+      - destination: Internet
+        destinationIp: 172.16.0.0/24
+  - key: ericmai-lb/linux-pool
+    filters:
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: ericmaivnetloadbalancervnet
+        sourcePort: '*'
+        destinationIp: ericmaivnetloadbalancervnet
+        destinationPort: '*'
+        protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: AzureLoadBalancer
+        sourcePort: '*'
+        destinationIp: '*'
+        destinationPort: '*'
+        protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: '*'
+        sourcePort: '*'
+        destinationIp: '*'
+        destinationPort: '*'
+        protocol: '*'
+    rules:
+      - destination: Internet
+        destinationIp: 172.16.0.0/24
+  - key: ericmai-lb/avail-set
+    filters:
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: ericmaivnetloadbalancervnet
+        sourcePort: '*'
+        destinationIp: ericmaivnetloadbalancervnet
+        destinationPort: '*'
+        protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: AzureLoadBalancer
+        sourcePort: '*'
+        destinationIp: '*'
+        destinationPort: '*'
+        protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        sourceIp: '*'
+        sourcePort: '*'
+        destinationIp: '*'
+        destinationPort: '*'
+        protocol: '*'
+    rules:
+      - destination: Internet
+        destinationIp: 172.16.0.6
+  - key: ericmai-ip
+    range:
+      sourceIp: 13.66.93.198
+    rules:
+      - destination: ericmai-lb/bepool
+        destinationPort: 50000
+        protocol: Tcp
+        override:
+          destinationPort: 3389
+      - destination: ericmai-lb/bepool
+        destinationPort: 80
+        protocol: Tcp
+      - destination: ericmai-lb/avail-set
+        destinationPort: 8022
+        protocol: Tcp
+        override:
+          destinationPort: 22
+  - key: ericmai-lb-test-01540/ipconfig1
+    range:
+      sourceIp: 172.16.0.6
+    rules:
+      - destination: default/router
+        destinationIp: default/router
+  - key: ericmai-vnet-loadbalancer-vnet
+    range:
+      sourceIp: 172.16.0.0/24
+    rules:
+      - destination: Internet
+        destinationIp: except 172.16.0.0/24
+  - key: Internet
+    endpoint: true
+    range:
+      sourceIp: Internet
+    rules:
+      - destination: ericmai-ip
+      - destination: ericmai-vnet-loadbalancer-vnet

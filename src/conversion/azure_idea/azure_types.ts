@@ -70,7 +70,7 @@ export interface AzureNetworkInterface extends AzureObjectBase {
 }
 
 export function asAzureNetworkInterface(
- item: AnyAzureObject
+  item: AnyAzureObject
 ): AzureNetworkInterface | null {
   return item.type === AzureObjectType.NIC ? item : null;
 }
@@ -85,9 +85,7 @@ export interface AzureNetworkSecurityGroup extends AzureObjectBase {
 }
 
 export interface AzureSecurityRule extends AzureObjectBase {
-  type:
-    | AzureObjectType.DEFAULT_SECURITY_RULE
-    | AzureObjectType.SECURITY_RULE
+  type: AzureObjectType.DEFAULT_SECURITY_RULE | AzureObjectType.SECURITY_RULE;
   properties: {
     access: 'Allow' | 'Deny';
     destinationAddressPrefix: string;
@@ -126,7 +124,7 @@ export interface AzureVirtualNetwork extends AzureObjectBase {
 }
 
 export function asAzureVirtualNetwork(
-  item: AnyAzureObject,
+  item: AnyAzureObject
 ): AzureVirtualNetwork | null {
   return item.type === 'microsoft.network/virtualnetworks' ? item : null;
 }
