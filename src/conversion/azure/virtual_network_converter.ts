@@ -6,7 +6,7 @@ import {
   createIpFormatter,
   formatDRange,
   Formatter,
-  parseIp,
+  parseDimensionedIp,
 } from '../../dimensions';
 
 import {IEntityStore} from '..';
@@ -66,7 +66,7 @@ export class VirtualNetworkConverter
     const addressRange = new DRange();
     const addresses = vnet.properties.addressSpace.addressPrefixes.join(', ');
     for (const address of vnet.properties.addressSpace.addressPrefixes) {
-      const ip = parseIp(ipDimensionType, address);
+      const ip = parseDimensionedIp(ipDimensionType, address);
       addressRange.add(ip);
     }
     const alias = vnet.name;

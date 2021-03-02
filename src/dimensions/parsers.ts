@@ -119,7 +119,7 @@ export function parseIpOrSymbol(
 ): DRange {
   text = text.trim();
   if (text[0] !== undefined && text[0] >= '0' && text[0] <= '9') {
-    return parseIp(dimension, text);
+    return parseDimensionedIp(dimension, text);
   } else {
     return parseSymbol(dimension, lookup, text);
   }
@@ -139,9 +139,16 @@ export function parseNumberOrSymbol(
 
 // DESIGN NOTE: the parse parameter of parseDRange() takes a DimensionType
 // as its first parameter. parseNumber uses this DimensionType to ensure
-// the value is in range. parseIp() ignores its DimensionType parameter
-// because it does not range check ip addresses.
-export function parseIp(dimension: DimensionType, text: string): DRange {
+// the value is in range. parseDimensionedIp() ignores its DimensionType
+// parameter because it does not range check ip addresses.
+export function parseDimensionedIp(
+  dimension: DimensionType,
+  text: string
+): DRange {
+  return parseIp(text);
+}
+
+export function parseIp(text: string): DRange {
   const trimmed = text.trim();
   const parts = trimmed.split('/');
 
