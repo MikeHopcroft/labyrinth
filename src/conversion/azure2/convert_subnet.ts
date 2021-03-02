@@ -1,7 +1,7 @@
 import {GraphServices} from './graph_services';
 import {AzureSubnet} from './types';
 
-export function subnet(
+export function convertSubnet(
   builder: GraphServices,
   spec: AzureSubnet,
   vNetKey: string

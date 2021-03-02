@@ -19,9 +19,9 @@ import {walk} from './walk';
 //     range: DRange or string expression?
 //   }
 export interface IConverters {
-  resourceGraph(builder: GraphServices, spec: AzureResourceGraph): void;
-  subnet(builder: GraphServices, spec: AzureSubnet, parent: string): string;
-  vnet(builder: GraphServices, spec: AzureVirtualNetwork): string;
+  resourceGraph(services: GraphServices, spec: AzureResourceGraph): void;
+  subnet(services: GraphServices, spec: AzureSubnet, parent: string): string;
+  vnet(services: GraphServices, spec: AzureVirtualNetwork): string;
 }
 
 const defaultConverterMocks: IConverters = {
@@ -92,5 +92,12 @@ export class GraphServices {
     } else {
       this.symbols.push(spec);
     }
+  }
+
+  // TODO: eventually we will probably need some scope management
+  // around the internet key, since it will be a different symbol,
+  // depending on VNet context.
+  getInternetKey() {
+    return 'Internet';
   }
 }
