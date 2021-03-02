@@ -1,25 +1,41 @@
 import {GraphSpec, NodeSpec, SymbolDefinitionSpec} from '../../graph';
 
-import {AnyAzureObject, AzureReference, AzureSubnet, AzureVirtualNetwork} from '../azure';
+import {
+  AnyAzureObject,
+  AzureReference,
+  AzureResourceGraph,
+  AzureSubnet,
+  AzureVirtualNetwork,
+} from './types';
 
 import {walk} from './walk';
 
+// DESIGN ALTERNATIVE (for converter return value):
+// Instead of returning identifier that is both the node key and
+// the service tag, return an object
+//   {
+//     inboundKey: string,
+//     outboundKey: string,
+//     range: DRange or string expression?
+//   }
 export interface IConverters {
-  vnet(builder: GraphBuilder, spec: AzureVirtualNetwork): string;
-  subnet(builder: GraphBuilder, spec: AzureSubnet, parent: string): string;
+  resourceGraph(builder: GraphServices, spec: AzureResourceGraph): void;
+  subnet(builder: GraphServices, spec: AzureSubnet, parent: string): string;
+  vnet(builder: GraphServices, spec: AzureVirtualNetwork): string;
 }
 
 const defaultConverterMocks: IConverters = {
-  vnet: (builder: GraphBuilder, spec: AzureVirtualNetwork) => spec.id,
-  subnet: (builder: GraphBuilder, spec: AzureSubnet, parent: string) =>
-    `${spec.id}/${parent}`,
+  resourceGraph: (builder: GraphServices, spec: AzureResourceGraph) => {},
+  subnet: (builder: GraphServices, spec: AzureSubnet, vNetKey: string) =>
+    `${spec.id}/${vNetKey}`,
+  vnet: (builder: GraphServices, spec: AzureVirtualNetwork) => spec.id,
 };
 
 export function overrideDefaultCoverterMocks(overrides: Partial<IConverters>) {
   return {...defaultConverterMocks, ...overrides};
 }
 
-export class GraphBuilder {
+export class GraphServices {
   private readonly idToAzureObject = new Map<string, AnyAzureObject>();
   readonly convert: IConverters;
   private readonly nodes: NodeSpec[] = [];
