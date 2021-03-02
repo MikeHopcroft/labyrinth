@@ -1,10 +1,11 @@
-import {GraphSpec, SymbolDefinitionSpec} from '../../graph';
+import {GraphSpec} from '../../graph';
 
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
 import {GraphServices, IConverters} from './graph_services';
 import {NameShortener} from './name_shortener';
+import {SymbolTable} from './symbol_table';
 import {AzureResourceGraph} from './types';
 import {walk} from './walk';
 
@@ -36,7 +37,7 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   //
   // Initialize GraphServices
   //
-  const symbols: SymbolDefinitionSpec[] = [
+  const symbols = new SymbolTable([
     {
       dimension: 'ip',
       symbol: 'AzureLoadBalancer',
@@ -47,7 +48,7 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
       symbol: 'Tcp',
       range: 'tcp',
     },
-  ];
+  ]);
   const services = new GraphServices(converters, symbols, resourceGraphSpec);
 
   //
