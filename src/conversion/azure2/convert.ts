@@ -1,5 +1,6 @@
 import {GraphSpec} from '../../graph';
 
+import {convertIp} from './convert_ip';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
@@ -16,6 +17,7 @@ const converters: IConverters = {
   subnet: convertSubnet,
   vnet: convertVNet,
   nsg: convertNsg,
+  ip: convertIp,
 };
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
