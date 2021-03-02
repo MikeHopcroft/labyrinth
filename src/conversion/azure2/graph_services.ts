@@ -4,6 +4,7 @@ import {SymbolTable} from './symbol_table';
 
 import {
   AnyAzureObject,
+  AzureIPConfiguration,
   AzureReference,
   AzureResourceGraph,
   AzureSubnet,
@@ -24,6 +25,7 @@ export interface IConverters {
   resourceGraph(services: GraphServices, spec: AzureResourceGraph): void;
   subnet(services: GraphServices, spec: AzureSubnet, parent: string): string;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): string;
+  ip(services: GraphServices, spec: AzureIPConfiguration): string;
 }
 
 const defaultConverterMocks: IConverters = {
