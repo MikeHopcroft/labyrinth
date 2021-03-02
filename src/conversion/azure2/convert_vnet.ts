@@ -21,7 +21,7 @@ export function convertVNet(
     addressRange.add(ip);
   }
   const sourceIp = formatIpLiteral(addressRange);
-  services.defineSymbol('ip', vNetServiceTag, sourceIp);
+  services.symbols.defineServiceTag(vNetServiceTag, sourceIp);
 
   // Create outbound rule (traffic leaving vnet).
   const routes: RoutingRuleSpec[] = [

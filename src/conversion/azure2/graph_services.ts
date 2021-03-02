@@ -1,5 +1,7 @@
 import {GraphSpec, NodeSpec, SymbolDefinitionSpec} from '../../graph';
 
+import {SymbolTable} from './symbol_table';
+
 import {
   AnyAzureObject,
   AzureReference,
@@ -39,15 +41,15 @@ export class GraphServices {
   private readonly idToAzureObject = new Map<string, AnyAzureObject>();
   readonly convert: IConverters;
   private readonly nodes: NodeSpec[] = [];
-  private readonly symbols: SymbolDefinitionSpec[];
+  readonly symbols: SymbolTable;
 
   constructor(
     converters: IConverters,
-    symbols: SymbolDefinitionSpec[],
+    symbols: SymbolTable,
     resourceGraph: AnyAzureObject[]
   ) {
     this.convert = converters;
-    this.symbols = [...symbols];
+    this.symbols = symbols;
     for (const item of walk(resourceGraph)) {
       this.idToAzureObject.set(item.id, item as AnyAzureObject);
     }
@@ -77,21 +79,7 @@ export class GraphServices {
   }
 
   getLabyrinthGraphSpec(): GraphSpec {
-    return {nodes: this.nodes, symbols: this.symbols};
-  }
-
-  defineSymbol(
-    dimension: string,
-    symbol: string,
-    range: string,
-    insertAtHead = false
-  ) {
-    const spec: SymbolDefinitionSpec = {dimension, symbol, range};
-    if (insertAtHead) {
-      this.symbols.unshift(spec);
-    } else {
-      this.symbols.push(spec);
-    }
+    return {nodes: this.nodes, symbols: this.symbols.getSymbolSpec()};
   }
 
   // TODO: eventually we will probably need some scope management
