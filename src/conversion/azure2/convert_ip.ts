@@ -15,7 +15,9 @@ export function convertIp(
   services: GraphServices,
   ipConfig: AzureIPConfiguration
 ): string {
+  const ip = convertToIpAddress(ipConfig);
   const ipKey = ipConfig.id;
 
+  services.symbols.defineServiceTag(ipKey, ip);
   return ipKey;
 }

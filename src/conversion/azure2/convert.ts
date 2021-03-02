@@ -67,3 +67,5 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
 
   return graph;
 }
+
+export const DefaultConverterConfig = converters;

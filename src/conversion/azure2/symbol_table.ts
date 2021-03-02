@@ -23,6 +23,16 @@ export class SymbolTable {
     return [...this.symbolToSpec.values()];
   }
 
+  getSymbol(symbolKey: string): SymbolDefinitionSpec {
+    const value = this.symbolToSpec.get(symbolKey);
+
+    if (!value) {
+      throw new TypeError(`Unable to locate symbol with the key "${symbolKey}`);
+    }
+
+    return value;
+  }
+
   private addSpec(spec: SymbolDefinitionSpec) {
     if (this.symbolToSpec.has(spec.symbol)) {
       const message = `Duplicate symbol "${spec.symbol}"`;
