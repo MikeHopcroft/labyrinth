@@ -27,3 +27,6 @@
   * Also Azure front door. DNS names instead of ips.
 * Review error messages using double vs. single quotes
   * Does escaping happen when usign one or the other
+* Nodes which may be visited more than once during the traversal
+  * Ip Configurations for examples. Referenced both by subnet and Network Interface
+* Can public IPs have NSG or only the things they are attached to?
