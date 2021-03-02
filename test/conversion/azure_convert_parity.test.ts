@@ -1037,7 +1037,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.1.4',
         },
-        rules: [
+        routes: [
           {
             destination: 'backendSubnet/router',
             constraints: {
@@ -1052,7 +1052,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.132',
         },
-        rules: [
+        routes: [
           {
             destination: 'frontendSubnet/router',
             constraints: {
@@ -1067,7 +1067,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.4',
         },
-        rules: [
+        routes: [
           {
             destination: 'jumpboxSubnet/router',
             constraints: {
@@ -1081,7 +1081,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.0/25',
         },
-        rules: [
+        routes: [
           {
             destination: 'jumpboxSubnet/outbound',
             constraints: {
@@ -1165,7 +1165,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
         ],
-        rules: [
+        routes: [
           {
             destination: 'jumpboxSubnet/router',
           },
@@ -1217,7 +1217,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.0/25',
         },
-        rules: [
+        routes: [
           {
             destination: 'vnet',
           },
@@ -1228,7 +1228,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.128/25',
         },
-        rules: [
+        routes: [
           {
             destination: 'frontendSubnet/outbound',
             constraints: {
@@ -1312,7 +1312,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
         ],
-        rules: [
+        routes: [
           {
             destination: 'frontendSubnet/router',
           },
@@ -1364,7 +1364,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.128/25',
         },
-        rules: [
+        routes: [
           {
             destination: 'vnet',
           },
@@ -1375,7 +1375,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.1.0/24',
         },
-        rules: [
+        routes: [
           {
             destination: 'backendSubnet/outbound',
             constraints: {
@@ -1460,7 +1460,7 @@ describe('Conversion - Azure Convert Parity', () => {
             source: 'data/azure/resource-graph-1.json',
           },
         ],
-        rules: [
+        routes: [
           {
             destination: 'backendSubnet/router',
           },
@@ -1525,7 +1525,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.1.0/24',
         },
-        rules: [
+        routes: [
           {
             destination: 'vnet',
           },
@@ -1536,7 +1536,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: '10.0.0.0/23',
         },
-        rules: [
+        routes: [
           {
             destination: 'Internet',
             constraints: {
@@ -1569,7 +1569,7 @@ describe('Conversion - Azure Convert Parity', () => {
         range: {
           sourceIp: 'Internet',
         },
-        rules: [
+        routes: [
           {
             destination: 'vnet',
             constraints: {

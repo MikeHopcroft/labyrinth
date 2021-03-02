@@ -24,7 +24,7 @@ const decodeActionType = decodeEnum<ActionType>(ActionType, 'ActionType');
 // The keys in this object must be dimension keys from the associated Universe.
 // The values should be strings with range expressions.
 // TODO: investigate why t.record(t.string, t.string) doesn't work.
-export const codecConstraint = t.record(t.string, t.unknown);
+export const codecConstraint = t.record(t.string, t.string);
 export type Constraint = t.TypeOf<typeof codecConstraint>;
 
 export const codecRuleSpecNoId = t.intersection([
@@ -46,13 +46,6 @@ export const codecRuleSpec = t.intersection([
 ]);
 
 export type RuleSpec = t.TypeOf<typeof codecRuleSpec>;
-
-export const RuleSpecReservedWords = new Set<string>([
-  'action',
-  'id',
-  'source',
-  'priority',
-]);
 
 export const codecRuleSpecNoIdSet = t.type({
   rules: t.array(codecRuleSpecNoId),

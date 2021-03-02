@@ -26,7 +26,8 @@
   * Offline
     * Problems loading reference 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to load schema from 'https://schemastore.azurewebsites.net/schemas/json/tsconfig.json': Unable to connect to https://schemastore.azurewebsites.net/schemas/json/tsconfig.json. Error: getaddrinfo ENOTFOUND schemastore.azurewebsites.net schemastore.azurewebsites.net:443
   * Cleanup
-    * Why t.record(t.string, t.any) vs t.record(t.string, t.string)?
+    * Remove RoutingRuleSpecReservedWords
+    * x Why t.record(t.string, t.any) vs t.record(t.string, t.string)?
     * Remove "as NodeSpec[]" from azure_convert_parity.test.ts. Use "const expected: NodeSpec[] = ..."
     * Get rid of initialRangeSpec (in node.ts)
     * x In Graph.formatFlow(), move outbound parameter to GraphFormattingOptions
@@ -34,24 +35,24 @@
     * COMMENT: This is not a cycle since and endpoint is not a router.
       * This is only true by convention. Do we need separate node types here?
   * Graph
-    * Consider deprecating GraphBuilder.
-      * Maybe not. GraphBuilder does the expensive part of creating Nodes. Perhaps rename to NodeBuilder?
+    * x Consider deprecating GraphBuilder.
+      * x Maybe not. GraphBuilder does the expensive part of creating Nodes. Perhaps rename to NodeBuilder?
     * Rename routes to something else: headers?
       * Edge.routes
       * Formatting
       * React App
     * RuleSpec and ForwardRuleSpec and NodeSpec
-      * Group dimension constraints under: condition? constraints? dimensions?
-      * Rename NodeSpec.rules to NodeSpec.routingRules? NodeSpec.routes?
+      * x Group dimension constraints under: condition? constraints? dimensions?
+      * x Rename NodeSpec.rules to NodeSpec.routingRules? NodeSpec.routes?
+      * Better design for RuleSpec/RuleSpecNoId/RuleSpecEx
+      * Analogous changes for ForwardRuleSpec/ForwardRuleSpecEx
     * x Load balancing
       * x Change type of destination from string to string[] - for load balancing.
           * x This is not enough - need to override fields specific to each machine in the pool.
           * x Decided on a different approach - introduced pool field.
       * x Want some sort of mode to run rules in parallel. Pool field.
-    * Better design for RuleSpec/RuleSpecNoId/RuleSpecEx
-    * Analogous changes for ForwardRuleSpec/ForwardRuleSpecEx
-    * io-ts: t.any is deprecated - use t.unknown
-    * Constraint, RuleSpec, ForwardRuleSpec: investigate why t.record(t.string, t.string) doesn't work.
+    * x io-ts: t.any is deprecated - use t.unknown
+    * x Constraint, RuleSpec, ForwardRuleSpec: investigate why t.record(t.string, t.string) doesn't work.
   * NAT
     * x overrideDimensions()
     * x clearOverrides()

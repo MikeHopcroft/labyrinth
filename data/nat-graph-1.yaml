@@ -4,14 +4,14 @@ nodes:
     endpoint: true
     range:
       sourceIp: 192.0.2.53
-    rules:
+    routes:
       - destination: publicIp
         constraints:
           destinationIp: 203.0.113.1
   - key: publicIp
     # External ip: 203.0.113.1
     # Internal ip: 10.0.0.1
-    rules:
+    routes:
       - destination: firewall
         constraints:
           destinationIp: 203.0.113.1
@@ -25,11 +25,11 @@ nodes:
         priority: 0
         constraints:
           destinationPort: http, https, 2201-2202
-    rules:
+    routes:
       - destination: loadBalancer
   - key: loadBalancer
     # 10.0.0.3
-    rules:
+    routes:
       - destination: serverA
         constraints:
           destinationPort: 2201
@@ -57,9 +57,9 @@ nodes:
     range:
       sourceIp: 20.0.0.2
     endpoint: true
-    rules: []
+    routes: []
   - key: serverB
     range:
       sourceIp: 20.0.0.3
     endpoint: true
-    rules: []
+    routes: []

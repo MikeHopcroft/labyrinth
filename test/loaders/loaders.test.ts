@@ -30,7 +30,7 @@ rules:
   - action: deny
     priority: 3
     constraints:
-      destinationPort: 445
+      destinationPort: '445'
       protocol: tcp, udp
   - action: allow
     priority: 4

@@ -1,6 +1,6 @@
 - key: main1
   endpoint: true
-  rules:
+  routes:
     - destination: main2
 - key: main2
   filters:
@@ -10,7 +10,7 @@
       priority: 1
       constraints:
         destinationPort: '1'
-  rules:
+  routes:
     - destination: a
       constraints:
         destinationIp: 10.0.0.0/8
@@ -29,10 +29,10 @@
         destinationIp: 10.0.0.0/7
 - key: a
   endpoint: true
-  rules: []
+  routes: []
 - key: b
   endpoint: true
-  rules: []
+  routes: []
 - key: c
   endpoint: true
-  rules: []
+  routes: []

@@ -8,7 +8,7 @@ const codecPoolRuleSpec = t.type({
 });
 export type PoolRuleSpec = t.TypeOf<typeof codecPoolRuleSpec>;
 
-const codecForwardRuleSpec = t.intersection([
+const codecRoutingRuleSpec = t.intersection([
   t.type({
     destination: t.string,
   }),
@@ -18,29 +18,21 @@ const codecForwardRuleSpec = t.intersection([
     override: codecConstraint,
   }),
 ]);
-export type ForwardRuleSpec = t.TypeOf<typeof codecForwardRuleSpec>;
+export type RoutingRuleSpec = t.TypeOf<typeof codecRoutingRuleSpec>;
 
-export const ForwardRuleSpecReservedWords = new Set<string>([
-  'destination',
-  'filters',
-  'id',
-  'override',
-  'source',
-]);
-
-export type AnyRuleSpec = RuleSpec | ForwardRuleSpec;
+export type AnyRuleSpec = RuleSpec | RoutingRuleSpec;
 
 export const codecNodeSpec = t.intersection([
   t.type({
     key: t.string,
-    rules: t.array(codecForwardRuleSpec),
+    routes: t.array(codecRoutingRuleSpec),
   }),
   t.partial({
     name: t.string,
     endpoint: t.boolean,
     filters: t.array(codecRuleSpecNoId),
     pool: t.array(codecPoolRuleSpec),
-    range: t.record(t.string, t.any),
+    range: codecConstraint,
   }),
 ]);
 

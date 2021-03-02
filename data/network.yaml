@@ -3,20 +3,20 @@ nodes:
   - name: internet
     key: internet
     endpoint: true
-    rules:
+    routes:
       - destination: gateway
         constraints:
           destinationIp: 10.0.0.0/15
   - name: gateway
     key: gateway
-    rules:
+    routes:
       - destination: internet
         constraints:
           destinationIp: except 10.0.0.0/15
       - destination: router
   - name: router
     key: router
-    rules:
+    routes:
       # Demo step 1: second route to server1
       # - destination: server1
       #   constraints:
@@ -30,7 +30,7 @@ nodes:
       - destination: gateway
   - name: subnet1
     key: subnet1
-    rules:
+    routes:
       - destination: router
         constraints:
           destinationIp: except 10.0.0.0/16
@@ -38,13 +38,13 @@ nodes:
   - name: server1
     key: server1
     endpoint: true
-    rules:
+    routes:
       - destination: subnet1
         constraints:
           destinationIp: except loopback
   - name: subnet2
     key: subnet2
-    rules:
+    routes:
       # Demo step 2: route to gateway introduces a cycle
       # - destination: gateway
       #   constraints:
@@ -56,18 +56,18 @@ nodes:
   - name: server2
     key: server2
     endpoint: true
-    rules:
+    routes:
       - destination: subnet2
         constraints:
           destinationIp: except loopback
   # Demo step 3: router3 is not reachable from any other node
   # - name: router3
   #   key: router3
-  #   rules:
+  #   routes:
   #     - destination: server3
   #       constraints:
   #         protocol: tcp
   # - name: server3
   #   key: server3
   #   endpoint: true
-  #   rules: []
+  #   routes: []

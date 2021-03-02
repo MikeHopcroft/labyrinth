@@ -1,6 +1,6 @@
 import DRange from 'drange';
 
-import {ForwardRuleSpec, NodeSpec, SymbolStore} from '../../graph';
+import {NodeSpec, RoutingRuleSpec, SymbolStore} from '../../graph';
 import {
   DimensionType,
   createIpFormatter,
@@ -77,7 +77,7 @@ export class VirtualNetworkConverter
     // TODO This function signature (for push) always confuses me. My bad.
     this.symbols.push('ip', vnet.name, addressRangeText);
 
-    const rules: ForwardRuleSpec[] = [
+    const rules: RoutingRuleSpec[] = [
       // Traffic leaving subnet
       {
         // TODO KEY_INTERNET
@@ -99,8 +99,8 @@ export class VirtualNetworkConverter
 
       for (const subnetNode of subnetNodes) {
         // TODO: Do we really want to patch the subnet rules here vs passing the vnet down?
-        if (subnetNode.rules.length === 0) {
-          subnetNode.rules.push({
+        if (subnetNode.routes.length === 0) {
+          subnetNode.routes.push({
             destination: alias,
           });
         }
@@ -120,7 +120,7 @@ export class VirtualNetworkConverter
       range: {
         sourceIp: addressRangeText,
       },
-      rules,
+      routes: rules,
     });
 
     return nodes;

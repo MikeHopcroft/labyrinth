@@ -10,8 +10,8 @@ import {
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
-import {ForwardRule, parseForwardRuleSpec} from './forward_rule';
 import {PoolRule, parsePoolRuleSpec} from './pool_rule';
+import {RoutingRule, parseRoutingRuleSpec} from './routing_rule';
 import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
 
@@ -74,8 +74,8 @@ export class Node {
       filters = Disjunction.universe<RuleSpec>();
     }
 
-    const forwardRules = spec.rules.map(r =>
-      parseForwardRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
+    const forwardRules = spec.routes.map(r =>
+      parseRoutingRuleSpec(universe, simplifier as Simplifier<RuleSpec>, r)
     );
     const poolRules = (spec.pool || []).map(r =>
       parsePoolRuleSpec(universe, r)
@@ -86,7 +86,7 @@ export class Node {
   createEdges(
     simplifier: Simplifier<AnyRuleSpec>,
     filters: Disjunction<RuleSpec>,
-    forwardRules: ForwardRule[],
+    forwardRules: RoutingRule[],
     poolRules: PoolRule[]
   ) {
     // NOTE that multiple rules may forward to the same node.
