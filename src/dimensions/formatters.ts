@@ -194,3 +194,9 @@ export function tryGetCIDR(s: number, e: number): string | undefined {
     return undefined;
   }
 }
+
+const ipLiteralFormatter = createIpFormatter(new Map<string, string>());
+
+export function formatIpLiteral(range: DRange) {
+  return formatDRange(ipLiteralFormatter, range);
+}

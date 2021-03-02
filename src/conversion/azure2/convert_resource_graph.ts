@@ -1,17 +1,17 @@
 import {GraphServices} from './graph_services';
 import {asAzureVirtualNetwork, AzureResourceGraph} from './types';
 
-export function resourceGraph(
+export function convertResourceGraph(
   builder: GraphServices,
-  spec: AzureResourceGraph
+  resourceGraphSpec: AzureResourceGraph
 ) {
-  const keys: string[] = [];
-  for (const item of spec) {
+  const vNetNodeKeys: string[] = [];
+  for (const item of resourceGraphSpec) {
     const vnet = asAzureVirtualNetwork(item);
     if (vnet) {
       // process vnet
       const key = builder.convert.vnet(builder, vnet);
-      keys.push(key);
+      vNetNodeKeys.push(key);
     }
   }
   // Define symbol for internet.
