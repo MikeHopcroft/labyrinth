@@ -1,10 +1,13 @@
-import {GraphSpec, NodeSpec, SymbolDefinitionSpec} from '../../graph';
+import {GraphSpec, NodeSpec} from '../../graph';
+import {IRules} from '../types';
+import {convertNsg} from './convert_network_security_group';
 
 import {SymbolTable} from './symbol_table';
 
 import {
   AnyAzureObject,
   AzureIPConfiguration,
+  AzureNetworkSecurityGroup,
   AzureReference,
   AzureResourceGraph,
   AzureSubnet,
@@ -26,6 +29,11 @@ export interface IConverters {
   subnet(services: GraphServices, spec: AzureSubnet, parent: string): string;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): string;
   ip(services: GraphServices, spec: AzureIPConfiguration): string;
+  nsg(
+    services: GraphServices,
+    spect: AzureNetworkSecurityGroup,
+    vnetSymbol: string
+  ): IRules;
 }
 
 const defaultConverterMocks: IConverters = {
@@ -33,6 +41,10 @@ const defaultConverterMocks: IConverters = {
   subnet: (builder: GraphServices, spec: AzureSubnet, vNetKey: string) =>
     `${spec.id}/${vNetKey}`,
   vnet: (builder: GraphServices, spec: AzureVirtualNetwork) => spec.id,
+  ip: (services: GraphServices, ip: AzureIPConfiguration) => {
+    return ip.id;
+  },
+  nsg: convertNsg,
 };
 
 export function overrideDefaultCoverterMocks(overrides: Partial<IConverters>) {
@@ -60,6 +72,10 @@ export class GraphServices {
   // Add a Labyrinth node to the generated graph.
   addNode(node: NodeSpec) {
     this.nodes.push(node);
+  }
+
+  hasItem(id: string): boolean {
+    return this.idToAzureObject.has(id);
   }
 
   // Looking an Azure item in the resource graph by its id.

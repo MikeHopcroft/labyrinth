@@ -3,6 +3,7 @@ import {GraphSpec} from '../../graph';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
+import {convertNsg} from './convert_network_security_group';
 import {GraphServices, IConverters} from './graph_services';
 import {NameShortener} from './name_shortener';
 import {SymbolTable} from './symbol_table';
@@ -14,6 +15,7 @@ const converters: IConverters = {
   resourceGraph: convertResourceGraph,
   subnet: convertSubnet,
   vnet: convertVNet,
+  nsg: convertNsg,
 };
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
