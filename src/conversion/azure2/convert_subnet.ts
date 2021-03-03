@@ -3,10 +3,26 @@ import {IRules} from '../types';
 
 import {GraphServices} from './graph_services';
 import {
+  AzureIdReference,
   AzureIPConfiguration,
   AzureNetworkSecurityGroup,
   AzureSubnet,
 } from './types';
+
+function convertNsgRules(
+  nsgRef: AzureIdReference,
+  services: GraphServices,
+  vNetKey: string
+): IRules | undefined {
+  if (nsgRef) {
+    const nsgSpec = services.dereference<AzureNetworkSecurityGroup>(nsgRef);
+
+    // FIX: vNetKey needs to be a symbol not just a node key
+    return services.convert.nsg(services, nsgSpec, vNetKey);
+  }
+
+  return undefined;
+}
 
 export function convertSubnet(
   services: GraphServices,
@@ -22,7 +38,7 @@ export function convertSubnet(
   const outboundKey = subnetKeyPrefix + '/outbound';
   const routerKey = subnetKeyPrefix + '/router';
 
-  const rules: RoutingRuleSpec[] = [
+  const routes: RoutingRuleSpec[] = [
     // Traffic leaving subnet
     {
       constraints: {
@@ -41,39 +57,33 @@ export function convertSubnet(
       // the resource graph. The first example of this is specifically for Virtual Machine
       // Scale Set ip configurations.
       if (services.hasItem(ip.id)) {
-        const ipConfig = services.dereference<AzureIPConfiguration>(ip);
-        const ipServiceTag = services.convert.ip(services, ipConfig);
-        rules.push({
+        const ipConfigSpec = services.dereference<AzureIPConfiguration>(ip);
+        const ipServiceTag = services.convert.ip(services, ipConfigSpec);
+        routes.push({
           destination: ipServiceTag,
           constraints: {destinationIp: ipServiceTag},
         });
       }
+      // TODO: else clause?
     }
   }
 
   const routerNode: NodeSpec = {
     key: routerKey,
-    range: {
-      sourceIp: subnetSpec.properties.addressPrefix,
-    },
-    routes: rules,
+    // TODO: do we want range here?
+    routes,
   };
   services.addNode(routerNode);
 
-  let nsgRules: IRules | null = null;
-  if (subnetSpec.properties.networkSecurityGroup) {
-    const nsgSpec = services.dereference<AzureNetworkSecurityGroup>(
-      subnetSpec.properties.networkSecurityGroup
-    );
-
-    // FIX: vNetKey needs to be a symbol not just a node key
-    nsgRules = services.convert.nsg(services, nsgSpec, vNetKey);
-  }
-
+  const nsgRules = convertNsgRules(
+    subnetSpec.properties.networkSecurityGroup,
+    services,
+    vNetKey
+  );
   const inboundNode: NodeSpec = {
     key: inboundKey,
-    filters: nsgRules?.inboundRules ?? [],
-    // NOTE: no range because inbound can receive from any sourceIp
+    filters: nsgRules?.inboundRules,
+    // TODO: do we want range here?
     // TODO: is this correct? The router moves packets in both directions.
     routes: [
       {
@@ -85,11 +95,10 @@ export function convertSubnet(
 
   const outboundNode: NodeSpec = {
     key: outboundKey,
-    filters: nsgRules?.outboundRules ?? [],
-    range: {
-      sourceIp: subnetSpec.properties.addressPrefix,
-    },
-    routes: [],
+    filters: nsgRules?.outboundRules,
+    routes: [{
+      destination: vNetKey
+    }],
   };
   services.addNode(outboundNode);
 

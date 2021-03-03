@@ -15,50 +15,50 @@
 // az graph query -q 'resources | where resourceGroup == "labyrinth-sample"'
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+// TODO: better names for AzureIdReference and AzureObjectBase.
 export interface AzureObjectBase {
   id: string;
-  name: string;
   resourceGroup: string;
-  type: string;
 }
 
-export interface AzureIdReference {
-  id: string;
-  resourceGroup: string;
+export interface AzureTypedObject extends AzureObjectBase {
+  name: string;
+  type: string;
 }
 
 // DESIGN NOTE: the unused type parameter T is for the benefit of
 // a generic function that dereferences an AzureReference<T> into
 // a T.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type AzureReference<T> = AzureIdReference;
+export type AzureReference<T> = AzureObjectBase;
 
-export interface AzureLocalIP extends AzureObjectBase {
+export interface AzureLocalIP extends AzureTypedObject {
   type: 'Microsoft.Network/networkInterfaces/ipConfigurations';
   properties: {
     privateIPAddress: string;
-    subnet: AzureIdReference | undefined;
+    subnet: AzureObjectBase | undefined;
   };
 }
 
-export interface AzurePublicIp extends AzureObjectBase {
+export interface AzurePublicIp extends AzureTypedObject {
   type: 'microsoft.network/publicipaddresses';
   properties: {
     ipAddress: string;
-    subnet: AzureIdReference | undefined;
+    subnet: AzureObjectBase | undefined;
   };
 }
 
 export type AzureIPConfiguration = AzureLocalIP | AzurePublicIp;
 
-export interface AzureNetworkInterface extends AzureObjectBase {
+export interface AzureNetworkInterface extends AzureTypedObject {
   type: 'microsoft.network/networkinterfaces';
   properties: {
     ipConfigurations: AzureIPConfiguration[];
   };
 }
 
-export interface AzureNetworkSecurityGroup extends AzureObjectBase {
+export interface AzureNetworkSecurityGroup extends AzureTypedObject {
   type: 'microsoft.network/networksecuritygroups';
   properties: {
     defaultSecurityRules: AzureSecurityRule[];
@@ -67,7 +67,7 @@ export interface AzureNetworkSecurityGroup extends AzureObjectBase {
   };
 }
 
-export interface AzureSecurityRule extends AzureObjectBase {
+export interface AzureSecurityRule extends AzureTypedObject {
   type:
     | 'Microsoft.Network/networkSecurityGroups/defaultSecurityRules'
     | 'Microsoft.Network/networkSecurityGroups/securityRules';
@@ -87,7 +87,7 @@ export interface AzureSecurityRule extends AzureObjectBase {
   };
 }
 
-export interface AzureSubnet extends AzureObjectBase {
+export interface AzureSubnet extends AzureTypedObject {
   type: 'Microsoft.Network/virtualNetworks/subnets';
   properties: {
     addressPrefix: string;
@@ -97,7 +97,7 @@ export interface AzureSubnet extends AzureObjectBase {
   };
 }
 
-export interface AzureVirtualNetwork extends AzureObjectBase {
+export interface AzureVirtualNetwork extends AzureTypedObject {
   type: 'microsoft.network/virtualnetworks';
   properties: {
     addressSpace: {

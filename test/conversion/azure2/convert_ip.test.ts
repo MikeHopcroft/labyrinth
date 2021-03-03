@@ -10,6 +10,7 @@ import {ServiceOracle} from './oracle';
 
 describe('Azure', () => {
   describe('Convert-IP', () => {
+    // We may have to do this init per test, if we have memoizing converters.
     const services = ServiceOracle.InitializedGraphServices();
 
     it('Conversion of local ip', () => {
@@ -32,9 +33,23 @@ describe('Azure', () => {
         },
       };
 
+      // Alternative form that emphasizes the semantics of the expected values.
+      const expected2: SymbolDefinitionSpec = {
+        dimension: 'ip', // TODO use enum
+        symbol: input.id,
+        range: input.properties.privateIPAddress,
+      };
+
       const ipKey = services.convert.ip(services, input);
-      const symbol = services.symbols.getSymbol(ipKey);
+
+      // TODO: is this assert too prescriptive? If enforces that the generated
+      // key is, in fact, input.id. This may be an implementation detail.
+      assert.equal(ipKey, input.id);
+
+      const symbol = services.symbols.getSymbolSpec(ipKey);
       assert.deepEqual(symbol, expected);
+
+      // TODO: need to verify that the correct node is generated.
     });
   });
 });

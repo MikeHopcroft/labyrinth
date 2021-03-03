@@ -2,6 +2,15 @@ import {NodeSpec, RoutingRuleSpec} from '../../graph';
 import {GraphServices} from './graph_services';
 import {asAzureVirtualNetwork, AzureResourceGraph} from './types';
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// convertResourceGraph() is responsible for
+//   1. Creating the `Internet` node with routes to all public ips.
+//   2. Materializing root nodes for VNets, NICs, and possibly compute pools.
+//   3. Defining the `Internet` service tag, which is referenced by routing
+//      and filtering rules in VNets and NSGs.
+//
+///////////////////////////////////////////////////////////////////////////////
 export function convertResourceGraph(
   services: GraphServices,
   resourceGraphSpec: AzureResourceGraph

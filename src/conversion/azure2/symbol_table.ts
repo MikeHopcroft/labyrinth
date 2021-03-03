@@ -19,11 +19,11 @@ export class SymbolTable {
     this.defineSymbol(serviceTagDimensionKey, tagName, range);
   }
 
-  getSymbolSpec(): SymbolDefinitionSpec[] {
+  getAllSymbolSpecs(): SymbolDefinitionSpec[] {
     return [...this.symbolToSpec.values()];
   }
 
-  getSymbol(symbolKey: string): SymbolDefinitionSpec {
+  getSymbolSpec(symbolKey: string): SymbolDefinitionSpec {
     const value = this.symbolToSpec.get(symbolKey);
 
     if (!value) {
@@ -40,4 +40,15 @@ export class SymbolTable {
     }
     this.symbolToSpec.set(spec.symbol, spec);
   }
+}
+
+// TODO: this approach to escaping might generate a collision with another
+// symbol that already uses `_`.
+// ISSUE: should escaping be done in SymbolTable.defineSymbol() and 
+// SymbolTable.getSymbolSpec(), or it escaping the resposibility of the
+// caller?
+export function escapeSymbol(symbol: string) {
+  const s1 = symbol.replace(/,/g, '_');
+  const s2 = symbol.replace(/-/g, '_');
+  return s2;
 }
