@@ -44,11 +44,11 @@ export class SymbolTable {
 
 // TODO: this approach to escaping might generate a collision with another
 // symbol that already uses `_`.
-// ISSUE: should escaping be done in SymbolTable.defineSymbol() and 
+// ISSUE: should escaping be done in SymbolTable.defineSymbol() and
 // SymbolTable.getSymbolSpec(), or it escaping the resposibility of the
 // caller?
 export function escapeSymbol(symbol: string) {
-  const s1 = symbol.replace(/,/g, '_');
-  const s2 = symbol.replace(/-/g, '_');
-  return s2;
+  const s1 = symbol.replace(/[,-]/g, '_');
+  // const s2 = s1.replace(/-/g, '_');
+  return s1;
 }

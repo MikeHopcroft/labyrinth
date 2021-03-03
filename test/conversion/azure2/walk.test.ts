@@ -3,7 +3,7 @@ import 'mocha';
 
 import {
   walkAzureObjectBases,
-  walkAzureTypedObjects
+  walkAzureTypedObjects,
 } from '../../../src/conversion/azure2';
 
 const input = [
