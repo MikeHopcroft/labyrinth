@@ -1,4 +1,5 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
+
 import {GraphServices} from './graph_services';
 import {asAzureVirtualNetwork, AzureResourceGraph} from './types';
 
@@ -28,12 +29,12 @@ export function convertResourceGraph(
     const vnet = asAzureVirtualNetwork(item);
     if (vnet) {
       // If the top-level item happens to be a VNet then materialize it.
-      const key = services.convert.vnet(services, vnet);
+      const {key, destinationIp} = services.convert.vnet(services, vnet);
       vNetNodeKeys.push(key);
 
       routes.push({
         destination: key,
-        constraints: {destinationIp: key},
+        constraints: {destinationIp},
       });
     }
   }

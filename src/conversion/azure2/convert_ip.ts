@@ -1,3 +1,4 @@
+import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
 import {AzureIPConfiguration, AzureObjectType} from './types';
 
@@ -14,10 +15,10 @@ function convertToIpAddress(ipItem: AzureIPConfiguration): string {
 export function convertIp(
   services: GraphServices,
   ipConfig: AzureIPConfiguration
-): string {
+): NodeKeyAndSourceIp {
   const ip = convertToIpAddress(ipConfig);
   const ipKey = ipConfig.id;
 
   services.symbols.defineServiceTag(ipKey, ip);
-  return ipKey;
+  return {key: ipKey, destinationIp: ip};
 }

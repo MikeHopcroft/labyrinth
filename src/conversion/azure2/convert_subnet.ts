@@ -1,7 +1,10 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
+
 import {IRules} from '../types';
 
+import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
+
 import {
   AzureIdReference,
   AzureIPConfiguration,
@@ -30,7 +33,7 @@ export function convertSubnet(
   services: GraphServices,
   subnetSpec: AzureSubnet,
   vNetKey: string
-): string {
+): NodeKeyAndSourceIp {
   // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
   const subnetKeyPrefix = subnetSpec.id;
 
@@ -62,10 +65,13 @@ export function convertSubnet(
         const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
           ip
         );
-        const ipServiceTag = services.convert.ip(services, ipConfigSpec);
+        const {key, destinationIp} = services.convert.ip(
+          services,
+          ipConfigSpec
+        );
         routes.push({
-          destination: ipServiceTag,
-          constraints: {destinationIp: ipServiceTag},
+          destination: key,
+          constraints: {destinationIp},
         });
       }
       // TODO: else clause?
@@ -109,5 +115,5 @@ export function convertSubnet(
   services.addNode(outboundNode);
 
   // TODO: What should be returned here? Subnet is represetned by 3 nodes...
-  return inboundNode.key;
+  return {key: inboundNode.key, destinationIp: 'xyz'};
 }

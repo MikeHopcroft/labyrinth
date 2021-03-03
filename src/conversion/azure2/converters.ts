@@ -1,5 +1,4 @@
-// TODO: remove this external dependency
-import {IRules} from '../types';
+import {RuleSpec} from '../../rules';
 
 import {convertNsg} from './convert_network_security_group';
 import {GraphServices} from './graph_services';
@@ -12,6 +11,16 @@ import {
   AzureVirtualNetwork,
 } from './types';
 
+export interface NodeKeyAndSourceIp {
+  key: string;
+  destinationIp: string;
+}
+
+export interface NSGRuleSpecs {
+  readonly outboundRules: RuleSpec[];
+  readonly inboundRules: RuleSpec[];
+}
+
 // DESIGN ALTERNATIVE (for converter return value):
 // Instead of returning identifier that is both the node key and
 // the service tag, return an object
@@ -22,24 +31,35 @@ import {
 //   }
 export interface IConverters {
   resourceGraph(services: GraphServices, spec: AzureResourceGraph): void;
-  subnet(services: GraphServices, spec: AzureSubnet, parent: string): string;
-  vnet(services: GraphServices, spec: AzureVirtualNetwork): string;
-  ip(services: GraphServices, spec: AzureIPConfiguration): string;
+  subnet(
+    services: GraphServices,
+    spec: AzureSubnet,
+    parent: string
+  ): NodeKeyAndSourceIp;
+  vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
+  ip(services: GraphServices, spec: AzureIPConfiguration): NodeKeyAndSourceIp;
   nsg(
     services: GraphServices,
-    spect: AzureNetworkSecurityGroup,
+    spec: AzureNetworkSecurityGroup,
     vnetSymbol: string
-  ): IRules;
+  ): NSGRuleSpecs;
 }
 
 export const defaultConverterMocks: IConverters = {
   resourceGraph: (services: GraphServices, spec: AzureResourceGraph) => {},
   subnet: (services: GraphServices, spec: AzureSubnet, vNetKey: string) =>
-    `${spec.id}/${vNetKey}`,
-  vnet: (services: GraphServices, spec: AzureVirtualNetwork) => spec.id,
-  ip: (services: GraphServices, ip: AzureIPConfiguration) => {
-    return ip.id;
-  },
+    // TODO: this is confusing. Returning vNetKey in destinationIp so that
+    // unit tests can verify vNetKey.
+    ({key: spec.id, destinationIp: `${vNetKey}`}),
+  vnet: (services: GraphServices, spec: AzureVirtualNetwork) => ({
+    key: spec.id,
+    destinationIp: 'xyz',
+  }),
+  ip: (services: GraphServices, spec: AzureIPConfiguration) => ({
+    key: spec.id,
+    destinationIp: 'xyz',
+  }),
+  // TODO: nsg should be a mock.
   nsg: convertNsg,
 };
 
