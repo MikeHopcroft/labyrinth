@@ -1,4 +1,4 @@
-import {AzureObjectBase} from '../azure';
+import {AzureTypedObject} from '../azure';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -6,7 +6,7 @@ import {AzureObjectBase} from '../azure';
 //
 ///////////////////////////////////////////////////////////////////////////////
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function* walk(root: any): IterableIterator<AzureObjectBase> {
+export function* walkAzureTypedObjects(root: any): IterableIterator<AzureTypedObject> {
   if (root && typeof root === 'object') {
     // NOTE: cannot use destructuring here because `root` is `any`.
     const id = root.id;
@@ -23,7 +23,28 @@ export function* walk(root: any): IterableIterator<AzureObjectBase> {
         continue;
       }
 
-      yield* walk(root[key]);
+      yield* walkAzureTypedObjects(root[key]);
+    }
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function* walkAzureObjectBases(root: any): IterableIterator<AzureTypedObject> {
+  if (root && typeof root === 'object') {
+    // NOTE: cannot use destructuring here because `root` is `any`.
+    const id = root.id;
+    const resourceGroup = root.resourceGroup;
+
+    if (id && resourceGroup) {
+      yield root;
+    }
+    for (const key in root) {
+      // https://eslint.org/docs/rules/no-prototype-builtins
+      if (!Object.prototype.hasOwnProperty.call(root, key)) {
+        continue;
+      }
+
+      yield* walkAzureObjectBases(root[key]);
     }
   }
 }

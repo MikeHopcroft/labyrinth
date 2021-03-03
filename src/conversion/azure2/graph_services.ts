@@ -14,7 +14,7 @@ import {
   AzureVirtualNetwork,
 } from './types';
 
-import {walk} from './walk';
+import {walkAzureTypedObjects} from './walk';
 
 // DESIGN ALTERNATIVE (for converter return value):
 // Instead of returning identifier that is both the node key and
@@ -64,7 +64,7 @@ export class GraphServices {
   ) {
     this.convert = converters;
     this.symbols = symbols;
-    for (const item of walk(resourceGraph)) {
+    for (const item of walkAzureTypedObjects(resourceGraph)) {
       this.idToAzureObject.set(item.id, item as AnyAzureObject);
     }
   }
@@ -97,7 +97,7 @@ export class GraphServices {
   }
 
   getLabyrinthGraphSpec(): GraphSpec {
-    return {nodes: this.nodes, symbols: this.symbols.getSymbolSpec()};
+    return {nodes: this.nodes, symbols: this.symbols.getAllSymbolSpecs()};
   }
 
   // TODO: eventually we will probably need some scope management

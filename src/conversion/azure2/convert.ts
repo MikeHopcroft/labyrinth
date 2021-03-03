@@ -9,7 +9,11 @@ import {GraphServices, IConverters} from './graph_services';
 import {NameShortener} from './name_shortener';
 import {SymbolTable} from './symbol_table';
 import {AzureResourceGraph} from './types';
-import {walk} from './walk';
+
+import {
+  walkAzureObjectBases,
+  walkAzureTypedObjects
+} from './walk';
 
 // TODO: Move `converters` to own file.
 const converters: IConverters = {
@@ -25,16 +29,16 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   // Shorten names in graph.
   //
 
-  // Populate shortener
+  // Populate shortener with ids from AzureTypedObjects.
   const shortener = new NameShortener();
-  for (const item of walk(resourceGraphSpec)) {
+  for (const item of walkAzureTypedObjects(resourceGraphSpec)) {
     shortener.add(item.id);
   }
 
   // Actually shorten names
   // TODO: this needs to convert references in addition to AnyAzureObjects
   // REVIEW: what if we need the old id and the new id in the node.
-  for (const item of walk(resourceGraphSpec)) {
+  for (const item of walkAzureObjectBases(resourceGraphSpec)) {
     item.id = shortener.shorten(item.id);
   }
 
