@@ -53,4 +53,6 @@ export function convertResourceGraph(
     range: {sourceIp},
     routes,
   };
+
+  services.addNode(internetNode);
 }

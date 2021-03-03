@@ -5,8 +5,10 @@ import {AzureTypedObject} from '../azure';
 // Generator for all nodes of type AzureObjectBase in an Azure ResourceGraph.
 //
 ///////////////////////////////////////////////////////////////////////////////
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function* walkAzureTypedObjects(root: any): IterableIterator<AzureTypedObject> {
+export function* walkAzureTypedObjects(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  root: any
+): IterableIterator<AzureTypedObject> {
   if (root && typeof root === 'object') {
     // NOTE: cannot use destructuring here because `root` is `any`.
     const id = root.id;
@@ -28,8 +30,10 @@ export function* walkAzureTypedObjects(root: any): IterableIterator<AzureTypedOb
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function* walkAzureObjectBases(root: any): IterableIterator<AzureTypedObject> {
+export function* walkAzureObjectBases(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  root: any
+): IterableIterator<AzureTypedObject> {
   if (root && typeof root === 'object') {
     // NOTE: cannot use destructuring here because `root` is `any`.
     const id = root.id;

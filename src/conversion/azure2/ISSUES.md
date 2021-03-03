@@ -9,6 +9,7 @@
     * Escape dash and comma
       * Converters will need to return two strings: nodeKey and serviceTag
     * Ensure that Azure never uses dash and comma.
+    * Who is responsible for calling escapeSymbol()?
 * BUG: convertResourceGraph() should not route from Internet to VNets.
 * Nodes which may be visited more than once during the traversal
   * Ip Configurations for examples. Referenced both by subnet and Network Interface

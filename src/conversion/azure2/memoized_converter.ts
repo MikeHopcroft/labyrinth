@@ -20,15 +20,13 @@ function convertIpFactory() {
   ): string {
     const memo = idToMemo.get(spec.id);
     if (memo) {
-
     } else {
       const nodeKey = spec.id;
       const sourceIp = spec.properties.privateIPAddress;
       const node: NodeSpec = {
         key: nodeKey,
-        routes: []
-      }
+        routes: [],
+      };
     }
   }
-
 }

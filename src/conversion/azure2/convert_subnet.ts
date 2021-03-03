@@ -15,7 +15,9 @@ function convertNsgRules(
   vNetKey: string
 ): IRules | undefined {
   if (nsgRef) {
-    const nsgSpec = services.dereference<AzureNetworkSecurityGroup>(nsgRef);
+    const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
+      nsgRef
+    );
 
     // FIX: vNetKey needs to be a symbol not just a node key
     return services.convert.nsg(services, nsgSpec, vNetKey);
@@ -56,8 +58,10 @@ export function convertSubnet(
       // Subnets may have ip configurations attached for items which do not exist in the
       // the resource graph. The first example of this is specifically for Virtual Machine
       // Scale Set ip configurations.
-      if (services.hasItem(ip.id)) {
-        const ipConfigSpec = services.dereference<AzureIPConfiguration>(ip);
+      if (services.index.has(ip.id)) {
+        const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
+          ip
+        );
         const ipServiceTag = services.convert.ip(services, ipConfigSpec);
         routes.push({
           destination: ipServiceTag,
@@ -96,9 +100,11 @@ export function convertSubnet(
   const outboundNode: NodeSpec = {
     key: outboundKey,
     filters: nsgRules?.outboundRules,
-    routes: [{
-      destination: vNetKey
-    }],
+    routes: [
+      {
+        destination: vNetKey,
+      },
+    ],
   };
   services.addNode(outboundNode);
 
