@@ -1,4 +1,5 @@
 * IPConfig references for scale set backend pools
+* Mocks are confusing
 * id shortening
   * x BUG: Need to shorten ids on both AnyAzureObjects and AzureIdReference
   * QUESTION: shorten before conversion or after or reintroduce aliases?

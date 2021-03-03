@@ -3,13 +3,14 @@ import DRange from 'drange';
 import {formatIpLiteral, parseIp} from '../../dimensions';
 import {RoutingRuleSpec} from '../../graph';
 
+import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
 import {AzureVirtualNetwork} from './types';
 
 export function convertVNet(
   services: GraphServices,
   vNetSpec: AzureVirtualNetwork
-): string {
+): NodeKeyAndSourceIp {
   // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
   const vNetNodeKey = vNetSpec.id;
   const vNetServiceTag = vNetSpec.id;
@@ -33,14 +34,14 @@ export function convertVNet(
 
   // Materialize subnets and create routes to each.
   for (const subnetSpec of vNetSpec.properties.subnets) {
-    const subnetNodeKey = services.convert.subnet(
+    const {key: subnetNodeKey, destinationIp} = services.convert.subnet(
       services,
       subnetSpec,
       vNetNodeKey
     );
     routes.push({
       destination: subnetNodeKey,
-      constraints: {destinationIp: subnetNodeKey},
+      constraints: {destinationIp},
     });
   }
 
@@ -50,5 +51,5 @@ export function convertVNet(
     routes,
   });
 
-  return vNetNodeKey;
+  return {key: vNetNodeKey, destinationIp: 'xyz'};
 }

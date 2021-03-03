@@ -2,10 +2,13 @@ import {assert} from 'chai';
 import 'mocha';
 import {SymbolDefinitionSpec} from '../../../src';
 
+// import {NodeKeyAndSourceIp} from './converters';
+
 import {
   AzureLocalIP,
   AzureObjectType,
 } from '../../../src/conversion/azure2/types';
+
 import {ServiceOracle} from './oracle';
 
 describe('Azure', () => {
@@ -40,14 +43,18 @@ describe('Azure', () => {
         range: input.properties.privateIPAddress,
       };
 
-      const ipKey = services.convert.ip(services, input);
+      const {key: ipKey, destinationIp} = services.convert.ip(services, input);
 
       // TODO: is this assert too prescriptive? If enforces that the generated
       // key is, in fact, input.id. This may be an implementation detail.
       assert.equal(ipKey, input.id);
+      assert.equal(destinationIp, input.properties.privateIPAddress);
 
+      // Convention is likely no longer to create service tags.
       const symbol = services.symbols.getSymbolSpec(ipKey);
       assert.deepEqual(symbol, expected);
+
+      assert.fail();
 
       // TODO: need to verify that the correct node is generated.
     });
