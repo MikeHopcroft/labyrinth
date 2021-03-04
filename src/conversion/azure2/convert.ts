@@ -15,7 +15,7 @@ import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
 import {AzureObjectIndex} from './azure_object_index';
 
 // TODO: Move `converters` to own file.
-const converters: IConverters = {
+export const converters: IConverters = {
   resourceGraph: convertResourceGraph,
   subnet: convertSubnet,
   vnet: convertVNet,

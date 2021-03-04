@@ -46,4 +46,5 @@
   * Does escaping happen when usign one or the other
 * Can public IPs have NSG or only the things they are attached to?
 * Should we template AzureIdReference?
-* 
+* Remove Default Service Tag creation
+  * Ex. ip converter
