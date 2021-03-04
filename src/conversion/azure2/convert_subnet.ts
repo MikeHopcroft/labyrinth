@@ -41,7 +41,6 @@ export function convertSubnet(
   // with other names.
   const inboundKey = subnetKeyPrefix + '/inbound';
   const outboundKey = subnetKeyPrefix + '/outbound';
-  const routerKey = subnetKeyPrefix + '/router';
 
   const routes: RoutingRuleSpec[] = [
     // Traffic leaving subnet
@@ -57,49 +56,27 @@ export function convertSubnet(
   //   Materialize ipConfiguration
   //   Add routing rule
   if (subnetSpec.properties.ipConfigurations) {
-    for (const ip of subnetSpec.properties.ipConfigurations) {
-      // Subnets may have ip configurations attached for items which do not exist in the
-      // the resource graph. The first example of this is specifically for Virtual Machine
-      // Scale Set ip configurations.
-      if (services.index.has(ip)) {
-        const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
-          ip
-        );
-        const {key, destinationIp} = services.convert.ip(
-          services,
-          ipConfigSpec
-        );
-        routes.push({
-          destination: key,
-          constraints: {destinationIp},
-        });
-      }
-      // TODO: else clause?
+    for (const ipRef of subnetSpec.properties.ipConfigurations) {
+      const {key, destinationIp} = services.convert.ip(services, ipRef);
+      routes.push({
+        destination: key,
+        constraints: {destinationIp},
+      });
     }
   }
-
-  const routerNode: NodeSpec = {
-    key: routerKey,
-    // TODO: do we want range here?
-    routes,
-  };
-  services.addNode(routerNode);
 
   const nsgRules = convertNsgRules(
     subnetSpec.properties.networkSecurityGroup,
     services,
     vNetKey
   );
+
   const inboundNode: NodeSpec = {
     key: inboundKey,
     filters: nsgRules?.inboundRules,
     // TODO: do we want range here?
     // TODO: is this correct? The router moves packets in both directions.
-    routes: [
-      {
-        destination: routerKey,
-      },
-    ],
+    routes,
   };
   services.addNode(inboundNode);
 
@@ -108,7 +85,7 @@ export function convertSubnet(
     filters: nsgRules?.outboundRules,
     routes: [
       {
-        destination: vNetKey,
+        destination: 'Internet',
       },
     ],
   };
