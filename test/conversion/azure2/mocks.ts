@@ -3,8 +3,13 @@
 // Mocking framework code. Read usage examples, below before reading framework.
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+import {URLSearchParams} from 'url';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Mocked<PARAMS extends any[], RESULT> = (...params: PARAMS) => RESULT;
+export type Mocked<PARAMS extends any[], RESULT> = (
+  ...params: PARAMS
+) => RESULT;
 
 // DESIGN NOTE 1: I would prefer to implement Behavior as a type union of
 // a SuccessBehavior and a ThrowBehavior, but I couldn't get it to work with
@@ -12,14 +17,53 @@ type Mocked<PARAMS extends any[], RESULT> = (...params: PARAMS) => RESULT;
 //
 // DESIGN NOTE 2: Behavior.result should probably have type `string | Error`.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface Behavior<PARAMS extends any[], RESULT> {
+export interface Behavior<PARAMS extends any[], RESULT> {
   params: PARAMS;
   message?: string;
   result?: RESULT;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-class Mocker<PARAMS extends any[], RESULT> {
+interface MockImpl<PARAMS extends any[], RESULT> {
+  (): Mocked<PARAMS, RESULT>;
+  log: Array<Behavior<PARAMS, RESULT>>;
+  foobar?: Mocked<PARAMS, RESULT>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createMock<PARAMS extends any[], RESULT>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  prototypeFunction: Mocked<PARAMS, RESULT>
+) {
+  const log: Array<Behavior<PARAMS, RESULT>> = [];
+  let action: Mocked<PARAMS, RESULT> | undefined = undefined;
+  const f = (...params: PARAMS): RESULT => {
+    if (action) {
+      const result = action(...params);
+      log.push({params, result});
+      return result;
+    } else {
+      const message = 'No mock defined.';
+      throw new TypeError(message);
+    }
+  };
+
+  f.log = () => {
+    return log;
+  };
+
+  f.action = (fun: Mocked<PARAMS, RESULT>) => {
+    action = fun;
+  };
+
+  // f.log = log;
+  // // f.action = action;
+
+  return f;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class Mocker<PARAMS extends any[], RESULT> {
   private readonly paramToResult = new Map<string, Behavior<PARAMS, RESULT>>();
   private readonly log: Array<Behavior<PARAMS, RESULT>> = [];
   private readonly defaultFunction: Mocked<PARAMS, RESULT> | undefined;
@@ -72,7 +116,7 @@ class Mocker<PARAMS extends any[], RESULT> {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Usage example
+// Usage example 1
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -152,3 +196,24 @@ console.log(mocker.invocations());
 function defaultFunction(a: number, b: number, op: string): number {
   return Number.NaN;
 }
+
+// ///////////////////////////////////////////////////////////////////////////////
+// //
+// // Usage example 2
+// //
+// ///////////////////////////////////////////////////////////////////////////////
+// import {converters} from '../../../src/conversion/azure2/convert';
+// import {IConverters} from '../../../src/conversion/azure2/converters';
+// import {GraphServices} from '../../../src/conversion/azure2/graph_services';
+
+// const baseMock: IConverters = {
+//   ip: () => {throw new TypeError('No mock for IConverters.ip()')},
+// }
+
+// const fake: IConverters = {} as IConverters;
+// const rgMocker = new Mocker(converters.resourceGraph);
+// rgMocker.params(services: GraphServices, spec: AzureResourceGraph)
+
+// const mocks : IConverters {
+//   resourceGraph:
+// }

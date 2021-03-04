@@ -1,79 +1,81 @@
 import {assert} from 'chai';
 import 'mocha';
-import {ActionType, GraphSpec} from '../../../src';
+import {AzureSubnet, GraphSpec} from '../../../src';
 
-import {ServiceOracle} from './oracle';
-import {ResourceGraphOracle} from './oracle_data';
+import {convertVNet} from '../../../src/conversion/azure2/convert_vnet';
+import {GraphServices} from '../../../src/conversion/azure2/graph_services';
 
-describe('Azure', () => {
-  describe('Convert-VNET', () => {
-    it('Basic Virtual Network Conversion', () => {
-      const expected = {
+// TODO: namespace this import
+import {
+  createConvertersMock,
+  createGraphServices,
+  subnet1,
+  subnet1SourceIps,
+  subnet2,
+  subnet2SourceIps,
+  vnet1,
+  vnet1SourceIps,
+} from './shared';
+
+describe('Azure2', () => {
+  describe('convertVNet()', () => {
+    it('VNet with two subnets', () => {
+      const mocks = createConvertersMock();
+      mocks.subnet.action(
+        (services: GraphServices, subnetSpec: AzureSubnet, parent: string) => {
+          return {
+            key: subnetSpec.id,
+            destinationIp: subnetSpec.properties.addressPrefix,
+          };
+        }
+      );
+      const services = createGraphServices(mocks);
+      const result = convertVNet(services, vnet1);
+      const observedGraphSpec = services.getLabyrinthGraphSpec();
+
+      // Verify the return value.
+      assert.equal(result.key, vnet1.id);
+      // assert.equal(result.destinationIp, vnet1SourceIps);
+
+      // Verify that subnetConverter() was invoked correctly.
+      const log = mocks.subnet.log();
+      assert.equal(log[0].params[1], subnet1);
+      assert.equal(log[0].params[2], vnet1.id);
+      assert.equal(log[1].params[1], subnet2);
+      assert.equal(log[1].params[2], vnet1.id);
+
+      // Verify the service tag definition.
+      assert.deepEqual(services.symbols.getSymbolSpec(vnet1.id), {
+        dimension: 'ip',
+        symbol: vnet1.id,
+        range: vnet1SourceIps,
+      });
+
+      // Verify that correct VNet node(s) were created in services.
+      const expectedGraphSpec: GraphSpec = {
         nodes: [
           {
-            key:
-              '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/router',
-            routes: [
-              {
-                constraints: {destinationIp: 'except 172.18.0.0/28'},
-                destination:
-                  '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/outbound',
-              },
-            ],
-          },
-          {
-            key:
-              '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/inbound',
-            filters: [
-              {
-                action: ActionType.ALLOW,
-                priority: 65000,
-                id: 1,
-                source: 'data/azure/resource-graph-1.json',
-                constraints: {
-                  sourceIp:
-                    '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B',
-                  sourcePort: '*',
-                  destinationIp:
-                    '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B',
-                  destinationPort: '*',
-                  protocol: '*',
-                },
-              },
-            ],
-            routes: [
-              {
-                destination:
-                  '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/router',
-              },
-            ],
-          },
-          {
-            key:
-              '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/outbound',
-            filters: [],
-            routes: [
-              {
-                destination:
-                  '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B',
-              },
-            ],
-          },
-          {
-            key:
-              '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B',
-            range: {sourceIp: '172.18.0.0/28'},
+            key: vnet1.id,
+            range: {
+              sourceIp: vnet1SourceIps,
+            },
             routes: [
               {
                 destination: 'Internet',
-                constraints: {destinationIp: 'except 172.18.0.0/28'},
+                constraints: {
+                  destinationIp: `except ${vnet1SourceIps}`,
+                },
               },
               {
-                destination:
-                  '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/inbound',
+                destination: subnet1.id,
                 constraints: {
-                  destinationIp:
-                    '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/inbound',
+                  destinationIp: subnet1SourceIps,
+                },
+              },
+              {
+                destination: subnet2.id,
+                constraints: {
+                  destinationIp: subnet2SourceIps,
                 },
               },
             ],
@@ -82,19 +84,13 @@ describe('Azure', () => {
         symbols: [
           {
             dimension: 'ip',
-            symbol:
-              '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B',
-            range: '172.18.0.0/28',
+            symbol: vnet1.id,
+            range: vnet1SourceIps,
           },
         ],
       };
 
-      const vnetSpec = ResourceGraphOracle.ValidVnet();
-      const graph = ResourceGraphOracle.ValidVnetGraph();
-      const services = ServiceOracle.InitializedGraphServices(graph);
-
-      services.convert.vnet(services, vnetSpec);
-      assert.deepEqual(services.getLabyrinthGraphSpec(), expected);
+      assert.deepEqual(observedGraphSpec, expectedGraphSpec);
     });
   });
 });
