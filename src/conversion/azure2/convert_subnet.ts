@@ -61,7 +61,7 @@ export function convertSubnet(
       // Subnets may have ip configurations attached for items which do not exist in the
       // the resource graph. The first example of this is specifically for Virtual Machine
       // Scale Set ip configurations.
-      if (services.index.has(ip.id)) {
+      if (services.index.has(ip)) {
         const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
           ip
         );

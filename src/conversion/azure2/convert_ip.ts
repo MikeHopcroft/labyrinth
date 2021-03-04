@@ -1,6 +1,12 @@
+import {AzureId} from './azure_id';
 import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
-import {AzureIPConfiguration, AzureObjectType} from './types';
+import {
+  AzureIdReference,
+  AzureIPConfiguration,
+  AzureObjectType,
+  AzureVirtualMachineScaleSet,
+} from './types';
 
 function convertToIpAddress(ipItem: AzureIPConfiguration): string {
   let ip: string;
@@ -12,12 +18,38 @@ function convertToIpAddress(ipItem: AzureIPConfiguration): string {
   return ip;
 }
 
-export function convertIp(
-  services: GraphServices,
+export function convertKnownIp(
   ipConfig: AzureIPConfiguration
 ): NodeKeyAndSourceIp {
   const ip = convertToIpAddress(ipConfig);
   const ipKey = ipConfig.id;
 
   return {key: ipKey, destinationIp: ip};
+}
+export function convertAsVMSSIp(
+  services: GraphServices,
+  ipRefSpec: AzureIdReference
+): NodeKeyAndSourceIp {
+  const vmssIds = AzureId.parseAsVMSSIpConfiguration(ipRefSpec);
+  const vmss = services.index.dereference<AzureVirtualMachineScaleSet>(
+    vmssIds.vmssId
+  );
+  return services.convert.vmssIp(
+    services,
+    vmss,
+    vmssIds.interfaceConfig,
+    vmssIds.ipConfig
+  );
+}
+
+export function convertIp(
+  services: GraphServices,
+  ipRefSpec: AzureIdReference
+): NodeKeyAndSourceIp {
+  if (!services.index.has(ipRefSpec)) {
+    return convertAsVMSSIp(services, ipRefSpec);
+  }
+
+  const ipConfig = services.index.dereference<AzureIPConfiguration>(ipRefSpec);
+  return convertKnownIp(ipConfig);
 }

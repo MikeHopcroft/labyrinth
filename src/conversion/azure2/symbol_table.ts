@@ -1,4 +1,6 @@
+import {string} from 'io-ts';
 import {SymbolDefinitionSpec} from '../../graph';
+import {throwIfEmptyString} from './exception_helpers';
 
 export const serviceTagDimensionKey = 'ip';
 
@@ -12,6 +14,8 @@ export class SymbolTable {
   }
 
   defineSymbol(dimension: string, symbol: string, range: string) {
+    throwIfEmptyString(range, 'Range cannot be empty');
+
     this.addSpec({dimension, symbol, range});
   }
 

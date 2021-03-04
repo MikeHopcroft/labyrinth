@@ -4,10 +4,14 @@ import {convertNsg} from './convert_network_security_group';
 import {GraphServices} from './graph_services';
 
 import {
-  AzureIPConfiguration,
+  AzureIdReference,
+  AzureLoadBalancer,
+  AzureLoadBalancerBackendPool,
+  AzureLoadBalancerFrontEndIp,
   AzureNetworkSecurityGroup,
   AzureResourceGraph,
   AzureSubnet,
+  AzureVirtualMachineScaleSet,
   AzureVirtualNetwork,
 } from './types';
 
@@ -30,6 +34,10 @@ export interface NSGRuleSpecs {
 //     range: DRange or string expression?
 //   }
 export interface IConverters {
+  backendPool(
+    services: GraphServices,
+    spec: AzureLoadBalancerBackendPool
+  ): NodeKeyAndSourceIp;
   resourceGraph(services: GraphServices, spec: AzureResourceGraph): void;
   subnet(
     services: GraphServices,
@@ -37,12 +45,26 @@ export interface IConverters {
     parent: string
   ): NodeKeyAndSourceIp;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
-  ip(services: GraphServices, spec: AzureIPConfiguration): NodeKeyAndSourceIp;
+  ip(services: GraphServices, spec: AzureIdReference): NodeKeyAndSourceIp;
+  loadBalancerIp(
+    services: GraphServices,
+    spec: AzureLoadBalancerFrontEndIp
+  ): NodeKeyAndSourceIp;
+  loadBalancer(
+    services: GraphServices,
+    spec: AzureLoadBalancer
+  ): NodeKeyAndSourceIp;
   nsg(
     services: GraphServices,
     spec: AzureNetworkSecurityGroup,
     vnetSymbol: string
   ): NSGRuleSpecs;
+  vmssIp(
+    services: GraphServices,
+    vmssSpec: AzureVirtualMachineScaleSet,
+    networkIterface: string,
+    ipConfig: string
+  ): NodeKeyAndSourceIp;
 }
 
 export const defaultConverterMocks: IConverters = {
@@ -55,12 +77,39 @@ export const defaultConverterMocks: IConverters = {
     key: spec.id,
     destinationIp: 'xyz',
   }),
-  ip: (services: GraphServices, spec: AzureIPConfiguration) => ({
+  ip: (services: GraphServices, spec: AzureIdReference) => ({
+    key: spec.id,
+    destinationIp: 'xyz',
+  }),
+  loadBalancerIp: (
+    services: GraphServices,
+    spec: AzureLoadBalancerFrontEndIp
+  ) => ({
+    key: spec.id,
+    destinationIp: 'xyz',
+  }),
+  backendPool: (
+    services: GraphServices,
+    spec: AzureLoadBalancerBackendPool
+  ) => ({
+    key: spec.id,
+    destinationIp: 'xyz',
+  }),
+  loadBalancer: (services: GraphServices, spec: AzureLoadBalancer) => ({
     key: spec.id,
     destinationIp: 'xyz',
   }),
   // TODO: nsg should be a mock.
   nsg: convertNsg,
+  vmssIp: (
+    services: GraphServices,
+    vmssSpec: AzureVirtualMachineScaleSet,
+    networkIterface: string,
+    ipConfig: string
+  ): NodeKeyAndSourceIp => ({
+    key: vmssSpec.id,
+    destinationIp: 'xyz',
+  }),
 };
 
 export function overrideDefaultCoverterMocks(overrides: Partial<IConverters>) {

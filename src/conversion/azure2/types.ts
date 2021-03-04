@@ -42,6 +42,13 @@ export enum AzureObjectType {
   SECURITY_RULE = 'Microsoft.Network/networkSecurityGroups/securityRules',
   SUBNET = 'Microsoft.Network/virtualNetworks/subnets',
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
+  VIRTUAL_MACHINE_SCALE_SET = 'microsoft.compute/virtualmachinescalesets',
+  LOAD_BALANCER_BACKEND_POOL = 'Microsoft.Network/loadBalancers/backendAddressPools',
+  LOAD_BALANCER_FRONT_END_IP = 'Microsoft.Network/loadBalancers/frontendIPConfigurations',
+  LOAD_BALANCER_NAT_POOL_INBOUND = 'Microsoft.Network/loadBalancers/inboundNatPools',
+  LOAD_BALANCER_NAT_RULE_INBOUND = 'Microsoft.Network/loadBalancers/inboundNatRules',
+  LOAD_BALANCER_RULE = 'Microsoft.Network/loadBalancers/loadBalancingRules',
+  LOAD_BALANCER = 'microsoft.network/loadbalancers',
 }
 
 export interface AzureLocalIP extends AzureObjectBase {
@@ -129,12 +136,111 @@ export function asAzureVirtualNetwork(
   return item.type === AzureObjectType.VIRTUAL_NETWORK ? item : null;
 }
 
+export interface AzureVmssIpConfiguration {
+  name: string;
+  properties: {
+    subnet: AzureIdReference;
+  };
+}
+
+export interface AzureVmssNetworkInterfaceConfig {
+  name: string;
+  properties: {
+    ipConfigurations: AzureVmssIpConfiguration[];
+    networkSecurityGroup: AzureIdReference;
+  };
+}
+
+export interface AzureVirtualMachineScaleSet extends AzureObjectBase {
+  type: AzureObjectType.VIRTUAL_MACHINE_SCALE_SET;
+  properties: {
+    virtualMachineProfile: {
+      networkProfile: {
+        networkInterfaceConfigurations: AzureVmssNetworkInterfaceConfig[];
+      };
+    };
+  };
+}
+
+export interface AzureLoadBalancerBackendPool extends AzureObjectBase {
+  type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL;
+  properties: {
+    backendIPConfigurations: AzureIdReference[];
+    loadBalancingRules: AzureIdReference[];
+  };
+}
+
+export interface AzureLoadBalancerFrontEndIp extends AzureObjectBase {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP;
+  properties: {
+    inboundNatPools: AzureIdReference[];
+    inboundNatRules: AzureIdReference[];
+    loadBalancingRules: AzureIdReference[];
+    publicIPAddress: AzureIdReference;
+  };
+}
+
+export interface AzureLoadBalancerInboundNatPool extends AzureObjectBase {
+  type: AzureObjectType.LOAD_BALANCER_NAT_POOL_INBOUND;
+  properties: {
+    backendPort: number;
+    frontendIPConfiguration: AzureIdReference;
+    frontendPortRangeStart: number;
+    frontendPortRangeEnd: number;
+    protocol: string;
+  };
+}
+
+export interface AzureLoadBalancerInboundNatRule extends AzureObjectBase {
+  type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND;
+  properties: {
+    backendPort: number;
+    backendIPConfiguration: AzureIdReference;
+    frontendIPConfiguration: AzureIdReference;
+    frontendPort: number;
+    protocol: string;
+  };
+}
+
+export interface AzureLoadBalancerRule extends AzureObjectBase {
+  type: AzureObjectType.LOAD_BALANCER_RULE;
+  properties: {
+    backendAddressPool: AzureIdReference;
+    backendPort: number;
+    frontendIPConfiguration: AzureIdReference;
+    frontendPort: number;
+    protocol: string;
+  };
+}
+
+export interface AzureLoadBalancer extends AzureObjectBase {
+  type: AzureObjectType.LOAD_BALANCER;
+  properties: {
+    backendAddressPools: AzureLoadBalancerBackendPool[];
+    frontendIPConfigurations: AzureLoadBalancerFrontEndIp[];
+    inboundNatPools: AzureLoadBalancerInboundNatPool[];
+    inboundNatRules: AzureLoadBalancerInboundNatRule[];
+    loadBalancingRules: AzureLoadBalancerRule[];
+  };
+}
+
+export function asLoadBalancer(item: AnyAzureObject): AzureLoadBalancer | null {
+  return item.type === AzureObjectType.LOAD_BALANCER ? item : null;
+}
+
 export type AnyAzureObject =
   | AzureIPConfiguration
+  | AzureLoadBalancer
+  | AzureLoadBalancerBackendPool
+  | AzureLoadBalancerFrontEndIp
+  | AzureLoadBalancerInboundNatPool
+  | AzureLoadBalancerInboundNatRule
+  | AzureLoadBalancerRule
   | AzureNetworkInterface
   | AzureNetworkSecurityGroup
   | AzureSecurityRule
   | AzureSubnet
+  | AzureVirtualMachineScaleSet
   | AzureVirtualNetwork;
 
 export type AzureResourceGraph = AnyAzureObject[];

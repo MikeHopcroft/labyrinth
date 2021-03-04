@@ -2,6 +2,11 @@ import {GraphSpec} from '../../graph';
 
 import {convertIp} from './convert_ip';
 import {IConverters} from './converters';
+import {
+  convertBackendPool,
+  convertLoadBalancer,
+  convertLoadBalancerIp,
+} from './convert_load_balancer';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
@@ -13,6 +18,7 @@ import {AzureResourceGraph} from './types';
 
 import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
 import {AzureObjectIndex} from './azure_object_index';
+import {convertVmssIp} from './convert_vmss';
 
 // TODO: Move `converters` to own file.
 const converters: IConverters = {
@@ -21,6 +27,10 @@ const converters: IConverters = {
   vnet: convertVNet,
   nsg: convertNsg,
   ip: convertIp,
+  backendPool: convertBackendPool,
+  loadBalancer: convertLoadBalancer,
+  loadBalancerIp: convertLoadBalancerIp,
+  vmssIp: convertVmssIp,
 };
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
@@ -28,18 +38,18 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   // Shorten names in graph.
   //
 
-  // Populate shortener with ids from AzureTypedObjects.
-  const shortener = new NameShortener();
-  for (const item of walkAzureTypedObjects(resourceGraphSpec)) {
-    shortener.add(item.id);
-  }
+  // // Populate shortener with ids from AzureTypedObjects.
+  // const shortener = new NameShortener();
+  // for (const item of walkAzureTypedObjects(resourceGraphSpec)) {
+  //   shortener.add(item.id);
+  // }
 
-  // Actually shorten names
-  // TODO: this needs to convert references in addition to AnyAzureObjects
-  // REVIEW: what if we need the old id and the new id in the node.
-  for (const item of walkAzureObjectBases(resourceGraphSpec)) {
-    item.id = shortener.shorten(item.id);
-  }
+  // // Actually shorten names
+  // // TODO: this needs to convert references in addition to AnyAzureObjects
+  // // REVIEW: what if we need the old id and the new id in the node.
+  // for (const item of walkAzureObjectBases(resourceGraphSpec)) {
+  //   item.id = shortener.shorten(item.id);
+  // }
 
   //
   // Initialize GraphServices

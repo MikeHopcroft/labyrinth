@@ -1,6 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 import {ActionType} from '../../../src';
+import {convert} from '../../../src/conversion/azure2/convert';
 
 import {ServiceOracle} from './oracle';
 import {ResourceGraphOracle} from './oracle_data';
@@ -92,8 +93,13 @@ describe('Azure', () => {
 
       services.convert.vnet(services, vnetSpec);
       const nodeGraph = services.getLabyrinthGraphSpec();
-      console.log(JSON.stringify(nodeGraph));
       assert.deepEqual(nodeGraph, expected);
     });
+  });
+
+  it('Test Load Balancer', () => {
+    const graph = ResourceGraphOracle.LoadBalancerGraph();
+    const result = convert(graph);
+    console.log(JSON.stringify(result));
   });
 });

@@ -1,4 +1,9 @@
-import {AnyAzureObject, AzureReference, AzureResourceGraph} from './types';
+import {
+  AnyAzureObject,
+  AzureIdReference,
+  AzureReference,
+  AzureResourceGraph,
+} from './types';
 import {walkAzureTypedObjects} from './walk';
 
 export class AzureObjectIndex {
@@ -19,8 +24,8 @@ export class AzureObjectIndex {
     this.idToAzureObject.set(item.id, item);
   }
 
-  has(id: string): boolean {
-    return this.idToAzureObject.has(id);
+  has(input: AzureIdReference): boolean {
+    return this.idToAzureObject.has(input.id);
   }
 
   get(id: string): AnyAzureObject {
