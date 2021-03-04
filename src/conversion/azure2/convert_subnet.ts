@@ -114,6 +114,8 @@ export function convertSubnet(
   };
   services.addNode(outboundNode);
 
-  // TODO: What should be returned here? Subnet is represetned by 3 nodes...
-  return {key: inboundNode.key, destinationIp: 'xyz'};
+  return {
+    key: inboundNode.key,
+    destinationIp: subnetSpec.properties.addressPrefix,
+  };
 }

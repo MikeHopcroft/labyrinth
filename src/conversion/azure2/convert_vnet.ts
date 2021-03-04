@@ -32,6 +32,7 @@ export function convertVNet(
     },
   ];
 
+  const vnetDestinations: string[] = [];
   // Materialize subnets and create routes to each.
   for (const subnetSpec of vNetSpec.properties.subnets) {
     const {key: subnetNodeKey, destinationIp} = services.convert.subnet(
@@ -43,6 +44,7 @@ export function convertVNet(
       destination: subnetNodeKey,
       constraints: {destinationIp},
     });
+    vnetDestinations.push(destinationIp);
   }
 
   services.addNode({
@@ -51,5 +53,5 @@ export function convertVNet(
     routes,
   });
 
-  return {key: vNetNodeKey, destinationIp: 'xyz'};
+  return {key: vNetNodeKey, destinationIp: vnetDestinations.join(',')};
 }

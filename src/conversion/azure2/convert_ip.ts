@@ -19,6 +19,5 @@ export function convertIp(
   const ip = convertToIpAddress(ipConfig);
   const ipKey = ipConfig.id;
 
-  services.symbols.defineServiceTag(ipKey, ip);
   return {key: ipKey, destinationIp: ip};
 }

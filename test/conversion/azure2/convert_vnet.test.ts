@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import 'mocha';
-import {ActionType, GraphSpec} from '../../../src';
+import {ActionType} from '../../../src';
 
 import {ServiceOracle} from './oracle';
 import {ResourceGraphOracle} from './oracle_data';
@@ -71,10 +71,7 @@ describe('Azure', () => {
               {
                 destination:
                   '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/inbound',
-                constraints: {
-                  destinationIp:
-                    '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testing-network-testing/providers/Microsoft.Network/virtualNetworks/VNET-B/subnets/A/inbound',
-                },
+                constraints: {destinationIp: '172.18.0.0/28'},
               },
             ],
           },
@@ -94,7 +91,9 @@ describe('Azure', () => {
       const services = ServiceOracle.InitializedGraphServices(graph);
 
       services.convert.vnet(services, vnetSpec);
-      assert.deepEqual(services.getLabyrinthGraphSpec(), expected);
+      const nodeGraph = services.getLabyrinthGraphSpec();
+      console.log(JSON.stringify(nodeGraph));
+      assert.deepEqual(nodeGraph, expected);
     });
   });
 });
