@@ -11,8 +11,8 @@ import {
 
 import {ServiceOracle} from './oracle';
 
-describe('Azure', () => {
-  describe('Convert-IP', () => {
+export default function test() {
+  describe('convertIp', () => {
     // We may have to do this init per test, if we have memoizing converters.
     const services = ServiceOracle.InitializedGraphServices();
 
@@ -59,4 +59,5 @@ describe('Azure', () => {
       // TODO: need to verify that the correct node is generated.
     });
   });
-});
+}
+

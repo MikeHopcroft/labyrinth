@@ -17,7 +17,7 @@ import {
   vnet1SourceIps,
 } from './shared';
 
-describe('Azure2', () => {
+export default function test() {
   describe('convertVNet()', () => {
     it('VNet with two subnets', () => {
       const mocks = createConvertersMock();
@@ -93,4 +93,4 @@ describe('Azure2', () => {
       assert.deepEqual(observedGraphSpec, expectedGraphSpec);
     });
   });
-});
+};
