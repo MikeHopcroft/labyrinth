@@ -262,7 +262,6 @@ describe('Graph', () => {
         c1,
         'main2 => main3 => right1 => right2 => main2\n  destination port: 2'
       );
-      console.log(c1);
     });
 
     it('Double cycle variant two', () => {

@@ -3,8 +3,8 @@
 * Unit testing cleanup
   * Mocha test explorer config - no coverage
   * x Test naming tree - Azure/Azure2/etc.
-  * Console spew in unit tests
-  * Test names - walkwalkAzureTypedObjects, walkwalkAzureObjectBases
+  * x Console spew in unit tests
+  * x Test names - walkwalkAzureTypedObjects, walkwalkAzureObjectBases
   * Finish up VNet unit test
   * Erase dead code in mocks
   * Refactor shared
