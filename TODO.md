@@ -5,8 +5,9 @@
   * x Test naming tree - Azure/Azure2/etc.
   * x Console spew in unit tests
   * x Test names - walkwalkAzureTypedObjects, walkwalkAzureObjectBases
+  * x Finish up VNet unit test
   * Unit test for convertSubnet
-  * Finish up VNet unit test
+  * Unit test for convertIp
   * x Erase dead code in mocks
   * x Refactor shared
 * Questions
