@@ -6,14 +6,14 @@ import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
 
 import {
-  AzureIdReference,
+  AzureReference,
   AzureIPConfiguration,
   AzureNetworkSecurityGroup,
   AzureSubnet,
 } from './types';
 
 function convertNsgRules(
-  nsgRef: AzureIdReference,
+  nsgRef: AzureReference<AzureNetworkSecurityGroup>,
   services: GraphServices,
   vNetKey: string
 ): IRules | undefined {

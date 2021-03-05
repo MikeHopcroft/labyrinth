@@ -2,9 +2,17 @@
 //
 // Mocking framework code. Read usage examples, below before reading framework.
 //
+// Functionality:
+//   1. Records parameters and return values and exception information for each
+//   invocation.
+//   2. Supplies a default implementation that throws.
+//   3. Allows user to patch in their own mock function.
+//
+// Potential future functionality:
+//   4. User-supplied return-value lists.
+//   5. User-supplied param => return-value map.
+//
 ///////////////////////////////////////////////////////////////////////////////
-
-import {URLSearchParams} from 'url';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Mocked<PARAMS extends any[], RESULT> = (
@@ -33,17 +41,23 @@ interface MockImpl<PARAMS extends any[], RESULT> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createMock<PARAMS extends any[], RESULT>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  prototypeFunction: Mocked<PARAMS, RESULT>
+  prototypeFunction: Mocked<PARAMS, RESULT> | undefined = undefined
 ) {
   const log: Array<Behavior<PARAMS, RESULT>> = [];
   let action: Mocked<PARAMS, RESULT> | undefined = undefined;
   const f = (...params: PARAMS): RESULT => {
     if (action) {
-      const result = action(...params);
-      log.push({params, result});
-      return result;
+      try {
+        const result = action(...params);
+        log.push({params, result});
+        return result;
+      } catch (e) {
+        log.push({params, message: e.message});
+        throw e;
+      }
     } else {
       const message = 'No mock defined.';
+      log.push({params, message: message});
       throw new TypeError(message);
     }
   };
@@ -56,164 +70,56 @@ export function createMock<PARAMS extends any[], RESULT>(
     action = fun;
   };
 
-  // f.log = log;
-  // // f.action = action;
-
   return f;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class Mocker<PARAMS extends any[], RESULT> {
-  private readonly paramToResult = new Map<string, Behavior<PARAMS, RESULT>>();
-  private readonly log: Array<Behavior<PARAMS, RESULT>> = [];
-  private readonly defaultFunction: Mocked<PARAMS, RESULT> | undefined;
-
-  constructor(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    prototypeFunction: Mocked<PARAMS, RESULT>,
-    defaultFunction: Mocked<PARAMS, RESULT> | undefined = undefined
-  ) {
-    this.defaultFunction = defaultFunction;
-  }
-
-  params(...params: PARAMS) {
-    return {
-      returns: (result: RESULT) => {
-        this.paramToResult.set(JSON.stringify(params), {params, result});
-      },
-
-      throws: (message: string) => {
-        this.paramToResult.set(JSON.stringify(params), {params, message});
-      },
-    };
-  }
-
-  entry() {
-    return (...params: PARAMS) => {
-      const key = JSON.stringify(params);
-      const value = this.paramToResult.get(key);
-      if (value) {
-        this.log.push(value);
-        if (value.message !== undefined) {
-          throw new TypeError(value.message);
-        }
-        return value;
-      } else if (this.defaultFunction) {
-        const result = this.defaultFunction(...params);
-        this.log.push({params, result});
-        return result;
-      } else {
-        const message = 'Missing default function.';
-        throw new TypeError(message);
-      }
-    };
-  }
-
-  invocations(): Array<Behavior<PARAMS, RESULT>> {
-    return this.log;
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Usage example 1
-//
-///////////////////////////////////////////////////////////////////////////////
-
-// Here is a function we'd like to mock. To build the mock, we need access to
-// the function declaration so the framework can infer  the parameter and
-// and result types.
-function realFunction(a: number, b: number, op: string): number {
-  if (op === '+') {
-    return a + b;
-  } else if (op === '-') {
-    return a - b;
-  } else if (op === '*') {
-    return a * b;
-  } else if (op === '/') {
-    return a / b;
-  } else {
-    const message = `Unknown operator "${op}".`;
-    throw new TypeError(message);
-  }
-}
-
-// The first step is to construct an instance of a Mocker, based on the
-// function to be mocked. An optional second parameter supplies a default
-// mock function. The default mock function will be used for invocations
-// that don't match those defined by calls to the params() function below.
-const mocker = new Mocker(realFunction);
-
-// The second step is to provide behaviors for select invocations.
-// Current behaviors include returning a result and throwing a TypeError.
-//
-// Right now, one can only register a single result for a particular set
-// or parameters.
-//
-// We could modify this code to define results for successive calls with
-// the same parameters, e.g.
-//   mocker.params(3, 4, '+').returns([7, 8, 9]);
-mocker.params(3, 4, '+').returns(7);
-mocker.params(3, 4, '*').returns(11);
-mocker.params(5, 0, '/').throws('divide by zero');
-
-// The next step is to grab the mock function.
-const mock = mocker.entry();
-
-//
-// Here are some invocations.
-//
-
-// Returns value provided to mocker.params().results. Prints "7".
-console.log(mock(3, 4, '+'));
-
-// Returns value provided to mocker.params().results. Prints "11".
-console.log(mock(3, 4, '*'));
-
-// These parameters weren't registered and we didn't provide a default mock
-// function as the optional second parameter to Mocker.constructor(), so the
-// framework throws.
-try {
-  console.log(mock(1, 2, '+'));
-} catch (e) {
-  console.log(e.message);
-}
-
-// This case was defined to throw by the call to mocker.params().throw().
-try {
-  console.log(mock(5, 0, '/'));
-} catch (e) {
-  console.log(e.message);
-}
-
-// After making calls to mock(), we can get back a log of all of the invocation
-// details.
-console.log(mocker.invocations());
-
-// Here is an example of a default function that could be passed as the
-// second parameter to Mocker.constructor().
-// eslint-disable-next-line  @typescript-eslint/no-unused-vars
-function defaultFunction(a: number, b: number, op: string): number {
-  return Number.NaN;
-}
-
 // ///////////////////////////////////////////////////////////////////////////////
 // //
-// // Usage example 2
+// // Usage example 1
 // //
 // ///////////////////////////////////////////////////////////////////////////////
-// import {converters} from '../../../src/conversion/azure2/convert';
-// import {IConverters} from '../../../src/conversion/azure2/converters';
-// import {GraphServices} from '../../../src/conversion/azure2/graph_services';
 
-// const baseMock: IConverters = {
-//   ip: () => {throw new TypeError('No mock for IConverters.ip()')},
+// // Here is a function we'd like to mock. To build the mock, we need access to
+// // the function declaration so the framework can infer  the parameter and
+// // and result types.
+// function realFunction(a: number, b: number, op: string): number {
+//   if (op === '+') {
+//     return a + b;
+//   } else if (op === '-') {
+//     return a - b;
+//   } else if (op === '*') {
+//     return a * b;
+//   } else if (op === '/') {
+//     return a / b;
+//   } else {
+//     const message = `Unknown operator "${op}".`;
+//     throw new TypeError(message);
+//   }
 // }
 
-// const fake: IConverters = {} as IConverters;
-// const rgMocker = new Mocker(converters.resourceGraph);
-// rgMocker.params(services: GraphServices, spec: AzureResourceGraph)
+// // The first step is to construct a mock using createMock(), which uses takes
+// // a function as a parameter, in order to define the parameter and return types.
+// const mock = createMock(realFunction);
 
-// const mocks : IConverters {
-//   resourceGraph:
+// // Alternatively, one can specify the parameter and return types as template
+// // parameters instead of inferring them from the function parameter.
+// const mock2 = createMock<[number, number, string], number>();
+
+// // This default mock will throw if invoked.
+// try {
+//   console.log(mock(5, 0, '/'));
+// } catch (e) {
+//   console.log(e.message);
 // }
+
+// // We can supply a function to call when the mock is invoked.
+// mock.action((a: number, b: number, op: string) => {
+//   console.log(`action(${a}, ${b}, ${op}) returns 123`);
+//   return 123;
+// });
+
+// console.log(mock(5, 0, '/'))
+
+// // After making calls to mock(), we can get back a log of all of the invocation
+// // details.
+// console.log(mock.log());

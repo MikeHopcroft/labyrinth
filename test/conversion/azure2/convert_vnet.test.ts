@@ -1,26 +1,31 @@
 import {assert} from 'chai';
 import 'mocha';
-import {AzureSubnet, GraphSpec} from '../../../src';
 
-import {convertVNet} from '../../../src/conversion/azure2/convert_vnet';
-import {GraphServices} from '../../../src/conversion/azure2/graph_services';
+import {NodeSpec} from '../../../src';
 
-// TODO: namespace this import
 import {
-  createConvertersMock,
-  createGraphServices,
+  AzureSubnet,
+  convertVNet,
+  GraphServices,
+} from '../../../src/conversion/azure2';
+
+// DESIGN NOTE: considered namespacing these items, but their usage became
+// too verbose. Expect that numbers in names (e.g. subnet1) prevent collisions
+// with similar terms.
+import {
+  createGraphServicesMock,
   subnet1,
   subnet1SourceIps,
   subnet2,
   subnet2SourceIps,
   vnet1,
   vnet1SourceIps,
-} from './shared';
+} from './sample_resource_graph';
 
 export default function test() {
   describe('convertVNet()', () => {
     it('VNet with two subnets', () => {
-      const mocks = createConvertersMock();
+      const {services, mocks} = createGraphServicesMock();
       mocks.subnet.action(
         (services: GraphServices, subnetSpec: AzureSubnet, parent: string) => {
           return {
@@ -29,9 +34,9 @@ export default function test() {
           };
         }
       );
-      const services = createGraphServices(mocks);
+
       const result = convertVNet(services, vnet1);
-      const observedGraphSpec = services.getLabyrinthGraphSpec();
+      const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
       assert.equal(result.key, vnet1.id);
@@ -52,45 +57,36 @@ export default function test() {
       });
 
       // Verify that correct VNet node(s) were created in services.
-      const expectedGraphSpec: GraphSpec = {
-        nodes: [
-          {
-            key: vnet1.id,
-            range: {
-              sourceIp: vnet1SourceIps,
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: vnet1.id,
+          range: {
+            sourceIp: vnet1SourceIps,
+          },
+          routes: [
+            {
+              destination: 'Internet',
+              constraints: {
+                destinationIp: `except ${vnet1SourceIps}`,
+              },
             },
-            routes: [
-              {
-                destination: 'Internet',
-                constraints: {
-                  destinationIp: `except ${vnet1SourceIps}`,
-                },
+            {
+              destination: subnet1.id,
+              constraints: {
+                destinationIp: subnet1SourceIps,
               },
-              {
-                destination: subnet1.id,
-                constraints: {
-                  destinationIp: subnet1SourceIps,
-                },
+            },
+            {
+              destination: subnet2.id,
+              constraints: {
+                destinationIp: subnet2SourceIps,
               },
-              {
-                destination: subnet2.id,
-                constraints: {
-                  destinationIp: subnet2SourceIps,
-                },
-              },
-            ],
-          },
-        ],
-        symbols: [
-          {
-            dimension: 'ip',
-            symbol: vnet1.id,
-            range: vnet1SourceIps,
-          },
-        ],
-      };
+            },
+          ],
+        },
+      ];
 
-      assert.deepEqual(observedGraphSpec, expectedGraphSpec);
+      assert.deepEqual(observedNodes, expectedNodes);
     });
   });
 }
