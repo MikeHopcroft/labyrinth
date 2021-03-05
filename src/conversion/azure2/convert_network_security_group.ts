@@ -3,8 +3,14 @@ import {removeUndefinedProperties} from '../../utilities';
 
 import {IRules} from '..';
 
-import {AzureNetworkSecurityGroup, AzureSecurityRule} from './types';
+import {
+  AzureNetworkSecurityGroup,
+  AzureObjectType,
+  AzureSecurityRule,
+} from './types';
 import {GraphServices} from './graph_services';
+import {AzureGraphNode} from './azure_graph_node';
+import {NodeKeyAndSourceIp} from './converters';
 
 function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
   const action =
@@ -76,24 +82,32 @@ function writeRule(
   }
 }
 
-export function convertNsg(
-  services: GraphServices,
-  nsg: AzureNetworkSecurityGroup,
-  vnetSymbol: string
-): IRules {
-  const inboundRules: RuleSpec[] = [];
-  const outboudRules: RuleSpec[] = [];
-
-  for (const rule of nsg.properties.defaultSecurityRules) {
-    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+export class NetworkSecurityGroupNode extends AzureGraphNode<
+  AzureNetworkSecurityGroup
+> {
+  constructor(input: AzureNetworkSecurityGroup) {
+    super(AzureObjectType.NSG, input);
   }
 
-  for (const rule of nsg.properties.securityRules) {
-    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    throw new Error('Method not implemented.');
   }
 
-  return {
-    outboundRules: outboudRules,
-    inboundRules: inboundRules,
-  };
+  convertRules(vnetSymbol: string): IRules {
+    const inboundRules: RuleSpec[] = [];
+    const outboudRules: RuleSpec[] = [];
+
+    for (const rule of this.value.properties.defaultSecurityRules) {
+      writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+    }
+
+    for (const rule of this.value.properties.securityRules) {
+      writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+    }
+
+    return {
+      outboundRules: outboudRules,
+      inboundRules: inboundRules,
+    };
+  }
 }

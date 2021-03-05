@@ -1,10 +1,12 @@
-import { AzureReference } from '../azure/types';
+import {number} from 'io-ts';
+import {AzureReference} from '../azure/types';
 import {AzureIdReference, AzureVirtualMachineScaleSet} from './types';
 
 export interface AzureVMSSIpResult {
   vmssId: AzureReference<AzureVirtualMachineScaleSet>;
   interfaceConfig: string;
   ipConfig: string;
+  logicalId: number;
 }
 
 function splitId(input: string): string[] {
@@ -29,6 +31,7 @@ export class AzureId {
         id: parts.slice(0, 9).join('/'),
         resourceGroup: input.resourceGroup,
       },
+      logicalId: Number.parseInt(parts[10]),
       interfaceConfig: parts[12],
       ipConfig: parts[14],
     };

@@ -1,56 +1,56 @@
+import {isAbsolute} from 'path';
+import {AzureTypedObject} from '../azure/types';
+import {AzureGraphNode} from './azure_graph_node';
 import {AzureId} from './azure_id';
 import {NodeKeyAndSourceIp} from './converters';
+import {SubnetNode} from './convert_subnet';
 import {GraphServices} from './graph_services';
-import {
-  AzureIdReference,
-  AzureIPConfiguration,
-  AzureObjectType,
-  AzureVirtualMachineScaleSet,
-} from './types';
+import {AzureIPConfiguration, AzureObjectType} from './types';
 
-function convertToIpAddress(ipItem: AzureIPConfiguration): string {
-  let ip: string;
-  if (ipItem.type === AzureObjectType.LOCAL_IP) {
-    ip = ipItem.properties.privateIPAddress;
-  } else {
-    ip = ipItem.properties.ipAddress;
-  }
-  return ip;
-}
+const KEY_INTERNET = 'Internet';
 
-export function convertKnownIp(
-  ipConfig: AzureIPConfiguration
-): NodeKeyAndSourceIp {
-  const ip = convertToIpAddress(ipConfig);
-  const ipKey = ipConfig.id;
-
-  return {key: ipKey, destinationIp: ip};
-}
-export function convertAsVMSSIp(
-  services: GraphServices,
-  ipRefSpec: AzureIdReference
-): NodeKeyAndSourceIp {
-  const vmssIds = AzureId.parseAsVMSSIpConfiguration(ipRefSpec);
-  const vmss: AzureVirtualMachineScaleSet = services.index.dereference(
-    vmssIds.vmssId
-  );
-
-  return services.convert.vmssIp(
-    services,
-    vmss,
-    vmssIds.interfaceConfig,
-    vmssIds.ipConfig
-  );
-}
-
-export function convertIp(
-  services: GraphServices,
-  ipRefSpec: AzureIdReference
-): NodeKeyAndSourceIp {
-  if (!services.index.has(ipRefSpec)) {
-    return convertAsVMSSIp(services, ipRefSpec);
+export class IpNode extends AzureGraphNode<AzureIPConfiguration> {
+  constructor(input: AzureIPConfiguration) {
+    super(input.type as AzureObjectType, input);
   }
 
-  const ipConfig = services.index.dereference<AzureIPConfiguration>(ipRefSpec);
-  return convertKnownIp(ipConfig);
+  *edges(): IterableIterator<string> {
+    if (this.value.type === AzureObjectType.LOCAL_IP) {
+      if (this.value.properties.subnet) {
+        yield this.value.properties.subnet.id;
+      }
+    }
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    return {key: this.nodeKey(), destinationIp: this.ipAddress()};
+  }
+
+  public ipAddress(): string {
+    if (this.value.type === AzureObjectType.LOCAL_IP) {
+      if (!this.value.properties.subnet) {
+        throw new TypeError(
+          `Local IP '${this.value.id}' is not bound to a subnet`
+        );
+      }
+
+      return this.value.properties.privateIPAddress;
+    } else {
+      return this.value.properties.ipAddress;
+    }
+  }
+
+  subnet(): SubnetNode {
+    return this.first<SubnetNode>(AzureObjectType.SUBNET);
+  }
+
+  private nodeKey(): string {
+    let key = KEY_INTERNET;
+
+    if (this.value.type === AzureObjectType.LOCAL_IP) {
+      key = this.subnet().keys.inbound;
+    }
+
+    return key;
+  }
 }

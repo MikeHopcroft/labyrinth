@@ -29,12 +29,17 @@ describe('Azure', () => {
         },
       };
 
-      const {key: ipKey, destinationIp} = services.convert.ip(services, input);
+      assert.fail(
+        'Currently failing due to behavior change with Load Balancer Exploration'
+      );
 
-      // TODO: is this assert too prescriptive? If enforces that the generated
-      // key is, in fact, input.id. This may be an implementation detail.
-      assert.equal(ipKey, input.id);
-      assert.equal(destinationIp, input.properties.privateIPAddress);
+      // services.index.add(input);
+      // const {key: ipKey, destinationIp} = services.convert.ip(services, input);
+
+      // // TODO: is this assert too prescriptive? If enforces that the generated
+      // // key is, in fact, input.id. This may be an implementation detail.
+      // assert.equal(ipKey, input.id);
+      // assert.equal(destinationIp, input.properties.privateIPAddress);
     });
   });
 });

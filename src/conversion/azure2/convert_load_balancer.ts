@@ -1,4 +1,4 @@
-import {RoutingRuleSpec} from '../../graph';
+import {Graph, PoolRuleSpec, RoutingRuleSpec} from '../../graph';
 
 import {
   AzureLoadBalancer,
@@ -6,151 +6,237 @@ import {
   AzureLoadBalancerBackendPool,
   AzureLoadBalancerInboundNatRule,
   AzureLoadBalancerFrontEndIp,
+  AzureObjectType,
+  AzureIdReference,
 } from './types';
 import {GraphServices} from './graph_services';
 import {NodeKeyAndSourceIp} from './converters';
+import {AzureGraphNode} from './azure_graph_node';
+import {IpNode} from './convert_ip';
+import {SubnetNode} from './convert_subnet';
+import {AzureId} from './azure_id';
+import {VMSSVirtualIpNode} from './convert_vmss';
 
 // TODO: Move into constants
 const AzureLoadBalancerSymbol = 'AzureLoadBalancer';
 
-function createLoadBalancerRoute(
-  frontEndIp: string,
-  backEnd: NodeKeyAndSourceIp,
-  protocol: string,
-  frontEndPort: string,
-  backendPort: string
-) {
-  const route: RoutingRuleSpec = {
-    destination: backEnd.key,
-    constraints: {
-      destinationPort: frontEndPort,
-      protocol: protocol,
-      destinationIp: frontEndIp,
-    },
-    override: {
-      destinationIp: backEnd.destinationIp,
-      sourceIp: AzureLoadBalancerSymbol,
-    },
-  };
-
-  if (backendPort !== frontEndPort) {
-    route.override!.destinationPort = backendPort;
+export class LoadBalancerFrontEndIpNode extends AzureGraphNode<
+  AzureLoadBalancerFrontEndIp
+> {
+  constructor(input: AzureLoadBalancerFrontEndIp) {
+    super(input.type as AzureObjectType, input);
   }
-  return route;
+
+  *edges(): IterableIterator<string> {
+    yield this.value.properties.publicIPAddress.id;
+  }
+
+  ip(): IpNode {
+    return this.first<IpNode>(AzureObjectType.PUBLIC_IP);
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    throw new Error('Method not implemented.');
+  }
 }
 
-function createRuleRoute(
-  lbRuleSpec: AzureLoadBalancerRule,
-  services: GraphServices
-): RoutingRuleSpec {
-  const convert = services.convert;
-  const store = services.index;
-  const rule = lbRuleSpec.properties;
+export class LoadBalancerBackEndPoolNode extends AzureGraphNode<
+  AzureLoadBalancerBackendPool
+> {
+  constructor(input: AzureLoadBalancerBackendPool) {
+    super(input.type as AzureObjectType, input);
+  }
 
-  const backend = convert.backendPool(
-    services,
-    store.dereference(rule.backendAddressPool)
-  );
-
-  const {destinationIp: frontEndIp} = convert.loadBalancerIp(
-    services,
-    store.dereference(rule.frontendIPConfiguration)
-  );
-
-  return createLoadBalancerRoute(
-    frontEndIp,
-    backend,
-    rule.protocol,
-    `${rule.frontendPort}`,
-    `${rule.backendPort}`
-  );
-}
-
-function createNATRoute(
-  natRuleSpec: AzureLoadBalancerInboundNatRule,
-  services: GraphServices
-): RoutingRuleSpec | null {
-  const convert = services.convert;
-  const store = services.index;
-
-  const rule = natRuleSpec.properties;
-
-  const backEnd = convert.ip(services, rule.backendIPConfiguration);
-
-  const {destinationIp: frontEndIp} = convert.loadBalancerIp(
-    services,
-    store.dereference(rule.frontendIPConfiguration)
-  );
-
-  return createLoadBalancerRoute(
-    frontEndIp,
-    backEnd,
-    rule.protocol,
-    `${rule.frontendPort}`,
-    `${rule.backendPort}`
-  );
-}
-
-export function convertLoadBalancer(
-  services: GraphServices,
-  loadBalancerSpec: AzureLoadBalancer
-): NodeKeyAndSourceIp {
-  const loadBalancerNodeKey = loadBalancerSpec.id;
-  const loadBalancerServiceTag = loadBalancerSpec.id;
-
-  const routes: RoutingRuleSpec[] = [];
-  const frontEndIps = new Set<string>();
-
-  // TODO: Review Pool vs Route
-  for (const lbRuleSpec of loadBalancerSpec.properties.loadBalancingRules) {
-    const route = createRuleRoute(lbRuleSpec, services);
-    routes.push(route);
-    if (route?.constraints?.destinationIp) {
-      frontEndIps.add(route.constraints.destinationIp);
+  *edges(): IterableIterator<string> {
+    for (const backend of this.value.properties.backendIPConfigurations) {
+      yield backend.id;
     }
   }
 
-  for (const natRuleSpec of loadBalancerSpec.properties.inboundNatRules) {
-    const route = createNATRoute(natRuleSpec, services);
-    if (route) {
-      routes.push(route);
-      if (route?.constraints?.destinationIp) {
-        frontEndIps.add(route.constraints.destinationIp);
-      }
+  subnet(): SubnetNode {
+    let subnet = this.firstOrDefault<IpNode>(
+      AzureObjectType.LOCAL_IP
+    )?.subnet();
+
+    if (!subnet) {
+      const vmssIp = this.first<VMSSVirtualIpNode>(
+        AzureObjectType.VMSS_VIRTUAL_IP
+      );
+      subnet = vmssIp.subnet();
+    }
+
+    return subnet;
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    return {key: this.value.id, destinationIp: this.value.id};
+  }
+}
+
+export class LoadBalancerRuleNode extends AzureGraphNode<
+  AzureLoadBalancerRule
+> {
+  constructor(input: AzureLoadBalancerRule) {
+    super(input.type as AzureObjectType, input);
+  }
+
+  *edges(): IterableIterator<string> {
+    yield this.value.properties.frontendIPConfiguration.id;
+    yield this.value.properties.backendAddressPool.id;
+  }
+
+  frontEndIp(): LoadBalancerFrontEndIpNode {
+    return this.first<LoadBalancerFrontEndIpNode>(
+      AzureObjectType.LOAD_BALANCER_FRONT_END_IP
+    );
+  }
+
+  backendPool(): LoadBalancerBackEndPoolNode {
+    return this.first<LoadBalancerBackEndPoolNode>(
+      AzureObjectType.LOAD_BALANCER_BACKEND_POOL
+    );
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    throw new Error('Method not implemented.');
+  }
+
+  convertToRoute(services: GraphServices): RoutingRuleSpec {
+    const rule = this.value.properties;
+
+    const frontEndIp = this.frontEndIp().ip().ipAddress();
+    const backEndPool = this.backendPool();
+
+    // TODO: Handle pool. . .
+    const ruleSpec: RoutingRuleSpec = {
+      destination: backEndPool.subnet().convert(services).key,
+      constraints: {
+        destinationPort: `${rule.frontendPort}`,
+        protocol: rule.protocol,
+        destinationIp: frontEndIp,
+      },
+      override: {
+        destinationIp: backEndPool.convert(services).destinationIp,
+        sourceIp: AzureLoadBalancerSymbol,
+      },
+    };
+
+    if (rule.backendPort !== rule.frontendPort) {
+      ruleSpec.override!.destinationPort = `${rule.backendPort}`;
+    }
+
+    return ruleSpec;
+  }
+}
+
+export class LoadBalancerNatRuleNode extends AzureGraphNode<
+  AzureLoadBalancerInboundNatRule
+> {
+  constructor(input: AzureLoadBalancerInboundNatRule) {
+    super(input.type as AzureObjectType, input);
+  }
+
+  *edges(): IterableIterator<string> {
+    yield this.value.properties.frontendIPConfiguration.id;
+    yield this.value.properties.backendIPConfiguration.id;
+  }
+
+  frontEndIp(): LoadBalancerFrontEndIpNode {
+    return this.first<LoadBalancerFrontEndIpNode>(
+      AzureObjectType.LOAD_BALANCER_FRONT_END_IP
+    );
+  }
+
+  backEnd(): IpNode {
+    return this.first<IpNode>(AzureObjectType.LOCAL_IP);
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    throw new Error('Method not implemented.');
+  }
+
+  convertToRoute(services: GraphServices): RoutingRuleSpec {
+    const rule = this.value.properties;
+
+    const backEnd = this.backEnd().convert(services);
+
+    const frontEndIp = this.frontEndIp().ip().ipAddress();
+
+    const ruleSpec: RoutingRuleSpec = {
+      destination: backEnd.key,
+      constraints: {
+        destinationPort: `${rule.frontendPort}`,
+        protocol: rule.protocol,
+        destinationIp: frontEndIp,
+      },
+      override: {
+        destinationIp: backEnd.destinationIp,
+        sourceIp: AzureLoadBalancerSymbol,
+      },
+    };
+
+    if (rule.backendPort !== rule.frontendPort) {
+      ruleSpec.override!.destinationPort = `${rule.backendPort}`;
+    }
+
+    return ruleSpec;
+  }
+}
+
+export class LoadBalancerNode extends AzureGraphNode<AzureLoadBalancer> {
+  constructor(input: AzureLoadBalancer) {
+    super(input.type as AzureObjectType, input);
+  }
+
+  *edges(): IterableIterator<string> {
+    for (const rule of this.value.properties.loadBalancingRules) {
+      yield rule.id;
+    }
+
+    for (const rule of this.value.properties.inboundNatRules) {
+      yield rule.id;
     }
   }
 
-  if (frontEndIps.size > 0) {
-    // TODO: Create using empty set if 0 or use except *
+  balancingRules(): IterableIterator<LoadBalancerRuleNode> {
+    return this.typedEdges<LoadBalancerRuleNode>(
+      AzureObjectType.LOAD_BALANCER_RULE
+    );
+  }
+
+  natRule(): IterableIterator<LoadBalancerNatRuleNode> {
+    return this.typedEdges<LoadBalancerNatRuleNode>(
+      AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND
+    );
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    const loadBalancerNodeKey = this.value.id;
+    const loadBalancerServiceTag = this.value.id;
+
+    const routes: RoutingRuleSpec[] = [];
+    const frontEndIps = new Set<string>();
+
+    for (const lbRule of this.balancingRules()) {
+      routes.push(lbRule.convertToRoute(services));
+      frontEndIps.add(lbRule.frontEndIp().ip().ipAddress());
+    }
+
+    for (const natRule of this.balancingRules()) {
+      routes.push(natRule.convertToRoute(services));
+      frontEndIps.add(natRule.frontEndIp().ip().ipAddress());
+    }
+
     services.symbols.defineServiceTag(
       loadBalancerServiceTag,
       [...frontEndIps.values()].join(',')
     );
+
+    services.addNode({
+      key: loadBalancerNodeKey,
+      routes,
+    });
+
+    return {key: loadBalancerNodeKey, destinationIp: loadBalancerServiceTag};
   }
-
-  services.addNode({
-    key: loadBalancerNodeKey,
-    routes,
-  });
-
-  return {key: loadBalancerNodeKey, destinationIp: loadBalancerServiceTag};
-}
-
-export function convertLoadBalancerIp(
-  services: GraphServices,
-  loadBalancerIpSpec: AzureLoadBalancerFrontEndIp
-): NodeKeyAndSourceIp {
-  const ipConfigSpec = services.index.dereference(
-    loadBalancerIpSpec.properties.publicIPAddress
-  );
-  return services.convert.ip(services, ipConfigSpec);
-}
-
-export function convertBackendPool(
-  services: GraphServices,
-  backendPoolSpec: AzureLoadBalancerBackendPool
-): NodeKeyAndSourceIp {
-  // TODO: Key should be subnet/inbound
-  // TODO: Destination ip should be observed IP or obtained ip
-  return {key: 'INVALID - Backend Subnet', destinationIp: backendPoolSpec.name};
 }

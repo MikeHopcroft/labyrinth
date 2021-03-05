@@ -15,6 +15,10 @@ export class AzureObjectIndex {
     }
   }
 
+  items(): IterableIterator<AnyAzureObject> {
+    return this.idToAzureObject.values();
+  }
+
   add(item: AnyAzureObject) {
     if (this.idToAzureObject.has(item.id)) {
       const message = `Duplicate Azure resource graph id "${item.id}"`;

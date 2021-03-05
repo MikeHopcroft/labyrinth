@@ -1,52 +1,70 @@
 import {NodeSpec} from '../../graph';
+
+import {AzureGraphNode} from './azure_graph_node';
 import {NodeKeyAndSourceIp} from './converters';
-import {subnetKeys} from './convert_subnet';
+import {IpNode} from './convert_ip';
+import {SubnetNode} from './convert_subnet';
 import {GraphServices} from './graph_services';
-import {AzureNetworkInterface, AzureObjectType, AzureReference} from './types';
+import {AzureNetworkInterface, AzureObjectType} from './types';
 
-export function convertNetworkInterface(
-  services: GraphServices,
-  nicRef: AzureReference<AzureNetworkInterface>
-): NodeKeyAndSourceIp {
-  const nicSpec: AzureNetworkInterface = services.index.dereference(nicRef);
+export class NetworkInterfaceNode extends AzureGraphNode<
+  AzureNetworkInterface
+> {
+  constructor(item: AzureNetworkInterface) {
+    super(AzureObjectType.NIC, item);
+  }
 
-  // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
-  const prefix = nicSpec.id;
-  const inbound = prefix + '/inbound';
-  const outbound = prefix + '/outbound';
-  const ips = new Set<string>();
-  // TODO: Handle NSG
+  *edges(): IterableIterator<string> {
+    for (const ipConfig of this.value.properties.ipConfigurations) {
+      yield ipConfig.id;
 
-  const inboundNode: NodeSpec = {
-    key: inbound,
-    endpoint: true,
-    routes: [],
-  };
-
-  const outboundNode: NodeSpec = {
-    key: outbound,
-    routes: [],
-  };
-
-  for (const ipConfig of nicSpec.properties.ipConfigurations) {
-    if (
-      ipConfig.properties.subnet &&
-      ipConfig.type === AzureObjectType.LOCAL_IP
-    ) {
-      const subnet = subnetKeys(ipConfig.properties.subnet);
-      outboundNode.routes.push({
-        destination: subnet.outbound,
-      });
-
-      ips.add(ipConfig.properties.privateIPAddress);
+      if (ipConfig.properties.subnet) {
+        yield ipConfig.properties.subnet.id;
+      }
     }
   }
 
-  services.addNode(inboundNode);
-  services.addNode(outboundNode);
+  subnet(): SubnetNode {
+    return this.first<SubnetNode>(AzureObjectType.SUBNET);
+  }
 
-  return {
-    key: inboundNode.key,
-    destinationIp: [...ips.values()].join(','),
-  };
+  ip(): string {
+    return [...this.typedEdges<IpNode>(AzureObjectType.LOCAL_IP)]
+      .map(x => x.ipAddress())
+      .join(',');
+  }
+
+  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
+    const nicSpec = this.value;
+    const subnet = this.subnet();
+
+    // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
+    const prefix = nicSpec.id;
+    const inbound = prefix + '/inbound';
+    const outbound = prefix + '/outbound';
+    // TODO: Handle NSG
+
+    const inboundNode: NodeSpec = {
+      key: inbound,
+      endpoint: true,
+      routes: [],
+    };
+
+    const outboundNode: NodeSpec = {
+      key: outbound,
+      routes: [
+        {
+          destination: subnet.keys.outbound,
+        },
+      ],
+    };
+
+    services.addNode(inboundNode);
+    services.addNode(outboundNode);
+
+    return {
+      key: inboundNode.key,
+      destinationIp: this.ip(),
+    };
+  }
 }

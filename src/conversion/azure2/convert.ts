@@ -1,37 +1,11 @@
 import {GraphSpec} from '../../graph';
-
-import {convertIp} from './convert_ip';
-import {IConverters} from './converters';
-import {
-  convertBackendPool,
-  convertLoadBalancer,
-  convertLoadBalancerIp,
-} from './convert_load_balancer';
-import {convertResourceGraph} from './convert_resource_graph';
-import {convertSubnet} from './convert_subnet';
-import {convertVNet} from './convert_vnet';
-import {convertNsg} from './convert_network_security_group';
 import {GraphServices} from './graph_services';
-import {NameShortener} from './name_shortener';
 import {SymbolTable} from './symbol_table';
-import {AzureResourceGraph} from './types';
+import {AzureObjectType, AzureResourceGraph} from './types';
 
-import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
-import {AzureObjectIndex} from './azure_object_index';
-import {convertVmssIp} from './convert_vmss';
-
-// TODO: Move `converters` to own file.
-const converters: IConverters = {
-  resourceGraph: convertResourceGraph,
-  subnet: convertSubnet,
-  vnet: convertVNet,
-  nsg: convertNsg,
-  ip: convertIp,
-  backendPool: convertBackendPool,
-  loadBalancer: convertLoadBalancer,
-  loadBalancerIp: convertLoadBalancerIp,
-  vmssIp: convertVmssIp,
-};
+import {walkAzureTypedObjects} from './walk';
+import {NormalizedAzureGraph} from './azure_graph_normalized';
+import {convertResourceGraph} from './convert_resource_graph';
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   //
@@ -66,20 +40,40 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
       range: 'tcp',
     },
   ]);
-  const index = new AzureObjectIndex(resourceGraphSpec);
-  const services = new GraphServices(converters, symbols, index);
+
+  // TODO.. Might be able to get away with the index...
+  //const index = new AzureObjectIndex(resourceGraphSpec);
+
+  const azureGraph = new NormalizedAzureGraph();
+
+  for (const spec of walkAzureTypedObjects(resourceGraphSpec)) {
+    azureGraph.addNode(spec);
+  }
+
+  // It's possible that the Azure Resource Graph spec may contains edges
+  // which are virtual and do not exist in the graph. Attempt resolve
+  // edges
+  for (const unresolvedEdge of azureGraph.unresolvedEdges()) {
+    azureGraph.addNode({
+      name: unresolvedEdge,
+      id: unresolvedEdge,
+      type: AzureObjectType.VMSS_VIRTUAL_IP,
+      resourceGroup: 'virtual',
+    });
+  }
+  azureGraph.validate();
+
+  const services = new GraphServices(symbols, azureGraph);
 
   //
   // Convert the AzureResourceGraph
   //
   // Could also write
   //   converters.resourceGraph(services, resourceGraph);
-  services.convert.resourceGraph(services, resourceGraphSpec);
+  convertResourceGraph(services);
 
   // Emit the GraphSpec
   const graph = services.getLabyrinthGraphSpec();
 
   return graph;
 }
-
-export const DefaultConverterConfig = converters;
