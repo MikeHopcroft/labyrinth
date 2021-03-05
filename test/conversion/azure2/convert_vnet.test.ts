@@ -27,6 +27,7 @@ export default function test() {
     it('VNet with two subnets', () => {
       const {services, mocks} = createGraphServicesMock();
       mocks.subnet.action(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (services: GraphServices, subnetSpec: AzureSubnet, parent: string) => {
           return {
             key: subnetSpec.id,
@@ -35,6 +36,8 @@ export default function test() {
         }
       );
 
+      // DESIGN NOTE: cannot call services.convert.vnet()  because our intent
+      // is to test the real convertVNet(), instead of its mock.
       const result = convertVNet(services, vnet1);
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
