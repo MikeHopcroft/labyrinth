@@ -15,19 +15,20 @@ const AzureLoadBalancerSymbol = 'AzureLoadBalancer';
 
 function createLoadBalancerRoute(
   frontEndIp: string,
-  destinationKey: string,
+  backEnd: NodeKeyAndSourceIp,
   protocol: string,
   frontEndPort: string,
   backendPort: string
 ) {
   const route: RoutingRuleSpec = {
-    destination: destinationKey,
+    destination: backEnd.key,
     constraints: {
       destinationPort: frontEndPort,
       protocol: protocol,
       destinationIp: frontEndIp,
     },
     override: {
+      destinationIp: backEnd.destinationIp,
       sourceIp: AzureLoadBalancerSymbol,
     },
   };
@@ -46,19 +47,19 @@ function createRuleRoute(
   const store = services.index;
   const rule = lbRuleSpec.properties;
 
-  const {key: backendPoolKey} = convert.backendPool(
+  const backend = convert.backendPool(
     services,
-    store.dereference<AzureLoadBalancerBackendPool>(rule.backendAddressPool)
+    store.dereference(rule.backendAddressPool)
   );
 
   const {destinationIp: frontEndIp} = convert.loadBalancerIp(
     services,
-    store.dereference<AzureLoadBalancerFrontEndIp>(rule.frontendIPConfiguration)
+    store.dereference(rule.frontendIPConfiguration)
   );
 
   return createLoadBalancerRoute(
     frontEndIp,
-    backendPoolKey,
+    backend,
     rule.protocol,
     `${rule.frontendPort}`,
     `${rule.backendPort}`
@@ -74,19 +75,16 @@ function createNATRoute(
 
   const rule = natRuleSpec.properties;
 
-  const {key: backendPoolKey} = convert.ip(
-    services,
-    rule.backendIPConfiguration
-  );
+  const backEnd = convert.ip(services, rule.backendIPConfiguration);
 
   const {destinationIp: frontEndIp} = convert.loadBalancerIp(
     services,
-    store.dereference<AzureLoadBalancerFrontEndIp>(rule.frontendIPConfiguration)
+    store.dereference(rule.frontendIPConfiguration)
   );
 
   return createLoadBalancerRoute(
     frontEndIp,
-    backendPoolKey,
+    backEnd,
     rule.protocol,
     `${rule.frontendPort}`,
     `${rule.backendPort}`
@@ -142,7 +140,7 @@ export function convertLoadBalancerIp(
   services: GraphServices,
   loadBalancerIpSpec: AzureLoadBalancerFrontEndIp
 ): NodeKeyAndSourceIp {
-  const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
+  const ipConfigSpec = services.index.dereference(
     loadBalancerIpSpec.properties.publicIPAddress
   );
   return services.convert.ip(services, ipConfigSpec);
@@ -152,5 +150,7 @@ export function convertBackendPool(
   services: GraphServices,
   backendPoolSpec: AzureLoadBalancerBackendPool
 ): NodeKeyAndSourceIp {
-  return {key: backendPoolSpec.id, destinationIp: backendPoolSpec.name};
+  // TODO: Key should be subnet/inbound
+  // TODO: Destination ip should be observed IP or obtained ip
+  return {key: 'INVALID - Backend Subnet', destinationIp: backendPoolSpec.name};
 }

@@ -1,7 +1,8 @@
-import {AzureIdReference} from './types';
+import { AzureReference } from '../azure/types';
+import {AzureIdReference, AzureVirtualMachineScaleSet} from './types';
 
 export interface AzureVMSSIpResult {
-  vmssId: AzureIdReference;
+  vmssId: AzureReference<AzureVirtualMachineScaleSet>;
   interfaceConfig: string;
   ipConfig: string;
 }

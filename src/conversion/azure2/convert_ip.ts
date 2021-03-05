@@ -31,9 +31,10 @@ export function convertAsVMSSIp(
   ipRefSpec: AzureIdReference
 ): NodeKeyAndSourceIp {
   const vmssIds = AzureId.parseAsVMSSIpConfiguration(ipRefSpec);
-  const vmss = services.index.dereference<AzureVirtualMachineScaleSet>(
+  const vmss: AzureVirtualMachineScaleSet = services.index.dereference(
     vmssIds.vmssId
   );
+
   return services.convert.vmssIp(
     services,
     vmss,

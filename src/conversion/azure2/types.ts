@@ -139,7 +139,7 @@ export function asAzureVirtualNetwork(
 export interface AzureVmssIpConfiguration {
   name: string;
   properties: {
-    subnet: AzureIdReference;
+    subnet: AzureReference<AzureSubnet>;
   };
 }
 
@@ -147,7 +147,7 @@ export interface AzureVmssNetworkInterfaceConfig {
   name: string;
   properties: {
     ipConfigurations: AzureVmssIpConfiguration[];
-    networkSecurityGroup: AzureIdReference;
+    networkSecurityGroup: AzureReference<AzureNetworkSecurityGroup>;
   };
 }
 
@@ -165,18 +165,18 @@ export interface AzureVirtualMachineScaleSet extends AzureObjectBase {
 export interface AzureLoadBalancerBackendPool extends AzureObjectBase {
   type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL;
   properties: {
-    backendIPConfigurations: AzureIdReference[];
-    loadBalancingRules: AzureIdReference[];
+    backendIPConfigurations: AzureReference<AzureIPConfiguration>[];
+    loadBalancingRules: AzureReference<AzureLoadBalancerRule>[];
   };
 }
 
 export interface AzureLoadBalancerFrontEndIp extends AzureObjectBase {
   type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP;
   properties: {
-    inboundNatPools: AzureIdReference[];
-    inboundNatRules: AzureIdReference[];
-    loadBalancingRules: AzureIdReference[];
-    publicIPAddress: AzureIdReference;
+    inboundNatPools: AzureReference<AzureLoadBalancerInboundNatPool>[];
+    inboundNatRules: AzureReference<AzureLoadBalancerInboundNatRule>[];
+    loadBalancingRules: AzureReference<AzureLoadBalancerRule>[];
+    publicIPAddress: AzureReference<AzurePublicIp>;
   };
 }
 
@@ -184,7 +184,7 @@ export interface AzureLoadBalancerInboundNatPool extends AzureObjectBase {
   type: AzureObjectType.LOAD_BALANCER_NAT_POOL_INBOUND;
   properties: {
     backendPort: number;
-    frontendIPConfiguration: AzureIdReference;
+    frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
     frontendPortRangeStart: number;
     frontendPortRangeEnd: number;
     protocol: string;
@@ -195,8 +195,8 @@ export interface AzureLoadBalancerInboundNatRule extends AzureObjectBase {
   type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND;
   properties: {
     backendPort: number;
-    backendIPConfiguration: AzureIdReference;
-    frontendIPConfiguration: AzureIdReference;
+    backendIPConfiguration: AzureReference<AzureIPConfiguration>;
+    frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
     frontendPort: number;
     protocol: string;
   };
@@ -205,9 +205,9 @@ export interface AzureLoadBalancerInboundNatRule extends AzureObjectBase {
 export interface AzureLoadBalancerRule extends AzureObjectBase {
   type: AzureObjectType.LOAD_BALANCER_RULE;
   properties: {
-    backendAddressPool: AzureIdReference;
+    backendAddressPool: AzureReference<AzureLoadBalancerBackendPool>;
     backendPort: number;
-    frontendIPConfiguration: AzureIdReference;
+    frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
     frontendPort: number;
     protocol: string;
   };
