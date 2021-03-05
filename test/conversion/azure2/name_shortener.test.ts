@@ -3,7 +3,7 @@ import 'mocha';
 
 import {NameShortener} from '../../../src/conversion/azure2';
 
-describe('Azure Idea', () => {
+export default function test() {
   describe('NameShortener', () => {
     it('Unknown key', () => {
       const inputs = ['a', 'c/b/a', 'e/d/a'];
@@ -67,4 +67,5 @@ describe('Azure Idea', () => {
       assert.deepEqual(outputs, expected);
     });
   });
-});
+}
+

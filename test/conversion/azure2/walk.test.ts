@@ -70,18 +70,20 @@ const input = [
   },
 ];
 
-describe('Azure2', () => {
-  it('walkwalkAzureTypedObjects', () => {
-    const expected = ['a', 'b', 'c', 'd', 'e', 'f'];
-    const output = [...walkAzureTypedObjects(input)].map(x => x.id);
+export default function test() {
+  describe('Walk', () => {
+    it('walkwalkAzureTypedObjects()', () => {
+      const expected = ['a', 'b', 'c', 'd', 'e', 'f'];
+      const output = [...walkAzureTypedObjects(input)].map(x => x.id);
 
-    assert.deepEqual(output, expected);
+      assert.deepEqual(output, expected);
+    });
+
+    it('walkwalkAzureObjectBases()', () => {
+      const expected = ['a', 'b', 'q', 'c', 'd', 'e', 'f', 'r'];
+      const output = [...walkAzureObjectBases(input)].map(x => x.id);
+
+      assert.deepEqual(output, expected);
+    });
   });
-
-  it('walkwalkAzureObjectBases', () => {
-    const expected = ['a', 'b', 'q', 'c', 'd', 'e', 'f', 'r'];
-    const output = [...walkAzureObjectBases(input)].map(x => x.id);
-
-    assert.deepEqual(output, expected);
-  });
-});
+}
