@@ -40,7 +40,7 @@ export default function test() {
 
       // Verify the return value.
       assert.equal(result.key, vnet1.id);
-      // assert.equal(result.destinationIp, vnet1SourceIps);
+      assert.equal(result.destinationIp, vnet1SourceIps);
 
       // Verify that subnetConverter() was invoked correctly.
       const log = mocks.subnet.log();

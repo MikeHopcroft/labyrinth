@@ -51,5 +51,5 @@ export function convertVNet(
     routes,
   });
 
-  return {key: vNetNodeKey, destinationIp: 'xyz'};
+  return {key: vNetNodeKey, destinationIp: sourceIp};
 }
