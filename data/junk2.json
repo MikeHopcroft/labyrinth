@@ -1,0 +1,144 @@
+{
+    "nodes": [
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+        "filters": [],
+        "routes": [{"destination": "Internet"}]
+      },
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/loadBalancers/ericmai-lb",
+        "routes": [
+          {
+            "destination": "INVALID - Backend Subnet",
+            "constraints": {
+              "destinationPort": "80",
+              "protocol": "Tcp",
+              "destinationIp": "13.66.93.198"
+            },
+            "override": {
+              "destinationIp": "bepool",
+              "sourceIp": "AzureLoadBalancer"
+            }
+          },
+          {
+            "destination": "INVALID - Backend Subnet",
+            "constraints": {
+              "destinationPort": "8022",
+              "protocol": "Tcp",
+              "destinationIp": "13.66.93.198"
+            },
+            "override": {
+              "destinationIp": "avail-set",
+              "sourceIp": "AzureLoadBalancer",
+              "destinationPort": "22"
+            }
+          },
+          {
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+            "constraints": {
+              "destinationPort": "50000",
+              "protocol": "Tcp",
+              "destinationIp": "13.66.93.198"
+            },
+            "override": {
+              "destinationIp": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+              "sourceIp": "AzureLoadBalancer",
+              "destinationPort": "3389"
+            }
+          }
+        ]
+      },
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+        "filters": [],
+        "routes": [{"destination": "Internet"}]
+      },
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai-linux/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+        "filters": [],
+        "routes": [{"destination": "Internet"}]
+      },
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet/subnets/default/inbound",
+        "routes": [
+          {
+            "constraints": {"destinationIp": "except 172.16.0.0/24"},
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet/subnets/default/outbound"
+          },
+          {
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+            "constraints": {
+              "destinationIp": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration"
+            }
+          },
+          {
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai-linux/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+            "constraints": {
+              "destinationIp": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai-linux/ericmai-vnet-loadbalancer-vnet-nic01/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration"
+            }
+          }
+        ]
+      },
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet/subnets/default/outbound",
+        "routes": [{"destination": "Internet"}]
+      },
+      {
+        "key": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet",
+        "range": {"sourceIp": "172.16.0.0/24"},
+        "routes": [
+          {
+            "destination": "Internet",
+            "constraints": {"destinationIp": "except 172.16.0.0/24"}
+          },
+          {
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet/subnets/default/inbound",
+            "constraints": {"destinationIp": "172.16.0.0/24"}
+          }
+        ]
+      },
+      {
+        "key": "Internet",
+        "endpoint": true,
+        "range": {
+          "sourceIp": "except /subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet"
+        },
+        "routes": [
+          {
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/loadBalancers/ericmai-lb",
+            "constraints": {
+              "destinationIp": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/loadBalancers/ericmai-lb"
+            }
+          },
+          {
+            "destination": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet",
+            "constraints": {"destinationIp": "172.16.0.0/24"}
+          }
+        ]
+      }
+    ],
+    "symbols": [
+      {
+        "dimension": "ip",
+        "symbol": "AzureLoadBalancer",
+        "range": "168.63.129.16"
+      },
+      {"dimension": "protocol", "symbol": "Tcp", "range": "tcp"},
+      {
+        "dimension": "ip",
+        "symbol": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/loadBalancers/ericmai-lb",
+        "range": "13.66.93.198"
+      },
+      {
+        "dimension": "ip",
+        "symbol": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet",
+        "range": "172.16.0.0/24"
+      },
+      {
+        "dimension": "ip",
+        "symbol": "Internet",
+        "range": "except /subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet"
+      }
+    ]
+  }
+  

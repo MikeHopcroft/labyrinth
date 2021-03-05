@@ -34,7 +34,7 @@ export interface IConverters {
   subnet(
     services: GraphServices,
     spec: AzureSubnet,
-    parent: string
+    vnetNodeKey: string
   ): NodeKeyAndSourceIp;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
   ip(services: GraphServices, spec: AzureIPConfiguration): NodeKeyAndSourceIp;

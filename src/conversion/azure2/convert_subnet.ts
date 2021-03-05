@@ -57,24 +57,18 @@ export function convertSubnet(
   //   Materialize ipConfiguration
   //   Add routing rule
   if (subnetSpec.properties.ipConfigurations) {
-    for (const ip of subnetSpec.properties.ipConfigurations) {
+    for (const ipConfigSpecRef of subnetSpec.properties.ipConfigurations) {
       // Subnets may have ip configurations attached for items which do not exist in the
       // the resource graph. The first example of this is specifically for Virtual Machine
       // Scale Set ip configurations.
-      if (services.index.has(ip.id)) {
-        const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
-          ip
-        );
         const {key, destinationIp} = services.convert.ip(
           services,
-          ipConfigSpec
+          ipConfigSpecRef
         );
         routes.push({
           destination: key,
           constraints: {destinationIp},
         });
-      }
-      // TODO: else clause?
     }
   }
 

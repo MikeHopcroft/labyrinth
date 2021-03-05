@@ -48,3 +48,7 @@
 * Should we template AzureIdReference?
 * Remove Default Service Tag creation
   * Ex. ip converter
+* store.dereference<AzureLoadBalancerBackendPool>(rule.backendAddressPool)
+  * fix so we don't have to specify type
+* Can a Network Interface card have two IPs in different subnets?
+  * This could create a bridge

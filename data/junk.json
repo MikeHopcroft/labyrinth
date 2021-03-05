@@ -1,0 +1,24 @@
+{
+    "name": "ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration",
+    "properties": {
+      "loadBalancerBackendAddressPools": [
+        {
+          "id": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/loadBalancers/ericmai-lb/backendAddressPools/bepool",
+          "resourceGroup": "ericmai-vnet-loadbalancer"
+        }
+      ],
+      "loadBalancerInboundNatPools": [
+        {
+          "id": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/loadBalancers/ericmai-lb/inboundNatPools/natpool",
+          "resourceGroup": "ericmai-vnet-loadbalancer"
+        }
+      ],
+      "primary": true,
+      "privateIPAddressVersion": "IPv4",
+      "subnet": {
+        "id": "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Network/virtualNetworks/ericmai-vnet-loadbalancer-vnet/subnets/default",
+        "resourceGroup": "ericmai-vnet-loadbalancer"
+
+      },
+      "x" : "/subscriptions/b8dc8f25-7e85-4e7e-bde2-3d621b696e9b/resourceGroups/ericmai-vnet-loadbalancer/providers/Microsoft.Compute/virtualMachineScaleSets/ericmai/virtualMachines/0/networkInterfaces/ericmai-vnet-loadbalancer-vnet-nic01/ipConfigurations/ericmai-vnet-loadbalancer-vnet-nic01-defaultIpConfiguration"
+    }
