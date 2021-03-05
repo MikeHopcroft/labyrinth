@@ -93,4 +93,4 @@ export default function test() {
       assert.deepEqual(observedGraphSpec, expectedGraphSpec);
     });
   });
-};
+}

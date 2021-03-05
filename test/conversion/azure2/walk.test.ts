@@ -72,14 +72,14 @@ const input = [
 
 export default function test() {
   describe('Walk', () => {
-    it('walkwalkAzureTypedObjects()', () => {
+    it('walkAzureTypedObjects()', () => {
       const expected = ['a', 'b', 'c', 'd', 'e', 'f'];
       const output = [...walkAzureTypedObjects(input)].map(x => x.id);
 
       assert.deepEqual(output, expected);
     });
 
-    it('walkwalkAzureObjectBases()', () => {
+    it('walkAzureObjectBases()', () => {
       const expected = ['a', 'b', 'q', 'c', 'd', 'e', 'f', 'r'];
       const output = [...walkAzureObjectBases(input)].map(x => x.id);
 
