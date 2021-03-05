@@ -5,9 +5,10 @@
   * x Test naming tree - Azure/Azure2/etc.
   * x Console spew in unit tests
   * x Test names - walkwalkAzureTypedObjects, walkwalkAzureObjectBases
+  * Unit test for convertSubnet
   * Finish up VNet unit test
-  * Erase dead code in mocks
-  * Refactor shared
+  * x Erase dead code in mocks
+  * x Refactor shared
 * Questions
   * Is the VirtualNetwork service tag defined in relation to the parent subnet or the resource group (which may have multiple VNETs)?
   * Can two VNets in the same resource group have overlaping ranges?
