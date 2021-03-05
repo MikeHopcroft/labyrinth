@@ -32,13 +32,6 @@ export interface Behavior<PARAMS extends any[], RESULT> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface MockImpl<PARAMS extends any[], RESULT> {
-  (): Mocked<PARAMS, RESULT>;
-  log: Array<Behavior<PARAMS, RESULT>>;
-  foobar?: Mocked<PARAMS, RESULT>;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createMock<PARAMS extends any[], RESULT>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prototypeFunction: Mocked<PARAMS, RESULT> | undefined = undefined

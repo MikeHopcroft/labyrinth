@@ -1,62 +1,60 @@
 import {assert} from 'chai';
 import 'mocha';
-import {SymbolDefinitionSpec} from '../../../src';
 
-// import {NodeKeyAndSourceIp} from './converters';
+import {NodeSpec} from '../../../src';
+
+import {convertIp} from '../../../src/conversion/azure2';
 
 import {
-  AzureLocalIP,
-  AzureObjectType,
-} from '../../../src/conversion/azure2/types';
-
-import {ServiceOracle} from './oracle';
+  createGraphServicesMock,
+  localIp1,
+  localIp1SourceIp,
+  subnet1,
+} from './sample_resource_graph';
 
 export default function test() {
-  describe('convertIp', () => {
-    // We may have to do this init per test, if we have memoizing converters.
-    const services = ServiceOracle.InitializedGraphServices();
+  describe('convertIp()', () => {
+    it('local ip', () => {
+      const {services} = createGraphServicesMock();
 
-    it('Conversion of local ip', () => {
-      const expected: SymbolDefinitionSpec = {
-        dimension: 'ip', // TODO use enum
-        symbol:
-          '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/providers/Microsoft.Network/networkInterfaces/frontend/ipConfigurations/testIp',
-        range: '192.168.200.4',
-      };
+      // convertIp() expects to find its subnet spec in the index.
+      services.index.add(subnet1);
 
-      const input: AzureLocalIP = {
-        type: AzureObjectType.LOCAL_IP,
-        name: 'testLoacalIp',
-        resourceGroup: 'test',
-        id:
-          '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/providers/Microsoft.Network/networkInterfaces/frontend/ipConfigurations/testIp',
-        properties: {
-          privateIPAddress: '192.168.200.4',
-          subnet: undefined,
+      // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
+      // to test the real convertIp(), instead of its mock.
+      const result = convertIp(services, localIp1);
+      const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
+
+      // Verify the return value.
+      assert.equal(result.key, localIp1.id);
+      assert.equal(result.destinationIp, localIp1SourceIp);
+
+      // Verify the service tag definition.
+      assert.deepEqual(services.symbols.getSymbolSpec(localIp1.id), {
+        dimension: 'ip',
+        symbol: localIp1.id,
+        range: localIp1.properties.privateIPAddress,
+      });
+
+      // Verify that correct VNet node(s) were created in services.
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: localIp1.id,
+          endpoint: true,
+          range: {sourceIp: localIp1SourceIp},
+          routes: [
+            {
+              // TODO: test shouldn't look inside of subnet's spec.
+              destination: subnet1.id,
+              constraints: {
+                destinationIp: `except ${localIp1SourceIp}`,
+              },
+            },
+          ],
         },
-      };
+      ];
 
-      // Alternative form that emphasizes the semantics of the expected values.
-      const expected2: SymbolDefinitionSpec = {
-        dimension: 'ip', // TODO use enum
-        symbol: input.id,
-        range: input.properties.privateIPAddress,
-      };
-
-      const {key: ipKey, destinationIp} = services.convert.ip(services, input);
-
-      // TODO: is this assert too prescriptive? If enforces that the generated
-      // key is, in fact, input.id. This may be an implementation detail.
-      assert.equal(ipKey, input.id);
-      assert.equal(destinationIp, input.properties.privateIPAddress);
-
-      // Convention is likely no longer to create service tags.
-      const symbol = services.symbols.getSymbolSpec(ipKey);
-      assert.deepEqual(symbol, expected);
-
-      assert.fail();
-
-      // TODO: need to verify that the correct node is generated.
+      assert.deepEqual(observedNodes, expectedNodes);
     });
   });
 }

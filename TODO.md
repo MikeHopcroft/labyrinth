@@ -7,7 +7,7 @@
   * x Test names - walkwalkAzureTypedObjects, walkwalkAzureObjectBases
   * x Finish up VNet unit test
   * Unit test for convertSubnet
-  * Unit test for convertIp
+  * x Unit test for convertIp
   * x Erase dead code in mocks
   * x Refactor shared
 * Questions
