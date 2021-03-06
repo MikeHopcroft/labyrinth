@@ -61,7 +61,7 @@ export interface AzureLocalIP extends AzureTypedObject {
   };
 }
 
-export interface AzurePublicIp extends AzureTypedObject {
+export interface AzurePublicIP extends AzureTypedObject {
   type: AzureObjectType.PUBLIC_IP;
   properties: {
     ipAddress: string;
@@ -69,7 +69,7 @@ export interface AzurePublicIp extends AzureTypedObject {
   };
 }
 
-export type AzureIPConfiguration = AzureLocalIP | AzurePublicIp;
+export type AzureIPConfiguration = AzureLocalIP | AzurePublicIP;
 
 export interface AzureNetworkInterface extends AzureObjectBase {
   type: AzureObjectType.NIC;

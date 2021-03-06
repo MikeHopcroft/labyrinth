@@ -4,7 +4,7 @@ import {
   AzureObjectBase,
   AzureObjectIndex,
   AzureObjectType,
-  AzurePublicIp,
+  AzurePublicIP,
   AzureNetworkSecurityGroup,
   AzureSubnet,
   AzureVirtualNetwork,
@@ -89,7 +89,7 @@ export const localIp1: AzureLocalIP = {
   },
 };
 
-export const publicIp1: AzurePublicIp = {
+export const publicIp1: AzurePublicIP = {
   type: AzureObjectType.PUBLIC_IP,
   id: publicIp1Id,
   name: publicIp1Name,
