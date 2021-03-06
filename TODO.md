@@ -1,5 +1,6 @@
 # TODO
 
+* Consitency: IP vs Ip in AzureLocalIP, AzurePublicIp
 * Unit testing cleanup
   * Mocha test explorer config - no coverage
   * x Test naming tree - Azure/Azure2/etc.

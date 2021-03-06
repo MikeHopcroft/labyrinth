@@ -1,15 +1,16 @@
 import {
   AnyAzureObject,
+  AzureLocalIP,
   AzureObjectBase,
   AzureObjectIndex,
   AzureObjectType,
+  AzurePublicIp,
   AzureNetworkSecurityGroup,
   AzureSubnet,
   AzureVirtualNetwork,
   GraphServices,
   IConverters,
   SymbolTable,
-  AzureLocalIP,
 } from '../../../src/conversion/azure2';
 
 import {createMock} from './mocks';
@@ -67,7 +68,12 @@ export const localIp1Id = ipId(nic1Name, localIp1Name);
 export const localIp1SourceIp = '10.0.0.1';
 export const localIp1SubnetName = subnet1Name;
 
-///////////////////////////////////////////////////////////////////////////////
+export const publicIp1Name = 'publicIp1';
+export const publicIp1Id = ipId(nic1Name, publicIp1Name);
+export const publicIp1SourceIp = '203.0.113.1';
+export const publicIp1SubnetName = subnet1Name;
+
+///////////////////////////////////////////////////////////////////////////
 //
 // Subnets
 //
@@ -147,6 +153,17 @@ export const localIp1: AzureLocalIP = {
   resourceGroup,
   properties: {
     privateIPAddress: localIp1SourceIp,
+    subnet: reference(subnet1Id),
+  },
+};
+
+export const publicIp1: AzurePublicIp = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIp1Id,
+  name: publicIp1Name,
+  resourceGroup,
+  properties: {
+    ipAddress: publicIp1SourceIp,
     subnet: reference(subnet1Id),
   },
 };
