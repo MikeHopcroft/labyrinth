@@ -73,6 +73,33 @@ export const publicIp1Id = ipId(nic1Name, publicIp1Name);
 export const publicIp1SourceIp = '203.0.113.1';
 export const publicIp1SubnetName = subnet1Name;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// IP Configurations
+//
+///////////////////////////////////////////////////////////////////////////////
+export const localIp1: AzureLocalIP = {
+  type: AzureObjectType.LOCAL_IP,
+  id: localIp1Id,
+  name: localIp1Name,
+  resourceGroup,
+  properties: {
+    privateIPAddress: localIp1SourceIp,
+    subnet: reference(subnet1Id),
+  },
+};
+
+export const publicIp1: AzurePublicIp = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIp1Id,
+  name: publicIp1Name,
+  resourceGroup,
+  properties: {
+    ipAddress: publicIp1SourceIp,
+    subnet: reference(subnet1Id),
+  },
+};
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // Subnets
@@ -85,7 +112,7 @@ export const subnet1: AzureSubnet = {
   resourceGroup,
   properties: {
     addressPrefix: subnet1SourceIps,
-    ipConfigurations: [],
+    ipConfigurations: [localIp1, publicIp1],
     networkSecurityGroup: reference(nsg1Id),
   },
 };
@@ -137,34 +164,6 @@ export const vnet1: AzureVirtualNetwork = {
       addressPrefixes: [vnet1SourceIps],
     },
     subnets: [subnet1, subnet2],
-  },
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// IP Configurations
-//
-///////////////////////////////////////////////////////////////////////////////
-
-export const localIp1: AzureLocalIP = {
-  type: AzureObjectType.LOCAL_IP,
-  id: localIp1Id,
-  name: localIp1Name,
-  resourceGroup,
-  properties: {
-    privateIPAddress: localIp1SourceIp,
-    subnet: reference(subnet1Id),
-  },
-};
-
-export const publicIp1: AzurePublicIp = {
-  type: AzureObjectType.PUBLIC_IP,
-  id: publicIp1Id,
-  name: publicIp1Name,
-  resourceGroup,
-  properties: {
-    ipAddress: publicIp1SourceIp,
-    subnet: reference(subnet1Id),
   },
 };
 

@@ -36,12 +36,16 @@ export function convertSubnet(
 ): NodeKeyAndSourceIp {
   // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
   const subnetKeyPrefix = subnetSpec.id;
+  const subnetServiceTag = subnetSpec.id;
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
   const inboundKey = subnetKeyPrefix + '/inbound';
   const outboundKey = subnetKeyPrefix + '/outbound';
   const routerKey = subnetKeyPrefix + '/router';
+
+  const sourceIp = subnetSpec.properties.addressPrefix;
+  services.symbols.defineServiceTag(subnetServiceTag, sourceIp);
 
   const routes: RoutingRuleSpec[] = [
     // Traffic leaving subnet
@@ -81,6 +85,7 @@ export function convertSubnet(
   const routerNode: NodeSpec = {
     key: routerKey,
     // TODO: do we want range here?
+    range: {sourceIp},
     routes,
   };
   services.addNode(routerNode);
@@ -115,5 +120,8 @@ export function convertSubnet(
   services.addNode(outboundNode);
 
   // TODO: What should be returned here? Subnet is represetned by 3 nodes...
-  return {key: inboundNode.key, destinationIp: 'xyz'};
+  return {
+    key: inboundNode.key,
+    destinationIp: subnetSpec.properties.addressPrefix,
+  };
 }
