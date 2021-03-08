@@ -7,7 +7,7 @@ import {SymbolDefinitionSpec} from '../../../src';
 import {
   AzureLocalIP,
   AzureObjectType,
-} from '../../../src/conversion/azure2/types';
+} from '../../../src/conversion/azure/types';
 
 import {ServiceOracle} from './oracle';
 

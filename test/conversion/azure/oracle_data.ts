@@ -4,7 +4,7 @@ import {
   AzureObjectType,
   AzureResourceGraph,
   AzureVirtualNetwork,
-} from '../../../src/conversion/azure2/types';
+} from '../../../src/conversion/azure/types';
 
 export class ResourceGraphOracle {
   static ValidVnet(): AzureVirtualNetwork {

@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NameShortener} from '../../../src/conversion/azure2';
+import {NameShortener} from '../../../src/conversion/azure';
 
 describe('Azure Idea', () => {
   describe('NameShortener', () => {

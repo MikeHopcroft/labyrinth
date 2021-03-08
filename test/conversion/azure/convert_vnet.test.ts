@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import {setServers} from 'dns';
 import 'mocha';
 import {ActionType} from '../../../src';
-import {convert} from '../../../src/conversion/azure2/convert';
+import {convert} from '../../../src/conversion/azure/convert';
 
 import {ServiceOracle} from './oracle';
 import {ResourceGraphOracle} from './oracle_data';

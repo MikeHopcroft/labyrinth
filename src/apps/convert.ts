@@ -3,8 +3,8 @@ import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
 import {FileSystem, YAML} from '..';
-import * as AzureConverter from '../conversion/azure2/convert';
-import {AnyAzureObject} from '../conversion/azure2/types';
+import * as AzureConverter from '../conversion/azure/convert';
+import {AnyAzureObject} from '../conversion/azure/types';
 
 import {fail, handleError, succeed} from '../utilities';
 
