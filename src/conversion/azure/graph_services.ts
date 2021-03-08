@@ -1,7 +1,7 @@
 import {GraphSpec, NodeSpec} from '../../graph';
 import {NormalizedAzureGraph} from './azure_graph_normalized';
 
-import {SymbolTable} from './symbol_table';
+import {SymbolTable} from '../symbol_table';
 
 export class GraphServices {
   readonly index: NormalizedAzureGraph;

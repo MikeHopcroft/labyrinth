@@ -1,6 +1,6 @@
 import {GraphSpec} from '../../graph';
 import {GraphServices} from './graph_services';
-import {SymbolTable} from './symbol_table';
+import {SymbolTable} from '../symbol_table';
 import {AzureObjectType, AzureResourceGraph} from './types';
 
 import {walkAzureTypedObjects} from './walk';

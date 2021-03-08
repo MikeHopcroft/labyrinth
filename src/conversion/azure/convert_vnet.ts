@@ -3,8 +3,9 @@ import DRange from 'drange';
 import {formatIpLiteral, parseIp} from '../../dimensions';
 import {RoutingRuleSpec} from '../../graph';
 
+import {NodeKeyAndSourceIp} from '../types';
+
 import {AzureGraphNode} from './azure_graph_node';
-import {NodeKeyAndSourceIp} from './converters';
 import {SubnetNode} from './convert_subnet';
 import {GraphServices} from './graph_services';
 import {AzureObjectType, AzureVirtualNetwork} from './types';

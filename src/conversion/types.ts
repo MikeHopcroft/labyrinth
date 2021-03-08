@@ -1,9 +1,14 @@
 import {RuleSpec} from '..';
 import {NodeSpec, SymbolDefinitionSpec} from '../graph';
 
-export interface IRules {
+export interface NSGRuleSpecs {
   readonly outboundRules: RuleSpec[];
   readonly inboundRules: RuleSpec[];
+}
+
+export interface NodeKeyAndSourceIp {
+  key: string;
+  destinationIp: string;
 }
 
 // TODO: What is a better name for this type?

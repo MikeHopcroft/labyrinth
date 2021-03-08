@@ -1,6 +1,5 @@
-import {string} from 'io-ts';
-import {SymbolDefinitionSpec} from '../../graph';
-import {throwIfEmptyString} from './exception_helpers';
+import {SymbolDefinitionSpec} from '../graph';
+import {throwIfEmptyString} from '../utilities';
 
 export const serviceTagDimensionKey = 'ip';
 

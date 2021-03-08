@@ -1,5 +1,7 @@
 import {Graph, PoolRuleSpec, RoutingRuleSpec} from '../../graph';
 
+import { NodeKeyAndSourceIp } from '../types';
+
 import {
   AzureLoadBalancer,
   AzureLoadBalancerRule,
@@ -10,7 +12,6 @@ import {
   AzureObjectBase,
 } from './types';
 import {GraphServices} from './graph_services';
-import {NodeKeyAndSourceIp} from './converters';
 import {AzureGraphNode} from './azure_graph_node';
 import {IpNode} from './convert_ip';
 import {SubnetNode} from './convert_subnet';

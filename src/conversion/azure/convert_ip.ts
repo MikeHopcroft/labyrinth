@@ -1,5 +1,6 @@
+import {NodeKeyAndSourceIp} from '../types';
+
 import {AzureGraphNode} from './azure_graph_node';
-import {NodeKeyAndSourceIp} from './converters';
 import {SubnetNode} from './convert_subnet';
 import {GraphServices} from './graph_services';
 import {AzureIPConfiguration, AzureObjectType, AzureTypedObject} from './types';

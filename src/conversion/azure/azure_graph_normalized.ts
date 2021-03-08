@@ -14,7 +14,7 @@ import {NetworkSecurityGroupNode} from './convert_network_security_group';
 import {SubnetNode} from './convert_subnet';
 import {VirtualMachineScaleSetNode, VMSSVirtualIpNode} from './convert_vmss';
 import {VirtualNetworkNode} from './convert_vnet';
-import {GraphE} from './graph_e';
+import {GraphE} from '../graph_e';
 import {AnyAzureObject, AzureObjectType, AzureReference} from './types';
 
 export class NormalizedAzureGraph extends GraphE<

@@ -1,4 +1,4 @@
-import {NodeKeyAndSourceIp} from './converters';
+import {NodeKeyAndSourceIp} from '../types';
 import {GraphServices} from './graph_services';
 import {AzureTypedObject, AzureObjectType} from './types';
 

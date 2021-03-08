@@ -1,7 +1,7 @@
 import {ActionType, Constraint, RuleSpec} from '../../rules';
 import {removeUndefinedProperties} from '../../utilities';
 
-import {IRules} from '..';
+import {NodeKeyAndSourceIp, NSGRuleSpecs} from '../types';
 
 import {
   AzureNetworkSecurityGroup,
@@ -10,7 +10,6 @@ import {
 } from './types';
 import {GraphServices} from './graph_services';
 import {AzureGraphNode} from './azure_graph_node';
-import {NodeKeyAndSourceIp} from './converters';
 
 function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
   const action =
@@ -93,7 +92,7 @@ export class NetworkSecurityGroupNode extends AzureGraphNode<
     throw new Error('Method not implemented.');
   }
 
-  convertRules(vnetSymbol: string): IRules {
+  convertRules(vnetSymbol: string): NSGRuleSpecs {
     const inboundRules: RuleSpec[] = [];
     const outboudRules: RuleSpec[] = [];
 
