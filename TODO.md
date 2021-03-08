@@ -1,5 +1,10 @@
 # TODO
 
+* Move Azure2 => Azure
+* Destinations on routes can be either strings or pools
+* Debug rule regressions for Deny Overrides and First Applicable
+* Publish new verion and integrate into React app
+* Investigate more key shortener options
 * x Consitency: IP vs Ip in AzureLocalIP, AzurePublicIp
 * Unit testing cleanup
   * Mocha test explorer config - no coverage
