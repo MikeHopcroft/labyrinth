@@ -1,11 +1,8 @@
-import {isAbsolute} from 'path';
-import {AzureTypedObject} from '../azure/types';
 import {AzureGraphNode} from './azure_graph_node';
-import {AzureId} from './azure_id';
 import {NodeKeyAndSourceIp} from './converters';
 import {SubnetNode} from './convert_subnet';
 import {GraphServices} from './graph_services';
-import {AzureIPConfiguration, AzureObjectType} from './types';
+import {AzureIPConfiguration, AzureObjectType, AzureTypedObject} from './types';
 
 const KEY_INTERNET = 'Internet';
 

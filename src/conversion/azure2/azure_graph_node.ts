@@ -1,7 +1,6 @@
-import {AzureTypedObject} from '../azure/types';
 import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
-import {AzureObjectType} from './types';
+import {AzureTypedObject, AzureObjectType} from './types';
 
 export interface IAzureGraphNode {
   readonly key: string;

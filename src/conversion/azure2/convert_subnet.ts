@@ -3,7 +3,6 @@ import {NodeSpec, RoutingRuleSpec} from '../../graph';
 import {AzureGraphNode} from './azure_graph_node';
 
 import {NodeKeyAndSourceIp} from './converters';
-import {IpNode} from './convert_ip';
 import {NetworkInterfaceNode} from './convert_network_interface';
 import {NetworkSecurityGroupNode} from './convert_network_security_group';
 import {VirtualNetworkNode} from './convert_vnet';

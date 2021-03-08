@@ -1,4 +1,4 @@
-import {AzureTypedObject} from '../azure/types';
+import {AzureTypedObject} from './types';
 
 import {AzureGraphNode, DefaultNode, IAzureGraphNode} from './azure_graph_node';
 import {IpNode} from './convert_ip';
@@ -102,7 +102,7 @@ export class NormalizedAzureGraph extends GraphE<
       case AzureObjectType.LOCAL_IP:
         return new IpNode(input);
       default:
-        return new DefaultNode(input);
+        return new DefaultNode(azureType);
     }
   }
 }

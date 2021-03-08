@@ -15,23 +15,22 @@
 // az graph query -q 'resources | where resourceGroup == "labyrinth-sample"'
 //
 ///////////////////////////////////////////////////////////////////////////////
+// TODO: better names for AzureIdReference and AzureObjectBase.
 export interface AzureObjectBase {
   id: string;
-  name: string;
   resourceGroup: string;
-  type: string;
 }
 
-export interface AzureIdReference {
-  id: string;
-  resourceGroup: string;
+export interface AzureTypedObject extends AzureObjectBase {
+  name: string;
+  type: string;
 }
 
 // DESIGN NOTE: the unused type parameter T is for the benefit of
 // a generic function that dereferences an AzureReference<T> into
 // a T.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export type AzureReference<T> = AzureIdReference;
+export type AzureReference<T> = AzureObjectBase;
 
 export enum AzureObjectType {
   DEFAULT_SECURITY_RULE = 'Microsoft.Network/networkSecurityGroups/defaultSecurityRules',
@@ -52,11 +51,11 @@ export enum AzureObjectType {
   LOAD_BALANCER = 'microsoft.network/loadbalancers',
 }
 
-export interface AzureVMSSVirtualIp extends AzureObjectBase {
+export interface AzureVMSSVirtualIp extends AzureTypedObject {
   type: AzureObjectType.VMSS_VIRTUAL_IP;
 }
 
-export interface AzureLocalIP extends AzureObjectBase {
+export interface AzureLocalIP extends AzureTypedObject {
   type: AzureObjectType.LOCAL_IP;
   properties: {
     privateIPAddress: string;
@@ -64,17 +63,17 @@ export interface AzureLocalIP extends AzureObjectBase {
   };
 }
 
-export interface AzurePublicIp extends AzureObjectBase {
+export interface AzurePublicIp extends AzureTypedObject {
   type: AzureObjectType.PUBLIC_IP;
   properties: {
     ipAddress: string;
-    subnet: AzureIdReference | undefined;
+    subnet: AzureObjectBase | undefined;
   };
 }
 
 export type AzureIPConfiguration = AzureLocalIP | AzurePublicIp;
 
-export interface AzureNetworkInterface extends AzureObjectBase {
+export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;
   properties: {
     ipConfigurations: AzureIPConfiguration[];
@@ -87,7 +86,7 @@ export function asAzureNetworkInterface(
   return item.type === AzureObjectType.NIC ? item : null;
 }
 
-export interface AzureNetworkSecurityGroup extends AzureObjectBase {
+export interface AzureNetworkSecurityGroup extends AzureTypedObject {
   type: AzureObjectType.NSG;
   properties: {
     defaultSecurityRules: AzureSecurityRule[];
@@ -96,7 +95,7 @@ export interface AzureNetworkSecurityGroup extends AzureObjectBase {
   };
 }
 
-export interface AzureSecurityRule extends AzureObjectBase {
+export interface AzureSecurityRule extends AzureTypedObject {
   type: AzureObjectType.DEFAULT_SECURITY_RULE | AzureObjectType.SECURITY_RULE;
   properties: {
     access: 'Allow' | 'Deny';
@@ -114,7 +113,7 @@ export interface AzureSecurityRule extends AzureObjectBase {
   };
 }
 
-export interface AzureSubnet extends AzureObjectBase {
+export interface AzureSubnet extends AzureTypedObject {
   type: AzureObjectType.SUBNET;
   properties: {
     addressPrefix: string;
@@ -124,7 +123,7 @@ export interface AzureSubnet extends AzureObjectBase {
   };
 }
 
-export interface AzureVirtualNetwork extends AzureObjectBase {
+export interface AzureVirtualNetwork extends AzureTypedObject {
   type: AzureObjectType.VIRTUAL_NETWORK;
   properties: {
     addressSpace: {
@@ -156,7 +155,7 @@ export interface AzureVmssNetworkInterfaceConfig {
   };
 }
 
-export interface AzureVirtualMachineScaleSet extends AzureObjectBase {
+export interface AzureVirtualMachineScaleSet extends AzureTypedObject {
   type: AzureObjectType.VIRTUAL_MACHINE_SCALE_SET;
   properties: {
     virtualMachineProfile: {
@@ -167,7 +166,7 @@ export interface AzureVirtualMachineScaleSet extends AzureObjectBase {
   };
 }
 
-export interface AzureLoadBalancerBackendPool extends AzureObjectBase {
+export interface AzureLoadBalancerBackendPool extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL;
   properties: {
     backendIPConfigurations: AzureReference<AzureIPConfiguration>[];
@@ -175,7 +174,7 @@ export interface AzureLoadBalancerBackendPool extends AzureObjectBase {
   };
 }
 
-export interface AzureLoadBalancerFrontEndIp extends AzureObjectBase {
+export interface AzureLoadBalancerFrontEndIp extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP;
   properties: {
     inboundNatPools: AzureReference<AzureLoadBalancerInboundNatPool>[];
@@ -185,7 +184,7 @@ export interface AzureLoadBalancerFrontEndIp extends AzureObjectBase {
   };
 }
 
-export interface AzureLoadBalancerInboundNatPool extends AzureObjectBase {
+export interface AzureLoadBalancerInboundNatPool extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_NAT_POOL_INBOUND;
   properties: {
     backendPort: number;
@@ -196,7 +195,7 @@ export interface AzureLoadBalancerInboundNatPool extends AzureObjectBase {
   };
 }
 
-export interface AzureLoadBalancerInboundNatRule extends AzureObjectBase {
+export interface AzureLoadBalancerInboundNatRule extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND;
   properties: {
     backendPort: number;
@@ -207,7 +206,7 @@ export interface AzureLoadBalancerInboundNatRule extends AzureObjectBase {
   };
 }
 
-export interface AzureLoadBalancerRule extends AzureObjectBase {
+export interface AzureLoadBalancerRule extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_RULE;
   properties: {
     backendAddressPool: AzureReference<AzureLoadBalancerBackendPool>;
@@ -218,7 +217,7 @@ export interface AzureLoadBalancerRule extends AzureObjectBase {
   };
 }
 
-export interface AzureLoadBalancer extends AzureObjectBase {
+export interface AzureLoadBalancer extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER;
   properties: {
     backendAddressPools: AzureLoadBalancerBackendPool[];

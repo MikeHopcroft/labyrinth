@@ -7,14 +7,13 @@ import {
   AzureLoadBalancerInboundNatRule,
   AzureLoadBalancerFrontEndIp,
   AzureObjectType,
-  AzureIdReference,
+  AzureObjectBase,
 } from './types';
 import {GraphServices} from './graph_services';
 import {NodeKeyAndSourceIp} from './converters';
 import {AzureGraphNode} from './azure_graph_node';
 import {IpNode} from './convert_ip';
 import {SubnetNode} from './convert_subnet';
-import {AzureId} from './azure_id';
 import {VMSSVirtualIpNode} from './convert_vmss';
 
 // TODO: Move into constants

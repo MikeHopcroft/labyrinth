@@ -1,6 +1,8 @@
-import {number} from 'io-ts';
-import {AzureReference} from '../azure/types';
-import {AzureIdReference, AzureVirtualMachineScaleSet} from './types';
+import {
+  AzureObjectBase,
+  AzureReference,
+  AzureVirtualMachineScaleSet,
+} from './types';
 
 export interface AzureVMSSIpResult {
   vmssId: AzureReference<AzureVirtualMachineScaleSet>;
@@ -17,9 +19,7 @@ export class AzureId {
   // In the case of Load Balancers which are using VMSS there are references which
   // do not contain direct items in the graph. This parsing function extracts the
   // separates the id which then can be used to look up necessary downstream items
-  static parseAsVMSSIpConfiguration(
-    input: AzureIdReference
-  ): AzureVMSSIpResult {
+  static parseAsVMSSIpConfiguration(input: AzureObjectBase): AzureVMSSIpResult {
     const parts = splitId(input.id);
 
     if (parts.length !== 15) {
@@ -37,7 +37,7 @@ export class AzureId {
     };
   }
 
-  static parseResourceHostId(input: AzureIdReference): string {
+  static parseResourceHostId(input: AzureObjectBase): string {
     const parts = splitId(input.id);
     return parts.slice(0, parts.length - 2).join('/');
   }

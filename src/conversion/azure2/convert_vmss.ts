@@ -1,10 +1,9 @@
-import {AzureTypedObject} from '../azure';
 import {AzureGraphNode} from './azure_graph_node';
 import {AzureId, AzureVMSSIpResult} from './azure_id';
 import {NodeKeyAndSourceIp} from './converters';
 import {SubnetNode} from './convert_subnet';
 import {GraphServices} from './graph_services';
-import {AzureObjectType, AzureVirtualMachineScaleSet} from './types';
+import {AzureObjectType, AzureTypedObject, AzureVirtualMachineScaleSet} from './types';
 
 export class VirtualMachineScaleSetNode extends AzureGraphNode<
   AzureVirtualMachineScaleSet

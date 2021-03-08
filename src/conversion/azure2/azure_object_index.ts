@@ -1,6 +1,6 @@
 import {
   AnyAzureObject,
-  AzureIdReference,
+  AzureObjectBase,
   AzureReference,
   AzureResourceGraph,
 } from './types';
@@ -28,7 +28,7 @@ export class AzureObjectIndex {
     this.idToAzureObject.set(item.id, item);
   }
 
-  has(input: AzureIdReference): boolean {
+  has(input: AzureObjectBase): boolean {
     return this.idToAzureObject.has(input.id);
   }
 
