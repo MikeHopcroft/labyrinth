@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "command-line-usage": "^6.1.1",
+    "crypto": "^1.0.1",
     "csv-parse": "^4.14.1",
     "drange": "^2.0.1",
     "fast-csv": "^4.3.5",

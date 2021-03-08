@@ -3,72 +3,90 @@ import DRange from 'drange';
 import {formatIpLiteral, parseIp} from '../../dimensions';
 import {RoutingRuleSpec} from '../../graph';
 
-import {NodeKeyAndSourceIp} from '../types';
+import {IGraphServices} from '../types';
+import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
 
-import {AzureGraphNode} from './azure_graph_node';
-import {SubnetNode} from './convert_subnet';
-import {GraphServices} from './graph_services';
-import {AzureObjectType, AzureVirtualNetwork} from './types';
+import {commonTypes} from './convert_common';
+import {
+  IReleatedX,
+  AnyAzureObject,
+  asSpec,
+  AzureObjectType,
+  AzureVirtualNetwork,
+  IAzureGraphNode,
+  IVirtualNetworkNode,
+} from './types';
 
-export class VirtualNetworkNode extends AzureGraphNode<AzureVirtualNetwork> {
-  readonly serviceTag: string;
-  readonly nodeKey: string;
-
-  constructor(vnet: AzureVirtualNetwork) {
-    super(AzureObjectType.VIRTUAL_NETWORK, vnet);
-    this.serviceTag = vnet.id;
-    this.nodeKey = vnet.id;
+function materializeVirtualNetwork(
+  services: IGraphServices,
+  nodeSpec: IVirtualNetworkNode
+) {
+  // Compute this VNet's address range by unioning up all of its address prefixes.
+  const addressRange = new DRange();
+  for (const address of nodeSpec.addressPrefixes) {
+    const ip = parseIp(address);
+    addressRange.add(ip);
   }
+  const sourceIp = formatIpLiteral(addressRange);
+  services.defineServiceTag(nodeSpec.serviceTag, sourceIp);
 
-  *edges(): IterableIterator<string> {
-    for (const item of this.value.properties.subnets) {
-      yield item.id;
-    }
-  }
+  // Create outbound rule (traffic leaving vnet).
+  const routes: RoutingRuleSpec[] = [
+    {
+      destination: services.getInternetKey(),
+      constraints: {destinationIp: `except ${sourceIp}`},
+    },
+  ];
 
-  subnets(): IterableIterator<SubnetNode> {
-    return this.typedEdges<SubnetNode>(AzureObjectType.SUBNET);
-  }
-
-  convertNode(services: GraphServices): NodeKeyAndSourceIp {
-    // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
-    const vNetSpec = this.value;
-
-    // Compute this VNet's address range by unioning up all of its address prefixes.
-    const addressRange = new DRange();
-    for (const address of vNetSpec.properties.addressSpace.addressPrefixes) {
-      const ip = parseIp(address);
-      addressRange.add(ip);
-    }
-    const sourceIp = formatIpLiteral(addressRange);
-    services.symbols.defineServiceTag(this.serviceTag, sourceIp);
-
-    // Create outbound rule (traffic leaving vnet).
-    const routes: RoutingRuleSpec[] = [
-      {
-        destination: services.getInternetKey(),
-        constraints: {destinationIp: `except ${sourceIp}`},
-      },
-    ];
-
-    const vnetDestinations: string[] = [];
-    // Materialize subnets and create routes to each.
-    for (const subnetNode of this.subnets()) {
-      const {key: subnetNodeKey, destinationIp} = subnetNode.convert(services);
-
-      routes.push({
-        destination: subnetNodeKey,
-        constraints: {destinationIp},
-      });
-      vnetDestinations.push(destinationIp);
-    }
-
-    services.addNode({
-      key: this.nodeKey,
-      range: {sourceIp},
-      routes,
+  const vnetDestinations: string[] = [];
+  // Materialize subnets and create routes to each.
+  for (const {
+    nodeKey: subnetNodeKey,
+    serviceTag: destinationIp,
+  } of nodeSpec.subnets()) {
+    routes.push({
+      destination: subnetNodeKey,
+      constraints: {destinationIp},
     });
-
-    return {key: this.nodeKey, destinationIp: vnetDestinations.join(',')};
+    vnetDestinations.push(destinationIp);
   }
+
+  services.addNode({
+    key: nodeSpec.nodeKey,
+    range: {sourceIp},
+    routes,
+  });
+}
+
+function* relatedItemKeys(spec: AzureVirtualNetwork): IterableIterator<string> {
+  for (const item of spec.properties.subnets) {
+    yield item.id;
+  }
+
+  yield 'Internet';
+}
+
+export function createVirtualNetworkNode(
+  services: IReleatedX,
+  input: AnyAzureObject
+): IVirtualNetworkNode {
+  const spec = asSpec<AzureVirtualNetwork>(
+    input,
+    AzureObjectType.VIRTUAL_NETWORK
+  );
+  const common = commonTypes(spec, services);
+  return {
+    serviceTag: normalizedSymbolKey(spec.id),
+    nodeKey: normalizedNodeKey(spec.id),
+    specId: spec.id,
+    relatedSpecIds: () => {
+      return relatedItemKeys(spec);
+    },
+    type: spec.type,
+    addressPrefixes: spec.properties.addressSpace.addressPrefixes,
+    subnets: common.subnets,
+    materialize: (services: IGraphServices, node: IAzureGraphNode) => {
+      materializeVirtualNetwork(services, node as IVirtualNetworkNode);
+    },
+  };
 }

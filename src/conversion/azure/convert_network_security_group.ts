@@ -1,19 +1,23 @@
-import {ActionType, Constraint, RuleSpec} from '../../rules';
+import {ActionType, Constraint, RuleSpec} from '../../rules/ruleSpec';
 import {removeUndefinedProperties} from '../../utilities';
 
-import {NodeKeyAndSourceIp, NSGRuleSpecs} from '../types';
+import {NSGRuleSpecs} from '../types';
 
+import {noExplicitRelations, noOpMaterialize} from './convert_common';
+import {normalizedSymbolKey, normalizedNodeKey} from './formatters';
 import {
+  AnyAzureObject,
+  asSpec,
   AzureNetworkSecurityGroup,
   AzureObjectType,
   AzureSecurityRule,
+  INetworkSecurityGroupNode,
+  IReleatedX,
 } from './types';
-import {GraphServices} from './graph_services';
-import {AzureGraphNode} from './azure_graph_node';
 
 function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
-  const action =
-    rule.properties.access === 'Allow' ? ActionType.ALLOW : ActionType.DENY;
+  // const action = ActionType.ALLOW;
+  //rule.properties.access === 'Allow' ? ActionType.ALLOW : ActionType.DENY;
   const priority = rule.properties.priority;
 
   // TODO: sourcePortRanges, sourceAddressPrefixes, etc.
@@ -36,7 +40,7 @@ function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
   const protocol = rule.properties.protocol;
 
   const spec: RuleSpec = {
-    action,
+    action: ActionType.ALLOW,
     priority,
     // TODO: set id and source fields correctly.
     id: 1,
@@ -81,32 +85,41 @@ function writeRule(
   }
 }
 
-export class NetworkSecurityGroupNode extends AzureGraphNode<
-  AzureNetworkSecurityGroup
-> {
-  constructor(input: AzureNetworkSecurityGroup) {
-    super(AzureObjectType.NSG, input);
+export function convertRules(
+  spec: AzureNetworkSecurityGroup,
+  vnetSymbol: string
+) {
+  const inboundRules: RuleSpec[] = [];
+  const outboudRules: RuleSpec[] = [];
+
+  for (const rule of spec.properties.defaultSecurityRules) {
+    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
   }
 
-  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
-    throw new Error('Method not implemented.');
+  for (const rule of spec.properties.securityRules) {
+    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
   }
 
-  convertRules(vnetSymbol: string): NSGRuleSpecs {
-    const inboundRules: RuleSpec[] = [];
-    const outboudRules: RuleSpec[] = [];
+  return {
+    outboundRules: outboudRules,
+    inboundRules: inboundRules,
+  };
+}
+export function createNetworkSecurityGroupNode(
+  services: IReleatedX,
+  input: AnyAzureObject
+): INetworkSecurityGroupNode {
+  const spec = asSpec<AzureNetworkSecurityGroup>(input, AzureObjectType.NSG);
 
-    for (const rule of this.value.properties.defaultSecurityRules) {
-      writeRule(rule, vnetSymbol, inboundRules, outboudRules);
-    }
-
-    for (const rule of this.value.properties.securityRules) {
-      writeRule(rule, vnetSymbol, inboundRules, outboudRules);
-    }
-
-    return {
-      outboundRules: outboudRules,
-      inboundRules: inboundRules,
-    };
-  }
+  return {
+    serviceTag: normalizedSymbolKey(spec.id),
+    nodeKey: normalizedNodeKey(spec.id),
+    specId: spec.id,
+    type: spec.type,
+    relatedSpecIds: noExplicitRelations,
+    materialize: noOpMaterialize,
+    convertRules(vnetSymbol: string): NSGRuleSpecs {
+      return convertRules(spec, vnetSymbol);
+    },
+  };
 }

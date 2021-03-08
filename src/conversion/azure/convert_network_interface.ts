@@ -1,70 +1,90 @@
 import {NodeSpec} from '../../graph';
-import {NodeKeyAndSourceIp} from '../types';
 
-import {AzureGraphNode} from './azure_graph_node';
-import {IpNode} from './convert_ip';
-import {SubnetNode} from './convert_subnet';
-import {GraphServices} from './graph_services';
-import {AzureNetworkInterface, AzureObjectType} from './types';
+import {IGraphServices} from '../types';
 
-export class NetworkInterfaceNode extends AzureGraphNode<
-  AzureNetworkInterface
-> {
-  constructor(item: AzureNetworkInterface) {
-    super(AzureObjectType.NIC, item);
+import {commonTypes} from './convert_common';
+import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
+
+import {
+  AnyAzureObject,
+  asSpec,
+  AzureNetworkInterface,
+  AzureObjectType,
+  INetworkInterfaceNode,
+  IReleatedX,
+} from './types';
+
+function* relatedItemKeys(
+  spec: AzureNetworkInterface
+): IterableIterator<string> {
+  if (spec.properties.networkSecurityGroup) {
+    yield spec.properties.networkSecurityGroup.id;
   }
 
-  *edges(): IterableIterator<string> {
-    for (const ipConfig of this.value.properties.ipConfigurations) {
-      yield ipConfig.id;
+  for (const ipConfig of spec.properties.ipConfigurations) {
+    yield ipConfig.id;
 
-      if (ipConfig.properties.subnet) {
-        yield ipConfig.properties.subnet.id;
-      }
+    if (ipConfig.properties.subnet) {
+      yield ipConfig.properties.subnet.id;
     }
   }
+}
 
-  subnet(): SubnetNode {
-    return this.first<SubnetNode>(AzureObjectType.SUBNET);
-  }
+export function materializeNetworkInterface(
+  services: IGraphServices,
+  node: INetworkInterfaceNode
+): void {
+  // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
+  const prefix = normalizedNodeKey(node.specId);
+  const inbound = prefix + '/inbound';
+  const outbound = prefix + '/outbound';
 
-  ip(): string {
-    return [...this.typedEdges<IpNode>(AzureObjectType.LOCAL_IP)]
-      .map(x => x.ipAddress())
-      .join(',');
-  }
+  const subnetNodeSpec = node.subnet();
+  const rules = node.nsg()?.convertRules(subnetNodeSpec.vnet().serviceTag);
 
-  protected convertNode(services: GraphServices): NodeKeyAndSourceIp {
-    const nicSpec = this.value;
-    const subnet = this.subnet();
+  const ips = [...node.ips()];
+  const ip = ips.map(x => x.ipAddress).join(',');
 
-    // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
-    const prefix = nicSpec.id;
-    const inbound = prefix + '/inbound';
-    const outbound = prefix + '/outbound';
-    // TODO: Handle NSG
+  const inboundNode: NodeSpec = {
+    key: inbound,
+    endpoint: true,
+    filters: rules?.inboundRules,
+    routes: [],
+  };
 
-    const inboundNode: NodeSpec = {
-      key: inbound,
-      endpoint: true,
-      routes: [],
-    };
+  const outboundNode: NodeSpec = {
+    key: outbound,
+    filters: rules?.outboundRules,
+    routes: [
+      {
+        destination: subnetNodeSpec.keys.outbound,
+      },
+    ],
+  };
 
-    const outboundNode: NodeSpec = {
-      key: outbound,
-      routes: [
-        {
-          destination: subnet.keys.outbound,
-        },
-      ],
-    };
+  services.addNode(inboundNode);
+  services.addNode(outboundNode);
+  services.defineServiceTag(node.serviceTag, ip);
+}
 
-    services.addNode(inboundNode);
-    services.addNode(outboundNode);
+export function createNetworkInterfaceNode(
+  services: IReleatedX,
+  refSpec: AnyAzureObject
+): INetworkInterfaceNode {
+  const common = commonTypes(refSpec, services);
+  const spec = asSpec<AzureNetworkInterface>(refSpec, AzureObjectType.NIC);
 
-    return {
-      key: inboundNode.key,
-      destinationIp: this.ip(),
-    };
-  }
+  return {
+    serviceTag: normalizedSymbolKey(spec.id),
+    nodeKey: `${normalizedNodeKey(spec.id)}/inbound`,
+    specId: spec.id,
+    type: spec.type,
+    subnet: common.subnet,
+    nsg: common.nsg,
+    ips: common.localIps,
+    relatedSpecIds: () => {
+      return relatedItemKeys(spec);
+    },
+    materialize: materializeNetworkInterface,
+  };
 }

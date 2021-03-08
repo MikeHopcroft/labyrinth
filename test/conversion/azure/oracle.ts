@@ -1,19 +1,19 @@
 import {walkAzureTypedObjects} from '../../../src/conversion/azure';
-import {NormalizedAzureGraph} from '../../../src/conversion/azure/azure_graph_normalized';
-import {GraphServices} from '../../../src/conversion/azure/graph_services';
 import {SymbolTable} from '../../../src/conversion/symbol_table';
 import {AzureResourceGraph} from '../../../src/conversion/azure/types';
+import {AzureNodeGraph} from '../../../src/conversion/azure/azure_node_graph';
+import {IGraphServices} from '../../../src/conversion/types';
 
 export class ServiceOracle {
   static InitializedGraphServices(
     spec: AzureResourceGraph = []
-  ): GraphServices {
+  ): IGraphServices {
     const symbolTable = new SymbolTable([]);
-    const graph = new NormalizedAzureGraph();
+    const graph = new AzureNodeGraph(symbolTable);
 
     for (const item of walkAzureTypedObjects(spec)) {
-      graph.addNode(item);
+      graph.observeRelationsAndRecord(item);
     }
-    return new GraphServices(symbolTable, graph);
+    return graph;
   }
 }

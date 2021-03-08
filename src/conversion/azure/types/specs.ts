@@ -33,26 +33,31 @@ export interface AzureTypedObject extends AzureObjectBase {
 export type AzureReference<T> = AzureObjectBase;
 
 export enum AzureObjectType {
-  DEFAULT_SECURITY_RULE = 'Microsoft.Network/networkSecurityGroups/defaultSecurityRules',
-  LOCAL_IP = 'Microsoft.Network/networkInterfaces/ipConfigurations',
+  DEFAULT_SECURITY_RULE = 'microsoft.network/networksecuritygroups/defaultsecurityrules',
+  LOCAL_IP = 'microsoft.network/networkinterfaces/ipconfigurations',
   PUBLIC_IP = 'microsoft.network/publicipaddresses',
   NIC = 'microsoft.network/networkinterfaces',
   NSG = 'microsoft.network/networksecuritygroups',
-  SECURITY_RULE = 'Microsoft.Network/networkSecurityGroups/securityRules',
-  SUBNET = 'Microsoft.Network/virtualNetworks/subnets',
+  SECURITY_RULE = 'microsoft.network/networksecuritygroups/securityrules',
+  SUBNET = 'microsoft.network/virtualnetworks/subnets',
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
   VIRTUAL_MACHINE_SCALE_SET = 'microsoft.compute/virtualmachinescalesets',
   VMSS_VIRTUAL_IP = 'microsoft.compute/virtualmachinescalesets/virtual.ip',
-  LOAD_BALANCER_BACKEND_POOL = 'Microsoft.Network/loadBalancers/backendAddressPools',
-  LOAD_BALANCER_FRONT_END_IP = 'Microsoft.Network/loadBalancers/frontendIPConfigurations',
-  LOAD_BALANCER_NAT_POOL_INBOUND = 'Microsoft.Network/loadBalancers/inboundNatPools',
-  LOAD_BALANCER_NAT_RULE_INBOUND = 'Microsoft.Network/loadBalancers/inboundNatRules',
-  LOAD_BALANCER_RULE = 'Microsoft.Network/loadBalancers/loadBalancingRules',
+  VMSS_VIRTUAL_NIC = 'microsoft.compute/virtualmachinescalesets/virtual.nic',
+  LOAD_BALANCER_BACKEND_POOL = 'microsoft.network/loadbalancers/backendaddresspools',
+  LOAD_BALANCER_FRONT_END_IP = 'microsoft.network/loadbalancers/frontendipconfigurations',
+  LOAD_BALANCER_NAT_POOL_INBOUND = 'microsoft.network/loadbalancers/inboundnatpools',
+  LOAD_BALANCER_NAT_RULE_INBOUND = 'microsoft.network/loadbalancers/inboundnatrules',
+  LOAD_BALANCER_RULE = 'microsoft.network/loadbalancers/loadbalancingrules',
   LOAD_BALANCER = 'microsoft.network/loadbalancers',
 }
 
 export interface AzureVMSSVirtualIp extends AzureTypedObject {
   type: AzureObjectType.VMSS_VIRTUAL_IP;
+}
+
+export interface AzureVMSSVirtualNic extends AzureTypedObject {
+  type: AzureObjectType.VMSS_VIRTUAL_NIC;
 }
 
 export interface AzureLocalIP extends AzureTypedObject {
@@ -71,12 +76,17 @@ export interface AzurePublicIp extends AzureTypedObject {
   };
 }
 
+export function isLocalIp(spec: AzureTypedObject): spec is AzureLocalIP {
+  return spec.type.toLowerCase() === AzureObjectType.LOCAL_IP;
+}
+
 export type AzureIPConfiguration = AzureLocalIP | AzurePublicIp;
 
 export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;
   properties: {
     ipConfigurations: AzureIPConfiguration[];
+    networkSecurityGroup: AzureReference<AzureNetworkSecurityGroup>;
   };
 }
 
@@ -246,6 +256,18 @@ export type AnyAzureObject =
   | AzureSubnet
   | AzureVirtualMachineScaleSet
   | AzureVMSSVirtualIp
+  | AzureVMSSVirtualNic
   | AzureVirtualNetwork;
 
 export type AzureResourceGraph = AnyAzureObject[];
+
+export function asSpec<T extends AnyAzureObject>(
+  spec: AnyAzureObject,
+  type: AzureObjectType
+): T {
+  if (spec.type.toLowerCase() !== type) {
+    throw new Error(`Invalid cast of "${spec.id}" to type "${type}"`);
+  }
+
+  return spec as T;
+}

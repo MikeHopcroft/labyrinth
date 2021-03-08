@@ -13,7 +13,7 @@ export class SymbolTable {
   }
 
   defineSymbol(dimension: string, symbol: string, range: string) {
-    throwIfEmptyString(range, 'Range cannot be empty');
+    throwIfEmptyString(range, `Range cannot be empty for '${symbol}`);
 
     this.addSpec({dimension, symbol, range});
   }
