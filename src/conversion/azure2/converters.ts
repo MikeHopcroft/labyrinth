@@ -1,3 +1,4 @@
+import { RoutingRuleSpec } from '../../graph';
 import {RuleSpec} from '../../rules';
 
 import {GraphServices} from './graph_services';
@@ -39,7 +40,7 @@ export interface IConverters {
     parent: string
   ): NodeKeyAndSourceIp;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
-  ip(services: GraphServices, spec: AzureIPConfiguration): NodeKeyAndSourceIp;
+  ip(services: GraphServices, spec: AzureIPConfiguration): RoutingRuleSpec;
   nsg(
     services: GraphServices,
     spec: AzureNetworkSecurityGroup,

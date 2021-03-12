@@ -31,6 +31,12 @@ export interface Behavior<PARAMS extends any[], RESULT> {
   result?: RESULT;
 }
 
+interface MockedFunction<PARAMS extends any[], RESULT> {
+  (): Mocked<PARAMS, RESULT>,
+  log: () => Array<Behavior<PARAMS, RESULT>>,
+  action?: Mocked<PARAMS, RESULT>,
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createMock<PARAMS extends any[], RESULT>(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -64,6 +70,18 @@ export function createMock<PARAMS extends any[], RESULT>(
   };
 
   return f;
+
+  // return {
+  //   (): f,
+  // };
+  //   (): f,
+  //   log: () => {
+  //     return log;
+  //   },
+  //   action: (fun: Mocked<PARAMS, RESULT>) => {
+  //     action = fun;
+  //   },
+  // };
 }
 
 // ///////////////////////////////////////////////////////////////////////////////

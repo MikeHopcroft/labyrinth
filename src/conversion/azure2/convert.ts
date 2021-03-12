@@ -9,10 +9,11 @@ import {convertNsg} from './convert_network_security_group';
 import {GraphServices} from './graph_services';
 import {NameShortener} from './name_shortener';
 import {SymbolTable} from './symbol_table';
-import {AzureResourceGraph} from './types';
+import {AzureNetworkInterface, AzureObjectType, AzureResourceGraph} from './types';
 
 import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
 import {AzureObjectIndex} from './azure_object_index';
+import {AzureObjectGroups} from './azure_object_groups';
 
 // TODO: Move `converters` to own file.
 export const converters: IConverters = {
@@ -57,7 +58,14 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
     },
   ]);
   const index = new AzureObjectIndex(resourceGraphSpec);
-  const services = new GraphServices(converters, symbols, index);
+  const groups = new AzureObjectGroups(resourceGraphSpec);
+  const services = new GraphServices(converters, symbols, groups, index);
+
+  //
+  // Initialize references
+  //
+  for (const nic of services.groups.items<AzureNetworkInterface>(AzureObjectType.NIC)) {
+  }
 
   //
   // Convert the AzureResourceGraph

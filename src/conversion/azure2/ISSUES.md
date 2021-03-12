@@ -1,3 +1,9 @@
+* Top
+  * Converters should return route to converted item.
+  * convertIp() should take an optional filter parameter.
+    * Use case is call from convertNic()
+  * Should have separate converters for localIp and publicIp
+
 * IPConfig references for scale set backend pools
 * Mocks are confusing
 * id shortening
