@@ -4,9 +4,6 @@ import {normalizedNodeKey, normalizedSymbolKey} from '../formatters';
 
 import {
   AzureLoadBalancerBackendPool,
-  AzureObjectType,
-  AnyAzureObject,
-  asSpec,
   ILoadBalancerBackendPoolNode,
   IReleatedX,
   ISubnetNode,
@@ -33,12 +30,8 @@ function materializeBackendPool(
 
 export function createLoadBalancerBackendPool(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureLoadBalancerBackendPool
 ): ILoadBalancerBackendPoolNode {
-  const spec = asSpec<AzureLoadBalancerBackendPool>(
-    input,
-    AzureObjectType.LOAD_BALANCER_BACKEND_POOL
-  );
   const common = commonTypes(spec, services);
 
   return {

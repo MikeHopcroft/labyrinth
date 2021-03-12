@@ -4,9 +4,6 @@ import {normalizedNodeKey, normalizedSymbolKey} from '../formatters';
 
 import {
   AzureLoadBalancerInboundNatRule,
-  AzureObjectType,
-  AnyAzureObject,
-  asSpec,
   ILoadBalancerNATRule,
   IReleatedX,
 } from '../types';
@@ -22,12 +19,8 @@ function* relatedNatRuleItems(spec: AzureLoadBalancerInboundNatRule) {
 
 export function createLoadBalancerNatRuleNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureLoadBalancerInboundNatRule
 ): ILoadBalancerNATRule {
-  const spec = asSpec<AzureLoadBalancerInboundNatRule>(
-    input,
-    AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND
-  );
   const common = commonTypes(spec, services);
 
   return {

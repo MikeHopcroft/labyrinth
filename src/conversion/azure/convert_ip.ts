@@ -1,12 +1,6 @@
 import {commonTypes, noOpMaterialize} from './convert_common';
 import {normalizedSymbolKey, subnetKeys} from './formatters';
-import {
-  AnyAzureObject,
-  AzureIPConfiguration,
-  IpNode,
-  IReleatedX,
-  isLocalIp,
-} from './types';
+import {AzureIPConfiguration, IpNode, IReleatedX, isLocalIp} from './types';
 
 const KEY_INTERNET = 'Internet';
 
@@ -44,9 +38,8 @@ function internetOrSubnetKey(spec: AzureIPConfiguration): string {
 
 export function createIpNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureIPConfiguration
 ): IpNode {
-  const spec = input as AzureIPConfiguration;
   const ipAddress = getIp(spec);
   const common = commonTypes(spec, services);
   return {

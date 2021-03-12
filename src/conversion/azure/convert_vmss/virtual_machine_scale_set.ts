@@ -2,9 +2,6 @@ import {commonTypes, noOpMaterialize} from '../convert_common';
 import {normalizedSymbolKey, normalizedNodeKey} from '../formatters';
 
 import {
-  AnyAzureObject,
-  asSpec,
-  AzureObjectType,
   AzureVirtualMachineScaleSet,
   AzureVMSSIpResult,
   IReleatedX,
@@ -25,12 +22,8 @@ function* relatedVMSSItemKeys(
 
 export function createVirtualMachineScaleSetNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureVirtualMachineScaleSet
 ): IVirutalMachineScaleSetNode {
-  const spec = asSpec<AzureVirtualMachineScaleSet>(
-    input,
-    AzureObjectType.VIRTUAL_MACHINE_SCALE_SET
-  );
   const common = commonTypes(spec, services);
 
   return {

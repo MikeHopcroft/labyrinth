@@ -5,13 +5,11 @@ import {normalizedSymbolKey, normalizedNodeKey} from '../formatters';
 import {
   AzureLoadBalancer,
   AzureObjectType,
-  AnyAzureObject,
-  IAzureGraphNode,
-  asSpec,
   ILoadBalancerRuleNode,
   ILoadBalancerNATRule,
   ILoadBalancerNode,
   IReleatedX,
+  IAzureGraphNode,
 } from '../types';
 
 function* relatedLoadBalancerItemKeys(
@@ -58,10 +56,8 @@ function materializeLoadBalancer(
 
 export function createLoadBalancerNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureLoadBalancer
 ): ILoadBalancerNode {
-  const spec = asSpec<AzureLoadBalancer>(input, AzureObjectType.LOAD_BALANCER);
-
   return {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: normalizedNodeKey(spec.id),

@@ -4,15 +4,7 @@ import {IGraphServices} from '../types';
 
 import {commonTypes} from './convert_common';
 import {normalizedSymbolKey, subnetKeys} from './formatters';
-import {
-  AnyAzureObject,
-  asSpec,
-  AzureObjectType,
-  AzureSubnet,
-  IReleatedX,
-  ISubnetNode,
-  IAzureGraphNode,
-} from './types';
+import {AzureSubnet, IReleatedX, ISubnetNode, IAzureGraphNode} from './types';
 
 function* relatedItemKeys(spec: AzureSubnet): IterableIterator<string> {
   if (spec.properties.networkSecurityGroup) {
@@ -60,9 +52,8 @@ function materializeSubnet(services: IGraphServices, nodeSpec: ISubnetNode) {
 
 export function createSubnetNode(
   services: IReleatedX,
-  refSpec: AnyAzureObject
+  spec: AzureSubnet
 ): ISubnetNode {
-  const spec = asSpec<AzureSubnet>(refSpec, AzureObjectType.SUBNET);
   const common = commonTypes(spec, services);
 
   const keys = subnetKeys(spec);

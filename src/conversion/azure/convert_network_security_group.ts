@@ -6,10 +6,7 @@ import {NSGRuleSpecs} from '../types';
 import {noExplicitRelations, noOpMaterialize} from './convert_common';
 import {normalizedSymbolKey, normalizedNodeKey} from './formatters';
 import {
-  AnyAzureObject,
-  asSpec,
   AzureNetworkSecurityGroup,
-  AzureObjectType,
   AzureSecurityRule,
   INetworkSecurityGroupNode,
   IReleatedX,
@@ -107,10 +104,8 @@ export function convertRules(
 }
 export function createNetworkSecurityGroupNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureNetworkSecurityGroup
 ): INetworkSecurityGroupNode {
-  const spec = asSpec<AzureNetworkSecurityGroup>(input, AzureObjectType.NSG);
-
   return {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: normalizedNodeKey(spec.id),

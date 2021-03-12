@@ -9,9 +9,6 @@ import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
 import {commonTypes} from './convert_common';
 import {
   IReleatedX,
-  AnyAzureObject,
-  asSpec,
-  AzureObjectType,
   AzureVirtualNetwork,
   IAzureGraphNode,
   IVirtualNetworkNode,
@@ -68,12 +65,8 @@ function* relatedItemKeys(spec: AzureVirtualNetwork): IterableIterator<string> {
 
 export function createVirtualNetworkNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureVirtualNetwork
 ): IVirtualNetworkNode {
-  const spec = asSpec<AzureVirtualNetwork>(
-    input,
-    AzureObjectType.VIRTUAL_NETWORK
-  );
   const common = commonTypes(spec, services);
   return {
     serviceTag: normalizedSymbolKey(spec.id),

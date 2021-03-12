@@ -4,9 +4,6 @@ import {normalizedSymbolKey, normalizedNodeKey} from '../formatters';
 
 import {
   AzureLoadBalancerRule,
-  AzureObjectType,
-  AnyAzureObject,
-  asSpec,
   ILoadBalancerRuleNode,
   IReleatedX,
 } from '../types';
@@ -22,12 +19,8 @@ function* relatedRuleItems(spec: AzureLoadBalancerRule) {
 
 export function createLoadBalancerRuleNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureLoadBalancerRule
 ): ILoadBalancerRuleNode {
-  const spec = asSpec<AzureLoadBalancerRule>(
-    input,
-    AzureObjectType.LOAD_BALANCER_RULE
-  );
   const common = commonTypes(spec, services);
 
   return {

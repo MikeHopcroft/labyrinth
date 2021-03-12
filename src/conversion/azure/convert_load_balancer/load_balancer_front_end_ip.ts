@@ -4,9 +4,7 @@ import {normalizedNodeKey, normalizedSymbolKey} from '../formatters';
 import {
   AzureLoadBalancerFrontEndIp,
   AzureObjectType,
-  AnyAzureObject,
   ILoadBalancerFrontEndIpNode,
-  asSpec,
   IpNode,
   IReleatedX,
 } from '../types';
@@ -17,13 +15,8 @@ function* relatedFrontEndIpItems(spec: AzureLoadBalancerFrontEndIp) {
 
 export function createLoadBalancerFrontEndIpNode(
   services: IReleatedX,
-  input: AnyAzureObject
+  spec: AzureLoadBalancerFrontEndIp
 ): ILoadBalancerFrontEndIpNode {
-  const spec = asSpec<AzureLoadBalancerFrontEndIp>(
-    input,
-    AzureObjectType.LOAD_BALANCER_FRONT_END_IP
-  );
-
   return {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: normalizedNodeKey(spec.id),

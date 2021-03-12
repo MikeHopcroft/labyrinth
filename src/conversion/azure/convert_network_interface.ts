@@ -6,10 +6,7 @@ import {commonTypes} from './convert_common';
 import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
 
 import {
-  AnyAzureObject,
-  asSpec,
   AzureNetworkInterface,
-  AzureObjectType,
   INetworkInterfaceNode,
   IReleatedX,
 } from './types';
@@ -69,10 +66,9 @@ export function materializeNetworkInterface(
 
 export function createNetworkInterfaceNode(
   services: IReleatedX,
-  refSpec: AnyAzureObject
+  spec: AzureNetworkInterface
 ): INetworkInterfaceNode {
-  const common = commonTypes(refSpec, services);
-  const spec = asSpec<AzureNetworkInterface>(refSpec, AzureObjectType.NIC);
+  const common = commonTypes(spec, services);
 
   return {
     serviceTag: normalizedSymbolKey(spec.id),
