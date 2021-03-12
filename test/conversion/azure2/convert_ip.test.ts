@@ -28,8 +28,8 @@ export default function test() {
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.key, localIp1.id);
-      assert.equal(result.destinationIp, localIp1SourceIp);
+      assert.equal(result.destination, localIp1.id);
+      assert.deepEqual(result.constraints, {destinationIp: localIp1SourceIp});
 
       // Verify the service tag definition.
       assert.deepEqual(services.symbols.getSymbolSpec(localIp1.id), {
@@ -71,8 +71,8 @@ export default function test() {
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.key, publicIp1.id);
-      assert.equal(result.destinationIp, publicIp1SourceIp);
+      assert.equal(result.destination, publicIp1.id);
+      assert.deepEqual(result.constraints, {destinatonIp: publicIp1SourceIp});
 
       // Verify the service tag definition.
       assert.deepEqual(services.symbols.getSymbolSpec(publicIp1.id), {

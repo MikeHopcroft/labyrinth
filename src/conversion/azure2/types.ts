@@ -75,6 +75,7 @@ export interface AzureNetworkInterface extends AzureObjectBase {
   type: AzureObjectType.NIC;
   properties: {
     ipConfigurations: AzureIPConfiguration[];
+    networkSecurityGroup?: AzureReference<AzureNetworkSecurityGroup>;
   };
 }
 

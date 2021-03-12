@@ -17,7 +17,8 @@ function convertToIpAddress(ipItem: AzureIPConfiguration): string {
 export function convertIp(
   services: GraphServices,
   ipConfig: AzureIPConfiguration
-): NodeKeyAndSourceIp {
+): RoutingRuleSpec {
+// ): NodeKeyAndSourceIp {
   const sourceIp = convertToIpAddress(ipConfig);
   const ipNodeKey = ipConfig.id;
 
@@ -25,7 +26,7 @@ export function convertIp(
   // TODO: deal with ipConfig.properties.subnet undefined.
   const subnetSpec = services.index.dereference<AzureSubnet>(
     ipConfig.properties.subnet!
-  );
+  );    
   const routes: RoutingRuleSpec[] = [
     {
       // TODO: this converter should not reach into subnet's spec.
@@ -43,5 +44,6 @@ export function convertIp(
   });
 
   services.symbols.defineServiceTag(ipNodeKey, sourceIp);
-  return {key: ipNodeKey, destinationIp: sourceIp};
+  return {destination: ipNodeKey, constraints: {destinationIp: sourceIp}};
+  // return {key: ipNodeKey, destinationIp: sourceIp};
 }

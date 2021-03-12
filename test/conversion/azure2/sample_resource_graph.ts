@@ -14,6 +14,7 @@ import {
 } from '../../../src/conversion/azure2';
 
 import {createMock} from './mocks';
+import { AzureObjectGroups } from '../../../src/conversion/azure2/azure_object_groups';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -32,8 +33,9 @@ export function createGraphServicesMock() {
   };
 
   const symbols = new SymbolTable([]);
+  const groups = new AzureObjectGroups([]);
   const index = new AzureObjectIndex([]);
-  const services = new GraphServices(mocks, symbols, index);
+  const services = new GraphServices(mocks, symbols, groups, index);
 
   return {services, mocks};
 }
