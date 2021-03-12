@@ -1,3 +1,4 @@
+import {equalsIgnoreCase} from '../../../collections';
 import {RoutingRuleSpec} from '../../../graph';
 
 import {IGraphServices, NSGRuleSpecs} from '../../types';
@@ -48,7 +49,7 @@ export function isNodeType(
   spec: IAzureGraphNode,
   type: AzureObjectType
 ): boolean {
-  return spec.type.toLowerCase() === type.toLowerCase();
+  return equalsIgnoreCase(spec.type, type);
 }
 
 export interface IVirtualNetworkNode extends IAzureGraphNode {

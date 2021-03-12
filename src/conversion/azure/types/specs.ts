@@ -15,6 +15,9 @@
 // az graph query -q 'resources | where resourceGroup == "labyrinth-sample"'
 //
 ///////////////////////////////////////////////////////////////////////////////
+
+import {equalsIgnoreCase} from '../../../collections';
+
 // TODO: better names for AzureIdReference and AzureObjectBase.
 export interface AzureObjectBase {
   id: string;
@@ -77,7 +80,7 @@ export interface AzurePublicIp extends AzureTypedObject {
 }
 
 export function isLocalIp(spec: AzureTypedObject): spec is AzureLocalIP {
-  return spec.type.toLowerCase() === AzureObjectType.LOCAL_IP;
+  return equalsIgnoreCase(spec.type, AzureObjectType.LOCAL_IP);
 }
 
 export type AzureIPConfiguration = AzureLocalIP | AzurePublicIp;
@@ -265,7 +268,7 @@ export function asSpec<T extends AnyAzureObject>(
   spec: AnyAzureObject,
   type: AzureObjectType
 ): T {
-  if (spec.type.toLowerCase() !== type) {
+  if (!equalsIgnoreCase(spec.type, type)) {
     throw new Error(`Invalid cast of "${spec.id}" to type "${type}"`);
   }
 

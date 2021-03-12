@@ -1,3 +1,4 @@
+import {equalsIgnoreCase} from '../../../collections';
 import {
   AzureObjectBase,
   AzureVirtualMachineScaleSet,
@@ -11,17 +12,23 @@ function splitId(input: string): string[] {
 export function isValidVMSSIpConfigId(id: string): boolean {
   const parts = splitId(id);
 
-  return parts.length === 15 && id.indexOf('virtualmachinescaleset') > 0;
+  return (
+    parts.length === 15 &&
+    id.toLowerCase().indexOf('virtualmachinescaleset') > 0
+  );
 }
 
 export function isValidVMSSIpNic(id: string): boolean {
   const parts = splitId(id);
 
-  return parts.length === 13 && id.indexOf('virtualmachinescaleset') > 0;
+  return (
+    parts.length === 13 &&
+    id.toLowerCase().indexOf('virtualmachinescaleset') > 0
+  );
 }
 
 export function asNicConfigSpecId(input: AzureVMSSIpResult) {
-  return `${input.vmssId.id}/virtualmachines/${input.logicalId}/networkinterfaces/${input.interfaceConfig}`;
+  return `${input.vmssId.id}/virtualMachines/${input.logicalId}/networkInterfaces/${input.interfaceConfig}`;
 }
 
 export function parseAsVMSSIpConfiguration(
@@ -73,7 +80,7 @@ export function getIpConfigWithNic(
   useDefault = false
 ) {
   const networkConfig = vmssSpec.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.find(
-    input => input.name.toLowerCase() === vmssIds.interfaceConfig.toLowerCase()
+    input => equalsIgnoreCase(input.name, vmssIds.interfaceConfig)
   );
 
   if (!networkConfig) {
@@ -82,8 +89,8 @@ export function getIpConfigWithNic(
     );
   }
 
-  let ipconfigSpec = networkConfig.properties.ipConfigurations.find(
-    input => input.name.toLowerCase() === vmssIds.ipConfig.toLowerCase()
+  let ipconfigSpec = networkConfig.properties.ipConfigurations.find(input =>
+    equalsIgnoreCase(input.name, vmssIds.ipConfig)
   );
 
   if (!ipconfigSpec) {

@@ -1,4 +1,6 @@
 import {GraphSpec, NodeSpec} from '../../graph';
+import {Comparers, IComparer, IMap, ISet, MapX, SetX} from '../../collections';
+
 import {SymbolTable} from '../symbol_table';
 import {IGraphServices, IServiceTagFactory} from '../types';
 
@@ -15,10 +17,6 @@ import * as Converter from './converters';
 import {noOpMaterialize} from './convert_common';
 import {createInternetNode} from './internet';
 import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
-
-function id(input: string): string {
-  return input.toLowerCase();
-}
 
 // TODO: Come up with a better name..
 export interface ITxNodeFactory {
@@ -47,24 +45,24 @@ function createDefaultNode(
 }
 
 export class AzureNodeGraph implements IReleatedX, IGraphServices {
-  private readonly specs: Map<string, AzureTypedObject>;
-  private readonly nodes: Map<string, IAzureGraphNode>;
-  private readonly relations: Map<string, Set<string>>;
+  private readonly specs: IMap<string, AzureTypedObject>;
+  private readonly nodes: IMap<string, IAzureGraphNode>;
+  private readonly relations: IMap<string, ISet<string>>;
   private readonly labyrinthNodes: NodeSpec[] = [];
   private readonly symbols: SymbolTable;
 
   constructor(symbols: SymbolTable) {
-    this.specs = new Map<string, AnyAzureObject>();
-    this.nodes = new Map<string, IAzureGraphNode>();
-    this.relations = new Map<string, Set<string>>();
+    this.specs = new MapX<string, AnyAzureObject>(Comparers.CaseInsensitive);
+    this.nodes = new MapX<string, IAzureGraphNode>(Comparers.CaseInsensitive);
+    this.relations = new MapX<string, Set<string>>(Comparers.CaseInsensitive);
     this.symbols = symbols;
     this.addInternetNode();
   }
 
   observeRelationsAndRecord(spec: AzureTypedObject) {
-    this.specs.set(id(spec.id), spec);
+    this.specs.set(spec.id, spec);
     const node = AzureNodeGraph.createNode(this, spec);
-    this.nodes.set(id(node.specId), node);
+    this.nodes.set(node.specId, node);
 
     for (const relatedId of node.relatedSpecIds()) {
       this.addRelation(node.specId, relatedId);
@@ -76,12 +74,11 @@ export class AzureNodeGraph implements IReleatedX, IGraphServices {
     refSpec: AzureObjectBase,
     type: AzureObjectType
   ): IterableIterator<T> {
-    const set = this.relations.get(id(refSpec.id));
+    const set = this.relations.get(refSpec.id);
 
     if (set) {
-      for (const itemId of set) {
+      for (const itemId of set.values()) {
         const node = this.nodes.get(itemId);
-
         if (node) {
           if (isNodeType(node, type)) {
             yield node as T;
@@ -111,7 +108,7 @@ export class AzureNodeGraph implements IReleatedX, IGraphServices {
   }
 
   getSpec<T extends AzureTypedObject>(specId: string): T {
-    const result = this.specs.get(id(specId));
+    const result = this.specs.get(specId);
 
     if (!result) {
       throw new TypeError(`Unable to locate spec for id '${specId}'`);
@@ -154,17 +151,14 @@ export class AzureNodeGraph implements IReleatedX, IGraphServices {
 
   private addInternetNode() {
     const node = createInternetNode(this);
-    this.nodes.set(id(node.specId), node);
+    this.nodes.set(node.specId, node);
   }
 
   private addRelation(fromId: string, toId: string) {
-    fromId = id(fromId);
-    toId = id(toId);
-
     let set = this.relations.get(fromId);
 
     if (!set) {
-      set = new Set<string>();
+      set = new SetX<string>(Comparers.CaseInsensitive);
       this.relations.set(fromId, set);
     }
 
