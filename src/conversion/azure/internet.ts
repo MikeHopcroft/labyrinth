@@ -20,13 +20,13 @@ export function createInternetNode(services: IReleatedX): IAzureGraphNode {
     );
   };
 
-  return {
+  const node = {
     serviceTag: KEY_INTERNET,
     nodeKey: KEY_INTERNET,
     specId: KEY_INTERNET,
     type: KEY_INTERNET,
     relatedSpecIds: noExplicitRelations,
-    materialize: (services, node) => {
+    materialize: () => {
       const vnets = readVnets();
 
       const vnetRules: RoutingRuleSpec[] = [];
@@ -39,19 +39,29 @@ export function createInternetNode(services: IReleatedX): IAzureGraphNode {
       }
 
       // This will be hooked up differently when we get PublicIp working.
-      services.addNode({
-        // You are using KEY_INTERNET in two different ways here. One is
-        // for the node's key and the other is for a service tag. Also,
-        // let's discuss the pros/cons of defining service tags for nodes.
-        key: KEY_INTERNET,
-        endpoint: true,
-        range: {
-          sourceIp: KEY_INTERNET,
-        },
-        routes: vnetRules,
-      });
-
-      services.defineServiceTag(node.serviceTag, '*');
+      return {
+        nodes: [
+          {
+            // You are using KEY_INTERNET in two different ways here. One is
+            // for the node's key and the other is for a service tag. Also,
+            // let's discuss the pros/cons of defining service tags for nodes.
+            key: KEY_INTERNET,
+            endpoint: true,
+            range: {
+              sourceIp: KEY_INTERNET,
+            },
+            routes: vnetRules,
+          },
+        ],
+        serviceTags: [
+          {
+            tag: node.serviceTag,
+            value: '*',
+          },
+        ],
+      };
     },
   };
+
+  return node;
 }

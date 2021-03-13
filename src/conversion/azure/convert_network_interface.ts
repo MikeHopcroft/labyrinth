@@ -1,6 +1,6 @@
 import {NodeSpec} from '../../graph';
 
-import {IGraphServices} from '../types';
+import {IMaterializedResult} from '../types';
 
 import {commonTypes} from './convert_common';
 import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
@@ -28,9 +28,8 @@ function* relatedItemKeys(
 }
 
 export function materializeNetworkInterface(
-  services: IGraphServices,
   node: INetworkInterfaceNode
-): void {
+): IMaterializedResult {
   // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
   const prefix = normalizedNodeKey(node.specId);
   const inbound = prefix + '/inbound';
@@ -59,9 +58,10 @@ export function materializeNetworkInterface(
     ],
   };
 
-  services.addNode(inboundNode);
-  services.addNode(outboundNode);
-  services.defineServiceTag(node.serviceTag, ip);
+  return {
+    nodes: [inboundNode, outboundNode],
+    serviceTags: [{tag: node.serviceTag, value: ip}],
+  };
 }
 
 export function createNetworkInterfaceNode(
@@ -70,7 +70,7 @@ export function createNetworkInterfaceNode(
 ): INetworkInterfaceNode {
   const common = commonTypes(spec, services);
 
-  return {
+  const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: `${normalizedNodeKey(spec.id)}/inbound`,
     specId: spec.id,
@@ -81,6 +81,9 @@ export function createNetworkInterfaceNode(
     relatedSpecIds: () => {
       return relatedItemKeys(spec);
     },
-    materialize: materializeNetworkInterface,
+    materialize: () => {
+      return materializeNetworkInterface(node);
+    },
   };
+  return node;
 }

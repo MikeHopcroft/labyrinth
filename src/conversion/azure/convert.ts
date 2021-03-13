@@ -88,7 +88,19 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
 
   // Materialize Labyrinth nodes and the graph
   for (const node of azureGraph.nodeIterator()) {
-    node.materialize(azureGraph, node);
+    const result = node.materialize();
+
+    if (result.nodes) {
+      for (const resultNode of result.nodes) {
+        azureGraph.addNode(resultNode);
+      }
+    }
+
+    if (result.serviceTags) {
+      for (const serviceTag of result.serviceTags) {
+        azureGraph.defineServiceTag(serviceTag.tag, serviceTag.value);
+      }
+    }
   }
 
   // Emit the GraphSpec

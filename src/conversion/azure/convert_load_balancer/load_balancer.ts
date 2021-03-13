@@ -1,7 +1,7 @@
 import {RoutingRuleSpec} from '../../../graph';
-import {IGraphServices} from '../../types';
-import {normalizedSymbolKey, normalizedNodeKey} from '../formatters';
+import {IMaterializedResult} from '../../types';
 
+import {normalizedSymbolKey, normalizedNodeKey} from '../formatters';
 import {
   AzureLoadBalancer,
   AzureObjectType,
@@ -9,7 +9,6 @@ import {
   ILoadBalancerNATRule,
   ILoadBalancerNode,
   IReleatedX,
-  IAzureGraphNode,
 } from '../types';
 
 function* relatedLoadBalancerItemKeys(
@@ -23,10 +22,7 @@ function* relatedLoadBalancerItemKeys(
     yield rule.id;
   }
 }
-function materializeLoadBalancer(
-  node: ILoadBalancerNode,
-  services: IGraphServices
-) {
+function materializeLoadBalancer(node: ILoadBalancerNode): IMaterializedResult {
   const loadBalancerNodeKey = node.nodeKey;
   const loadBalancerServiceTag = node.serviceTag;
 
@@ -43,22 +39,27 @@ function materializeLoadBalancer(
     frontEndIps.add(natRule.frontEndIp().ip().ipAddress);
   }
 
-  services.defineServiceTag(
-    loadBalancerServiceTag,
-    [...frontEndIps.values()].join(',')
-  );
-
-  services.addNode({
-    key: loadBalancerNodeKey,
-    routes,
-  });
+  return {
+    nodes: [
+      {
+        key: loadBalancerNodeKey,
+        routes,
+      },
+    ],
+    serviceTags: [
+      {
+        tag: loadBalancerServiceTag,
+        value: [...frontEndIps.values()].join(','),
+      },
+    ],
+  };
 }
 
 export function createLoadBalancerNode(
   services: IReleatedX,
   spec: AzureLoadBalancer
 ): ILoadBalancerNode {
-  return {
+  const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: normalizedNodeKey(spec.id),
     specId: spec.id,
@@ -78,8 +79,10 @@ export function createLoadBalancerNode(
     relatedSpecIds: () => {
       return relatedLoadBalancerItemKeys(spec);
     },
-    materialize: (services: IGraphServices, node: IAzureGraphNode) => {
-      materializeLoadBalancer(node as ILoadBalancerNode, services);
+    materialize: () => {
+      return materializeLoadBalancer(node);
     },
   };
+
+  return node;
 }

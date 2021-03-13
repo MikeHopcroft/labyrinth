@@ -1,4 +1,4 @@
-import {IGraphServices} from '../../types';
+import {IMaterializedResult} from '../../types';
 
 import {normalizedNodeKey, normalizedSymbolKey} from '../formatters';
 
@@ -17,15 +17,23 @@ function* relatedBackendItems(spec: AzureLoadBalancerBackendPool) {
 }
 
 function materializeBackendPool(
-  services: IGraphServices,
   node: ILoadBalancerBackendPoolNode
-) {
+): IMaterializedResult {
   const ips = [...node.ips()].map(x => x.ipAddress);
 
   if (!ips || ips.length === 0) {
     throw new Error('Invalid backend pool configuration');
   }
-  services.defineServiceTag(node.serviceTag, ips.join(','));
+
+  return {
+    nodes: undefined,
+    serviceTags: [
+      {
+        tag: node.serviceTag,
+        value: ips.join(','),
+      },
+    ],
+  };
 }
 
 export function createLoadBalancerBackendPool(
@@ -34,7 +42,7 @@ export function createLoadBalancerBackendPool(
 ): ILoadBalancerBackendPoolNode {
   const common = commonTypes(spec, services);
 
-  return {
+  const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: normalizedNodeKey(spec.id),
     specId: spec.id,
@@ -56,6 +64,10 @@ export function createLoadBalancerBackendPool(
     relatedSpecIds: () => {
       return relatedBackendItems(spec);
     },
-    materialize: materializeBackendPool,
+    materialize: () => {
+      return materializeBackendPool(node);
+    },
   };
+
+  return node;
 }

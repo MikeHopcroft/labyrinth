@@ -1,4 +1,4 @@
-import {IGraphServices} from '../types';
+import {IMaterializedResult} from '../types';
 import {
   AzureObjectBase,
   AzureObjectType,
@@ -7,7 +7,6 @@ import {
   IpNode,
   IReleatedX,
   ISubnetNode,
-  IAzureGraphNode,
   IVirtualNetworkNode,
 } from './types';
 
@@ -46,12 +45,12 @@ export function commonTypes(
   };
 }
 
-export function noOpMaterialize(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  services: IGraphServices,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  node: IAzureGraphNode
-): void {}
+export function noOpMaterialize(): IMaterializedResult {
+  return {
+    nodes: undefined,
+    serviceTags: undefined,
+  };
+}
 
 export function noExplicitRelations() {
   return [].values();

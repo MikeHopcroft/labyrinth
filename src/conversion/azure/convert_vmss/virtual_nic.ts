@@ -44,7 +44,7 @@ export function createVMSSVirtualIpNIC(
     );
   };
 
-  return {
+  const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: `${normalizedNodeKey(spec.id)}/inbound`,
     specId: spec.id,
@@ -55,6 +55,9 @@ export function createVMSSVirtualIpNIC(
     relatedSpecIds: () => {
       return relatedVmssVirtualNicItemKeys(vmssId, config.nicSpec);
     },
-    materialize: materializeNetworkInterface,
+    materialize: () => {
+      return materializeNetworkInterface(node);
+    },
   };
+  return node;
 }

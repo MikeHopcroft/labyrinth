@@ -3,21 +3,15 @@ import DRange from 'drange';
 import {formatIpLiteral, parseIp} from '../../dimensions';
 import {RoutingRuleSpec} from '../../graph';
 
-import {IGraphServices} from '../types';
-import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
+import {IMaterializedResult} from '../types';
 
+import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
 import {commonTypes} from './convert_common';
-import {
-  IReleatedX,
-  AzureVirtualNetwork,
-  IAzureGraphNode,
-  IVirtualNetworkNode,
-} from './types';
+import {IReleatedX, AzureVirtualNetwork, IVirtualNetworkNode} from './types';
 
 function materializeVirtualNetwork(
-  services: IGraphServices,
   nodeSpec: IVirtualNetworkNode
-) {
+): IMaterializedResult {
   // Compute this VNet's address range by unioning up all of its address prefixes.
   const addressRange = new DRange();
   for (const address of nodeSpec.addressPrefixes) {
@@ -25,12 +19,11 @@ function materializeVirtualNetwork(
     addressRange.add(ip);
   }
   const sourceIp = formatIpLiteral(addressRange);
-  services.defineServiceTag(nodeSpec.serviceTag, sourceIp);
 
   // Create outbound rule (traffic leaving vnet).
   const routes: RoutingRuleSpec[] = [
     {
-      destination: services.getInternetKey(),
+      destination: 'Internet',
       constraints: {destinationIp: `except ${sourceIp}`},
     },
   ];
@@ -48,11 +41,21 @@ function materializeVirtualNetwork(
     vnetDestinations.push(destinationIp);
   }
 
-  services.addNode({
-    key: nodeSpec.nodeKey,
-    range: {sourceIp},
-    routes,
-  });
+  return {
+    nodes: [
+      {
+        key: nodeSpec.nodeKey,
+        range: {sourceIp},
+        routes,
+      },
+    ],
+    serviceTags: [
+      {
+        tag: nodeSpec.serviceTag,
+        value: sourceIp,
+      },
+    ],
+  };
 }
 
 function* relatedItemKeys(spec: AzureVirtualNetwork): IterableIterator<string> {
@@ -68,7 +71,7 @@ export function createVirtualNetworkNode(
   spec: AzureVirtualNetwork
 ): IVirtualNetworkNode {
   const common = commonTypes(spec, services);
-  return {
+  const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: normalizedNodeKey(spec.id),
     specId: spec.id,
@@ -78,8 +81,10 @@ export function createVirtualNetworkNode(
     type: spec.type,
     addressPrefixes: spec.properties.addressSpace.addressPrefixes,
     subnets: common.subnets,
-    materialize: (services: IGraphServices, node: IAzureGraphNode) => {
-      materializeVirtualNetwork(services, node as IVirtualNetworkNode);
+    materialize: () => {
+      return materializeVirtualNetwork(node);
     },
   };
+
+  return node;
 }

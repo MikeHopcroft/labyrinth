@@ -1,7 +1,7 @@
 import {equalsIgnoreCase} from '../../../collections';
 import {RoutingRuleSpec} from '../../../graph';
 
-import {IGraphServices, NSGRuleSpecs} from '../../types';
+import {IMaterializedResult, NSGRuleSpecs} from '../../types';
 
 import {
   AzureObjectBase,
@@ -42,7 +42,7 @@ export interface IAzureGraphNode {
   readonly specId: string;
   readonly type: string;
   relatedSpecIds(): IterableIterator<string>;
-  materialize(services: IGraphServices, node: IAzureGraphNode): void;
+  materialize(): IMaterializedResult;
 }
 
 export function isNodeType(

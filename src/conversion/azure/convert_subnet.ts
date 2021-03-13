@@ -1,10 +1,10 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
-import {IGraphServices} from '../types';
+import {IMaterializedResult} from '../types';
 
 import {commonTypes} from './convert_common';
 import {normalizedSymbolKey, subnetKeys} from './formatters';
-import {AzureSubnet, IReleatedX, ISubnetNode, IAzureGraphNode} from './types';
+import {AzureSubnet, IReleatedX, ISubnetNode} from './types';
 
 function* relatedItemKeys(spec: AzureSubnet): IterableIterator<string> {
   if (spec.properties.networkSecurityGroup) {
@@ -12,7 +12,7 @@ function* relatedItemKeys(spec: AzureSubnet): IterableIterator<string> {
   }
 }
 
-function materializeSubnet(services: IGraphServices, nodeSpec: ISubnetNode) {
+function materializeSubnet(nodeSpec: ISubnetNode): IMaterializedResult {
   const routes: RoutingRuleSpec[] = [];
 
   // For each ipConfiguration
@@ -35,7 +35,6 @@ function materializeSubnet(services: IGraphServices, nodeSpec: ISubnetNode) {
     // TODO: is this correct? The router moves packets in both directions.
     routes,
   };
-  services.addNode(inboundNode);
 
   const outboundNode: NodeSpec = {
     key: nodeSpec.keys.outbound,
@@ -46,8 +45,16 @@ function materializeSubnet(services: IGraphServices, nodeSpec: ISubnetNode) {
       },
     ],
   };
-  services.addNode(outboundNode);
-  services.defineServiceTag(nodeSpec.serviceTag, nodeSpec.addressPrefix);
+
+  return {
+    nodes: [inboundNode, outboundNode],
+    serviceTags: [
+      {
+        tag: nodeSpec.serviceTag,
+        value: nodeSpec.addressPrefix,
+      },
+    ],
+  };
 }
 
 export function createSubnetNode(
@@ -57,7 +64,7 @@ export function createSubnetNode(
   const common = commonTypes(spec, services);
 
   const keys = subnetKeys(spec);
-  return {
+  const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: keys.inbound,
     specId: spec.id,
@@ -70,8 +77,9 @@ export function createSubnetNode(
     nics: common.nics,
     vnet: common.vnet,
     nsg: common.nsg,
-    materialize: (services: IGraphServices, node: IAzureGraphNode) => {
-      materializeSubnet(services, node as ISubnetNode);
+    materialize: () => {
+      return materializeSubnet(node);
     },
   };
+  return node;
 }

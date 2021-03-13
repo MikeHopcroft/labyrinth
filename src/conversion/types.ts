@@ -26,7 +26,12 @@ export interface IServiceTagFactory {
   defineServiceTag(tagName: string, range: string): void;
 }
 
-export interface IGraphServices extends IServiceTagFactory {
-  getInternetKey(): string;
-  addNode(node: NodeSpec): void;
+export interface IServiceTag {
+  tag: string;
+  value: string;
+}
+
+export interface IMaterializedResult {
+  nodes: NodeSpec[] | undefined;
+  serviceTags: IServiceTag[] | undefined;
 }

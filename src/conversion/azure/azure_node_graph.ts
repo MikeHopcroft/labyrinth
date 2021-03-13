@@ -2,7 +2,7 @@ import {GraphSpec, NodeSpec} from '../../graph';
 import {Comparers, IMap, ISet, MapX, SetX} from '../../collections';
 
 import {SymbolTable} from '../symbol_table';
-import {IGraphServices, IServiceTagFactory} from '../types';
+import {IServiceTagFactory} from '../types';
 
 import {
   AnyAzureObject,
@@ -21,12 +21,11 @@ export interface ITxNodeFactory {
   createNode(services: IReleatedX, spec: AnyAzureObject): IAzureGraphNode;
   materializeNode(
     serviceTagFactory: IServiceTagFactory,
-    graphServices: IGraphServices,
     nodeSpec: IAzureGraphNode
   ): void;
 }
 
-export class AzureNodeGraph implements IReleatedX, IGraphServices {
+export class AzureNodeGraph implements IReleatedX {
   private readonly specs: IMap<string, AzureTypedObject>;
   private readonly nodes: IMap<string, IAzureGraphNode>;
   private readonly relations: IMap<string, ISet<string>>;
