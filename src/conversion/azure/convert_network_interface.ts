@@ -3,7 +3,7 @@ import {NodeSpec} from '../../graph';
 import {IMaterializedResult} from '../types';
 
 import {commonTypes} from './convert_common';
-import {normalizedNodeKey, normalizedSymbolKey} from './formatters';
+import {inboundOutboundKeys, normalizedSymbolKey} from './formatters';
 
 import {
   AzureNetworkInterface,
@@ -30,11 +30,6 @@ function* relatedItemKeys(
 export function materializeNetworkInterface(
   node: INetworkInterfaceNode
 ): IMaterializedResult {
-  // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
-  const prefix = normalizedNodeKey(node.specId);
-  const inbound = prefix + '/inbound';
-  const outbound = prefix + '/outbound';
-
   const subnetNodeSpec = node.subnet();
   const rules = node.nsg()?.convertRules(subnetNodeSpec.vnet().serviceTag);
 
@@ -42,14 +37,14 @@ export function materializeNetworkInterface(
   const ip = ips.map(x => x.ipAddress).join(',');
 
   const inboundNode: NodeSpec = {
-    key: inbound,
+    key: node.keys.inbound,
     endpoint: true,
     filters: rules?.inboundRules,
     routes: [],
   };
 
   const outboundNode: NodeSpec = {
-    key: outbound,
+    key: node.keys.outbound,
     filters: rules?.outboundRules,
     routes: [
       {
@@ -69,15 +64,17 @@ export function createNetworkInterfaceNode(
   spec: AzureNetworkInterface
 ): INetworkInterfaceNode {
   const common = commonTypes(spec, services);
+  const keys = inboundOutboundKeys(spec);
 
   const node = {
     serviceTag: normalizedSymbolKey(spec.id),
-    nodeKey: `${normalizedNodeKey(spec.id)}/inbound`,
+    nodeKey: keys.inbound,
     specId: spec.id,
     type: spec.type,
     subnet: common.subnet,
     nsg: common.nsg,
     ips: common.localIps,
+    keys: keys,
     relatedSpecIds: () => {
       return relatedItemKeys(spec);
     },

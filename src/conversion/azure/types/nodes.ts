@@ -57,14 +57,14 @@ export interface IVirtualNetworkNode extends IAzureGraphNode {
   subnets(): IterableIterator<ISubnetNode>;
 }
 
-export interface SubnetKeys {
+export interface InboundOutboundKeys {
   readonly prefix: string;
   readonly inbound: string;
   readonly outbound: string;
 }
 
 export interface ISubnetNode extends IAzureGraphNode {
-  readonly keys: SubnetKeys;
+  readonly keys: InboundOutboundKeys;
   readonly addressPrefix: string;
   nics(): IterableIterator<INetworkInterfaceNode>;
   vnet(): IVirtualNetworkNode;
@@ -72,6 +72,7 @@ export interface ISubnetNode extends IAzureGraphNode {
 }
 
 export interface INetworkInterfaceNode extends IAzureGraphNode {
+  readonly keys: InboundOutboundKeys;
   subnet(): ISubnetNode;
   ips(): IterableIterator<IpNode>;
   nsg(): INetworkSecurityGroupNode | undefined;

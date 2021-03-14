@@ -1,6 +1,6 @@
 import {commonTypes} from '../convert_common';
 import {materializeNetworkInterface} from '../convert_network_interface';
-import {normalizedNodeKey, normalizedSymbolKey} from '../formatters';
+import {inboundOutboundKeys, normalizedSymbolKey} from '../formatters';
 import {
   AnyAzureObject,
   AzureObjectType,
@@ -43,11 +43,12 @@ export function createVMSSVirtualIpNIC(
       AzureObjectType.VMSS_VIRTUAL_IP
     );
   };
-
+  const keys = inboundOutboundKeys(spec);
   const node = {
     serviceTag: normalizedSymbolKey(spec.id),
-    nodeKey: `${normalizedNodeKey(spec.id)}/inbound`,
+    nodeKey: keys.inbound,
     specId: spec.id,
+    keys: keys,
     type: AzureObjectType.NIC,
     subnet: common.subnet,
     ips: virtualIps,

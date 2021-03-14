@@ -1,5 +1,5 @@
 import {commonTypes, noOpMaterialize} from './convert_common';
-import {normalizedSymbolKey, subnetKeys} from './formatters';
+import {normalizedSymbolKey, inboundOutboundKeys} from './formatters';
 import {AzureIPConfiguration, IpNode, IReleatedX, isLocalIp} from './types';
 
 const KEY_INTERNET = 'Internet';
@@ -30,7 +30,7 @@ function internetOrSubnetKey(spec: AzureIPConfiguration): string {
   let key = KEY_INTERNET;
 
   if (isLocalIp(spec) && spec.properties.subnet) {
-    key = subnetKeys(spec.properties.subnet).inbound;
+    key = inboundOutboundKeys(spec.properties.subnet).inbound;
   }
 
   return key;

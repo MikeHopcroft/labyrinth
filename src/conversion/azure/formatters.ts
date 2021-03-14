@@ -1,5 +1,5 @@
 import {hash} from '../../utilities/hash';
-import {AzureReference, AzureSubnet, SubnetKeys} from './types';
+import {AzureReference, AzureSubnet, InboundOutboundKeys} from './types';
 
 export function normalizedSymbolKey(input: string): string {
   const normalizedInput = input.toLowerCase();
@@ -14,7 +14,9 @@ export function normalizedNodeKey(input: string): string {
   return normalizedInput.split('/').slice(6).reverse().join('/');
 }
 
-export function subnetKeys(input: AzureReference<AzureSubnet>): SubnetKeys {
+export function inboundOutboundKeys(
+  input: AzureReference<AzureSubnet>
+): InboundOutboundKeys {
   // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
   const prefix = normalizedNodeKey(input.id);
 

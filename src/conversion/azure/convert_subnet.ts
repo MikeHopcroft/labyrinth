@@ -3,7 +3,7 @@ import {NodeSpec, RoutingRuleSpec} from '../../graph';
 import {IMaterializedResult} from '../types';
 
 import {commonTypes} from './convert_common';
-import {normalizedSymbolKey, subnetKeys} from './formatters';
+import {normalizedSymbolKey, inboundOutboundKeys} from './formatters';
 import {AzureSubnet, IReleatedX, ISubnetNode} from './types';
 
 function* relatedItemKeys(spec: AzureSubnet): IterableIterator<string> {
@@ -63,7 +63,7 @@ export function createSubnetNode(
 ): ISubnetNode {
   const common = commonTypes(spec, services);
 
-  const keys = subnetKeys(spec);
+  const keys = inboundOutboundKeys(spec);
   const node = {
     serviceTag: normalizedSymbolKey(spec.id),
     nodeKey: keys.inbound,
