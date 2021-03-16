@@ -1,3 +1,16 @@
+* Benefits
+  * Users of relationships don't need to know the details of where relationships are stored in the specs and how they're encoded.
+  * Prepare stage doesn't need to know the details of preparation for each spec type.
+    * Don't need to know top-level types.
+    * Spec-specific preparation code is next to materialize code.
+  * createAzureNode and materialize() method on IAzureGraphNode
+    * Pro: Materialization can happen in any order.
+    * Con: Switch statement and need for different IAzureGraph node implementations
+
+* Principles
+  * Materializers don't know specifics of other node specs
+  * Materializers don't know specifics of other node materializations
+
 * Top 2
   * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
   * Rework convertIp()
@@ -6,11 +19,14 @@
   * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * Move away from Azure ids for node keys
     * Use unique identifiers for node keys
+      * Need to think about brittleness in unit tests - where tests need to know how/order ids are allocate
     * Put Azure id into node name field
     * Run shortener on Labyrinth graph, as necessary
   * Decide whether to improve subnet unit test design for NSG
     * Issue is that NSG spec must be converted into inbound and outbound rules. These are hard-coded into the mock today. Assuming there will be other tests that will want to use the inbound and outbound rules. Perhaps nsg1 needs to be built from the concatendation of nsg1Inbound and nsg1Outbound.
   * Naming consistency: convertNetworkSecurityGroup vs convertNIC, convertVNET
+  * Remove services.getInternetKey()
+    * The resource graph is the sole owner of this key
   * Review implementations and unit tests
     * convertIp
       * Rework to take parent node key
@@ -29,6 +45,7 @@
     * convertSubnet
       * Figure out where IRules should live - probably an export of convert_network_security_group.ts.
     * convertVNet
+      * Parent should pass in internet node key
 
 * Top
   * Converters should return route to converted item.
