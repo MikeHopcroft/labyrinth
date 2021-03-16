@@ -1,16 +1,11 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
-// TODO: import IRules from './types', not '../types'
-import {IRules} from '../types';
-
 import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
-
 import {
-  AzureReference,
-  AzureNetworkSecurityGroup,
   AzureSubnet,
   AzureNetworkInterface,
+  AzureNetworkSecurityGroup,
 } from './types';
 
 export function convertSubnet(
@@ -58,14 +53,14 @@ export function convertSubnet(
   };
   services.addNode(routerNode);
 
-  const nsgRules = convertNsgRules(
-    subnetSpec.properties.networkSecurityGroup,
-    services,
-    vNetKey
+  const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
+    subnetSpec.properties.networkSecurityGroup
   );
+  const nsgRules = services.convert.nsg(nsgSpec, vNetKey);
+
   const inboundNode: NodeSpec = {
     key: inboundKey,
-    filters: nsgRules!.inboundRules,
+    filters: nsgRules.inboundRules,
     // TODO: do we want range here?
     // TODO: is this correct? The router moves packets in both directions.
     routes: [
@@ -78,7 +73,7 @@ export function convertSubnet(
 
   const outboundNode: NodeSpec = {
     key: outboundKey,
-    filters: nsgRules!.outboundRules,
+    filters: nsgRules.outboundRules,
     routes: [
       {
         destination: vNetKey,
@@ -94,19 +89,24 @@ export function convertSubnet(
   };
 }
 
-function convertNsgRules(
-  nsgRef: AzureReference<AzureNetworkSecurityGroup>,
-  services: GraphServices,
-  vNetKey: string
-): IRules | undefined {
-  if (nsgRef) {
-    const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
-      nsgRef
-    );
+// interface IRules {
+//   readonly outboundRules: RuleSpec[];
+//   readonly inboundRules: RuleSpec[];
+// }
 
-    // FIX: vNetKey needs to be a symbol not just a node key
-    return services.convert.nsg(services, nsgSpec, vNetKey);
-  }
+// function convertNsgRules(
+//   nsgRef: AzureReference<AzureNetworkSecurityGroup>,
+//   services: GraphServices,
+//   vNetKey: string
+// ): IRules | undefined {
+//   if (nsgRef) {
+//     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
+//       nsgRef
+//     );
 
-  return undefined;
-}
+//     // FIX: vNetKey needs to be a symbol not just a node key
+//     return services.convert.nsg(services, nsgSpec, vNetKey);
+//   }
+
+//   return undefined;
+// }

@@ -40,9 +40,5 @@ export interface IConverters {
   ): NodeKeyAndSourceIp;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
   ip(services: GraphServices, spec: AzureIPConfiguration): RoutingRuleSpec;
-  nsg(
-    services: GraphServices,
-    spec: AzureNetworkSecurityGroup,
-    vnetSymbol: string
-  ): NSGRuleSpecs;
+  nsg(spec: AzureNetworkSecurityGroup, vnetSymbol: string): NSGRuleSpecs;
 }

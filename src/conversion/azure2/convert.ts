@@ -1,12 +1,12 @@
 import {GraphSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
-import {convertIp} from './convert_ip';
 import {IConverters} from './converters';
+import {convertIp} from './convert_ip';
+import {convertNsg} from './convert_nsg';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
-import {convertNsg} from './convert_network_security_group';
 import {GraphServices} from './graph_services';
 import {NameShortener} from './name_shortener';
 import {SymbolTable} from './symbol_table';
