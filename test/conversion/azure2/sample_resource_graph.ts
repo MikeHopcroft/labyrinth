@@ -11,10 +11,10 @@ import {
   GraphServices,
   IConverters,
   SymbolTable,
+  AzureNetworkInterface,
 } from '../../../src/conversion/azure2';
 
 import {createMock} from './mocks';
-import { AzureObjectGroups } from '../../../src/conversion/azure2/azure_object_groups';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,9 +33,8 @@ export function createGraphServicesMock() {
   };
 
   const symbols = new SymbolTable([]);
-  const groups = new AzureObjectGroups([]);
   const index = new AzureObjectIndex([]);
-  const services = new GraphServices(mocks, symbols, groups, index);
+  const services = new GraphServices(mocks, symbols, index);
 
   return {services, mocks};
 }
@@ -64,6 +63,7 @@ export const subnet2Id = subnetId(vnet1Id, subnet2Name);
 export const subnet2SourceIps = '10.0.1.0/8';
 
 export const nic1Name = 'nice1';
+export const nic1Id = nicId(nic1Name);
 
 export const localIp1Name = 'localIp1';
 export const localIp1Id = ipId(nic1Name, localIp1Name);
@@ -80,6 +80,7 @@ export const publicIp1SubnetName = subnet1Name;
 // IP Configurations
 //
 ///////////////////////////////////////////////////////////////////////////////
+// TODO: should this be called `privateIp1`?
 export const localIp1: AzureLocalIP = {
   type: AzureObjectType.LOCAL_IP,
   id: localIp1Id,
@@ -99,6 +100,20 @@ export const publicIp1: AzurePublicIP = {
   properties: {
     ipAddress: publicIp1SourceIp,
     subnet: reference(subnet1Id),
+  },
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Nics
+//
+///////////////////////////////////////////////////////////////////////////////
+export const nic1: AzureNetworkInterface = {
+  type: AzureObjectType.NIC,
+  id: nic1Id,
+  resourceGroup,
+  properties: {
+    ipConfigurations: [localIp1, publicIp1],
   },
 };
 

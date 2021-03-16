@@ -1,5 +1,6 @@
 import {GraphSpec} from '../../graph';
 
+import {AzureObjectIndex} from './azure_object_index';
 import {convertIp} from './convert_ip';
 import {IConverters} from './converters';
 import {convertResourceGraph} from './convert_resource_graph';
@@ -9,11 +10,8 @@ import {convertNsg} from './convert_network_security_group';
 import {GraphServices} from './graph_services';
 import {NameShortener} from './name_shortener';
 import {SymbolTable} from './symbol_table';
-import {AzureNetworkInterface, AzureObjectType, AzureResourceGraph} from './types';
-
+import {AzureNetworkInterface, AzureResourceGraph} from './types';
 import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
-import {AzureObjectIndex} from './azure_object_index';
-import {AzureObjectGroups} from './azure_object_groups';
 
 // TODO: Move `converters` to own file.
 export const converters: IConverters = {
@@ -58,21 +56,24 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
     },
   ]);
   const index = new AzureObjectIndex(resourceGraphSpec);
-  const groups = new AzureObjectGroups(resourceGraphSpec);
-  const services = new GraphServices(converters, symbols, groups, index);
+  const services = new GraphServices(converters, symbols, index);
 
   //
   // Initialize references
   //
-  for (const nic of services.groups.items<AzureNetworkInterface>(AzureObjectType.NIC)) {
+  for (const nic of services.index.withType(AzureNetworkInterface)) {
+    for (const ipConfig of nic.properties.ipConfigurations) {
+      const subnet = ipConfig.properties.subnet;
+      if (subnet) {
+        services.index.addReference(nic, subnet);
+      }
+    }
   }
 
   //
   // Convert the AzureResourceGraph
   //
-  // Could also write
-  //   converters.resourceGraph(services, resourceGraph);
-  services.convert.resourceGraph(services, resourceGraphSpec);
+  services.convert.resourceGraph(services);
 
   // Emit the GraphSpec
   const graph = services.getLabyrinthGraphSpec();

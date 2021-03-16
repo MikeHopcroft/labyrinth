@@ -1,5 +1,6 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
+// TODO: import IRules from './types', not '../types'
 import {IRules} from '../types';
 
 import {NodeKeyAndSourceIp} from './converters';
@@ -7,10 +8,9 @@ import {GraphServices} from './graph_services';
 
 import {
   AzureReference,
-  AzureIPConfiguration,
   AzureNetworkSecurityGroup,
   AzureSubnet,
-  AzureObjectType,
+  AzureNetworkInterface,
 } from './types';
 
 export function convertSubnet(
@@ -34,39 +34,19 @@ export function convertSubnet(
   const routes: RoutingRuleSpec[] = [
     // Traffic leaving subnet
     {
+      destination: outboundKey,
       constraints: {
         destinationIp: `except ${subnetSpec.properties.addressPrefix}`,
       },
-      destination: outboundKey,
     },
   ];
 
-  // For each ipConfiguration
-  //   Materialize ipConfiguration
-  //   Add routing rule
-  for (const ip of subnetSpec.properties.ipConfigurations) {
-    // Subnets may have ip configurations attached for items which do not exist in the
-    // the resource graph. The first example of this is specifically for Virtual Machine
-    // Scale Set ip configurations.
-    if (services.index.has(ip.id)) {
-      const ipConfigSpec = services.index.dereference<AzureIPConfiguration>(
-        ip
-      );
-      routes.push(services.convert.ip(
-        services,
-        ipConfigSpec
-      ));
-    }
-    // TODO: else clause?
-
-    for (const ipConfigSpec of services.groups.items<AzureIPConfiguration>(
-      AzureObjectType.LOCAL_IP,
-      subnetSpec
-    )) {
-      routes.push(services.convert.ip(
-        services,
-        ipConfigSpec
-      ));
+  // Materialize ip configurations and add routes.
+  for (const nic of services.index
+    .for(subnetSpec)
+    .withType(AzureNetworkInterface)) {
+    for (const ipConfigSpec of nic.properties.ipConfigurations) {
+      routes.push(services.convert.ip(services, ipConfigSpec));
     }
   }
 
@@ -130,4 +110,3 @@ function convertNsgRules(
 
   return undefined;
 }
-

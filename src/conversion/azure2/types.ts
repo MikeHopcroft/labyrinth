@@ -53,37 +53,48 @@ export enum AzureObjectType {
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
 }
 
+// TODO: should this be called AzurePrivateIp?
 export interface AzureLocalIP extends AzureTypedObject {
   type: AzureObjectType.LOCAL_IP;
+  // TODO: should there be a `name` field?
   properties: {
     privateIPAddress: string;
+    // TODO: REVIEW: can subnet ever be undefined?
     subnet: AzureReference<AzureSubnet> | undefined;
   };
 }
+export const AzureLocalIP = {type: AzureObjectType.LOCAL_IP} as AzureLocalIP;
 
 export interface AzurePublicIP extends AzureTypedObject {
   type: AzureObjectType.PUBLIC_IP;
+  // TODO: should there be a `name` field?
   properties: {
     ipAddress: string;
+    // TODO: REVIEW: can subnet ever be undefined?
     subnet: AzureReference<AzureSubnet> | undefined;
   };
 }
+export const AzurePublicIP = {type: AzureObjectType.PUBLIC_IP} as AzurePublicIP;
 
 export type AzureIPConfiguration = AzureLocalIP | AzurePublicIP;
 
 export interface AzureNetworkInterface extends AzureObjectBase {
   type: AzureObjectType.NIC;
+  // TODO: should there be a `name` field?
   properties: {
     ipConfigurations: AzureIPConfiguration[];
     networkSecurityGroup?: AzureReference<AzureNetworkSecurityGroup>;
   };
 }
+export const AzureNetworkInterface = {
+  type: AzureObjectType.NIC,
+} as AzureNetworkInterface;
 
-export function asAzureNetworkInterface(
-  item: AnyAzureObject
-): AzureNetworkInterface | null {
-  return item.type === AzureObjectType.NIC ? item : null;
-}
+// export function asAzureNetworkInterface(
+//   item: AnyAzureObject
+// ): AzureNetworkInterface | null {
+//   return item.type === AzureObjectType.NIC ? item : null;
+// }
 
 export interface AzureNetworkSecurityGroup extends AzureTypedObject {
   type: AzureObjectType.NSG;
@@ -93,6 +104,9 @@ export interface AzureNetworkSecurityGroup extends AzureTypedObject {
     subnets: AzureReference<AzureSubnet>[];
   };
 }
+export const AzureNetworkSecurityGroup = {
+  type: AzureObjectType.NSG,
+} as AzureNetworkSecurityGroup;
 
 export interface AzureSecurityRule extends AzureTypedObject {
   type: AzureObjectType.DEFAULT_SECURITY_RULE | AzureObjectType.SECURITY_RULE;
@@ -111,6 +125,9 @@ export interface AzureSecurityRule extends AzureTypedObject {
     sourcePortRanges: string[];
   };
 }
+export const AzureSecurityRule = {
+  type: AzureObjectType.SECURITY_RULE,
+} as AzureSecurityRule;
 
 export interface AzureSubnet extends AzureTypedObject {
   type: AzureObjectType.SUBNET;
@@ -121,6 +138,7 @@ export interface AzureSubnet extends AzureTypedObject {
     // TODO: privateEndpoints
   };
 }
+export const AzureSubnet = {type: AzureObjectType.SUBNET} as AzureSubnet;
 
 export interface AzureVirtualNetwork extends AzureTypedObject {
   type: AzureObjectType.VIRTUAL_NETWORK;
@@ -132,12 +150,15 @@ export interface AzureVirtualNetwork extends AzureTypedObject {
     // TODO: virtualNetworkPeerings
   };
 }
+export const AzureVirtualNetwork = {
+  type: AzureObjectType.VIRTUAL_NETWORK,
+} as AzureVirtualNetwork;
 
-export function asAzureVirtualNetwork(
-  item: AnyAzureObject
-): AzureVirtualNetwork | null {
-  return item.type === AzureObjectType.VIRTUAL_NETWORK ? item : null;
-}
+// export function asAzureVirtualNetwork(
+//   item: AnyAzureObject
+// ): AzureVirtualNetwork | null {
+//   return item.type === AzureObjectType.VIRTUAL_NETWORK ? item : null;
+// }
 
 export type AnyAzureObject =
   | AzureIPConfiguration

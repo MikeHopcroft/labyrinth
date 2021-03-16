@@ -72,7 +72,7 @@ export default function test() {
 
       // Verify the return value.
       assert.equal(result.destination, publicIp1.id);
-      assert.deepEqual(result.constraints, {destinatonIp: publicIp1SourceIp});
+      assert.deepEqual(result.constraints, {destinationIp: publicIp1SourceIp});
 
       // Verify the service tag definition.
       assert.deepEqual(services.symbols.getSymbolSpec(publicIp1.id), {

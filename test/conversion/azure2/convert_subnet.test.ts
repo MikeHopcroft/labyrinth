@@ -20,6 +20,7 @@ import {
   localIp1Id,
   localIp1Name,
   localIp1SourceIp,
+  nic1,
   nsg1,
   publicIp1,
   publicIp1Id,
@@ -37,21 +38,22 @@ export default function test() {
 
       // convertSubnet() expects to find its nsg spec in the index.
       services.index.add(nsg1);
-      services.index.add(localIp1);
-      services.index.add(publicIp1);
+
+      // convertSubnet() expects to find references to its nics.
+      services.index.addReference(nic1, subnet1);
 
       mocks.ip.action(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (services: GraphServices, ipSpec: AzureIPConfiguration) => {
           if (ipSpec.name === localIp1Name) {
             return {
-              key: localIp1Id,
-              destinationIp: localIp1SourceIp,
+              destination: localIp1Id,
+              constraints: {destinationIp: localIp1SourceIp},
             };
           } else if (ipSpec.name === publicIp1Name) {
             return {
-              key: publicIp1Id,
-              destinationIp: publicIp1SourceIp,
+              destination: publicIp1Id,
+              constraints: {destinationIp: publicIp1SourceIp},
             };
           } else {
             throw new TypeError('Unknown ip configuration');
