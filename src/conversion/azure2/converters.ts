@@ -1,4 +1,4 @@
-import { RoutingRuleSpec } from '../../graph';
+import {RoutingRuleSpec} from '../../graph';
 import {RuleSpec} from '../../rules';
 
 import {GraphServices} from './graph_services';
@@ -6,7 +6,6 @@ import {GraphServices} from './graph_services';
 import {
   AzureIPConfiguration,
   AzureNetworkSecurityGroup,
-  AzureResourceGraph,
   AzureSubnet,
   AzureVirtualNetwork,
 } from './types';
@@ -33,7 +32,7 @@ export interface NSGRuleSpecs {
 //     range: DRange or string expression?
 //   }
 export interface IConverters {
-  resourceGraph(services: GraphServices, spec: AzureResourceGraph): void;
+  resourceGraph(services: GraphServices): void;
   subnet(
     services: GraphServices,
     spec: AzureSubnet,

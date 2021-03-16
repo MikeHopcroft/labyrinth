@@ -1,3 +1,35 @@
+* Top 2
+  * In convertSubnet(): // TODO: import IRules from './types', not '../types'
+  * Rework convertIp()
+    * Take parent nodeKey
+  * Decide whether to return routingRule or nodeKey + serviceTag pair.
+  * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
+  * Move away from Azure ids for node keys
+    * Use unique identifiers for node keys
+    * Put Azure id into node name field
+    * Run shortener on Labyrinth graph, as necessary
+  * Decide whether to improve subnet unit test design for NSG
+    * Issue is that NSG spec must be converted into inbound and outbound rules. These are hard-coded into the mock today. Assuming there will be other tests that will want to use the inbound and outbound rules. Perhaps nsg1 needs to be built from the concatendation of nsg1Inbound and nsg1Outbound.
+  * Naming consistency: convertNetworkSecurityGroup vs convertNIC, convertVNET
+  * Review implementations and unit tests
+    * convertIp
+      * Rework to take parent node key
+      * Split out into calls to convertLocalIP() and convertPublicIp()
+    * convertNetworkSecurityGroup
+      * Better mocking support
+      * Unit test
+    * convertNIC
+      * Implement
+      * Unit test
+    * convertPublicIP
+      * Implement
+      * Unit test
+    * convertResourceGraph
+      * Unit test
+    * convertSubnet
+      * Figure out where IRules should live - probably an export of convert_network_security_group.ts.
+    * convertVNet
+
 * Top
   * Converters should return route to converted item.
   * convertIp() should take an optional filter parameter.
