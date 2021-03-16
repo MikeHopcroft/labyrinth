@@ -1,5 +1,5 @@
 * Top 2
-  * In convertSubnet(): // TODO: import IRules from './types', not '../types'
+  * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
   * Rework convertIp()
     * Take parent nodeKey
   * Decide whether to return routingRule or nodeKey + serviceTag pair.

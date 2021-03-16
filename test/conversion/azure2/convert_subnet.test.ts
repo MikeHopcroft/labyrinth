@@ -81,8 +81,6 @@ export default function test() {
 
       mocks.nsg.action(
         (
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          services: GraphServices,
           nsgSpec: AzureNetworkSecurityGroup,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           vnetNodeKey: string

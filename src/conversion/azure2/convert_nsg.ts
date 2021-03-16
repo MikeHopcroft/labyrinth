@@ -1,10 +1,47 @@
 import {ActionType, Constraint, RuleSpec} from '../../rules';
 import {removeUndefinedProperties} from '../../utilities';
 
-import {IRules} from '..';
-
 import {AzureNetworkSecurityGroup, AzureSecurityRule} from './types';
-import {GraphServices} from './graph_services';
+
+interface IRules {
+  readonly outboundRules: RuleSpec[];
+  readonly inboundRules: RuleSpec[];
+}
+
+export function convertNsg(
+  nsg: AzureNetworkSecurityGroup,
+  vnetSymbol: string
+): IRules {
+  const inboundRules: RuleSpec[] = [];
+  const outboudRules: RuleSpec[] = [];
+
+  for (const rule of nsg.properties.defaultSecurityRules) {
+    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  }
+
+  for (const rule of nsg.properties.securityRules) {
+    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  }
+
+  return {
+    outboundRules: outboudRules,
+    inboundRules: inboundRules,
+  };
+}
+
+function writeRule(
+  rule: AzureSecurityRule,
+  vnetSymbol: string,
+  inbound: RuleSpec[],
+  outbound: RuleSpec[]
+) {
+  const r = convertRule(rule, vnetSymbol);
+  if (rule.properties.direction === 'Inbound') {
+    inbound.push(r);
+  } else {
+    outbound.push(r);
+  }
+}
 
 function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
   const action =
@@ -62,38 +99,19 @@ function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
   return spec;
 }
 
-function writeRule(
-  rule: AzureSecurityRule,
-  vnetSymbol: string,
-  inbound: RuleSpec[],
-  outbound: RuleSpec[]
-) {
-  const r = convertRule(rule, vnetSymbol);
-  if (rule.properties.direction === 'Inbound') {
-    inbound.push(r);
-  } else {
-    outbound.push(r);
-  }
-}
+// export function convertNsgRules(
+//   nsgRef: AzureReference<AzureNetworkSecurityGroup>,
+//   services: GraphServices,
+//   vNetKey: string
+// ): IRules | undefined {
+//   if (nsgRef) {
+//     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
+//       nsgRef
+//     );
 
-export function convertNsg(
-  services: GraphServices,
-  nsg: AzureNetworkSecurityGroup,
-  vnetSymbol: string
-): IRules {
-  const inboundRules: RuleSpec[] = [];
-  const outboudRules: RuleSpec[] = [];
+//     // FIX: vNetKey needs to be a symbol not just a node key
+//     return services.convert.nsg(services, nsgSpec, vNetKey);
+//   }
 
-  for (const rule of nsg.properties.defaultSecurityRules) {
-    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
-  }
-
-  for (const rule of nsg.properties.securityRules) {
-    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
-  }
-
-  return {
-    outboundRules: outboudRules,
-    inboundRules: inboundRules,
-  };
-}
+//   return undefined;
+// }
