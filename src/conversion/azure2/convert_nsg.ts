@@ -1,7 +1,7 @@
 import {ActionType, Constraint, RuleSpec} from '../../rules';
 import {removeUndefinedProperties} from '../../utilities';
 
-import {AzureNetworkSecurityGroup, AzureSecurityRule} from './types';
+import {AzureNetworkSecurityGroup, AzureSecurityRule} from './azure_types';
 
 interface IRules {
   readonly outboundRules: RuleSpec[];

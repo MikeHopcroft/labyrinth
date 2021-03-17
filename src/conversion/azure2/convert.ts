@@ -1,6 +1,7 @@
 import {GraphSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
+import {AzureNetworkInterface, AzureResourceGraph} from './azure_types';
 import {IConverters} from './converters';
 import {convertIp} from './convert_ip';
 import {convertNIC} from './convert_nic';
@@ -11,7 +12,6 @@ import {convertVNet} from './convert_vnet';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
 import {SymbolTable} from './symbol_table';
-import {AzureNetworkInterface, AzureResourceGraph} from './types';
 
 // TODO: Move `converters` to own file.
 export const converters: IConverters = {
@@ -24,23 +24,6 @@ export const converters: IConverters = {
 };
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
-  // //
-  // // Shorten names in graph.
-  // //
-
-  // // Populate shortener with ids from AzureTypedObjects.
-  // const shortener = new NameShortener();
-  // for (const item of walkAzureTypedObjects(resourceGraphSpec)) {
-  //   shortener.add(item.id);
-  // }
-
-  // // Actually shorten names
-  // // TODO: this needs to convert references in addition to AnyAzureObjects
-  // // REVIEW: what if we need the old id and the new id in the node.
-  // for (const item of walkAzureObjectBases(resourceGraphSpec)) {
-  //   item.id = shortener.shorten(item.id);
-  // }
-
   //
   // Normalize casing in Azure Resource Graph type fields.
   //
@@ -77,7 +60,7 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   }
 
   //
-  // Convert the AzureResourceGraph
+  // Convert the AzureResourceGraph to a Labyrinth graph.
   //
   services.convert.resourceGraph(services);
 

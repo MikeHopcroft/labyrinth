@@ -4,7 +4,7 @@ import {
   AzureObjectType,
   AzureReference,
   AzureResourceGraph,
-} from './types';
+} from './azure_types';
 
 import {walkAzureTypedObjects} from './walk';
 

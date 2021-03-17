@@ -1,4 +1,5 @@
 export * from './azure_object_index';
+export * from './azure_types';
 export * from './convert_ip';
 export * from './convert_nic';
 export * from './convert_subnet';
@@ -7,5 +8,4 @@ export * from './converters';
 export * from './graph_services';
 export * from './name_shortener';
 export * from './symbol_table';
-export * from './types';
 export * from './walk';

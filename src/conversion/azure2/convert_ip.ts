@@ -1,7 +1,11 @@
 import {SimpleRoutingRuleSpec} from '../../graph';
 
+import {
+  AzureIPConfiguration,
+  AzureObjectType,
+  AzureSubnet,
+} from './azure_types';
 import {GraphServices} from './graph_services';
-import {AzureIPConfiguration, AzureObjectType, AzureSubnet} from './types';
 
 function convertToIpAddress(ipItem: AzureIPConfiguration): string {
   let ip: string;

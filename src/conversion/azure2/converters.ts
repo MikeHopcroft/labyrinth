@@ -1,15 +1,15 @@
 import {SimpleRoutingRuleSpec} from '../../graph';
 import {RuleSpec} from '../../rules';
 
-import {GraphServices} from './graph_services';
-
 import {
   AzureIPConfiguration,
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   AzureSubnet,
   AzureVirtualNetwork,
-} from './types';
+} from './azure_types';
+
+import {GraphServices} from './graph_services';
 
 export interface NodeKeyAndSourceIp {
   key: string;
