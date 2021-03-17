@@ -15,8 +15,9 @@
   * Cherry pick PR #14
   * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
   * . Implement convertNIC()
-    * . Extract commonality with convertSubnet() to a function.
-    * Rework router/inbound/outbound to generate only inbound/outbound.
+    * x Extract commonality with convertSubnet() to a function.
+    * x Rework router/inbound/outbound to generate only inbound/outbound.
+    * Unit test for omitted outbound node.
   * Rework convertIp()
     * Take parent nodeKey
   * . Decide whether to return routingRule or nodeKey + serviceTag pair.

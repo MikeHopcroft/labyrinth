@@ -1,4 +1,4 @@
-import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
+import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
 import {NSGRuleSpecs} from './converters';
 
 import {GraphServices} from './graph_services';
@@ -13,31 +13,6 @@ export function buildInboundOutboundNodes(
   vnetSymbol: string,
   addressRange: string | undefined = undefined
 ): SimpleRoutingRuleSpec {
-  // TODO: come up with safer naming scheme. Want to avoid collisions
-  // with other names.
-  const inboundKey = keyPrefix + '/inbound';
-  const outboundKey = keyPrefix + '/outbound';
-  const routerKey = keyPrefix + '/router';
-
-  const internalRoutes = routeBuilder(outboundKey);
-  const destinationIp = addressRange ?? gatherDestinationIps(internalRoutes);
-
-  //
-  // Router node
-  //
-  const routes: RoutingRuleSpec[] = [
-    ...internalRoutes,
-    {
-      destination: outboundKey,
-    },
-  ];
-
-  const routerNode: NodeSpec = {
-    key: routerKey,
-    routes,
-  };
-  services.addNode(routerNode);
-
   //
   // NSG rules
   //
@@ -53,36 +28,48 @@ export function buildInboundOutboundNodes(
     nsgRules = services.convert.nsg(nsgSpec, vnetSymbol);
   }
 
+  // TODO: come up with safer naming scheme. Want to avoid collisions
+  // with other names.
+  const inboundKey = keyPrefix + '/inbound';
+
+  // Only include an outbound node if there are outbound NSG rules.
+  const outboundKey =
+    nsgRules.outboundRules.length > 0 ? keyPrefix + '/outbound' : parent;
+
+  const inboundRoutes = routeBuilder(outboundKey);
+
   //
-  // Inbound node
+  // Construct inbound node
   //
   const inboundNode: NodeSpec = {
     key: inboundKey,
     filters: nsgRules.inboundRules,
-    routes: [{destination: routerKey}],
+    routes: inboundRoutes,
   };
   services.addNode(inboundNode);
 
   //
-  // Outbound node
+  // If there are outbound NSG rules, construct outbound node
   //
-  const outboundNode: NodeSpec = {
-    key: outboundKey,
-    filters: nsgRules.outboundRules,
-    routes: [{destination: parent}],
-  };
-  services.addNode(outboundNode);
+  if (nsgRules.outboundRules.length > 0) {
+    const outboundNode: NodeSpec = {
+      key: outboundKey,
+      filters: nsgRules.outboundRules,
+      routes: [{destination: parent}],
+    };
+    services.addNode(outboundNode);
+  }
 
+  //
+  // Return route for use by parent node.
+  //
+  const destinationIp = addressRange ?? gatherDestinationIps(inboundRoutes);
   return {
     destination: inboundKey,
     constraints: {destinationIp},
   };
 }
 
-// TODO: REVIEW: this function assumes that the constraints
-// are always simple destinationIp constraints. Is there any
-// way to make this assumption more explicit or typesafe?
-// What would happen if the routes had other types of constraints?
 function gatherDestinationIps(routes: SimpleRoutingRuleSpec[]) {
   const ips: string[] = [];
   for (const route of routes) {

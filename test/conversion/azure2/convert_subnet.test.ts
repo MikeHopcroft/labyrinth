@@ -4,10 +4,8 @@ import 'mocha';
 import {NodeSpec} from '../../../src';
 
 import {
-  AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   convertSubnet,
-  GraphServices,
   NSGRuleSpecs,
 } from '../../../src/conversion/azure2';
 
@@ -27,7 +25,7 @@ import {
 
 export default function test() {
   describe('convertSubnet()', () => {
-    it('Subnet with one NIC', () => {
+    it('Subnet with NSG and one NIC', () => {
       const {services, mocks} = createGraphServicesMock();
 
       // convertSubnet() expects to find its nsg spec in the index.
@@ -36,30 +34,15 @@ export default function test() {
       // convertSubnet() expects to find references to its nics.
       services.index.addReference(nic1, subnet1);
 
-      mocks.nic.action(
-        (
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          services: GraphServices,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          spec: AzureNetworkInterface,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          parent: string,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          vnetSymbol: string
-        ) => {
-          return {
-            destination: 'foo2',
-            constraints: {destinationIp: 'bar2'},
-          };
-        }
-      );
+      mocks.nic.action(() => {
+        return {
+          destination: 'foo',
+          constraints: {destinationIp: 'bar'},
+        };
+      });
 
       mocks.nsg.action(
-        (
-          nsgSpec: AzureNetworkSecurityGroup | undefined,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          vnetNodeKey: string
-        ): NSGRuleSpecs => {
+        (nsgSpec: AzureNetworkSecurityGroup | undefined): NSGRuleSpecs => {
           if (nsgSpec === nsg1) {
             return {inboundRules, outboundRules};
           } else {
@@ -81,49 +64,28 @@ export default function test() {
       assert.equal(result.constraints.destinationIp, subnet1SourceIps);
 
       // Verify that nicConverter() was invoked correctly.
-      const log = mocks.nic.log();
-      assert.equal(log.length, 1);
-      assert.equal(log[0].params[1], nic1);
-      assert.equal(log[0].params[2], `${subnet1.id}/outbound`);
-      assert.equal(log[0].params[3], vnet1Id);
+      const nicLog = mocks.nic.log();
+      assert.equal(nicLog.length, 1);
+      assert.equal(nicLog[0].params[1], nic1);
+      assert.equal(nicLog[0].params[2], `${subnet1.id}/outbound`);
+      assert.equal(nicLog[0].params[3], vnet1Id);
 
       // Verify that nsgConverter() was invoked correctly.
-      const log2 = mocks.nsg.log();
-      assert.equal(log2.length, 1);
-      assert.equal(log2[0].params[0], nsg1);
-      assert.equal(log2[0].params[1], vnet1Id);
+      const nsgLog = mocks.nsg.log();
+      assert.equal(nsgLog.length, 1);
+      assert.equal(nsgLog[0].params[0], nsg1);
+      assert.equal(nsgLog[0].params[1], vnet1Id);
 
       // Verify that correct nodes were created.
       const expectedNodes: NodeSpec[] = [
-        // Router
-        {
-          key: `${subnet1.id}/router`,
-          // range: {
-          //   sourceIp: subnet1SourceIps,
-          // },
-          routes: [
-            {
-              destination: 'foo',
-              constraints: {
-                destinationIp: 'bar',
-              },
-            },
-            {
-              destination: `${subnet1.id}/outbound`,
-              constraints: {
-                destinationIp: `except ${subnet1SourceIps}`,
-              },
-            },
-          ],
-        },
-
         // Inbound
         {
           key: `${subnet1.id}/inbound`,
           filters: inboundRules,
           routes: [
             {
-              destination: `${subnet1.id}/router`,
+              destination: 'foo',
+              constraints: {destinationIp: 'bar'},
             },
           ],
         },
@@ -139,8 +101,6 @@ export default function test() {
           ],
         },
       ];
-
-      console.log(JSON.stringify(nodes, null, 2));
 
       assert.deepEqual(nodes, expectedNodes);
     });
