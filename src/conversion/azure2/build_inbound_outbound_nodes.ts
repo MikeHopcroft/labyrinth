@@ -4,19 +4,23 @@ import {NSGRuleSpecs} from './converters';
 import {GraphServices} from './graph_services';
 import {AzureNetworkSecurityGroup, AzureReference} from './types';
 
-export function buildNSGRouters(
+export function buildInboundOutboundNodes(
   services: GraphServices,
   keyPrefix: string,
-  internalRoutes: SimpleRoutingRuleSpec[],
+  routeBuilder: (parent: string) => SimpleRoutingRuleSpec[],
   nsgRef: AzureReference<AzureNetworkSecurityGroup> | undefined,
   parent: string,
-  vnetSymbol: string
+  vnetSymbol: string,
+  addressRange: string | undefined = undefined
 ): SimpleRoutingRuleSpec {
+  // TODO: come up with safer naming scheme. Want to avoid collisions
+  // with other names.
   const inboundKey = keyPrefix + '/inbound';
   const outboundKey = keyPrefix + '/outbound';
-  const routerKey = keyPrefix + '/outbound';
+  const routerKey = keyPrefix + '/router';
 
-  const destinationIp = gatherDestinationIps(internalRoutes);
+  const internalRoutes = routeBuilder(outboundKey);
+  const destinationIp = addressRange ?? gatherDestinationIps(internalRoutes);
 
   //
   // Router node
@@ -63,7 +67,7 @@ export function buildNSGRouters(
   // Outbound node
   //
   const outboundNode: NodeSpec = {
-    key: inboundKey,
+    key: outboundKey,
     filters: nsgRules.outboundRules,
     routes: [{destination: parent}],
   };

@@ -1,91 +1,43 @@
-import {NodeSpec, RoutingRuleSpec} from '../../graph';
+import {SimpleRoutingRuleSpec} from '../../graph';
 
-import {NodeKeyAndSourceIp} from './converters';
+import {buildInboundOutboundNodes} from './build_inbound_outbound_nodes';
 import {GraphServices} from './graph_services';
-import {
-  AzureSubnet,
-  AzureNetworkInterface,
-  AzureNetworkSecurityGroup,
-} from './types';
+import {AzureSubnet, AzureNetworkInterface} from './types';
 
 export function convertSubnet(
   services: GraphServices,
-  subnetSpec: AzureSubnet,
-  vnetKey: string
-): NodeKeyAndSourceIp {
-  // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
-  const subnetKeyPrefix = subnetSpec.id;
-  const subnetServiceTag = subnetSpec.id;
-
-  // TODO: come up with safer naming scheme. Want to avoid collisions
-  // with other names.
-  const inboundKey = subnetKeyPrefix + '/inbound';
-  const outboundKey = subnetKeyPrefix + '/outbound';
-  const routerKey = subnetKeyPrefix + '/router';
-
-  const sourceIp = subnetSpec.properties.addressPrefix;
-  services.symbols.defineServiceTag(subnetServiceTag, sourceIp);
-
-  const routes: RoutingRuleSpec[] = [
-    // Traffic leaving subnet
-    {
-      destination: outboundKey,
-      constraints: {
-        destinationIp: `except ${subnetSpec.properties.addressPrefix}`,
-      },
-    },
-  ];
+  spec: AzureSubnet,
+  parent: string,
+  vnetSymbol: string
+): SimpleRoutingRuleSpec {
+  const keyPrefix = spec.id;
 
   // Materialize nics and add routes.
-  for (const nic of services.index
-    .for(subnetSpec)
-    .withType(AzureNetworkInterface)) {
-    routes.push(services.convert.nic(services, nic, routerKey, vnetKey));
-    // for (const ipConfigSpec of nic.properties.ipConfigurations) {
-    //   routes.push(services.convert.ip(services, ipConfigSpec));
-    // }
-  }
-
-  const routerNode: NodeSpec = {
-    key: routerKey,
-    // TODO: do we want range here?
-    range: {sourceIp},
-    routes,
+  const routeBuilder = (parent: string): SimpleRoutingRuleSpec[] => {
+    const routes: SimpleRoutingRuleSpec[] = [];
+    for (const nic of services.index
+      .for(spec)
+      .withType(AzureNetworkInterface)) {
+      routes.push(services.convert.nic(services, nic, parent, vnetSymbol));
+    }
+    return routes;
   };
-  services.addNode(routerNode);
 
-  const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
-    subnetSpec.properties.networkSecurityGroup
+  const route = buildInboundOutboundNodes(
+    services,
+    keyPrefix,
+    routeBuilder,
+    spec.properties.networkSecurityGroup,
+    parent,
+    vnetSymbol,
+    spec.properties.addressPrefix
   );
-  const nsgRules = services.convert.nsg(nsgSpec, vnetKey);
 
-  const inboundNode: NodeSpec = {
-    key: inboundKey,
-    filters: nsgRules.inboundRules,
-    // TODO: do we want range here?
-    // TODO: is this correct? The router moves packets in both directions.
-    routes: [
-      {
-        destination: routerKey,
-      },
-    ],
-  };
-  services.addNode(inboundNode);
-
-  const outboundNode: NodeSpec = {
-    key: outboundKey,
-    filters: nsgRules.outboundRules,
-    routes: [
-      {
-        destination: vnetKey,
-      },
-    ],
-  };
-  services.addNode(outboundNode);
-
-  // TODO: What should be returned here? Subnet is represetned by 3 nodes...
+  // Subnet differs from NIC in that its inbound routing rule is for all
+  // ips in the addressPrefix, instead of the union of the ip configurations
+  // actually present.
   return {
-    key: inboundNode.key,
-    destinationIp: subnetSpec.properties.addressPrefix,
+    destination: route.destination,
+    constraints: {destinationIp: spec.properties.addressPrefix},
   };
 }

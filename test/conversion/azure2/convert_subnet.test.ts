@@ -48,8 +48,8 @@ export default function test() {
           vnetSymbol: string
         ) => {
           return {
-            destination: 'foo',
-            constraints: {destinationIp: 'bar'},
+            destination: 'foo2',
+            constraints: {destinationIp: 'bar2'},
           };
         }
       );
@@ -70,20 +70,21 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.vnet() because our intent
       // is to test the real convertVNet(), instead of its mock.
-      const result = convertSubnet(services, subnet1, vnet1Id);
-      const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
+      const result = convertSubnet(services, subnet1, vnet1Id, vnet1Id);
+      const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
-      // TODO: verify no symbol table additions.
+      // Verify no symbol table additions.
+      assert.equal(symbols.length, 0);
 
       // Verify the return value.
-      assert.equal(result.key, `${subnet1.id}/inbound`);
-      assert.equal(result.destinationIp, subnet1SourceIps);
+      assert.equal(result.destination, `${subnet1.id}/inbound`);
+      assert.equal(result.constraints.destinationIp, subnet1SourceIps);
 
       // Verify that nicConverter() was invoked correctly.
       const log = mocks.nic.log();
       assert.equal(log.length, 1);
       assert.equal(log[0].params[1], nic1);
-      assert.equal(log[0].params[2], `${subnet1.id}/router`);
+      assert.equal(log[0].params[2], `${subnet1.id}/outbound`);
       assert.equal(log[0].params[3], vnet1Id);
 
       // Verify that nsgConverter() was invoked correctly.
@@ -92,46 +93,27 @@ export default function test() {
       assert.equal(log2[0].params[0], nsg1);
       assert.equal(log2[0].params[1], vnet1Id);
 
-      // Verify the service tag definition.
-      assert.deepEqual(services.symbols.getSymbolSpec(subnet1.id), {
-        dimension: 'ip',
-        symbol: subnet1.id,
-        range: subnet1SourceIps,
-      });
-
       // Verify that correct nodes were created.
       const expectedNodes: NodeSpec[] = [
         // Router
         {
           key: `${subnet1.id}/router`,
-          range: {
-            sourceIp: subnet1SourceIps,
-          },
+          // range: {
+          //   sourceIp: subnet1SourceIps,
+          // },
           routes: [
-            {
-              destination: `${subnet1.id}/outbound`,
-              constraints: {
-                destinationIp: `except ${subnet1SourceIps}`,
-              },
-            },
             {
               destination: 'foo',
               constraints: {
                 destinationIp: 'bar',
               },
             },
-            // {
-            //   destination: localIp1Id,
-            //   constraints: {
-            //     destinationIp: localIp1SourceIp,
-            //   },
-            // },
-            // {
-            //   destination: publicIp1Id,
-            //   constraints: {
-            //     destinationIp: publicIp1SourceIp,
-            //   },
-            // },
+            {
+              destination: `${subnet1.id}/outbound`,
+              constraints: {
+                destinationIp: `except ${subnet1SourceIps}`,
+              },
+            },
           ],
         },
 
@@ -158,7 +140,9 @@ export default function test() {
         },
       ];
 
-      assert.deepEqual(observedNodes, expectedNodes);
+      console.log(JSON.stringify(nodes, null, 2));
+
+      assert.deepEqual(nodes, expectedNodes);
     });
   });
 }

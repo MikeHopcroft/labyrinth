@@ -28,10 +28,20 @@ export default function test() {
       const {services, mocks} = createGraphServicesMock();
       mocks.subnet.action(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (services: GraphServices, subnetSpec: AzureSubnet, parent: string) => {
+        (
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          services: GraphServices,
+          subnetSpec: AzureSubnet,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          parent: string,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          vnetSymbol: string
+        ) => {
           return {
-            key: subnetSpec.id,
-            destinationIp: subnetSpec.properties.addressPrefix,
+            destination: subnetSpec.id,
+            constraints: {
+              destinationIp: subnetSpec.properties.addressPrefix,
+            },
           };
         }
       );
