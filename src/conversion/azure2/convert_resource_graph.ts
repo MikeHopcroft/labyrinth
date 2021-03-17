@@ -1,7 +1,7 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
+import {AzureVirtualNetwork} from './azure_types';
 import {GraphServices} from './graph_services';
-import {AzureVirtualNetwork} from './types';
 
 ///////////////////////////////////////////////////////////////////////////////
 //

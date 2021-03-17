@@ -3,9 +3,9 @@ import DRange from 'drange';
 import {formatIpLiteral, parseIp} from '../../dimensions';
 import {RoutingRuleSpec} from '../../graph';
 
+import {AzureVirtualNetwork} from './azure_types';
 import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
-import {AzureVirtualNetwork} from './types';
 
 export function convertVNet(
   services: GraphServices,

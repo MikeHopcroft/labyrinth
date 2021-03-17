@@ -1,8 +1,8 @@
 import {SimpleRoutingRuleSpec} from '../../graph';
 
+import {AzureSubnet, AzureNetworkInterface} from './azure_types';
 import {buildInboundOutboundNodes} from './build_inbound_outbound_nodes';
 import {GraphServices} from './graph_services';
-import {AzureSubnet, AzureNetworkInterface} from './types';
 
 export function convertSubnet(
   services: GraphServices,

@@ -1,8 +1,8 @@
 import {SimpleRoutingRuleSpec} from '../../graph';
 
-import {GraphServices} from './graph_services';
+import {AzureNetworkInterface} from './azure_types';
 import {buildInboundOutboundNodes} from './build_inbound_outbound_nodes';
-import {AzureNetworkInterface} from './types';
+import {GraphServices} from './graph_services';
 
 // TODO: Verify that all IpConfigs have same subnet
 

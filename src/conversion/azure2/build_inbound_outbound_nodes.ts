@@ -1,8 +1,8 @@
 import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
-import {NSGRuleSpecs} from './converters';
 
+import {AzureNetworkSecurityGroup, AzureReference} from './azure_types';
+import {NSGRuleSpecs} from './converters';
 import {GraphServices} from './graph_services';
-import {AzureNetworkSecurityGroup, AzureReference} from './types';
 
 export function buildInboundOutboundNodes(
   services: GraphServices,

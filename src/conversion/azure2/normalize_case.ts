@@ -1,4 +1,4 @@
-import {AzureResourceGraph} from './types';
+import {AzureResourceGraph} from './azure_types';
 import {walkAzureTypedObjects} from './walk';
 
 // DESIGN NOTE: Azure resource graphs use an inconsistent mixture of upper and
