@@ -1,6 +1,9 @@
+import {ActionType, RuleSpec} from '../../../src';
+
 import {
   AnyAzureObject,
   AzureLocalIP,
+  AzureNetworkInterface,
   AzureObjectBase,
   AzureObjectIndex,
   AzureObjectType,
@@ -11,7 +14,6 @@ import {
   GraphServices,
   IConverters,
   SymbolTable,
-  AzureNetworkInterface,
 } from '../../../src/conversion/azure2';
 
 import {createMock} from './mocks';
@@ -26,6 +28,7 @@ export function createGraphServicesMock() {
 
   const mocks = {
     ip: createMock(fake.ip),
+    nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
     resourceGraph: createMock(fake.resourceGraph),
     subnet: createMock(fake.subnet),
@@ -62,13 +65,18 @@ export const subnet2Name = 'subnet2';
 export const subnet2Id = subnetId(vnet1Id, subnet2Name);
 export const subnet2SourceIps = '10.0.1.0/8';
 
-export const nic1Name = 'nice1';
+export const nic1Name = 'nic1';
 export const nic1Id = nicId(nic1Name);
 
 export const localIp1Name = 'localIp1';
 export const localIp1Id = ipId(nic1Name, localIp1Name);
 export const localIp1SourceIp = '10.0.0.1';
 export const localIp1SubnetName = subnet1Name;
+
+export const localIp2Name = 'localIp2';
+export const localIp2Id = ipId(nic1Name, localIp2Name);
+export const localIp2SourceIp = '10.0.0.2';
+export const localIp2SubnetName = subnet1Name;
 
 export const publicIp1Name = 'publicIp1';
 export const publicIp1Id = ipId(nic1Name, publicIp1Name);
@@ -92,6 +100,17 @@ export const localIp1: AzureLocalIP = {
   },
 };
 
+export const localIp2: AzureLocalIP = {
+  type: AzureObjectType.LOCAL_IP,
+  id: localIp2Id,
+  name: localIp2Name,
+  resourceGroup,
+  properties: {
+    privateIPAddress: localIp2SourceIp,
+    subnet: reference(subnet1Id),
+  },
+};
+
 export const publicIp1: AzurePublicIP = {
   type: AzureObjectType.PUBLIC_IP,
   id: publicIp1Id,
@@ -100,20 +119,6 @@ export const publicIp1: AzurePublicIP = {
   properties: {
     ipAddress: publicIp1SourceIp,
     subnet: reference(subnet1Id),
-  },
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Nics
-//
-///////////////////////////////////////////////////////////////////////////////
-export const nic1: AzureNetworkInterface = {
-  type: AzureObjectType.NIC,
-  id: nic1Id,
-  resourceGroup,
-  properties: {
-    ipConfigurations: [localIp1, publicIp1],
   },
 };
 
@@ -151,6 +156,23 @@ export const subnet2: AzureSubnet = {
 // Network Security Groups
 //
 ///////////////////////////////////////////////////////////////////////////////
+export const inboundRules: RuleSpec[] = [
+  {
+    action: ActionType.ALLOW,
+    priority: 1,
+    id: 1,
+    source: 'abc',
+  },
+];
+
+export const outboundRules: RuleSpec[] = [
+  {
+    action: ActionType.DENY,
+    priority: 2,
+    id: 2,
+    source: 'def',
+  },
+];
 
 // Empty NSG associated with subnet1.
 export const nsg1: AzureNetworkSecurityGroup = {
@@ -162,6 +184,21 @@ export const nsg1: AzureNetworkSecurityGroup = {
     defaultSecurityRules: [],
     securityRules: [],
     subnets: [reference(subnet1Id)],
+  },
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Nics
+//
+///////////////////////////////////////////////////////////////////////////////
+export const nic1: AzureNetworkInterface = {
+  type: AzureObjectType.NIC,
+  id: nic1Id,
+  resourceGroup,
+  properties: {
+    ipConfigurations: [localIp1, localIp2],
+    networkSecurityGroup: reference(nsg1),
   },
 };
 

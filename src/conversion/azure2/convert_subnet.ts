@@ -11,7 +11,7 @@ import {
 export function convertSubnet(
   services: GraphServices,
   subnetSpec: AzureSubnet,
-  vNetKey: string
+  vnetKey: string
 ): NodeKeyAndSourceIp {
   // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
   const subnetKeyPrefix = subnetSpec.id;
@@ -36,13 +36,14 @@ export function convertSubnet(
     },
   ];
 
-  // Materialize ip configurations and add routes.
+  // Materialize nics and add routes.
   for (const nic of services.index
     .for(subnetSpec)
     .withType(AzureNetworkInterface)) {
-    for (const ipConfigSpec of nic.properties.ipConfigurations) {
-      routes.push(services.convert.ip(services, ipConfigSpec));
-    }
+    routes.push(services.convert.nic(services, nic, routerKey, vnetKey));
+    // for (const ipConfigSpec of nic.properties.ipConfigurations) {
+    //   routes.push(services.convert.ip(services, ipConfigSpec));
+    // }
   }
 
   const routerNode: NodeSpec = {
@@ -56,7 +57,7 @@ export function convertSubnet(
   const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
     subnetSpec.properties.networkSecurityGroup
   );
-  const nsgRules = services.convert.nsg(nsgSpec, vNetKey);
+  const nsgRules = services.convert.nsg(nsgSpec, vnetKey);
 
   const inboundNode: NodeSpec = {
     key: inboundKey,
@@ -76,7 +77,7 @@ export function convertSubnet(
     filters: nsgRules.outboundRules,
     routes: [
       {
-        destination: vNetKey,
+        destination: vnetKey,
       },
     ],
   };
@@ -88,25 +89,3 @@ export function convertSubnet(
     destinationIp: subnetSpec.properties.addressPrefix,
   };
 }
-
-// interface IRules {
-//   readonly outboundRules: RuleSpec[];
-//   readonly inboundRules: RuleSpec[];
-// }
-
-// function convertNsgRules(
-//   nsgRef: AzureReference<AzureNetworkSecurityGroup>,
-//   services: GraphServices,
-//   vNetKey: string
-// ): IRules | undefined {
-//   if (nsgRef) {
-//     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
-//       nsgRef
-//     );
-
-//     // FIX: vNetKey needs to be a symbol not just a node key
-//     return services.convert.nsg(services, nsgSpec, vNetKey);
-//   }
-
-//   return undefined;
-// }

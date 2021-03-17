@@ -1,10 +1,10 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {ActionType, NodeSpec, RuleSpec} from '../../../src';
+import {NodeSpec} from '../../../src';
 
 import {
-  AzureIPConfiguration,
+  AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   convertSubnet,
   GraphServices,
@@ -16,16 +16,10 @@ import {
 // with similar terms.
 import {
   createGraphServicesMock,
-  localIp1,
-  localIp1Id,
-  localIp1Name,
-  localIp1SourceIp,
+  inboundRules,
   nic1,
   nsg1,
-  publicIp1,
-  publicIp1Id,
-  publicIp1Name,
-  publicIp1SourceIp,
+  outboundRules,
   subnet1,
   subnet1SourceIps,
   vnet1Id,
@@ -33,7 +27,7 @@ import {
 
 export default function test() {
   describe('convertSubnet()', () => {
-    it('Subnet with two ipConfigurations', () => {
+    it('Subnet with one NIC', () => {
       const {services, mocks} = createGraphServicesMock();
 
       // convertSubnet() expects to find its nsg spec in the index.
@@ -42,46 +36,27 @@ export default function test() {
       // convertSubnet() expects to find references to its nics.
       services.index.addReference(nic1, subnet1);
 
-      mocks.ip.action(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (services: GraphServices, ipSpec: AzureIPConfiguration) => {
-          if (ipSpec.name === localIp1Name) {
-            return {
-              destination: localIp1Id,
-              constraints: {destinationIp: localIp1SourceIp},
-            };
-          } else if (ipSpec.name === publicIp1Name) {
-            return {
-              destination: publicIp1Id,
-              constraints: {destinationIp: publicIp1SourceIp},
-            };
-          } else {
-            throw new TypeError('Unknown ip configuration');
-          }
+      mocks.nic.action(
+        (
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          services: GraphServices,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          spec: AzureNetworkInterface,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          parent: string,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          vnetSymbol: string
+        ) => {
+          return {
+            destination: 'foo',
+            constraints: {destinationIp: 'bar'},
+          };
         }
       );
 
-      const inboundRules: RuleSpec[] = [
-        {
-          action: ActionType.ALLOW,
-          priority: 1,
-          id: 1,
-          source: 'abc',
-        },
-      ];
-
-      const outboundRules: RuleSpec[] = [
-        {
-          action: ActionType.DENY,
-          priority: 2,
-          id: 2,
-          source: 'def',
-        },
-      ];
-
       mocks.nsg.action(
         (
-          nsgSpec: AzureNetworkSecurityGroup,
+          nsgSpec: AzureNetworkSecurityGroup | undefined,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           vnetNodeKey: string
         ): NSGRuleSpecs => {
@@ -93,20 +68,29 @@ export default function test() {
         }
       );
 
-      // DESIGN NOTE: cannot call services.convert.vnet()  because our intent
+      // DESIGN NOTE: cannot call services.convert.vnet() because our intent
       // is to test the real convertVNet(), instead of its mock.
       const result = convertSubnet(services, subnet1, vnet1Id);
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
+
+      // TODO: verify no symbol table additions.
 
       // Verify the return value.
       assert.equal(result.key, `${subnet1.id}/inbound`);
       assert.equal(result.destinationIp, subnet1SourceIps);
 
-      // Verify that ipConverter() was invoked correctly.
-      const log = mocks.ip.log();
-      assert.equal(log.length, 2);
-      assert.equal(log[0].params[1], localIp1);
-      assert.equal(log[1].params[1], publicIp1);
+      // Verify that nicConverter() was invoked correctly.
+      const log = mocks.nic.log();
+      assert.equal(log.length, 1);
+      assert.equal(log[0].params[1], nic1);
+      assert.equal(log[0].params[2], `${subnet1.id}/router`);
+      assert.equal(log[0].params[3], vnet1Id);
+
+      // Verify that nsgConverter() was invoked correctly.
+      const log2 = mocks.nsg.log();
+      assert.equal(log2.length, 1);
+      assert.equal(log2[0].params[0], nsg1);
+      assert.equal(log2[0].params[1], vnet1Id);
 
       // Verify the service tag definition.
       assert.deepEqual(services.symbols.getSymbolSpec(subnet1.id), {
@@ -115,7 +99,7 @@ export default function test() {
         range: subnet1SourceIps,
       });
 
-      // Verify that correct VNet nodes were created in services.
+      // Verify that correct nodes were created.
       const expectedNodes: NodeSpec[] = [
         // Router
         {
@@ -131,17 +115,23 @@ export default function test() {
               },
             },
             {
-              destination: localIp1Id,
+              destination: 'foo',
               constraints: {
-                destinationIp: localIp1SourceIp,
+                destinationIp: 'bar',
               },
             },
-            {
-              destination: publicIp1Id,
-              constraints: {
-                destinationIp: publicIp1SourceIp,
-              },
-            },
+            // {
+            //   destination: localIp1Id,
+            //   constraints: {
+            //     destinationIp: localIp1SourceIp,
+            //   },
+            // },
+            // {
+            //   destination: publicIp1Id,
+            //   constraints: {
+            //     destinationIp: publicIp1SourceIp,
+            //   },
+            // },
           ],
         },
 

@@ -2,39 +2,25 @@ import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 import {NSGRuleSpecs} from './converters';
 
 import {GraphServices} from './graph_services';
-import {AzureNetworkInterface, AzureNetworkSecurityGroup} from './types';
+import {AzureNetworkSecurityGroup, AzureReference} from './types';
 
-// Memoizing
-//  How does memoizing work if caller needs node key?
-//  What if second call passes different parameters?
-// Verify that all IpConfigs have same subnet
-// Add NIC to group for subnet
-// Materialize inbound, outbound, and router nodes
-
-export function convertNIC(
+export function buildNSGRouters(
   services: GraphServices,
-  spec: AzureNetworkInterface,
+  keyPrefix: string,
+  internalRoutes: SimpleRoutingRuleSpec[],
+  nsgRef: AzureReference<AzureNetworkSecurityGroup> | undefined,
   parent: string,
-  vnetKey: string
+  vnetSymbol: string
 ): SimpleRoutingRuleSpec {
-  const keyPrefix = spec.id;
-
   const inboundKey = keyPrefix + '/inbound';
   const outboundKey = keyPrefix + '/outbound';
-  const routerKey = keyPrefix + '/router';
+  const routerKey = keyPrefix + '/outbound';
+
+  const destinationIp = gatherDestinationIps(internalRoutes);
 
   //
   // Router node
   //
-  const internalRoutes: SimpleRoutingRuleSpec[] = [];
-
-  // Traffic going to IP configurations on this NIC.
-  for (const ip of spec.properties.ipConfigurations) {
-    internalRoutes.push(services.convert.ip(services, ip));
-  }
-  const destinationIp = gatherDestinationIps(internalRoutes);
-
-  // Traffic leaving NIC
   const routes: RoutingRuleSpec[] = [
     ...internalRoutes,
     {
@@ -55,12 +41,12 @@ export function convertNIC(
     inboundRules: [],
     outboundRules: [],
   };
-  const nsgRef = spec.properties.networkSecurityGroup;
+
   if (nsgRef) {
     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
       nsgRef
     );
-    nsgRules = services.convert.nsg(nsgSpec, vnetKey);
+    nsgRules = services.convert.nsg(nsgSpec, vnetSymbol);
   }
 
   //
@@ -77,7 +63,7 @@ export function convertNIC(
   // Outbound node
   //
   const outboundNode: NodeSpec = {
-    key: outboundKey,
+    key: inboundKey,
     filters: nsgRules.outboundRules,
     routes: [{destination: parent}],
   };

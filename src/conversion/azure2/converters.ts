@@ -1,10 +1,11 @@
-import {RoutingRuleSpec} from '../../graph';
+import {SimpleRoutingRuleSpec} from '../../graph';
 import {RuleSpec} from '../../rules';
 
 import {GraphServices} from './graph_services';
 
 import {
   AzureIPConfiguration,
+  AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   AzureSubnet,
   AzureVirtualNetwork,
@@ -32,6 +33,12 @@ export interface NSGRuleSpecs {
 //     range: DRange or string expression?
 //   }
 export interface IConverters {
+  nic(
+    services: GraphServices,
+    spec: AzureNetworkInterface,
+    parent: string,
+    vnetSymbol: string
+  ): SimpleRoutingRuleSpec;
   resourceGraph(services: GraphServices): void;
   subnet(
     services: GraphServices,
@@ -39,6 +46,12 @@ export interface IConverters {
     parent: string
   ): NodeKeyAndSourceIp;
   vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
-  ip(services: GraphServices, spec: AzureIPConfiguration): RoutingRuleSpec;
-  nsg(spec: AzureNetworkSecurityGroup, vnetSymbol: string): NSGRuleSpecs;
+  ip(
+    services: GraphServices,
+    spec: AzureIPConfiguration
+  ): SimpleRoutingRuleSpec;
+  nsg(
+    spec: AzureNetworkSecurityGroup | undefined,
+    vnetSymbol: string
+  ): NSGRuleSpecs;
 }
