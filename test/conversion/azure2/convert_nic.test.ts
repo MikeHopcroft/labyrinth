@@ -60,11 +60,7 @@ export default function test() {
       );
 
       mocks.nsg.action(
-        (
-          nsgSpec: AzureNetworkSecurityGroup | undefined,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          vnetNodeKey: string
-        ): NSGRuleSpecs => {
+        (nsgSpec: AzureNetworkSecurityGroup | undefined): NSGRuleSpecs => {
           if (nsgSpec === nsg1) {
             return {inboundRules, outboundRules};
           } else {
@@ -86,25 +82,26 @@ export default function test() {
       );
 
       // Verify that ipConverter() was invoked correctly.
-      const log = mocks.ip.log();
-      assert.equal(log.length, 2);
-      assert.equal(log[0].params[1], localIp1);
-      assert.equal(log[1].params[1], localIp2);
+      const ipLog = mocks.ip.log();
+      assert.equal(ipLog.length, 2);
+      assert.equal(ipLog[0].params[1], localIp1);
+      assert.equal(ipLog[1].params[1], localIp2);
 
       // Verify that nsgConverter() was invoked correctly.
-      const log2 = mocks.nsg.log();
-      assert.equal(log2.length, 1);
-      assert.equal(log2[0].params[0], nsg1);
-      assert.equal(log2[0].params[1], vnet1Id);
+      const nsgLog = mocks.nsg.log();
+      assert.equal(nsgLog.length, 1);
+      assert.equal(nsgLog[0].params[0], nsg1);
+      assert.equal(nsgLog[0].params[1], vnet1Id);
 
       // Verify no symbol table additions.
       assert.equal(symbols.length, 0);
 
       // Verify that correct nodes were created.
       const expectedNodes: NodeSpec[] = [
-        // Router
+        // Inbound
         {
-          key: `${nic1.id}/router`,
+          key: `${nic1.id}/inbound`,
+          filters: inboundRules,
           routes: [
             {
               destination: localIp1Id,
@@ -117,20 +114,6 @@ export default function test() {
               constraints: {
                 destinationIp: localIp2SourceIp,
               },
-            },
-            {
-              destination: `${nic1.id}/outbound`,
-            },
-          ],
-        },
-
-        // Inbound
-        {
-          key: `${nic1.id}/inbound`,
-          filters: inboundRules,
-          routes: [
-            {
-              destination: `${nic1.id}/router`,
             },
           ],
         },
