@@ -15,17 +15,6 @@
 // az graph query -q 'resources | where resourceGroup == "labyrinth-sample"'
 //
 ///////////////////////////////////////////////////////////////////////////////
-// export interface AzureObjectBase {
-//   id: string;
-//   name: string;
-//   resourceGroup: string;
-//   type: string;
-// }
-
-// export interface AzureIdReference {
-//   id: string;
-//   resourceGroup: string;
-// }
 export interface AzureObjectBase {
   id: string;
   resourceGroup: string;
@@ -42,14 +31,19 @@ export interface AzureTypedObject extends AzureObjectBase {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export type AzureReference<T> = AzureObjectBase;
 
+// DESIGN NOTE: Azure resource graphs use an inconsistent mixture of upper and
+// lower casing in the AzureTypedObject's `type` field. This codebase assumes
+// lower case, meaning that the `type` fields in the resource graph must be
+// down cased before attempting to generate a Labyrinth graph.
+// See the normalizeCase() function.
 export enum AzureObjectType {
-  DEFAULT_SECURITY_RULE = 'Microsoft.Network/networkSecurityGroups/defaultSecurityRules',
-  LOCAL_IP = 'Microsoft.Network/networkInterfaces/ipConfigurations',
+  DEFAULT_SECURITY_RULE = 'microsoft.network/networksecuritygroups/defaultsecurityrules',
+  LOCAL_IP = 'microsoft.network/networkinterfaces/ipconfigurations',
   PUBLIC_IP = 'microsoft.network/publicipaddresses',
   NIC = 'microsoft.network/networkinterfaces',
   NSG = 'microsoft.network/networksecuritygroups',
-  SECURITY_RULE = 'Microsoft.Network/networkSecurityGroups/securityRules',
-  SUBNET = 'Microsoft.Network/virtualNetworks/subnets',
+  SECURITY_RULE = 'microsoft.network/networksecuritygroups/securityrules',
+  SUBNET = 'microsoft.network/virtualnetworks/subnets',
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
 }
 

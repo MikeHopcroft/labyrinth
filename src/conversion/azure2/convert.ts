@@ -9,10 +9,9 @@ import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
 import {GraphServices} from './graph_services';
-import {NameShortener} from './name_shortener';
+import {normalizeCase} from './normalize_case';
 import {SymbolTable} from './symbol_table';
 import {AzureNetworkInterface, AzureResourceGraph} from './types';
-import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
 
 // TODO: Move `converters` to own file.
 export const converters: IConverters = {
@@ -25,22 +24,27 @@ export const converters: IConverters = {
 };
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
-  //
-  // Shorten names in graph.
-  //
+  // //
+  // // Shorten names in graph.
+  // //
 
-  // Populate shortener with ids from AzureTypedObjects.
-  const shortener = new NameShortener();
-  for (const item of walkAzureTypedObjects(resourceGraphSpec)) {
-    shortener.add(item.id);
-  }
+  // // Populate shortener with ids from AzureTypedObjects.
+  // const shortener = new NameShortener();
+  // for (const item of walkAzureTypedObjects(resourceGraphSpec)) {
+  //   shortener.add(item.id);
+  // }
 
-  // Actually shorten names
-  // TODO: this needs to convert references in addition to AnyAzureObjects
-  // REVIEW: what if we need the old id and the new id in the node.
-  for (const item of walkAzureObjectBases(resourceGraphSpec)) {
-    item.id = shortener.shorten(item.id);
-  }
+  // // Actually shorten names
+  // // TODO: this needs to convert references in addition to AnyAzureObjects
+  // // REVIEW: what if we need the old id and the new id in the node.
+  // for (const item of walkAzureObjectBases(resourceGraphSpec)) {
+  //   item.id = shortener.shorten(item.id);
+  // }
+
+  //
+  // Normalize casing in Azure Resource Graph type fields.
+  //
+  normalizeCase(resourceGraphSpec);
 
   //
   // Initialize GraphServices

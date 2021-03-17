@@ -12,6 +12,10 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
+  * LocalIp vs PrivateIp
+  * Delete memoized conveter
+  * Rename types.ts to azure_types.ts
+  * Normalize casing in Azure Resource Graph type fields.
   * Cherry pick PR #14
   * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
   * . Implement convertNIC()
