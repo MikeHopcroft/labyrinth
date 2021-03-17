@@ -3,7 +3,8 @@ import {GraphSpec} from '../../graph';
 import {AzureObjectIndex} from './azure_object_index';
 import {IConverters} from './converters';
 import {convertIp} from './convert_ip';
-import {convertNsg} from './convert_nsg';
+import {convertNIC} from './convert_nic';
+import {convertNSG} from './convert_nsg';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVNet} from './convert_vnet';
@@ -15,10 +16,11 @@ import {walkAzureObjectBases, walkAzureTypedObjects} from './walk';
 
 // TODO: Move `converters` to own file.
 export const converters: IConverters = {
+  nic: convertNIC,
   resourceGraph: convertResourceGraph,
   subnet: convertSubnet,
   vnet: convertVNet,
-  nsg: convertNsg,
+  nsg: convertNSG,
   ip: convertIp,
 };
 

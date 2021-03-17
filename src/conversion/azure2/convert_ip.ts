@@ -1,4 +1,4 @@
-import {RoutingRuleSpec} from '../../graph';
+import {SimpleRoutingRuleSpec} from '../../graph';
 
 import {GraphServices} from './graph_services';
 import {AzureIPConfiguration, AzureObjectType, AzureSubnet} from './types';
@@ -16,7 +16,7 @@ function convertToIpAddress(ipItem: AzureIPConfiguration): string {
 export function convertIp(
   services: GraphServices,
   ipConfig: AzureIPConfiguration
-): RoutingRuleSpec {
+): SimpleRoutingRuleSpec {
   const sourceIp = convertToIpAddress(ipConfig);
   const ipNodeKey = ipConfig.id;
 
@@ -25,7 +25,7 @@ export function convertIp(
   const subnetSpec = services.index.dereference<AzureSubnet>(
     ipConfig.properties.subnet!
   );
-  const routes: RoutingRuleSpec[] = [
+  const routes: SimpleRoutingRuleSpec[] = [
     {
       // TODO: this converter should not reach into subnet's spec.
       destination: subnetSpec.id,

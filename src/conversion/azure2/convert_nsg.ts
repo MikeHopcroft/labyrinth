@@ -8,7 +8,7 @@ interface IRules {
   readonly inboundRules: RuleSpec[];
 }
 
-export function convertNsg(
+export function convertNSG(
   nsg: AzureNetworkSecurityGroup,
   vnetSymbol: string
 ): IRules {
@@ -98,20 +98,3 @@ function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
 
   return spec;
 }
-
-// export function convertNsgRules(
-//   nsgRef: AzureReference<AzureNetworkSecurityGroup>,
-//   services: GraphServices,
-//   vNetKey: string
-// ): IRules | undefined {
-//   if (nsgRef) {
-//     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
-//       nsgRef
-//     );
-
-//     // FIX: vNetKey needs to be a symbol not just a node key
-//     return services.convert.nsg(services, nsgSpec, vNetKey);
-//   }
-
-//   return undefined;
-// }

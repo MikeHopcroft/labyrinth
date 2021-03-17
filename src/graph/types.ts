@@ -20,6 +20,11 @@ const codecRoutingRuleSpec = t.intersection([
 ]);
 export type RoutingRuleSpec = t.TypeOf<typeof codecRoutingRuleSpec>;
 
+export interface SimpleRoutingRuleSpec extends RoutingRuleSpec {
+  destination: string;
+  constraints: {destinationIp: string};
+}
+
 export type AnyRuleSpec = RuleSpec | RoutingRuleSpec;
 
 export const codecNodeSpec = t.intersection([

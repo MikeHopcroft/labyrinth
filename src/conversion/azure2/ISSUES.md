@@ -13,6 +13,8 @@
 
 * Top 2
   * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
+  * Implement convertNIC()
+    * Extract commonality with convertSubnet() to a function.
   * Rework convertIp()
     * Take parent nodeKey
   * Decide whether to return routingRule or nodeKey + serviceTag pair.

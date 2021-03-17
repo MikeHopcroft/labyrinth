@@ -1,5 +1,6 @@
 export * from './azure_object_index';
 export * from './convert_ip';
+export * from './convert_nic';
 export * from './convert_subnet';
 export * from './convert_vnet';
 export * from './converters';
