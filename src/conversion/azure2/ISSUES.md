@@ -12,12 +12,16 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
+  * Cherry pick PR #14
   * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
-  * Implement convertNIC()
-    * Extract commonality with convertSubnet() to a function.
+  * . Implement convertNIC()
+    * . Extract commonality with convertSubnet() to a function.
+    * Rework router/inbound/outbound to generate only inbound/outbound.
   * Rework convertIp()
     * Take parent nodeKey
-  * Decide whether to return routingRule or nodeKey + serviceTag pair.
+  * . Decide whether to return routingRule or nodeKey + serviceTag pair.
+    * Might need to improve parser to allow except anywhere
+    * This might change the semantics of except for some use cases (except a, b ==? except a, except b)
   * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * Move away from Azure ids for node keys
     * Use unique identifiers for node keys

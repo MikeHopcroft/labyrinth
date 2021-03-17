@@ -58,11 +58,11 @@ export const nsg1Name = 'nsg1';
 export const nsg1Id = nsgId(nsg1Name);
 
 export const subnet1Name = 'subnet1';
-export const subnet1Id = subnetId(vnet1Id, subnet1Name);
+export const subnet1Id = subnetId(vnet1Name, subnet1Name);
 export const subnet1SourceIps = '10.0.0.0/8';
 
 export const subnet2Name = 'subnet2';
-export const subnet2Id = subnetId(vnet1Id, subnet2Name);
+export const subnet2Id = subnetId(vnet1Name, subnet2Name);
 export const subnet2SourceIps = '10.0.1.0/8';
 
 export const nic1Name = 'nic1';
