@@ -1,5 +1,7 @@
 # TODO
 
+* Graph.js console app might want to print out symbol table
+  * Also, might need to figure out best way to present/consume node keys.
 * Move Azure2 => Azure
 * Destinations on routes can be either strings or pools
 * Debug rule regressions for Deny Overrides and First Applicable

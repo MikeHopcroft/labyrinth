@@ -50,9 +50,11 @@ export function buildInboundOutboundNodes(
   const inboundNode: NodeSpec = {
     key: inboundKey,
     name: spec.id + '/inbound',
-    filters: nsgRules.inboundRules,
     routes: inboundRoutes,
   };
+  if (nsgRules.inboundRules.length) {
+    inboundNode.filters = nsgRules.inboundRules;
+  }
   services.addNode(inboundNode);
 
   //
@@ -62,9 +64,11 @@ export function buildInboundOutboundNodes(
     const outboundNode: NodeSpec = {
       key: outboundKey,
       name: spec.id + '/outbound',
-      filters: nsgRules.outboundRules,
       routes: [{destination: parent}],
     };
+    if (nsgRules.outboundRules.length) {
+      outboundNode.filters = nsgRules.outboundRules;
+    }
     services.addNode(outboundNode);
   }
 
