@@ -13,7 +13,7 @@
 
 * Top 2
   * Add ranges back to nodes
-  * Rename LocalIp to PrivateIp
+  * x Rename LocalIp to PrivateIp
   * Intergrate with converter console application
     * Smoke check with data/resource-graph-1.json
   * Write design note

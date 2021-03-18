@@ -41,7 +41,7 @@ export type AzureReference<T> = AzureObjectBase;
 // update the azureTypeNames array, below.
 export enum AzureObjectType {
   DEFAULT_SECURITY_RULE = 'microsoft.network/networksecuritygroups/defaultsecurityrules',
-  LOCAL_IP = 'microsoft.network/networkinterfaces/ipconfigurations',
+  PRIVATE_IP = 'microsoft.network/networkinterfaces/ipconfigurations',
   PUBLIC_IP = 'microsoft.network/publicipaddresses',
   NIC = 'microsoft.network/networkinterfaces',
   NSG = 'microsoft.network/networksecuritygroups',
@@ -52,7 +52,7 @@ export enum AzureObjectType {
 
 // Type names used for Labyrinth node key generation. See NodeKeyGenerator.
 export const azureTypeNames = [
-  [AzureObjectType.LOCAL_IP, 'privateIp'],
+  [AzureObjectType.PRIVATE_IP, 'privateIp'],
   [AzureObjectType.PUBLIC_IP, 'publicIp'],
   [AzureObjectType.NIC, 'nic'],
   [AzureObjectType.NSG, 'nsg'],
@@ -61,8 +61,8 @@ export const azureTypeNames = [
 ];
 
 // TODO: should this be called AzurePrivateIp?
-export interface AzureLocalIP extends AzureTypedObject {
-  type: AzureObjectType.LOCAL_IP;
+export interface AzurePrivateIP extends AzureTypedObject {
+  type: AzureObjectType.PRIVATE_IP;
   // TODO: should there be a `name` field?
   properties: {
     privateIPAddress: string;
@@ -70,7 +70,9 @@ export interface AzureLocalIP extends AzureTypedObject {
     subnet: AzureReference<AzureSubnet> | undefined;
   };
 }
-export const AzureLocalIP = {type: AzureObjectType.LOCAL_IP} as AzureLocalIP;
+export const AzurePrivateIP = {
+  type: AzureObjectType.PRIVATE_IP,
+} as AzurePrivateIP;
 
 export interface AzurePublicIP extends AzureTypedObject {
   type: AzureObjectType.PUBLIC_IP;
@@ -83,7 +85,7 @@ export interface AzurePublicIP extends AzureTypedObject {
 }
 export const AzurePublicIP = {type: AzureObjectType.PUBLIC_IP} as AzurePublicIP;
 
-export type AzureIPConfiguration = AzureLocalIP | AzurePublicIP;
+export type AzureIPConfiguration = AzurePrivateIP | AzurePublicIP;
 
 export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;

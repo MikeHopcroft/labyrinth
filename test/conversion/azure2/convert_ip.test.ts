@@ -7,9 +7,9 @@ import {convertIp} from '../../../src/conversion/azure2';
 
 import {
   createGraphServicesMock,
-  localIp1,
-  localIp1Id,
-  localIp1SourceIp,
+  privateIp1,
+  privateIp1Id,
+  privateIp1SourceIp,
   publicIp1,
   publicIp1Id,
   publicIp1SourceIp,
@@ -18,7 +18,7 @@ import {
 
 export default function test() {
   describe('convertIp()', () => {
-    it('local ip', () => {
+    it('private ip', () => {
       const {services} = createGraphServicesMock();
 
       // convertIp() expects to find its subnet spec in the index.
@@ -26,12 +26,12 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
-      const result = convertIp(services, localIp1, 'nic1');
+      const result = convertIp(services, privateIp1, 'nic1');
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
       assert.equal(result.destination, 'privateIp1');
-      assert.deepEqual(result.constraints, {destinationIp: localIp1SourceIp});
+      assert.deepEqual(result.constraints, {destinationIp: privateIp1SourceIp});
 
       // Verify no symbol table additions.
       assert.equal(symbols.length, 0);
@@ -40,14 +40,14 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: 'privateIp1',
-          name: localIp1Id,
+          name: privateIp1Id,
           endpoint: true,
-          range: {sourceIp: localIp1SourceIp},
+          range: {sourceIp: privateIp1SourceIp},
           routes: [
             {
               destination: 'nic1',
               constraints: {
-                destinationIp: `except ${localIp1SourceIp}`,
+                destinationIp: `except ${privateIp1SourceIp}`,
               },
             },
           ],

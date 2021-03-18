@@ -17,14 +17,14 @@ import {
 import {
   createGraphServicesMock,
   inboundRules,
-  localIp1,
-  localIp2,
-  localIp1Id,
-  localIp2Id,
-  localIp1Name,
-  localIp2Name,
-  localIp1SourceIp,
-  localIp2SourceIp,
+  privateIp1,
+  privateIp2,
+  privateIp1Id,
+  privateIp2Id,
+  privateIp1Name,
+  privateIp2Name,
+  privateIp1SourceIp,
+  privateIp2SourceIp,
   nic1,
   nic1Id,
   nsg1,
@@ -35,7 +35,7 @@ import {
 
 export default function test() {
   describe('convertNIC()', () => {
-    it('NIC with NSG and two local ips', () => {
+    it('NIC with NSG and two private ips', () => {
       const {services, mocks} = createGraphServicesMock();
 
       // convertNIC() expects to find its nsg spec in the index.
@@ -44,15 +44,15 @@ export default function test() {
       mocks.ip.action(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         (services: GraphServices, ipSpec: AzureIPConfiguration) => {
-          if (ipSpec.name === localIp1Name) {
+          if (ipSpec.name === privateIp1Name) {
             return {
-              destination: localIp1Id,
-              constraints: {destinationIp: localIp1SourceIp},
+              destination: privateIp1Id,
+              constraints: {destinationIp: privateIp1SourceIp},
             };
-          } else if (ipSpec.name === localIp2Name) {
+          } else if (ipSpec.name === privateIp2Name) {
             return {
-              destination: localIp2Id,
-              constraints: {destinationIp: localIp2SourceIp},
+              destination: privateIp2Id,
+              constraints: {destinationIp: privateIp2SourceIp},
             };
           } else {
             throw new TypeError('Unknown ip configuration');
@@ -79,14 +79,14 @@ export default function test() {
       assert.equal(result.destination, 'nic1/inbound');
       assert.equal(
         result.constraints.destinationIp,
-        `${localIp1SourceIp},${localIp2SourceIp}`
+        `${privateIp1SourceIp},${privateIp2SourceIp}`
       );
 
       // Verify that ipConverter() was invoked correctly.
       const ipLog = mocks.ip.log();
       assert.equal(ipLog.length, 2);
-      assert.equal(ipLog[0].params[1], localIp1);
-      assert.equal(ipLog[1].params[1], localIp2);
+      assert.equal(ipLog[0].params[1], privateIp1);
+      assert.equal(ipLog[1].params[1], privateIp2);
 
       // Verify that nsgConverter() was invoked correctly.
       const nsgLog = mocks.nsg.log();
@@ -106,15 +106,15 @@ export default function test() {
           filters: inboundRules,
           routes: [
             {
-              destination: localIp1Id,
+              destination: privateIp1Id,
               constraints: {
-                destinationIp: localIp1SourceIp,
+                destinationIp: privateIp1SourceIp,
               },
             },
             {
-              destination: localIp2Id,
+              destination: privateIp2Id,
               constraints: {
-                destinationIp: localIp2SourceIp,
+                destinationIp: privateIp2SourceIp,
               },
             },
           ],
