@@ -12,8 +12,12 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
+  * Add ranges back to nodes
+  * Intergrate with converter console application
+    * Smoke check with data/resource-graph-1.json
   * Rename LocalIp to PrivateIp
-  * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
+  * x Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
+  * x Remove NodeKeyAndDestinationIp
   * x Delete memoized conveter
   * x Rename types.ts to azure_types.ts
   * x Normalize casing in Azure Resource Graph type fields.

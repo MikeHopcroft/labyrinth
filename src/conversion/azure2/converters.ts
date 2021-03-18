@@ -11,10 +11,10 @@ import {
 
 import {GraphServices} from './graph_services';
 
-export interface NodeKeyAndSourceIp {
-  key: string;
-  destinationIp: string;
-}
+// export interface NodeKeyAndDestinationIp {
+//   key: string;
+//   destinationIp: string;
+// }
 
 export interface NSGRuleSpecs {
   readonly outboundRules: RuleSpec[];
@@ -46,7 +46,10 @@ export interface IConverters {
     parent: string,
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
-  vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
+  vnet(
+    services: GraphServices,
+    spec: AzureVirtualNetwork
+  ): SimpleRoutingRuleSpec;
   ip(
     services: GraphServices,
     spec: AzureIPConfiguration,
