@@ -6,7 +6,7 @@ import {GraphServices} from './graph_services';
 
 function convertToIpAddress(ipItem: AzureIPConfiguration): string {
   let ip: string;
-  if (ipItem.type === AzureObjectType.LOCAL_IP) {
+  if (ipItem.type === AzureObjectType.PRIVATE_IP) {
     ip = ipItem.properties.privateIPAddress;
   } else {
     ip = ipItem.properties.ipAddress;

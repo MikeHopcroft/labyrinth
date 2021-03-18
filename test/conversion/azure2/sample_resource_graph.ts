@@ -2,7 +2,7 @@ import {ActionType, RuleSpec} from '../../../src';
 
 import {
   AnyAzureObject,
-  AzureLocalIP,
+  AzurePrivateIP,
   AzureNetworkInterface,
   AzureObjectBase,
   AzureObjectIndex,
@@ -68,15 +68,15 @@ export const subnet2SourceIps = '10.0.1.0/8';
 export const nic1Name = 'nic1';
 export const nic1Id = nicId(nic1Name);
 
-export const localIp1Name = 'localIp1';
-export const localIp1Id = ipId(nic1Name, localIp1Name);
-export const localIp1SourceIp = '10.0.0.1';
-export const localIp1SubnetName = subnet1Name;
+export const privateIp1Name = 'privateIp1';
+export const privateIp1Id = ipId(nic1Name, privateIp1Name);
+export const privateIp1SourceIp = '10.0.0.1';
+export const privateIp1SubnetName = subnet1Name;
 
-export const localIp2Name = 'localIp2';
-export const localIp2Id = ipId(nic1Name, localIp2Name);
-export const localIp2SourceIp = '10.0.0.2';
-export const localIp2SubnetName = subnet1Name;
+export const privateIp2Name = 'privateIp2';
+export const privateIp2Id = ipId(nic1Name, privateIp2Name);
+export const privateIp2SourceIp = '10.0.0.2';
+export const privateIp2SubnetName = subnet1Name;
 
 export const publicIp1Name = 'publicIp1';
 export const publicIp1Id = ipId(nic1Name, publicIp1Name);
@@ -89,24 +89,24 @@ export const publicIp1SubnetName = subnet1Name;
 //
 ///////////////////////////////////////////////////////////////////////////////
 // TODO: should this be called `privateIp1`?
-export const localIp1: AzureLocalIP = {
-  type: AzureObjectType.LOCAL_IP,
-  id: localIp1Id,
-  name: localIp1Name,
+export const privateIp1: AzurePrivateIP = {
+  type: AzureObjectType.PRIVATE_IP,
+  id: privateIp1Id,
+  name: privateIp1Name,
   resourceGroup,
   properties: {
-    privateIPAddress: localIp1SourceIp,
+    privateIPAddress: privateIp1SourceIp,
     subnet: reference(subnet1Id),
   },
 };
 
-export const localIp2: AzureLocalIP = {
-  type: AzureObjectType.LOCAL_IP,
-  id: localIp2Id,
-  name: localIp2Name,
+export const privateIp2: AzurePrivateIP = {
+  type: AzureObjectType.PRIVATE_IP,
+  id: privateIp2Id,
+  name: privateIp2Name,
   resourceGroup,
   properties: {
-    privateIPAddress: localIp2SourceIp,
+    privateIPAddress: privateIp2SourceIp,
     subnet: reference(subnet1Id),
   },
 };
@@ -134,7 +134,7 @@ export const subnet1: AzureSubnet = {
   resourceGroup,
   properties: {
     addressPrefix: subnet1SourceIps,
-    ipConfigurations: [localIp1, publicIp1],
+    ipConfigurations: [privateIp1, publicIp1],
     networkSecurityGroup: reference(nsg1Id),
   },
 };
@@ -198,7 +198,7 @@ export const nic1: AzureNetworkInterface = {
   name: nic1Name,
   resourceGroup,
   properties: {
-    ipConfigurations: [localIp1, localIp2],
+    ipConfigurations: [privateIp1, privateIp2],
     networkSecurityGroup: reference(nsg1),
   },
 };
