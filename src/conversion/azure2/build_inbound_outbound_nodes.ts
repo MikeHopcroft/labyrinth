@@ -1,7 +1,10 @@
 import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
-import {AzureTypedObject} from '../azure/types';
 
-import {AzureNetworkSecurityGroup, AzureReference} from './azure_types';
+import {
+  AzureNetworkSecurityGroup,
+  AzureReference,
+  AzureTypedObject,
+} from './azure_types';
 import {NSGRuleSpecs} from './converters';
 import {GraphServices} from './graph_services';
 
