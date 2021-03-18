@@ -12,7 +12,8 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
-  * LocalIp vs PrivateIp
+  * Rename LocalIp to PrivateIp
+  * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * x Delete memoized conveter
   * x Rename types.ts to azure_types.ts
   * x Normalize casing in Azure Resource Graph type fields.
@@ -23,15 +24,16 @@
     * x Rework router/inbound/outbound to generate only inbound/outbound.
     * Unit test for omitted outbound node.
   * Rework convertIp()
-    * Take parent nodeKey
+    * x Take parent nodeKey
+    * Separate handling for publicIp, privateIp
+    * Correct handling of publicIp
   * . Decide whether to return routingRule or nodeKey + serviceTag pair.
     * Might need to improve parser to allow except anywhere
     * This might change the semantics of except for some use cases (except a, b ==? except a, except b)
-  * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * . Move away from Azure ids for node keys
     * x Use unique identifiers for node keys
       * x Need to think about brittleness in unit tests - where tests need to know how/order ids are allocate
-    * Put Azure id into node name field
+    * x Put Azure id into node name field
     * Run shortener on Labyrinth graph, as necessary
   * Decide whether to improve subnet unit test design for NSG
     * Issue is that NSG spec must be converted into inbound and outbound rules. These are hard-coded into the mock today. Assuming there will be other tests that will want to use the inbound and outbound rules. Perhaps nsg1 needs to be built from the concatendation of nsg1Inbound and nsg1Outbound.

@@ -8,8 +8,10 @@ import {convertIp} from '../../../src/conversion/azure2';
 import {
   createGraphServicesMock,
   localIp1,
+  localIp1Id,
   localIp1SourceIp,
   publicIp1,
+  publicIp1Id,
   publicIp1SourceIp,
   subnet1,
 } from './sample_resource_graph';
@@ -38,6 +40,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: 'privateIp1',
+          name: localIp1Id,
           endpoint: true,
           range: {sourceIp: localIp1SourceIp},
           routes: [
@@ -76,6 +79,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: 'publicIp1',
+          name: publicIp1Id,
           endpoint: true,
           range: {sourceIp: publicIp1SourceIp},
           routes: [
