@@ -24,15 +24,14 @@ export function convertIp(
 
   const routes: SimpleRoutingRuleSpec[] = [
     {
-      // TODO: this converter should not reach into subnet's spec.
       destination: parent,
       constraints: {destinationIp: `except ${sourceIp}`},
     },
   ];
 
-  // Materialize node
   services.addNode({
     key: ipNodeKey,
+    name: spec.id,
     endpoint: true,
     range: {sourceIp},
     routes,

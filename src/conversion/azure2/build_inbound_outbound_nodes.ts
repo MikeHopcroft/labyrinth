@@ -1,4 +1,5 @@
 import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
+import {AzureTypedObject} from '../azure/types';
 
 import {AzureNetworkSecurityGroup, AzureReference} from './azure_types';
 import {NSGRuleSpecs} from './converters';
@@ -6,13 +7,15 @@ import {GraphServices} from './graph_services';
 
 export function buildInboundOutboundNodes(
   services: GraphServices,
-  keyPrefix: string,
+  spec: AzureTypedObject,
   routeBuilder: (parent: string) => SimpleRoutingRuleSpec[],
   nsgRef: AzureReference<AzureNetworkSecurityGroup> | undefined,
   parent: string,
   vnetSymbol: string,
   addressRange: string | undefined = undefined
 ): SimpleRoutingRuleSpec {
+  const keyPrefix = services.ids.createKey(spec);
+
   //
   // NSG rules
   //
@@ -43,6 +46,7 @@ export function buildInboundOutboundNodes(
   //
   const inboundNode: NodeSpec = {
     key: inboundKey,
+    name: spec.id + '/inbound',
     filters: nsgRules.inboundRules,
     routes: inboundRoutes,
   };
@@ -54,6 +58,7 @@ export function buildInboundOutboundNodes(
   if (nsgRules.outboundRules.length > 0) {
     const outboundNode: NodeSpec = {
       key: outboundKey,
+      name: spec.id + '/outbound',
       filters: nsgRules.outboundRules,
       routes: [{destination: parent}],
     };

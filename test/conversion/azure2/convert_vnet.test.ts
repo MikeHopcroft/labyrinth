@@ -82,6 +82,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: 'vnet1',
+          name: vnet1.id,
           range: {
             sourceIp: vnet1SourceIps,
           },

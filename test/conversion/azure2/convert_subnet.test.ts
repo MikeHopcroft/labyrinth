@@ -19,6 +19,7 @@ import {
   nsg1,
   outboundRules,
   subnet1,
+  subnet1Id,
   subnet1SourceIps,
 } from './sample_resource_graph';
 
@@ -80,6 +81,7 @@ export default function test() {
         // Inbound
         {
           key: 'subnet1/inbound',
+          name: subnet1Id + '/inbound',
           filters: inboundRules,
           routes: [
             {
@@ -92,6 +94,7 @@ export default function test() {
         // Outbound
         {
           key: 'subnet1/outbound',
+          name: subnet1Id + '/outbound',
           filters: outboundRules,
           routes: [
             {

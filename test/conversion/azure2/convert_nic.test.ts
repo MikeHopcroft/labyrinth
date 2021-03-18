@@ -26,6 +26,7 @@ import {
   localIp1SourceIp,
   localIp2SourceIp,
   nic1,
+  nic1Id,
   nsg1,
   outboundRules,
   subnet1Id,
@@ -101,6 +102,7 @@ export default function test() {
         // Inbound
         {
           key: 'nic1/inbound',
+          name: nic1Id + '/inbound',
           filters: inboundRules,
           routes: [
             {
@@ -121,6 +123,7 @@ export default function test() {
         // Outbound
         {
           key: 'nic1/outbound',
+          name: nic1Id + '/outbound',
           filters: outboundRules,
           routes: [
             {

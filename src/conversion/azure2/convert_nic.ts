@@ -12,8 +12,6 @@ export function convertNIC(
   parent: string,
   vnetSymbol: string
 ): SimpleRoutingRuleSpec {
-  const keyPrefix = services.ids.createKey(spec);
-
   const routeBuilder = (parent: string): SimpleRoutingRuleSpec[] =>
     spec.properties.ipConfigurations.map(ip =>
       services.convert.ip(services, ip, parent)
@@ -21,7 +19,7 @@ export function convertNIC(
 
   return buildInboundOutboundNodes(
     services,
-    keyPrefix,
+    spec,
     routeBuilder,
     spec.properties.networkSecurityGroup,
     parent,

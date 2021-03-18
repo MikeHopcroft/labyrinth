@@ -44,6 +44,7 @@ export function convertVNet(
 
   services.addNode({
     key: vNetNodeKey,
+    name: spec.id,
     range: {sourceIp},
     routes,
   });
