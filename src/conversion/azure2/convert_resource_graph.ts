@@ -23,13 +23,9 @@ export function convertResourceGraph(services: GraphServices) {
 
   // Convert each VNet.
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
-    const {key, destinationIp} = services.convert.vnet(services, vnet);
-    vNetNodeKeys.push(key);
-
-    routes.push({
-      destination: key,
-      constraints: {destinationIp},
-    });
+    const route = services.convert.vnet(services, vnet);
+    vNetNodeKeys.push(route.destination);
+    routes.push(route);
   }
 
   // Define a service tag for `Internet`, which is referenced in router rules

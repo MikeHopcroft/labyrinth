@@ -61,8 +61,8 @@ export default function test() {
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.key, 'vnet1');
-      assert.equal(result.destinationIp, vnet1SourceIps);
+      assert.equal(result.destination, 'vnet1');
+      assert.equal(result.constraints.destinationIp, vnet1SourceIps);
 
       // Verify that subnetConverter() was invoked correctly.
       const log = mocks.subnet.log();

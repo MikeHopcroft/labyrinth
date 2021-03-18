@@ -1,16 +1,15 @@
 import DRange from 'drange';
 
 import {formatIpLiteral, parseIp} from '../../dimensions';
-import {RoutingRuleSpec} from '../../graph';
+import {RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 
 import {AzureVirtualNetwork} from './azure_types';
-import {NodeKeyAndSourceIp} from './converters';
 import {GraphServices} from './graph_services';
 
 export function convertVNet(
   services: GraphServices,
   spec: AzureVirtualNetwork
-): NodeKeyAndSourceIp {
+): SimpleRoutingRuleSpec {
   const vNetNodeKey = services.ids.createKey(spec);
   const vNetServiceTag = vNetNodeKey;
 
@@ -20,14 +19,14 @@ export function convertVNet(
     const ip = parseIp(address);
     addressRange.add(ip);
   }
-  const sourceIp = formatIpLiteral(addressRange);
-  services.symbols.defineServiceTag(vNetServiceTag, sourceIp);
+  const destinationIp = formatIpLiteral(addressRange);
+  services.symbols.defineServiceTag(vNetServiceTag, destinationIp);
 
   // Create outbound rule (traffic leaving vnet).
   const routes: RoutingRuleSpec[] = [
     {
       destination: services.getInternetKey(),
-      constraints: {destinationIp: `except ${sourceIp}`},
+      constraints: {destinationIp: `except ${destinationIp}`},
     },
   ];
 
@@ -45,9 +44,12 @@ export function convertVNet(
   services.addNode({
     key: vNetNodeKey,
     name: spec.id,
-    range: {sourceIp},
+    range: {sourceIp: destinationIp},
     routes,
   });
 
-  return {key: vNetNodeKey, destinationIp: sourceIp};
+  return {
+    destination: vNetNodeKey,
+    constraints: {destinationIp},
+  };
 }
