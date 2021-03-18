@@ -13,15 +13,21 @@
 
 * Top 2
   * Add ranges back to nodes
+  * Rename LocalIp to PrivateIp
   * Intergrate with converter console application
     * Smoke check with data/resource-graph-1.json
-  * Rename LocalIp to PrivateIp
+  * Write design note
+  * Remove services.getInternetKey()
+    * The resource graph is the sole owner of this key
+    * The Internet service tag is another story
+  * Convenience function to initialize GraphServices.
+  * Move Azure-specific symbols to dedicated Azure universe.
   * x Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * x Remove NodeKeyAndDestinationIp
   * x Delete memoized conveter
   * x Rename types.ts to azure_types.ts
   * x Normalize casing in Azure Resource Graph type fields.
-  * Cherry pick PR #14
+  * x Cherry pick PR #14
   * x In convertSubnet(): // TODO: import IRules from './types', not '../types'
   * . Implement convertNIC()
     * x Extract commonality with convertSubnet() to a function.
@@ -33,6 +39,7 @@
     * Correct handling of publicIp
   * . Decide whether to return routingRule or nodeKey + serviceTag pair.
     * Might need to improve parser to allow except anywhere
+      * Or throw if field contains 'except'
     * This might change the semantics of except for some use cases (except a, b ==? except a, except b)
   * . Move away from Azure ids for node keys
     * x Use unique identifiers for node keys
@@ -40,10 +47,8 @@
     * x Put Azure id into node name field
     * Run shortener on Labyrinth graph, as necessary
   * Decide whether to improve subnet unit test design for NSG
-    * Issue is that NSG spec must be converted into inbound and outbound rules. These are hard-coded into the mock today. Assuming there will be other tests that will want to use the inbound and outbound rules. Perhaps nsg1 needs to be built from the concatendation of nsg1Inbound and nsg1Outbound.
-  * Naming consistency: convertNetworkSecurityGroup vs convertNIC, convertVNET
-  * Remove services.getInternetKey()
-    * The resource graph is the sole owner of this key
+    * Issue is that NSG spec must be converted into inbound and outbound rules. These are hard-coded into the mock today. Assuming there will be other tests that will want to use the inbound and outbound rules. Perhaps nsg1 needs to be built from the concatenation of nsg1Inbound and nsg1Outbound.
+  * x Naming consistency: convertNetworkSecurityGroup vs convertNIC, convertVNET
   * Review implementations and unit tests
     * convertIp
       * Rework to take parent node key
