@@ -12,18 +12,19 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
-  * Deprecate Azure folder
-  * Rename Azure2 folder
-  * Intergrate with converter console application
-    * Smoke check with data/resource-graph-1.json
+  * x Deprecate Azure folder
+  * x Rename Azure2 folder
+  * x Intergrate with converter console application
+    * x Smoke check with data/resource-graph-1.json
+  * Implement NAT for publicIp
   * Add ranges back to nodes
-  * x Rename LocalIp to PrivateIp
   * Write design note
   * Remove services.getInternetKey()
     * The resource graph is the sole owner of this key
     * The Internet service tag is another story
   * Convenience function to initialize GraphServices.
   * Move Azure-specific symbols to dedicated Azure universe.
+  * x Rename LocalIp to PrivateIp
   * x Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * x Remove NodeKeyAndDestinationIp
   * x Delete memoized conveter
