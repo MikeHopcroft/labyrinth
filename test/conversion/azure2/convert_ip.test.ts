@@ -24,30 +24,25 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
-      const result = convertIp(services, localIp1);
-      const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
+      const result = convertIp(services, localIp1, 'nic1');
+      const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.destination, localIp1.id);
+      assert.equal(result.destination, 'privateIp1');
       assert.deepEqual(result.constraints, {destinationIp: localIp1SourceIp});
 
-      // Verify the service tag definition.
-      assert.deepEqual(services.symbols.getSymbolSpec(localIp1.id), {
-        dimension: 'ip',
-        symbol: localIp1.id,
-        range: localIp1.properties.privateIPAddress,
-      });
+      // Verify no symbol table additions.
+      assert.equal(symbols.length, 0);
 
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
-          key: localIp1.id,
+          key: 'privateIp1',
           endpoint: true,
           range: {sourceIp: localIp1SourceIp},
           routes: [
             {
-              // TODO: test shouldn't look inside of subnet's spec.
-              destination: subnet1.id,
+              destination: 'nic1',
               constraints: {
                 destinationIp: `except ${localIp1SourceIp}`,
               },
@@ -56,7 +51,7 @@ export default function test() {
         },
       ];
 
-      assert.deepEqual(observedNodes, expectedNodes);
+      assert.deepEqual(nodes, expectedNodes);
     });
 
     it('public ip', () => {
@@ -67,30 +62,25 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
-      const result = convertIp(services, publicIp1);
-      const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
+      const result = convertIp(services, publicIp1, 'nic1');
+      const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.destination, publicIp1.id);
+      assert.equal(result.destination, 'publicIp1');
       assert.deepEqual(result.constraints, {destinationIp: publicIp1SourceIp});
 
-      // Verify the service tag definition.
-      assert.deepEqual(services.symbols.getSymbolSpec(publicIp1.id), {
-        dimension: 'ip',
-        symbol: publicIp1.id,
-        range: publicIp1.properties.ipAddress,
-      });
+      // Verify no symbol table additions.
+      assert.equal(symbols.length, 0);
 
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
-          key: publicIp1.id,
+          key: 'publicIp1',
           endpoint: true,
           range: {sourceIp: publicIp1SourceIp},
           routes: [
             {
-              // TODO: test shouldn't look inside of subnet's spec.
-              destination: subnet1.id,
+              destination: 'nic1',
               constraints: {
                 destinationIp: `except ${publicIp1SourceIp}`,
               },
@@ -99,7 +89,7 @@ export default function test() {
         },
       ];
 
-      assert.deepEqual(observedNodes, expectedNodes);
+      assert.deepEqual(nodes, expectedNodes);
     });
   });
 }

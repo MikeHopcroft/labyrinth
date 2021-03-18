@@ -10,7 +10,7 @@ export function convertSubnet(
   parent: string,
   vnetSymbol: string
 ): SimpleRoutingRuleSpec {
-  const keyPrefix = spec.id;
+  const keyPrefix = services.ids.createKey(spec);
 
   // Materialize nics and add routes.
   const routeBuilder = (parent: string): SimpleRoutingRuleSpec[] => {

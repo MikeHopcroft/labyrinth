@@ -13,7 +13,7 @@
 
 * Top 2
   * LocalIp vs PrivateIp
-  * Delete memoized conveter
+  * x Delete memoized conveter
   * x Rename types.ts to azure_types.ts
   * x Normalize casing in Azure Resource Graph type fields.
   * Cherry pick PR #14
@@ -28,9 +28,9 @@
     * Might need to improve parser to allow except anywhere
     * This might change the semantics of except for some use cases (except a, b ==? except a, except b)
   * Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
-  * Move away from Azure ids for node keys
-    * Use unique identifiers for node keys
-      * Need to think about brittleness in unit tests - where tests need to know how/order ids are allocate
+  * . Move away from Azure ids for node keys
+    * x Use unique identifiers for node keys
+      * x Need to think about brittleness in unit tests - where tests need to know how/order ids are allocate
     * Put Azure id into node name field
     * Run shortener on Labyrinth graph, as necessary
   * Decide whether to improve subnet unit test design for NSG

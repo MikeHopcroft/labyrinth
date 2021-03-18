@@ -10,14 +10,13 @@ export function convertNIC(
   services: GraphServices,
   spec: AzureNetworkInterface,
   parent: string,
-  vnetKey: string
+  vnetSymbol: string
 ): SimpleRoutingRuleSpec {
-  const keyPrefix = spec.id;
+  const keyPrefix = services.ids.createKey(spec);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const routeBuilder = (parent: string): SimpleRoutingRuleSpec[] =>
     spec.properties.ipConfigurations.map(ip =>
-      services.convert.ip(services, ip)
+      services.convert.ip(services, ip, parent)
     );
 
   return buildInboundOutboundNodes(
@@ -26,6 +25,6 @@ export function convertNIC(
     routeBuilder,
     spec.properties.networkSecurityGroup,
     parent,
-    vnetKey
+    vnetSymbol
   );
 }

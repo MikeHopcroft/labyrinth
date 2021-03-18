@@ -195,6 +195,7 @@ export const nsg1: AzureNetworkSecurityGroup = {
 export const nic1: AzureNetworkInterface = {
   type: AzureObjectType.NIC,
   id: nic1Id,
+  name: nic1Name,
   resourceGroup,
   properties: {
     ipConfigurations: [localIp1, localIp2],

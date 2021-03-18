@@ -20,7 +20,6 @@ import {
   outboundRules,
   subnet1,
   subnet1SourceIps,
-  vnet1Id,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -53,34 +52,34 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.vnet() because our intent
       // is to test the real convertVNet(), instead of its mock.
-      const result = convertSubnet(services, subnet1, vnet1Id, vnet1Id);
+      const result = convertSubnet(services, subnet1, 'vnet1', 'vnet1');
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify no symbol table additions.
       assert.equal(symbols.length, 0);
 
       // Verify the return value.
-      assert.equal(result.destination, `${subnet1.id}/inbound`);
+      assert.equal(result.destination, 'subnet1/inbound');
       assert.equal(result.constraints.destinationIp, subnet1SourceIps);
 
       // Verify that nicConverter() was invoked correctly.
       const nicLog = mocks.nic.log();
       assert.equal(nicLog.length, 1);
       assert.equal(nicLog[0].params[1], nic1);
-      assert.equal(nicLog[0].params[2], `${subnet1.id}/outbound`);
-      assert.equal(nicLog[0].params[3], vnet1Id);
+      assert.equal(nicLog[0].params[2], 'subnet1/outbound');
+      assert.equal(nicLog[0].params[3], 'vnet1');
 
       // Verify that nsgConverter() was invoked correctly.
       const nsgLog = mocks.nsg.log();
       assert.equal(nsgLog.length, 1);
       assert.equal(nsgLog[0].params[0], nsg1);
-      assert.equal(nsgLog[0].params[1], vnet1Id);
+      assert.equal(nsgLog[0].params[1], 'vnet1');
 
       // Verify that correct nodes were created.
       const expectedNodes: NodeSpec[] = [
         // Inbound
         {
-          key: `${subnet1.id}/inbound`,
+          key: 'subnet1/inbound',
           filters: inboundRules,
           routes: [
             {
@@ -92,11 +91,11 @@ export default function test() {
 
         // Outbound
         {
-          key: `${subnet1.id}/outbound`,
+          key: 'subnet1/outbound',
           filters: outboundRules,
           routes: [
             {
-              destination: vnet1Id,
+              destination: 'vnet1',
             },
           ],
         },

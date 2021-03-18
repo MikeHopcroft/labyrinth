@@ -1,10 +1,7 @@
 import {SimpleRoutingRuleSpec} from '../../graph';
 
-import {
-  AzureIPConfiguration,
-  AzureObjectType,
-  AzureSubnet,
-} from './azure_types';
+import {AzureIPConfiguration, AzureObjectType} from './azure_types';
+
 import {GraphServices} from './graph_services';
 
 function convertToIpAddress(ipItem: AzureIPConfiguration): string {
@@ -19,20 +16,16 @@ function convertToIpAddress(ipItem: AzureIPConfiguration): string {
 
 export function convertIp(
   services: GraphServices,
-  ipConfig: AzureIPConfiguration
+  spec: AzureIPConfiguration,
+  parent: string
 ): SimpleRoutingRuleSpec {
-  const sourceIp = convertToIpAddress(ipConfig);
-  const ipNodeKey = ipConfig.id;
+  const sourceIp = convertToIpAddress(spec);
+  const ipNodeKey = services.ids.createKey(spec);
 
-  // TODO: create routing table and node.
-  // TODO: deal with ipConfig.properties.subnet undefined.
-  const subnetSpec = services.index.dereference<AzureSubnet>(
-    ipConfig.properties.subnet!
-  );
   const routes: SimpleRoutingRuleSpec[] = [
     {
       // TODO: this converter should not reach into subnet's spec.
-      destination: subnetSpec.id,
+      destination: parent,
       constraints: {destinationIp: `except ${sourceIp}`},
     },
   ];
@@ -45,7 +38,5 @@ export function convertIp(
     routes,
   });
 
-  services.symbols.defineServiceTag(ipNodeKey, sourceIp);
   return {destination: ipNodeKey, constraints: {destinationIp: sourceIp}};
-  // return {key: ipNodeKey, destinationIp: sourceIp};
 }

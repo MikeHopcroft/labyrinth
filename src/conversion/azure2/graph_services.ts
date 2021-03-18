@@ -2,9 +2,11 @@ import {GraphSpec, NodeSpec} from '../../graph';
 import {AzureObjectIndex} from './azure_object_index';
 
 import {IConverters} from './converters';
+import {NodeKeyGenerator} from './node_key_generator';
 import {SymbolTable} from './symbol_table';
 
 export class GraphServices {
+  readonly ids = new NodeKeyGenerator();
   readonly index: AzureObjectIndex;
   readonly convert: IConverters;
   private readonly nodes: NodeSpec[] = [];

@@ -49,7 +49,8 @@ export interface IConverters {
   vnet(services: GraphServices, spec: AzureVirtualNetwork): NodeKeyAndSourceIp;
   ip(
     services: GraphServices,
-    spec: AzureIPConfiguration
+    spec: AzureIPConfiguration,
+    parent: string
   ): SimpleRoutingRuleSpec;
   nsg(
     spec: AzureNetworkSecurityGroup | undefined,
