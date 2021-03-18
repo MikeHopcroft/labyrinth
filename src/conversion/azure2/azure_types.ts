@@ -50,7 +50,7 @@ export enum AzureObjectType {
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
 }
 
-// Type names used for Labyrinth node key generation.
+// Type names used for Labyrinth node key generation. See NodeKeyGenerator.
 export const azureTypeNames = [
   [AzureObjectType.LOCAL_IP, 'privateIp'],
   [AzureObjectType.PUBLIC_IP, 'publicIp'],

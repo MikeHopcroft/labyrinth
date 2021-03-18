@@ -20,6 +20,18 @@ const codecRoutingRuleSpec = t.intersection([
 ]);
 export type RoutingRuleSpec = t.TypeOf<typeof codecRoutingRuleSpec>;
 
+// DESIGN NOTE: SimpleRoutingRuleSpec is used to indicate that the spec
+// contains a constraint that consists solely of a destinationIp. The use case
+// is forming the union of the destinationIp values across a collection of
+// constraints.
+//
+// WARNING: the only safe and correct way to compute the union of constraints
+// is to parse them into Conjunctions, then perform the union, then serialize
+// them out. In certain situations it may be permissible to union the text in
+// the destinationIp fields by joining with a comma. When performing this
+// textual union, it is important to ensure that none of the destinationIp
+// values uses keyworkds like `except`, `any`, `all`, and `*`. Other symbols
+// should be safe for union.
 export interface SimpleRoutingRuleSpec extends RoutingRuleSpec {
   destination: string;
   constraints: {destinationIp: string};
