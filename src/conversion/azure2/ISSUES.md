@@ -12,10 +12,12 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
-  * Add ranges back to nodes
-  * x Rename LocalIp to PrivateIp
+  * Deprecate Azure folder
+  * Rename Azure2 folder
   * Intergrate with converter console application
     * Smoke check with data/resource-graph-1.json
+  * Add ranges back to nodes
+  * x Rename LocalIp to PrivateIp
   * Write design note
   * Remove services.getInternetKey()
     * The resource graph is the sole owner of this key
