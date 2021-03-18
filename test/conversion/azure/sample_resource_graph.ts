@@ -14,7 +14,7 @@ import {
   GraphServices,
   IConverters,
   SymbolTable,
-} from '../../../src/conversion/azure2';
+} from '../../../src/conversion/azure';
 
 import {createMock} from './mocks';
 
