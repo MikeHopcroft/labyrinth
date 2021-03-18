@@ -36,6 +36,9 @@ export type AzureReference<T> = AzureObjectBase;
 // lower case, meaning that the `type` fields in the resource graph must be
 // down cased before attempting to generate a Labyrinth graph.
 // See the normalizeCase() function.
+//
+// WARNING: when adding new values to the AzureObjectType enum, be sure to
+// update the azureTypeNames array, below.
 export enum AzureObjectType {
   DEFAULT_SECURITY_RULE = 'microsoft.network/networksecuritygroups/defaultsecurityrules',
   LOCAL_IP = 'microsoft.network/networkinterfaces/ipconfigurations',
@@ -46,6 +49,16 @@ export enum AzureObjectType {
   SUBNET = 'microsoft.network/virtualnetworks/subnets',
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
 }
+
+// Type names used for Labyrinth node key generation.
+export const azureTypeNames = [
+  [AzureObjectType.LOCAL_IP, 'privateIp'],
+  [AzureObjectType.PUBLIC_IP, 'publicIp'],
+  [AzureObjectType.NIC, 'nic'],
+  [AzureObjectType.NSG, 'nsg'],
+  [AzureObjectType.SUBNET, 'subnet'],
+  [AzureObjectType.VIRTUAL_NETWORK, 'vnet'],
+];
 
 // TODO: should this be called AzurePrivateIp?
 export interface AzureLocalIP extends AzureTypedObject {
@@ -72,7 +85,7 @@ export const AzurePublicIP = {type: AzureObjectType.PUBLIC_IP} as AzurePublicIP;
 
 export type AzureIPConfiguration = AzureLocalIP | AzurePublicIP;
 
-export interface AzureNetworkInterface extends AzureObjectBase {
+export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;
   // TODO: should there be a `name` field?
   properties: {

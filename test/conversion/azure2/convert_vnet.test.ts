@@ -37,8 +37,17 @@ export default function test() {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           vnetSymbol: string
         ) => {
+          let destination: string;
+          if (subnetSpec === subnet1) {
+            destination = 'subnet1';
+          } else if (subnetSpec === subnet2) {
+            destination = 'subnet2';
+          } else {
+            throw new TypeError('Unexpected subnet');
+          }
+
           return {
-            destination: subnetSpec.id,
+            destination,
             constraints: {
               destinationIp: subnetSpec.properties.addressPrefix,
             },
@@ -52,27 +61,27 @@ export default function test() {
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.key, vnet1.id);
+      assert.equal(result.key, 'vnet1');
       assert.equal(result.destinationIp, vnet1SourceIps);
 
       // Verify that subnetConverter() was invoked correctly.
       const log = mocks.subnet.log();
       assert.equal(log[0].params[1], subnet1);
-      assert.equal(log[0].params[2], vnet1.id);
+      assert.equal(log[0].params[2], 'vnet1');
       assert.equal(log[1].params[1], subnet2);
-      assert.equal(log[1].params[2], vnet1.id);
+      assert.equal(log[1].params[2], 'vnet1');
 
       // Verify the service tag definition.
-      assert.deepEqual(services.symbols.getSymbolSpec(vnet1.id), {
+      assert.deepEqual(services.symbols.getSymbolSpec('vnet1'), {
         dimension: 'ip',
-        symbol: vnet1.id,
+        symbol: 'vnet1',
         range: vnet1SourceIps,
       });
 
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
-          key: vnet1.id,
+          key: 'vnet1',
           range: {
             sourceIp: vnet1SourceIps,
           },
@@ -84,13 +93,13 @@ export default function test() {
               },
             },
             {
-              destination: subnet1.id,
+              destination: 'subnet1',
               constraints: {
                 destinationIp: subnet1SourceIps,
               },
             },
             {
-              destination: subnet2.id,
+              destination: 'subnet2',
               constraints: {
                 destinationIp: subnet2SourceIps,
               },

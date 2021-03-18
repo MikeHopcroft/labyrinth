@@ -75,7 +75,7 @@ export default function test() {
       const {nodes: observedNodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify result.
-      assert.equal(result.destination, `${nic1.id}/inbound`);
+      assert.equal(result.destination, 'nic1/inbound');
       assert.equal(
         result.constraints.destinationIp,
         `${localIp1SourceIp},${localIp2SourceIp}`
@@ -100,7 +100,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         // Inbound
         {
-          key: `${nic1.id}/inbound`,
+          key: 'nic1/inbound',
           filters: inboundRules,
           routes: [
             {
@@ -120,7 +120,7 @@ export default function test() {
 
         // Outbound
         {
-          key: `${nic1.id}/outbound`,
+          key: 'nic1/outbound',
           filters: outboundRules,
           routes: [
             {

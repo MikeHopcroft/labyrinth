@@ -9,15 +9,14 @@ import {GraphServices} from './graph_services';
 
 export function convertVNet(
   services: GraphServices,
-  vNetSpec: AzureVirtualNetwork
+  spec: AzureVirtualNetwork
 ): NodeKeyAndSourceIp {
-  // Our convention is to use the Azure id as the Labyrinth NodeSpec key.
-  const vNetNodeKey = vNetSpec.id;
-  const vNetServiceTag = vNetSpec.id;
+  const vNetNodeKey = services.ids.createKey(spec);
+  const vNetServiceTag = vNetNodeKey;
 
   // Compute this VNet's address range by unioning up all of its address prefixes.
   const addressRange = new DRange();
-  for (const address of vNetSpec.properties.addressSpace.addressPrefixes) {
+  for (const address of spec.properties.addressSpace.addressPrefixes) {
     const ip = parseIp(address);
     addressRange.add(ip);
   }
@@ -33,12 +32,12 @@ export function convertVNet(
   ];
 
   // Materialize subnets and create routes to each.
-  for (const subnetSpec of vNetSpec.properties.subnets) {
+  for (const subnetSpec of spec.properties.subnets) {
     const route = services.convert.subnet(
       services,
       subnetSpec,
       vNetNodeKey,
-      vNetNodeKey
+      vNetServiceTag
     );
     routes.push(route);
   }
