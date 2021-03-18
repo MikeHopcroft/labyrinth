@@ -3,7 +3,7 @@ import 'mocha';
 
 import {NodeSpec} from '../../../src';
 
-import {convertIp} from '../../../src/conversion/azure2';
+import {convertIp} from '../../../src/conversion/azure';
 
 import {
   createGraphServicesMock,

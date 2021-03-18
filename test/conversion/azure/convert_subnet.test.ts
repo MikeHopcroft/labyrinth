@@ -7,7 +7,7 @@ import {
   AzureNetworkSecurityGroup,
   convertSubnet,
   NSGRuleSpecs,
-} from '../../../src/conversion/azure2';
+} from '../../../src/conversion/azure';
 
 // DESIGN NOTE: considered namespacing these items, but their usage became
 // too verbose. Expect that numbers in names (e.g. subnet1) prevent collisions

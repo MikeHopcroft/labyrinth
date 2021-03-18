@@ -5,8 +5,8 @@ import path from 'path';
 
 import {FileSystem, YAML} from '../io';
 
-import {AnyAzureObject} from '../conversion/azure2';
-import {convert} from '../conversion/azure2/convert';
+import {AnyAzureObject} from '../conversion/azure';
+import {convert} from '../conversion/azure/convert';
 
 import {fail, handleError, succeed} from '../utilities';
 
