@@ -1093,6 +1093,76 @@ describe('Graph', () => {
       );
     });
 
+    // TODO: REVIEW: is this really the behavior we want?
+    // Consider [] equivalent to undefined.
+    it('Inbound: empty filter blocks all routes', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          filters: [],
+          routes: [
+            {
+              destination: 'b',
+            },
+          ],
+        },
+        {
+          key: 'b',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = true;
+
+      assert.equal(
+        paths(graph, 'a', 'b', {outbound}),
+        trim(`
+          b:
+            routes:
+              (no routes)
+
+            paths:
+              (no paths)`)
+      );
+    });
+
+    it('Inbound: undefined filter allows all', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          routes: [
+            {
+              destination: 'b',
+            },
+          ],
+        },
+        {
+          key: 'b',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = true;
+
+      assert.equal(
+        paths(graph, 'a', 'b', {outbound}),
+        trim(`
+          b:
+            routes:
+              (universe)
+
+            paths:
+              a => b
+                (universe)`)
+      );
+    });
+
     it('Inbound and outbound', () => {
       const nodes: NodeSpec[] = [
         {

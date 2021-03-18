@@ -1,5 +1,8 @@
 # TODO
 
+* Need to decide on semantics of NodeSpec.filters === [].
+  * One factor is that YAML can't really serialze undefined, so we prefer to no attach the filter property when its value is undefined.
+  * Another consideration is that denyOverrides takes the array, so it should probably decide the semantics of an empty array.
 * Graph.js console app might want to print out symbol table
   * Also, might need to figure out best way to present/consume node keys.
 * Move Azure2 => Azure
