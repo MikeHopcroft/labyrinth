@@ -31,6 +31,7 @@ export function createGraphServicesMock() {
     ip: createMock(fake.ip),
     nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
+    publicIp: createMock(fake.publicIp),
     resourceGraph: createMock(fake.resourceGraph),
     subnet: createMock(fake.subnet),
     vnet: createMock(fake.vnet),
@@ -85,6 +86,13 @@ export const publicIp1Id = ipId(nic1Name, publicIp1Name);
 export const publicIp1SourceIp = '203.0.113.1';
 export const publicIp1SubnetName = subnet1Name;
 
+export const publicIpWithPrivateName = 'publicIpWithPrivateIp1';
+export const publicIpWithPrivateId = publicIpId(publicIpWithPrivateName);
+export const publicIpWithPrivateSourceIp = '203.0.113.1';
+
+export const privateIpWithPublicName = 'privateIpWithPublic1';
+export const privateIpWithPublicId = ipId(nic1Name, publicIpWithPrivateName);
+
 export const vm1Name = 'vm1';
 export const vm1Id = vmId(vm1Name);
 
@@ -123,7 +131,29 @@ export const publicIp1: AzurePublicIP = {
   resourceGroup,
   properties: {
     ipAddress: publicIp1SourceIp,
+  },
+};
+
+export const privateIpWithPublic: AzurePrivateIP = {
+  type: AzureObjectType.PRIVATE_IP,
+  id: privateIpWithPublicId,
+  name: privateIpWithPublicName,
+  resourceGroup,
+  properties: {
+    privateIPAddress: privateIp1SourceIp,
     subnet: reference(subnet1Id),
+    publicIPAddress: reference(publicIpWithPrivateId),
+  },
+};
+
+export const publicIpWithPrivate: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIpWithPrivateId,
+  name: publicIpWithPrivateName,
+  resourceGroup,
+  properties: {
+    ipAddress: publicIpWithPrivateSourceIp,
+    ipConfiguration: reference(privateIpWithPublic),
   },
 };
 
@@ -283,6 +313,10 @@ function nsgId(name: string) {
 
 function nicId(name: string) {
   return `${resourceGroupId()}${networkProvider()}/virtualInterfaces/${name}`;
+}
+
+function publicIpId(name: string) {
+  return `${resourceGroupId()}${networkProvider()}/publicIpAddresses/${name}`;
 }
 
 function ipId(nic: string, ip: string) {

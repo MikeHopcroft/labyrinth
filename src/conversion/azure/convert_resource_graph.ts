@@ -1,6 +1,6 @@
 import {NodeSpec, RoutingRuleSpec} from '../../graph';
 
-import {AzureVirtualNetwork} from './azure_types';
+import {AzurePublicIP, AzureVirtualNetwork} from './azure_types';
 import {GraphServices} from './graph_services';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -19,20 +19,39 @@ export function convertResourceGraph(services: GraphServices) {
   // Materialize each virtual network, while saving its NodeKey for later use.
   // Create routes from internet to each virtual network.
   const vNetNodeKeys: string[] = [];
-  const routes: RoutingRuleSpec[] = [];
+  const gatewayRoutes: RoutingRuleSpec[] = [];
+  const internetRoutes: RoutingRuleSpec[] = [];
 
   const azureGatewayKey = 'AzureGateway';
   // TODO: Allocate Key to avoid possible collisions
   const internetNodeKey = services.getInternetKey();
 
+  // Convert each Public Ips.
+  for (const ipSpec of services.index.withType(AzurePublicIP)) {
+    const {inbound, outbound} = services.convert.publicIp(
+      services,
+      ipSpec,
+      azureGatewayKey,
+      internetNodeKey
+    );
+
+    if (inbound) {
+      internetRoutes.push(inbound);
+    }
+
+    if (outbound) {
+      gatewayRoutes.push(outbound);
+    }
+  }
+
   // Convert each VNet.
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
     const route = services.convert.vnet(services, vnet);
     vNetNodeKeys.push(route.destination);
-    routes.push(route);
+    gatewayRoutes.push(route);
   }
 
-  routes.push({
+  gatewayRoutes.push({
     destination: internetNodeKey,
   });
 
@@ -46,7 +65,7 @@ export function convertResourceGraph(services: GraphServices) {
   // TODO: the routes should really be the routes to all of the public ips, not the vnets.
   const azureGateway: NodeSpec = {
     key: azureGatewayKey,
-    routes,
+    routes: gatewayRoutes,
   };
   services.addNode(azureGateway);
 
@@ -54,11 +73,7 @@ export function convertResourceGraph(services: GraphServices) {
   const internetNode: NodeSpec = {
     key: internetNodeKey,
     endpoint: true,
-    routes: [
-      {
-        destination: azureGatewayKey,
-      },
-    ],
+    routes: internetRoutes,
   };
   services.addNode(internetNode);
 }
