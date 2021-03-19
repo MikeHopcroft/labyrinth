@@ -44,10 +44,7 @@ export function convertNIC(
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
   const inboundKey = keyPrefix + '/inbound';
-
-  // Only include an outbound node if there are outbound NSG rules.
-  const outboundKey =
-    nsgRules.outboundRules.length > 0 ? keyPrefix + '/outbound' : parent;
+  const outboundKey = keyPrefix + '/outbound';
 
   // Create the route to the VM.
   const vmSpec = services.index.dereference<AzureVirtualMachine>(
@@ -71,17 +68,25 @@ export function convertNIC(
   //
   // If there are outbound NSG rules, construct outbound node
   //
-  if (nsgRules.outboundRules.length > 0) {
-    const outboundNode: NodeSpec = {
-      key: outboundKey,
-      name: spec.id + '/outbound',
-      routes: [{destination: parent}],
-    };
-    if (nsgRules.outboundRules.length) {
-      outboundNode.filters = nsgRules.outboundRules;
-    }
-    services.addNode(outboundNode);
+  const sourceIp = spec.properties.ipConfigurations
+    .map(ip => ip.properties.privateIPAddress)
+    .join(',');
+
+  const outboundNode: NodeSpec = {
+    key: outboundKey,
+    name: spec.id + '/outbound',
+    routes: [
+      {
+        destination: parent,
+        constraints: {sourceIp},
+      },
+    ],
+  };
+
+  if (nsgRules.outboundRules.length) {
+    outboundNode.filters = nsgRules.outboundRules;
   }
+  services.addNode(outboundNode);
 
   //
   // Return route for use by parent node.
@@ -91,12 +96,8 @@ export function convertNIC(
   // IpConfigs bound to multiple subnets. If this assumption were wrong,
   // we would have to filter this map to include only private IPs for the
   // subnet parent of this NIC.
-  const destinationIp = spec.properties.ipConfigurations
-    .map(ip => ip.properties.privateIPAddress)
-    .join(',');
-
   return {
     destination: inboundKey,
-    constraints: {destinationIp},
+    constraints: {destinationIp: sourceIp},
   };
 }
