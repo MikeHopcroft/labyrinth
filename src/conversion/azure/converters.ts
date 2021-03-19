@@ -25,14 +25,6 @@ export interface NSGRuleSpecs {
 // DESIGN NOTE: IConverters exists to allow mocking of individual
 // converters with resorting to monkey patching.
 //
-// DESIGN ALTERNATIVE (for converter return value):
-// Instead of returning identifier that is both the node key and
-// the service tag, return an object
-//   {
-//     inboundKey: string,
-//     outboundKey: string,
-//     range: DRange or string expression?
-//   }
 export interface IConverters {
   nic(
     services: GraphServices,

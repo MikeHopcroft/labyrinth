@@ -1,15 +1,9 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NodeSpec, RoutingRuleSpec} from '../../../src';
+import {NodeSpec} from '../../../src';
 
-import {
-  AzureNetworkSecurityGroup,
-  AzureVirtualMachine,
-  convertNIC,
-  GraphServices,
-  NSGRuleSpecs,
-} from '../../../src/conversion/azure';
+import {convertNIC} from '../../../src/conversion/azure';
 
 // DESIGN NOTE: considered namespacing these items, but their usage became
 // too verbose. Expect that numbers in names (e.g. subnet1) prevent collisions
@@ -21,11 +15,12 @@ import {
   privateIp2SourceIp,
   nic1,
   nic1Id,
+  nicWithoutVm,
   nsg1,
   outboundRules,
   subnet1Id,
   vnet1Id,
-  nicWithoutVm,
+  vm1,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -35,31 +30,17 @@ export default function test() {
 
       // convertNIC() expects to find its nsg spec in the index.
       services.index.add(nsg1);
+      services.index.add(vm1);
 
-      mocks.nsg.action(
-        (nsgSpec: AzureNetworkSecurityGroup | undefined): NSGRuleSpecs => {
-          if (nsgSpec === nsg1) {
-            return {inboundRules, outboundRules};
-          } else {
-            throw 'Incorrect nsg spec';
-          }
-        }
-      );
+      mocks.nsg.action(() => {
+        return {inboundRules, outboundRules};
+      });
 
-      mocks.vm.action(
-        (
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          services: GraphServices,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          spec: AzureVirtualMachine,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          parent: string
-        ): RoutingRuleSpec => {
-          return {
-            destination: 'vm1',
-          };
-        }
-      );
+      mocks.vm.action(() => {
+        return {
+          destination: 'vm1',
+        };
+      });
 
       // DESIGN NOTE: cannot call services.convert.nic() because our intent
       // is to test the real convertNIC(), instead of its mock.

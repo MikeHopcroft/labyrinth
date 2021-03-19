@@ -103,12 +103,6 @@ export const AzureNetworkInterface = {
   type: AzureObjectType.NIC,
 } as AzureNetworkInterface;
 
-// export function asAzureNetworkInterface(
-//   item: AnyAzureObject
-// ): AzureNetworkInterface | null {
-//   return item.type === AzureObjectType.NIC ? item : null;
-// }
-
 export interface AzureNetworkSecurityGroup extends AzureTypedObject {
   type: AzureObjectType.NSG;
   properties: {
@@ -174,12 +168,6 @@ export interface AzureVirtualNetwork extends AzureTypedObject {
 export const AzureVirtualNetwork = {
   type: AzureObjectType.VIRTUAL_NETWORK,
 } as AzureVirtualNetwork;
-
-// export function asAzureVirtualNetwork(
-//   item: AnyAzureObject
-// ): AzureVirtualNetwork | null {
-//   return item.type === AzureObjectType.VIRTUAL_NETWORK ? item : null;
-// }
 
 export type AnyAzureObject =
   | AzureIPConfiguration

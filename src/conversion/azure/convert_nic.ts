@@ -1,11 +1,11 @@
-import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
+import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
 
 import {
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
-  AzureReference,
   AzureVirtualMachine,
 } from './azure_types';
+
 import {NSGRuleSpecs} from './converters';
 import {GraphServices} from './graph_services';
 
@@ -49,11 +49,11 @@ export function convertNIC(
   const outboundKey =
     nsgRules.outboundRules.length > 0 ? keyPrefix + '/outbound' : parent;
 
-  const vmRoute = createVmRoute(
-    services,
-    outboundKey,
+  // Create the route to the VM.
+  const vmSpec = services.index.dereference<AzureVirtualMachine>(
     spec.properties.virtualMachine
   );
+  const vmRoute = services.convert.vm(services, vmSpec, outboundKey);
 
   //
   // Construct inbound node
@@ -86,6 +86,11 @@ export function convertNIC(
   //
   // Return route for use by parent node.
   //
+
+  // DESIGN NOTE: it appears that Azure does not allow a NIC to include
+  // IpConfigs bound to multiple subnets. If this assumption were wrong,
+  // we would have to filter this map to include only private IPs for the
+  // subnet parent of this NIC.
   const destinationIp = spec.properties.ipConfigurations
     .map(ip => ip.properties.privateIPAddress)
     .join(',');
@@ -94,14 +99,4 @@ export function convertNIC(
     destination: inboundKey,
     constraints: {destinationIp},
   };
-}
-
-function createVmRoute(
-  services: GraphServices,
-  outboundKey: string,
-  specRef: AzureReference<AzureVirtualMachine>
-): RoutingRuleSpec {
-  const vmSpec = services.index.dereference<AzureVirtualMachine>(specRef);
-  const vmRoute = services.convert.vm(services, vmSpec, outboundKey);
-  return vmRoute;
 }

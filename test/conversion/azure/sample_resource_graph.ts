@@ -86,7 +86,7 @@ export const publicIp1SourceIp = '203.0.113.1';
 export const publicIp1SubnetName = subnet1Name;
 
 export const vm1Name = 'vm1';
-export const vm1Id = nsgId(nsg1Name);
+export const vm1Id = vmId(vm1Name);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -287,6 +287,10 @@ function nicId(name: string) {
 
 function ipId(nic: string, ip: string) {
   return `${nicId(nic)}/ipConfigurations/${ip}`;
+}
+
+function vmId(name: string) {
+  return `${resourceGroupId()}Microsoft.Compute/virtualMachines/${name}`;
 }
 
 function reference(item: AnyAzureObject | string): AzureObjectBase {
