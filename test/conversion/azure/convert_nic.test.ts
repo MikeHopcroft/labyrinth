@@ -85,6 +85,9 @@ export default function test() {
           routes: [
             {
               destination: subnet1Id,
+              constraints: {
+                sourceIp: `${privateIp1SourceIp},${privateIp2SourceIp}`,
+              },
             },
           ],
         },
