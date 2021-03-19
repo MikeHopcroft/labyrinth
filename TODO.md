@@ -1,5 +1,26 @@
 # TODO
 
+* Need to decide on semantics of NodeSpec.filters === [].
+  * One factor is that YAML can't really serialze undefined, so we prefer to no attach the filter property when its value is undefined.
+  * Another consideration is that denyOverrides takes the array, so it should probably decide the semantics of an empty array.
+* Graph.js console app might want to print out symbol table
+  * Also, might need to figure out best way to present/consume node keys.
+* Move Azure2 => Azure
+* Destinations on routes can be either strings or pools
+* Debug rule regressions for Deny Overrides and First Applicable
+* Publish new verion and integrate into React app
+* Investigate more key shortener options
+* x Consitency: IP vs Ip in AzureLocalIP, AzurePublicIp
+* Unit testing cleanup
+  * Mocha test explorer config - no coverage
+  * x Test naming tree - Azure/Azure2/etc.
+  * x Console spew in unit tests
+  * x Test names - walkwalkAzureTypedObjects, walkwalkAzureObjectBases
+  * x Finish up VNet unit test
+  * x Unit test for convertSubnet
+  * x Unit test for convertIp
+  * x Erase dead code in mocks
+  * x Refactor shared
 * Questions
   * Is the VirtualNetwork service tag defined in relation to the parent subnet or the resource group (which may have multiple VNETs)?
   * Can two VNets in the same resource group have overlaping ranges?

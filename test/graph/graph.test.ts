@@ -262,7 +262,6 @@ describe('Graph', () => {
         c1,
         'main2 => main3 => right1 => right2 => main2\n  destination port: 2'
       );
-      console.log(c1);
     });
 
     it('Double cycle variant two', () => {
@@ -1091,6 +1090,76 @@ describe('Graph', () => {
               main1 => main2 => c
                 destination ip: 11.0.0.0/8
                 destination port: except 1`)
+      );
+    });
+
+    // TODO: REVIEW: is this really the behavior we want?
+    // Consider [] equivalent to undefined.
+    it('Inbound: empty filter blocks all routes', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          filters: [],
+          routes: [
+            {
+              destination: 'b',
+            },
+          ],
+        },
+        {
+          key: 'b',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = true;
+
+      assert.equal(
+        paths(graph, 'a', 'b', {outbound}),
+        trim(`
+          b:
+            routes:
+              (no routes)
+
+            paths:
+              (no paths)`)
+      );
+    });
+
+    it('Inbound: undefined filter allows all', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          routes: [
+            {
+              destination: 'b',
+            },
+          ],
+        },
+        {
+          key: 'b',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = true;
+
+      assert.equal(
+        paths(graph, 'a', 'b', {outbound}),
+        trim(`
+          b:
+            routes:
+              (universe)
+
+            paths:
+              a => b
+                (universe)`)
       );
     });
 

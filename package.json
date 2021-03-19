@@ -23,7 +23,7 @@
   "scripts": {
     "docs": "node node_modules/prepress/build/src/apps/prepress.js documentation/src documentation",
     "test": "mocha",
-    "test-coverage": "nyc mocha",
+    "test-coverage": "nyc mocha --config .mocharc-ts.json",
     "lint": "gts lint",
     "clean": "gts clean",
     "compile": "tsc",
@@ -31,7 +31,35 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "pretest-coverage": "npm run compile",
-    "posttest": "npm run lint"
+    "posttest": "npm run lint",
+    "watch": "npm-watch test",
+    "watch:compile": "npm-watch compile"
+  },
+  "watch": {
+    "compile": {
+      "patterns": [
+        "src",
+        "test"
+      ],
+      "extensions": "*.ts",
+      "ignore": [
+        "build",
+        "node_modules"
+      ],
+      "verbose": true
+    },
+    "test": {
+      "patterns": [
+        "src",
+        "test"
+      ],
+      "extensions": "*.ts",
+      "ignore": [
+        "build",
+        "node_modules"
+      ],
+      "verbose": true
+    }
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
@@ -45,6 +73,7 @@
     "chai": "^4.2.0",
     "gts": "^3.0.2",
     "mocha": "^8.2.1",
+    "npm-watch": "^0.9.0",
     "nyc": "^15.1.0",
     "prepress": "0.0.3",
     "source-map-support": "^0.5.19",

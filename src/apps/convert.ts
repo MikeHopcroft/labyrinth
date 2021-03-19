@@ -2,9 +2,11 @@ import commandLineUsage from 'command-line-usage';
 import {Section} from 'command-line-usage';
 import minimist from 'minimist';
 import path from 'path';
-import {FileSystem, YAML} from '..';
+
+import {FileSystem, YAML} from '../io';
+
 import {AnyAzureObject} from '../conversion/azure';
-import {AzureConverter} from '../conversion/azure/azure_converter';
+import {convert} from '../conversion/azure/convert';
 
 import {fail, handleError, succeed} from '../utilities';
 
@@ -26,7 +28,7 @@ function main() {
     console.log(`Azure resource graph input file: ${infile}`);
     console.log(`Labyrinth graph output file: ${outfile}`);
     const root = FileSystem.readFileSyncAs<AnyAzureObject[]>(infile);
-    const graph = AzureConverter.convert(root.values());
+    const graph = convert(root);
     YAML.writeNodeGraphAsYamlFile(graph, outfile);
     console.log('Conversion complete.');
   } catch (e) {

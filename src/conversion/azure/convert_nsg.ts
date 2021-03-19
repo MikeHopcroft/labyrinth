@@ -1,18 +1,49 @@
 import {ActionType, Constraint, RuleSpec} from '../../rules';
 import {removeUndefinedProperties} from '../../utilities';
 
-import {IRules} from '..';
+import {AzureNetworkSecurityGroup, AzureSecurityRule} from './azure_types';
 
-import {
-  AzureNetworkSecurityGroup,
-  AzureSecurityRule,
-  AzureVirtualNetwork,
-} from '.';
+interface IRules {
+  readonly outboundRules: RuleSpec[];
+  readonly inboundRules: RuleSpec[];
+}
 
-function convertRule(
-  vnet: AzureVirtualNetwork,
-  rule: AzureSecurityRule
-): RuleSpec {
+export function convertNSG(
+  nsg: AzureNetworkSecurityGroup,
+  vnetSymbol: string
+): IRules {
+  const inboundRules: RuleSpec[] = [];
+  const outboudRules: RuleSpec[] = [];
+
+  for (const rule of nsg.properties.defaultSecurityRules) {
+    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  }
+
+  for (const rule of nsg.properties.securityRules) {
+    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  }
+
+  return {
+    outboundRules: outboudRules,
+    inboundRules: inboundRules,
+  };
+}
+
+function writeRule(
+  rule: AzureSecurityRule,
+  vnetSymbol: string,
+  inbound: RuleSpec[],
+  outbound: RuleSpec[]
+) {
+  const r = convertRule(rule, vnetSymbol);
+  if (rule.properties.direction === 'Inbound') {
+    inbound.push(r);
+  } else {
+    outbound.push(r);
+  }
+}
+
+function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
   const action =
     rule.properties.access === 'Allow' ? ActionType.ALLOW : ActionType.DENY;
   const priority = rule.properties.priority;
@@ -21,7 +52,7 @@ function convertRule(
   let sourceIp = rule.properties.sourceAddressPrefix;
   // TODO: consider using symbol table here instead of vnet.name.
   if (sourceIp === 'VirtualNetwork') {
-    sourceIp = vnet.name;
+    sourceIp = vnetSymbol;
   }
 
   const sourcePort = rule.properties.sourcePortRange;
@@ -30,7 +61,7 @@ function convertRule(
   let destinationIp = rule.properties.destinationAddressPrefix;
   // TODO: consider using symbol table here instead of vnet.name.
   if (destinationIp === 'VirtualNetwork') {
-    destinationIp = vnet.name;
+    destinationIp = vnetSymbol;
   }
 
   const destinationPort = rule.properties.destinationPortRange;
@@ -67,38 +98,3 @@ function convertRule(
 
   return spec;
 }
-
-function createNetworkSecurityGroupRules(
-  nsg: AzureNetworkSecurityGroup,
-  vnet: AzureVirtualNetwork
-): IRules {
-  const inboundRules: RuleSpec[] = [];
-  const outboudRules: RuleSpec[] = [];
-
-  for (const rule of nsg.properties.defaultSecurityRules) {
-    const r = convertRule(vnet, rule);
-    if (rule.properties.direction === 'Inbound') {
-      inboundRules.push(r);
-    } else {
-      outboudRules.push(r);
-    }
-  }
-
-  for (const rule of nsg.properties.securityRules) {
-    const r = convertRule(vnet, rule);
-    if (rule.properties.direction === 'Inbound') {
-      inboundRules.push(r);
-    } else {
-      outboudRules.push(r);
-    }
-  }
-
-  return {
-    outboundRules: outboudRules,
-    inboundRules: inboundRules,
-  };
-}
-
-export const NSG = {
-  parseRules: createNetworkSecurityGroupRules,
-};
