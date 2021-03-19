@@ -1,4 +1,4 @@
-import {SimpleRoutingRuleSpec} from '../../graph';
+import {RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 import {RuleSpec} from '../../rules';
 
 import {
@@ -6,6 +6,7 @@ import {
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   AzureSubnet,
+  AzureVirtualMachine,
   AzureVirtualNetwork,
 } from './azure_types';
 
@@ -59,4 +60,9 @@ export interface IConverters {
     spec: AzureNetworkSecurityGroup | undefined,
     vnetSymbol: string
   ): NSGRuleSpecs;
+  vm(
+    services: GraphServices,
+    spec: AzureVirtualMachine,
+    parent: string
+  ): RoutingRuleSpec;
 }

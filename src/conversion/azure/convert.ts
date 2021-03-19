@@ -8,6 +8,7 @@ import {convertNIC} from './convert_nic';
 import {convertNSG} from './convert_nsg';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
+import {convertVm} from './convert_vm';
 import {convertVNet} from './convert_vnet';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
@@ -21,6 +22,7 @@ export const converters: IConverters = {
   vnet: convertVNet,
   nsg: convertNSG,
   ip: convertIp,
+  vm: convertVm,
 };
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {

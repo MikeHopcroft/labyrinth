@@ -48,6 +48,7 @@ export enum AzureObjectType {
   SECURITY_RULE = 'microsoft.network/networksecuritygroups/securityrules',
   SUBNET = 'microsoft.network/virtualnetworks/subnets',
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
+  VIRTUAL_MACHINE = 'microsoft.compute/virtualmachines',
 }
 
 // Type names used for Labyrinth node key generation. See NodeKeyGenerator.
@@ -58,6 +59,7 @@ export const azureTypeNames = [
   [AzureObjectType.NSG, 'nsg'],
   [AzureObjectType.SUBNET, 'subnet'],
   [AzureObjectType.VIRTUAL_NETWORK, 'vnet'],
+  [AzureObjectType.VIRTUAL_MACHINE, 'vm'],
 ];
 
 // TODO: should this be called AzurePrivateIp?
@@ -68,6 +70,7 @@ export interface AzurePrivateIP extends AzureTypedObject {
     privateIPAddress: string;
     // TODO: REVIEW: can subnet ever be undefined?
     subnet: AzureReference<AzureSubnet> | undefined;
+    publicIPAddress?: AzureReference<AzurePublicIP>;
   };
 }
 export const AzurePrivateIP = {
@@ -91,8 +94,9 @@ export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;
   // TODO: should there be a `name` field?
   properties: {
-    ipConfigurations: AzureIPConfiguration[];
+    ipConfigurations: AzurePrivateIP[];
     networkSecurityGroup?: AzureReference<AzureNetworkSecurityGroup>;
+    virtualMachine?: AzureReference<AzureVirtualMachine>;
   };
 }
 export const AzureNetworkInterface = {
@@ -149,6 +153,14 @@ export interface AzureSubnet extends AzureTypedObject {
 }
 export const AzureSubnet = {type: AzureObjectType.SUBNET} as AzureSubnet;
 
+export interface AzureVirtualMachine extends AzureTypedObject {
+  type: AzureObjectType.VIRTUAL_MACHINE;
+}
+
+export const AzureVirtualMachine = {
+  type: AzureObjectType.VIRTUAL_MACHINE,
+} as AzureVirtualMachine;
+
 export interface AzureVirtualNetwork extends AzureTypedObject {
   type: AzureObjectType.VIRTUAL_NETWORK;
   properties: {
@@ -175,6 +187,7 @@ export type AnyAzureObject =
   | AzureNetworkSecurityGroup
   | AzureSecurityRule
   | AzureSubnet
+  | AzureVirtualMachine
   | AzureVirtualNetwork;
 
 export type AzureResourceGraph = AnyAzureObject[];

@@ -1,11 +1,11 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NodeSpec} from '../../../src';
+import {NodeSpec, RoutingRuleSpec} from '../../../src';
 
 import {
-  AzureIPConfiguration,
   AzureNetworkSecurityGroup,
+  AzureVirtualMachine,
   convertNIC,
   GraphServices,
   NSGRuleSpecs,
@@ -17,12 +17,6 @@ import {
 import {
   createGraphServicesMock,
   inboundRules,
-  privateIp1,
-  privateIp2,
-  privateIp1Id,
-  privateIp2Id,
-  privateIp1Name,
-  privateIp2Name,
   privateIp1SourceIp,
   privateIp2SourceIp,
   nic1,
@@ -31,6 +25,7 @@ import {
   outboundRules,
   subnet1Id,
   vnet1Id,
+  nicWithoutVm,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -41,25 +36,6 @@ export default function test() {
       // convertNIC() expects to find its nsg spec in the index.
       services.index.add(nsg1);
 
-      mocks.ip.action(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        (services: GraphServices, ipSpec: AzureIPConfiguration) => {
-          if (ipSpec.name === privateIp1Name) {
-            return {
-              destination: privateIp1Id,
-              constraints: {destinationIp: privateIp1SourceIp},
-            };
-          } else if (ipSpec.name === privateIp2Name) {
-            return {
-              destination: privateIp2Id,
-              constraints: {destinationIp: privateIp2SourceIp},
-            };
-          } else {
-            throw new TypeError('Unknown ip configuration');
-          }
-        }
-      );
-
       mocks.nsg.action(
         (nsgSpec: AzureNetworkSecurityGroup | undefined): NSGRuleSpecs => {
           if (nsgSpec === nsg1) {
@@ -67,6 +43,21 @@ export default function test() {
           } else {
             throw 'Incorrect nsg spec';
           }
+        }
+      );
+
+      mocks.vm.action(
+        (
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          services: GraphServices,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          spec: AzureVirtualMachine,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          parent: string
+        ): RoutingRuleSpec => {
+          return {
+            destination: 'vm1',
+          };
         }
       );
 
@@ -81,12 +72,6 @@ export default function test() {
         result.constraints.destinationIp,
         `${privateIp1SourceIp},${privateIp2SourceIp}`
       );
-
-      // Verify that ipConverter() was invoked correctly.
-      const ipLog = mocks.ip.log();
-      assert.equal(ipLog.length, 2);
-      assert.equal(ipLog[0].params[1], privateIp1);
-      assert.equal(ipLog[1].params[1], privateIp2);
 
       // Verify that nsgConverter() was invoked correctly.
       const nsgLog = mocks.nsg.log();
@@ -106,16 +91,7 @@ export default function test() {
           filters: inboundRules,
           routes: [
             {
-              destination: privateIp1Id,
-              constraints: {
-                destinationIp: privateIp1SourceIp,
-              },
-            },
-            {
-              destination: privateIp2Id,
-              constraints: {
-                destinationIp: privateIp2SourceIp,
-              },
+              destination: 'vm1',
             },
           ],
         },
@@ -134,6 +110,13 @@ export default function test() {
       ];
 
       assert.deepEqual(observedNodes, expectedNodes);
+    });
+    it('Guard check for missing VM', () => {
+      const {services} = createGraphServicesMock();
+
+      assert.throws(() => {
+        convertNIC(services, nicWithoutVm, subnet1Id, vnet1Id);
+      }, 'NIC without VM are not supported');
     });
   });
 }

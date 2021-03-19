@@ -10,6 +10,7 @@ import {
   AzurePublicIP,
   AzureNetworkSecurityGroup,
   AzureSubnet,
+  AzureVirtualMachine,
   AzureVirtualNetwork,
   GraphServices,
   IConverters,
@@ -33,6 +34,7 @@ export function createGraphServicesMock() {
     resourceGraph: createMock(fake.resourceGraph),
     subnet: createMock(fake.subnet),
     vnet: createMock(fake.vnet),
+    vm: createMock(fake.vm),
   };
 
   const symbols = new SymbolTable([]);
@@ -82,6 +84,9 @@ export const publicIp1Name = 'publicIp1';
 export const publicIp1Id = ipId(nic1Name, publicIp1Name);
 export const publicIp1SourceIp = '203.0.113.1';
 export const publicIp1SubnetName = subnet1Name;
+
+export const vm1Name = 'vm1';
+export const vm1Id = nsgId(nsg1Name);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -189,10 +194,34 @@ export const nsg1: AzureNetworkSecurityGroup = {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Virtual Machines
+//
+///////////////////////////////////////////////////////////////////////////////
+export const vm1: AzureVirtualMachine = {
+  type: AzureObjectType.VIRTUAL_MACHINE,
+  id: vm1Id,
+  name: vm1Name,
+  resourceGroup,
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Nics
 //
 ///////////////////////////////////////////////////////////////////////////////
 export const nic1: AzureNetworkInterface = {
+  type: AzureObjectType.NIC,
+  id: nic1Id,
+  name: nic1Name,
+  resourceGroup,
+  properties: {
+    ipConfigurations: [privateIp1, privateIp2],
+    networkSecurityGroup: reference(nsg1),
+    virtualMachine: reference(vm1),
+  },
+};
+
+export const nicWithoutVm: AzureNetworkInterface = {
   type: AzureObjectType.NIC,
   id: nic1Id,
   name: nic1Name,
