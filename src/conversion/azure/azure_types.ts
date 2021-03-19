@@ -82,13 +82,16 @@ export interface AzurePublicIP extends AzureTypedObject {
   // TODO: should there be a `name` field?
   properties: {
     ipAddress: string;
-    // TODO: REVIEW: can subnet ever be undefined?
-    subnet: AzureReference<AzureSubnet> | undefined;
+    ipConfiguration?: AzureReference<AnyIpConfiguration>;
   };
 }
 export const AzurePublicIP = {type: AzureObjectType.PUBLIC_IP} as AzurePublicIP;
 
 export type AzureIPConfiguration = AzurePrivateIP | AzurePublicIP;
+
+// There will eventually be other Ip Configuration Types such as
+// firewall, VPN gateway, App Gateway, etc.
+export type AnyIpConfiguration = AzurePrivateIP;
 
 export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;

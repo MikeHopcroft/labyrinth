@@ -5,17 +5,13 @@ import {
   AzureIPConfiguration,
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
+  AzurePublicIP,
   AzureSubnet,
   AzureVirtualMachine,
   AzureVirtualNetwork,
 } from './azure_types';
-
+import {PublicIpRoutes} from './convert_public_ip';
 import {GraphServices} from './graph_services';
-
-// export interface NodeKeyAndDestinationIp {
-//   key: string;
-//   destinationIp: string;
-// }
 
 export interface NSGRuleSpecs {
   readonly outboundRules: RuleSpec[];
@@ -52,6 +48,12 @@ export interface IConverters {
     spec: AzureNetworkSecurityGroup | undefined,
     vnetSymbol: string
   ): NSGRuleSpecs;
+  publicIp(
+    services: GraphServices,
+    spec: AzurePublicIP,
+    gatewayKey: string,
+    internetKey: string
+  ): PublicIpRoutes;
   vm(
     services: GraphServices,
     spec: AzureVirtualMachine,

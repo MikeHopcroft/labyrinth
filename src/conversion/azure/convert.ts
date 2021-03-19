@@ -6,6 +6,7 @@ import {IConverters} from './converters';
 import {convertIp} from './convert_ip';
 import {convertNIC} from './convert_nic';
 import {convertNSG} from './convert_nsg';
+import {convertPublicIp} from './convert_public_ip';
 import {convertResourceGraph} from './convert_resource_graph';
 import {convertSubnet} from './convert_subnet';
 import {convertVm} from './convert_vm';
@@ -22,6 +23,7 @@ export const converters: IConverters = {
   vnet: convertVNet,
   nsg: convertNSG,
   ip: convertIp,
+  publicIp: convertPublicIp,
   vm: convertVm,
 };
 
