@@ -11,6 +11,49 @@
   * Materializers don't know specifics of other node specs
   * Materializers don't know specifics of other node materializations
 
+* x azure_types
+  * x dead/commented out code in azure_types - asAzureNetworkInterface
+* convert_nics.ts
+  * convenience function to create nsgrules for possible null reference - use in createSubnet as well.
+  * convenience function to encapsulate node construction with potentially undefined filters - use in createSubnet as well
+  * Assuming all ipConfigs have same subnet. Otherwise
+    * x destination_ip should join only those ips with matching subnet
+    * x code that makes reference from subnet to nic should make reference if any ipconfig is for subnet
+  * x createVmRoute may be too small for its own function
+  * outbound routes will need to be modified for public ips
+    * also, outbound routes with no longer be optional if there is at least one public ip
+* convert_vm.ts
+  * Routes should have constraint on source ips equal to union of nic ipconfigs
+    * These routes will need to be passed down from parent.
+  * Memoizing converter
+    * Maps id to NodeSpec
+    * Method to add to NodeSpec routes
+    * xxx Factory to create convertVm()
+    * xxx Factory to create instance of IConverters
+* convert.ts
+  * xxx Factory to create instance of IConverters.
+  * xxx Decide whether unit tests need some sort of analogue.
+* converters.ts
+  * x Remove DESIGN ALTERNATIVE comment
+* convert_nic.test.ts
+  * x Can remove unused parameters to mock.
+* sample_resource_graph.ts
+  * x SEEMS wrong: export const vm1Id = nsgId(nsg1Name);
+  * create idempotent key creator for use in unit tests
+    * Integrate with sample_resource_graph.ts
+* public ip
+  * NAT
+  * Incorporate into some sort of gateway outside the VNet, probably
+* services.ids.createVarient(key, string)
+* delete deprecated folder
+* Look for linter error for if on constant expression
+* Node like a default gateway that routes outbound traffic to public ips, if necessary
+* Consider unit test convenience function:
+  * checkargs(nsglog[0],params)(nsg1, vnet1Id);
+* Remove unused parameters to mocks
+* 
+
+
 * Top 2
   * x Deprecate Azure folder
   * x Rename Azure2 folder
