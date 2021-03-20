@@ -20,7 +20,7 @@ export function convertIp(
   parent: string
 ): SimpleRoutingRuleSpec {
   const sourceIp = convertToIpAddress(spec);
-  const ipNodeKey = services.ids.createKey(spec);
+  const ipNodeKey = services.nodes.createKey(spec);
 
   const routes: SimpleRoutingRuleSpec[] = [
     {
@@ -29,7 +29,7 @@ export function convertIp(
     },
   ];
 
-  services.addNode({
+  services.nodes.add({
     key: ipNodeKey,
     name: spec.id,
     endpoint: true,

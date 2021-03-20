@@ -67,7 +67,7 @@ export function convertResourceGraph(services: GraphServices) {
     key: azureGatewayKey,
     routes: gatewayRoutes,
   };
-  services.addNode(azureGateway);
+  services.nodes.add(azureGateway);
 
   // TODO: the routes should really be the routes to all of the public ips, not the vnets.
   const internetNode: NodeSpec = {
@@ -75,5 +75,5 @@ export function convertResourceGraph(services: GraphServices) {
     endpoint: true,
     routes: internetRoutes,
   };
-  services.addNode(internetNode);
+  services.nodes.add(internetNode);
 }
