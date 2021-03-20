@@ -12,7 +12,20 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
-  * VMs with multiple NICs
+  * Add node keys to sample_resource_graph.ts
+  * Check for places to use createKeyVariant()
+  * Consistant naming for converters (Ip vs IP, etc)
+    * nic: convertNIC,
+    * resourceGraph: convertResourceGraph,
+    * subnet: convertSubnet,
+    * vnet: convertVNet,
+    * nsg: convertNSG,
+    * ip: convertIp,
+    * publicIp: convertPublicIp,
+    * vm: convertVM,
+  * x VMs with multiple NICs
+    * x Implement
+    * x Unit test
   * x Deprecate Azure folder
   * x Rename Azure2 folder
   * x Intergrate with converter console application

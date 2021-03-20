@@ -65,17 +65,8 @@ export class NodeServices {
     this.keyToNode.set(node.key, node);
   }
 
-  has(key: string): boolean {
-    return this.keyToNode.has(key);
-  }
-
-  get(key: string): NodeSpec {
-    const node = this.keyToNode.get(key);
-    if (!node) {
-      const message = `Unknown node key ${key}`;
-      throw new TypeError(message);
-    }
-    return node;
+  get(key: string): NodeSpec | undefined {
+    return this.keyToNode.get(key);
   }
 
   nodes(): IterableIterator<NodeSpec> {

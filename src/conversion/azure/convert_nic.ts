@@ -1,4 +1,4 @@
-import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
+import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 
 import {
   AzureNetworkInterface,
@@ -43,14 +43,23 @@ export function convertNIC(
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
-  const inboundKey = keyPrefix + '/inbound';
-  const outboundKey = keyPrefix + '/outbound';
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
 
-  // Create the route to the VM.
+  // Route from VM to this NIC.
+  const sourceIp = spec.properties.ipConfigurations
+    .map(ip => ip.properties.privateIPAddress)
+    .join(',');
+  const routeFromVM: RoutingRuleSpec = {
+    destination: outboundKey,
+    constraints: {sourceIp},
+  };
+
+  // Materialize the VM.
   const vmSpec = services.index.dereference<AzureVirtualMachine>(
     spec.properties.virtualMachine
   );
-  const vmRoute = services.convert.vm(services, vmSpec, outboundKey);
+  const routeToVM = services.convert.vm(services, vmSpec, routeFromVM);
 
   //
   // Construct inbound node
@@ -58,29 +67,17 @@ export function convertNIC(
   const inboundNode: NodeSpec = {
     key: inboundKey,
     name: spec.id + '/inbound',
-    routes: [vmRoute],
+    routes: [routeToVM],
   };
   if (nsgRules.inboundRules.length) {
     inboundNode.filters = nsgRules.inboundRules;
   }
   services.nodes.add(inboundNode);
 
-  //
-  // If there are outbound NSG rules, construct outbound node
-  //
-  const sourceIp = spec.properties.ipConfigurations
-    .map(ip => ip.properties.privateIPAddress)
-    .join(',');
-
   const outboundNode: NodeSpec = {
     key: outboundKey,
     name: spec.id + '/outbound',
-    routes: [
-      {
-        destination: parent,
-        constraints: {sourceIp},
-      },
-    ],
+    routes: [{destination: parent}],
   };
 
   if (nsgRules.outboundRules.length) {
