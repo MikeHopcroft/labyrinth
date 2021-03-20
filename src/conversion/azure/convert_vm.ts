@@ -8,9 +8,9 @@ export function convertVm(
   spec: AzureVirtualMachine,
   parent: string
 ): RoutingRuleSpec {
-  const key = services.ids.createKey(spec);
+  const key = services.nodes.createKey(spec);
 
-  services.addNode({
+  services.nodes.add({
     key,
     name: spec.id,
     endpoint: true,

@@ -10,7 +10,7 @@ export function convertVNet(
   services: GraphServices,
   spec: AzureVirtualNetwork
 ): SimpleRoutingRuleSpec {
-  const vNetNodeKey = services.ids.createKey(spec);
+  const vNetNodeKey = services.nodes.createKey(spec);
   const vNetServiceTag = vNetNodeKey;
 
   // Compute this VNet's address range by unioning up all of its address prefixes.
@@ -41,7 +41,7 @@ export function convertVNet(
     routes.push(route);
   }
 
-  services.addNode({
+  services.nodes.add({
     key: vNetNodeKey,
     name: spec.id,
     range: {sourceIp: destinationIp},

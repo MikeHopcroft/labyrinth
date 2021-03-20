@@ -12,11 +12,12 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
+  * VMs with multiple NICs
   * x Deprecate Azure folder
   * x Rename Azure2 folder
   * x Intergrate with converter console application
     * x Smoke check with data/resource-graph-1.json
-  * Implement NAT for publicIp
+  * x Implement NAT for publicIp
   * Add ranges back to nodes
   * Write design note
   * Remove services.getInternetKey()
@@ -49,6 +50,7 @@
       * x Need to think about brittleness in unit tests - where tests need to know how/order ids are allocate
     * x Put Azure id into node name field
     * Run shortener on Labyrinth graph, as necessary
+    * x Idempotent node key generation
   * Decide whether to improve subnet unit test design for NSG
     * Issue is that NSG spec must be converted into inbound and outbound rules. These are hard-coded into the mock today. Assuming there will be other tests that will want to use the inbound and outbound rules. Perhaps nsg1 needs to be built from the concatenation of nsg1Inbound and nsg1Outbound.
   * x Naming consistency: convertNetworkSecurityGroup vs convertNIC, convertVNET

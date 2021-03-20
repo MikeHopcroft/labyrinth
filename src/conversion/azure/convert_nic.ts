@@ -23,7 +23,7 @@ export function convertNIC(
     throw new TypeError('NIC without VM are not supported');
   }
 
-  const keyPrefix = services.ids.createKey(spec);
+  const keyPrefix = services.nodes.createKey(spec);
 
   //
   // NSG rules
@@ -63,7 +63,7 @@ export function convertNIC(
   if (nsgRules.inboundRules.length) {
     inboundNode.filters = nsgRules.inboundRules;
   }
-  services.addNode(inboundNode);
+  services.nodes.add(inboundNode);
 
   //
   // If there are outbound NSG rules, construct outbound node
@@ -86,7 +86,7 @@ export function convertNIC(
   if (nsgRules.outboundRules.length) {
     outboundNode.filters = nsgRules.outboundRules;
   }
-  services.addNode(outboundNode);
+  services.nodes.add(outboundNode);
 
   //
   // Return route for use by parent node.
