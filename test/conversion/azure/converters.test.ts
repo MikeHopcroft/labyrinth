@@ -3,6 +3,7 @@ import 'mocha';
 import ip from './convert_ip.test';
 import nic from './convert_nic.test';
 import subnet from './convert_subnet.test';
+import vm from './convert_vm.test';
 import vnet from './convert_vnet.test';
 
 export default function test() {
@@ -10,6 +11,7 @@ export default function test() {
     ip();
     nic();
     subnet();
+    vm();
     vnet();
   });
 }

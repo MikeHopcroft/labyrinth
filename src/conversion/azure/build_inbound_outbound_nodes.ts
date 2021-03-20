@@ -36,11 +36,13 @@ export function buildInboundOutboundNodes(
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
-  const inboundKey = keyPrefix + '/inbound';
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
 
   // Only include an outbound node if there are outbound NSG rules.
   const outboundKey =
-    nsgRules.outboundRules.length > 0 ? keyPrefix + '/outbound' : parent;
+    nsgRules.outboundRules.length > 0
+      ? services.nodes.createKeyVariant(keyPrefix, 'outbound')
+      : parent;
 
   const inboundRoutes = routeBuilder(outboundKey);
 

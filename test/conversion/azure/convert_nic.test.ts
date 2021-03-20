@@ -15,6 +15,7 @@ import {
   privateIp2SourceIp,
   nic1,
   nic1Id,
+  nic1Name,
   nicWithoutVm,
   nsg1,
   outboundRules,
@@ -60,6 +61,15 @@ export default function test() {
       assert.equal(nsgLog[0].params[0], nsg1);
       assert.equal(nsgLog[0].params[1], vnet1Id);
 
+      // Verify that vmConverter() was invoked correctly.
+      const vmLog = mocks.vm.log();
+      assert.equal(vmLog.length, 1);
+      assert.equal(vmLog[0].params[1], vm1);
+      assert.deepEqual(vmLog[0].params[2], {
+        destination: services.nodes.createKeyVariant(nic1Name, 'outbound'),
+        constraints: {sourceIp: `${privateIp1SourceIp},${privateIp2SourceIp}`},
+      });
+
       // Verify no symbol table additions.
       assert.equal(symbols.length, 0);
 
@@ -67,7 +77,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         // Inbound
         {
-          key: 'nic1/inbound',
+          key: services.nodes.createKeyVariant(nic1Name, 'inbound'),
           name: nic1Id + '/inbound',
           filters: inboundRules,
           routes: [
@@ -79,15 +89,12 @@ export default function test() {
 
         // Outbound
         {
-          key: 'nic1/outbound',
+          key: services.nodes.createKeyVariant(nic1Name, 'outbound'),
           name: nic1Id + '/outbound',
           filters: outboundRules,
           routes: [
             {
               destination: subnet1Id,
-              constraints: {
-                sourceIp: `${privateIp1SourceIp},${privateIp2SourceIp}`,
-              },
             },
           ],
         },
@@ -95,6 +102,7 @@ export default function test() {
 
       assert.deepEqual(observedNodes, expectedNodes);
     });
+
     it('Guard check for missing VM', () => {
       const {services} = createGraphServicesMock();
 

@@ -57,6 +57,6 @@ export interface IConverters {
   vm(
     services: GraphServices,
     spec: AzureVirtualMachine,
-    parent: string
+    parentRoute: RoutingRuleSpec
   ): RoutingRuleSpec;
 }
