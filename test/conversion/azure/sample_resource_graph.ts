@@ -14,7 +14,7 @@ import {
   AzureVirtualNetwork,
   GraphServices,
   IConverters,
-  SymbolTable,
+  NodeServices,
 } from '../../../src/conversion/azure';
 
 import {createMock} from './mocks';
@@ -24,6 +24,8 @@ import {createMock} from './mocks';
 // Factories
 //
 ///////////////////////////////////////////////////////////////////////////////
+const nodeServices = new NodeServices();
+
 export function createGraphServicesMock() {
   const fake: IConverters = {} as IConverters;
 
@@ -38,9 +40,9 @@ export function createGraphServicesMock() {
     vm: createMock(fake.vm),
   };
 
-  const symbols = new SymbolTable([]);
   const index = new AzureObjectIndex([]);
-  const services = new GraphServices(mocks, symbols, index);
+  const nodes = new NodeServices();
+  const services = new GraphServices(index, {converters: mocks, nodes});
 
   return {services, mocks};
 }
@@ -112,6 +114,7 @@ export const privateIp1: AzurePrivateIP = {
     subnet: reference(subnet1Id),
   },
 };
+export const privateIp1Key = nodeServices.createKey(privateIp1);
 
 export const privateIp2: AzurePrivateIP = {
   type: AzureObjectType.PRIVATE_IP,
@@ -123,6 +126,7 @@ export const privateIp2: AzurePrivateIP = {
     subnet: reference(subnet1Id),
   },
 };
+export const privateIp2Key = nodeServices.createKey(privateIp2);
 
 export const publicIp1: AzurePublicIP = {
   type: AzureObjectType.PUBLIC_IP,
@@ -133,6 +137,7 @@ export const publicIp1: AzurePublicIP = {
     ipAddress: publicIp1SourceIp,
   },
 };
+export const publicIp1Key = nodeServices.createKey(publicIp1);
 
 export const privateIpWithPublic: AzurePrivateIP = {
   type: AzureObjectType.PRIVATE_IP,
@@ -145,6 +150,9 @@ export const privateIpWithPublic: AzurePrivateIP = {
     publicIPAddress: reference(publicIpWithPrivateId),
   },
 };
+export const privateIpWithPublicKey = nodeServices.createKey(
+  privateIpWithPublic
+);
 
 export const publicIpWithPrivate: AzurePublicIP = {
   type: AzureObjectType.PUBLIC_IP,
@@ -156,6 +164,9 @@ export const publicIpWithPrivate: AzurePublicIP = {
     ipConfiguration: reference(privateIpWithPublic),
   },
 };
+export const publicIpWithPrivateKey = nodeServices.createKey(
+  publicIpWithPrivate
+);
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -173,6 +184,15 @@ export const subnet1: AzureSubnet = {
     networkSecurityGroup: reference(nsg1Id),
   },
 };
+const subnet1Key = nodeServices.createKey(subnet1);
+export const subnet1InboundKey = nodeServices.createKeyVariant(
+  subnet1Key,
+  'inbound'
+);
+export const subnet1OutboundKey = nodeServices.createKeyVariant(
+  subnet1Key,
+  'outbound'
+);
 
 export const subnet2: AzureSubnet = {
   type: AzureObjectType.SUBNET,
@@ -185,6 +205,15 @@ export const subnet2: AzureSubnet = {
     networkSecurityGroup: reference(nsg1Id),
   },
 };
+const subnet2Key = nodeServices.createKey(subnet2);
+export const subnet2InboundKey = nodeServices.createKeyVariant(
+  subnet2Key,
+  'inbound'
+);
+export const subnet2OutboundKey = nodeServices.createKeyVariant(
+  subnet2Key,
+  'outbound'
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -221,6 +250,7 @@ export const nsg1: AzureNetworkSecurityGroup = {
     subnets: [reference(subnet1Id)],
   },
 };
+export const nsg1Key = nodeServices.createKey(nsg1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -233,6 +263,7 @@ export const vm1: AzureVirtualMachine = {
   name: vm1Name,
   resourceGroup,
 };
+export const vm1Key = nodeServices.createKey(vm1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -250,6 +281,12 @@ export const nic1: AzureNetworkInterface = {
     virtualMachine: reference(vm1),
   },
 };
+const nic1Key = nodeServices.createKey(nic1);
+export const nic1InboundKey = nodeServices.createKeyVariant(nic1Key, 'inbound');
+export const nic1OutboundKey = nodeServices.createKeyVariant(
+  nic1Key,
+  'outbound'
+);
 
 export const nicWithoutVm: AzureNetworkInterface = {
   type: AzureObjectType.NIC,
@@ -261,13 +298,13 @@ export const nicWithoutVm: AzureNetworkInterface = {
     networkSecurityGroup: reference(nsg1),
   },
 };
+export const nicWithoutVmKey = nodeServices.createKey(nicWithoutVm);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Virtual Networks
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 export const vnet1: AzureVirtualNetwork = {
   type: AzureObjectType.VIRTUAL_NETWORK,
   id: vnet1Id,
@@ -280,6 +317,8 @@ export const vnet1: AzureVirtualNetwork = {
     subnets: [subnet1, subnet2],
   },
 };
+export const vnet1Key = nodeServices.createKey(vnet1);
+export const vnet1Symbol = vnet1Key;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

@@ -1,9 +1,16 @@
 import {GraphSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
+import {defaultConverters} from './default_converters';
 import {IConverters} from './converters';
 import {NodeServices} from './node_services';
 import {SymbolTable} from './symbol_table';
+
+export interface GraphServicesOptions {
+  converters?: IConverters;
+  nodes?: NodeServices;
+  symbols?: SymbolTable;
+}
 
 export class GraphServices {
   readonly index: AzureObjectIndex;
@@ -11,14 +18,11 @@ export class GraphServices {
   readonly nodes = new NodeServices();
   readonly symbols: SymbolTable;
 
-  constructor(
-    converters: IConverters,
-    symbols: SymbolTable,
-    index: AzureObjectIndex
-  ) {
-    this.convert = converters;
-    this.symbols = symbols;
+  constructor(index: AzureObjectIndex, options: GraphServicesOptions = {}) {
     this.index = index;
+    this.convert = options.converters ?? defaultConverters();
+    this.nodes = options.nodes ?? new NodeServices();
+    this.symbols = options.symbols ?? new SymbolTable([]);
   }
 
   getLabyrinthGraphSpec(): GraphSpec {

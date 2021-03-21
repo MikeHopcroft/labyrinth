@@ -8,7 +8,12 @@ import {convertVM} from '../../../src/conversion/azure';
 // DESIGN NOTE: considered namespacing these items, but their usage became
 // too verbose. Expect that numbers in names (e.g. subnet1) prevent collisions
 // with similar terms.
-import {createGraphServicesMock, vm1, vm1Id} from './sample_resource_graph';
+import {
+  createGraphServicesMock,
+  vm1,
+  vm1Key,
+  vm1Id,
+} from './sample_resource_graph';
 
 export default function test() {
   describe('convertVM()', () => {
@@ -32,11 +37,11 @@ export default function test() {
       const {nodes: observedNodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify result1.
-      assert.equal(result1.destination, 'vm1');
+      assert.equal(result1.destination, vm1Key);
       assert.equal(result1.constraints, undefined);
 
       // Verify result2.
-      assert.equal(result2.destination, 'vm1');
+      assert.equal(result2.destination, vm1Key);
       assert.equal(result2.constraints, undefined);
 
       // Verify no symbol table additions.
@@ -46,7 +51,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           endpoint: true,
-          key: 'vm1',
+          key: vm1Key,
           name: vm1Id,
           routes: [route1, route2],
         },
