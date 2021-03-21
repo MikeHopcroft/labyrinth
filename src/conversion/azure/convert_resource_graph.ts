@@ -35,12 +35,12 @@ export function convertResourceGraph(services: GraphServices) {
       internetNodeKey
     );
 
-    if (inbound) {
-      internetRoutes.push(inbound);
+    for (const route of inbound) {
+      internetRoutes.push(route);
     }
 
-    if (outbound) {
-      gatewayRoutes.push(outbound);
+    for (const route of outbound) {
+      gatewayRoutes.push(route);
     }
   }
 

@@ -4,32 +4,39 @@ import {AzureObjectType, AzurePublicIP} from './azure_types';
 import {GraphServices} from './graph_services';
 
 export interface PublicIpRoutes {
-  inbound?: RoutingRuleSpec;
-  outbound?: RoutingRuleSpec;
+  inbound: RoutingRuleSpec[];
+  outbound: RoutingRuleSpec[];
 }
 
 export function convertPublicIp(
   services: GraphServices,
-  spec: AzurePublicIP,
+  publicIpSpec: AzurePublicIP,
   gatewayKey: string,
   internetKey: string
 ): PublicIpRoutes {
-  if (spec.properties.ipConfiguration) {
+  if (publicIpSpec.properties.ipConfiguration) {
     const ipconfig = services.index.dereference(
-      spec.properties.ipConfiguration
+      publicIpSpec.properties.ipConfiguration
     );
 
     if (ipconfig.type === AzureObjectType.PRIVATE_IP) {
       return createNicRoutesForPublicIp(
-        spec.properties.ipAddress,
+        publicIpSpec.properties.ipAddress,
         ipconfig.properties.privateIPAddress,
         internetKey,
+        gatewayKey
+      );
+    } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
+      return services.convert.loadBalancerFrontend(
+        services,
+        ipconfig,
+        publicIpSpec,
         gatewayKey
       );
     }
   }
 
-  return {inbound: undefined, outbound: undefined};
+  return {inbound: [], outbound: []};
 }
 
 function createNicRoutesForPublicIp(
@@ -38,25 +45,29 @@ function createNicRoutesForPublicIp(
   internetKey: string,
   gatewayKey: string
 ): PublicIpRoutes {
-  const inbound: RoutingRuleSpec = {
-    destination: gatewayKey,
-    constraints: {
-      destinationIp: privateIp,
+  const inbound: RoutingRuleSpec[] = [
+    {
+      destination: gatewayKey,
+      constraints: {
+        destinationIp: publicIp,
+      },
+      override: {
+        destinationIp: privateIp,
+      },
     },
-    override: {
-      destinationIp: privateIp,
-    },
-  };
+  ];
 
-  const outbound = {
-    destination: internetKey,
-    constraints: {
-      sourceIp: privateIp,
+  const outbound = [
+    {
+      destination: internetKey,
+      constraints: {
+        sourceIp: privateIp,
+      },
+      override: {
+        sourceIp: publicIp,
+      },
     },
-    override: {
-      sourceIp: publicIp,
-    },
-  };
+  ];
 
   return {inbound, outbound};
 }

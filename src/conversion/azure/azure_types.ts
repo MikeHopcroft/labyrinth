@@ -41,6 +41,12 @@ export type AzureReference<T> = AzureObjectBase;
 // update the azureTypeNames array, below.
 export enum AzureObjectType {
   DEFAULT_SECURITY_RULE = 'microsoft.network/networksecuritygroups/defaultsecurityrules',
+  LOAD_BALANCER = 'microsoft.network/loadbalancers',
+  LOAD_BALANCER_BACKEND_POOL = 'microsoft.network/loadbalancers/backendaddresspools',
+  LOAD_BALANCER_FRONT_END_IP = 'microsoft.network/loadbalancers/frontendipconfigurations',
+  LOAD_BALANCER_NAT_POOL_INBOUND = 'microsoft.network/loadbalancers/inboundnatpools',
+  LOAD_BALANCER_NAT_RULE_INBOUND = 'microsoft.network/loadbalancers/inboundnatrules',
+  LOAD_BALANCER_RULE = 'microsoft.network/loadbalancers/loadbalancingrules',
   PRIVATE_IP = 'microsoft.network/networkinterfaces/ipconfigurations',
   PUBLIC_IP = 'microsoft.network/publicipaddresses',
   NIC = 'microsoft.network/networkinterfaces',
@@ -69,7 +75,7 @@ export interface AzurePrivateIP extends AzureTypedObject {
   properties: {
     privateIPAddress: string;
     // TODO: REVIEW: can subnet ever be undefined?
-    subnet: AzureReference<AzureSubnet> | undefined;
+    subnet: AzureReference<AzureSubnet>;
     publicIPAddress?: AzureReference<AzurePublicIP>;
   };
 }
@@ -91,7 +97,7 @@ export type AzureIPConfiguration = AzurePrivateIP | AzurePublicIP;
 
 // There will eventually be other Ip Configuration Types such as
 // firewall, VPN gateway, App Gateway, etc.
-export type AnyIpConfiguration = AzurePrivateIP;
+export type AnyIpConfiguration = AzurePrivateIP | AzureLoadBalancerFrontEndIp;
 
 export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;
@@ -172,8 +178,79 @@ export const AzureVirtualNetwork = {
   type: AzureObjectType.VIRTUAL_NETWORK,
 } as AzureVirtualNetwork;
 
+export interface AzureLoadBalancerBackendPool extends AzureTypedObject {
+  type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL;
+  properties: {
+    backendIPConfigurations: AzureReference<AzureIPConfiguration>[];
+    loadBalancingRules: AzureReference<AzureLoadBalancerRule>[];
+  };
+}
+
+export const AzureLoadBalancerBackendPool = {
+  type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL,
+} as AzureLoadBalancerBackendPool;
+
+export interface AzureLoadBalancerFrontEndIp extends AzureTypedObject {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP;
+  properties: {
+    inboundNatPools?: AzureReference<AzureLoadBalancerInboundNatPool>[];
+    inboundNatRules?: AzureReference<AzureLoadBalancerInboundNatRule>[];
+    loadBalancingRules?: AzureReference<AzureLoadBalancerRule>[];
+    publicIPAddress: AzureReference<AzurePublicIP>;
+  };
+}
+
+export interface AzureLoadBalancerInboundNatPool extends AzureTypedObject {
+  type: AzureObjectType.LOAD_BALANCER_NAT_POOL_INBOUND;
+  properties: {
+    backendPort: number;
+    frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
+    frontendPortRangeStart: number;
+    frontendPortRangeEnd: number;
+    protocol: string;
+  };
+}
+
+export interface AzureLoadBalancerInboundNatRule extends AzureTypedObject {
+  type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND;
+  properties: {
+    backendPort: number;
+    backendIPConfiguration: AzureReference<AzureIPConfiguration>;
+    frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
+    frontendPort: number;
+    protocol: string;
+  };
+}
+
+export interface AzureLoadBalancerRule extends AzureTypedObject {
+  type: AzureObjectType.LOAD_BALANCER_RULE;
+  properties: {
+    backendAddressPool: AzureReference<AzureLoadBalancerBackendPool>;
+    backendPort: number;
+    frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
+    frontendPort: number;
+    protocol: string;
+  };
+}
+
+export interface AzureLoadBalancer extends AzureTypedObject {
+  type: AzureObjectType.LOAD_BALANCER;
+  properties: {
+    backendAddressPools: AzureLoadBalancerBackendPool[];
+    frontendIPConfigurations: AzureLoadBalancerFrontEndIp[];
+    inboundNatPools: AzureLoadBalancerInboundNatPool[];
+    inboundNatRules: AzureLoadBalancerInboundNatRule[];
+    loadBalancingRules: AzureLoadBalancerRule[];
+  };
+}
 export type AnyAzureObject =
   | AzureIPConfiguration
+  | AzureLoadBalancer
+  | AzureLoadBalancerBackendPool
+  | AzureLoadBalancerFrontEndIp
+  | AzureLoadBalancerInboundNatPool
+  | AzureLoadBalancerInboundNatRule
+  | AzureLoadBalancerRule
   | AzureNetworkInterface
   | AzureNetworkSecurityGroup
   | AzureSecurityRule

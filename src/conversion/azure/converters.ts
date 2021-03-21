@@ -3,6 +3,7 @@ import {RuleSpec} from '../../rules';
 
 import {
   AzureIPConfiguration,
+  AzureLoadBalancerFrontEndIp,
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   AzurePublicIP,
@@ -22,6 +23,12 @@ export interface NSGRuleSpecs {
 // converters with resorting to monkey patching.
 //
 export interface IConverters {
+  loadBalancerFrontend(
+    services: GraphServices,
+    spec: AzureLoadBalancerFrontEndIp,
+    publicIpSpec: AzurePublicIP,
+    gatewayKey: string
+  ): PublicIpRoutes;
   nic(
     services: GraphServices,
     spec: AzureNetworkInterface,

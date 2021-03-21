@@ -15,6 +15,10 @@ import {
   GraphServices,
   IConverters,
   NodeServices,
+  AzureLoadBalancerFrontEndIp,
+  AzureLoadBalancerInboundNatRule,
+  AzureLoadBalancerRule,
+  AzureLoadBalancerBackendPool,
 } from '../../../src/conversion/azure';
 
 import {createMock} from './mocks';
@@ -31,6 +35,7 @@ export function createGraphServicesMock() {
 
   const mocks = {
     ip: createMock(fake.ip),
+    loadBalancerFrontend: createMock(fake.loadBalancerFrontend),
     nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
     publicIp: createMock(fake.publicIp),
@@ -97,6 +102,25 @@ export const privateIpWithPublicId = ipId(nic1Name, publicIpWithPrivateName);
 
 export const vm1Name = 'vm1';
 export const vm1Id = vmId(vm1Name);
+
+export const loadBalancer1Name = 'loadBalancer1';
+export const loadBalancer1Id = loadBalancerId(loadBalancer1Name);
+
+export const natRule1Name = 'natRule1';
+export const natRule1Id = natRuleId(loadBalancer1Name, natRule1Name);
+
+export const poolRule1Name = 'poolRule1';
+export const poolRule1Id = poolRuleId(loadBalancer1Name, poolRule1Name);
+
+export const backendPool1Name = 'backendPool';
+export const backendPool1Id = backendPoolId(
+  loadBalancer1Name,
+  backendPool1Name
+);
+export const backendPool1SourceIp = '10.0.0.1,10.0.0.2';
+
+export const frontEndIp1Name = 'frontEndIp';
+export const frontEndIp1Id = frontEndIpId(loadBalancer1Name, frontEndIp1Name);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -322,6 +346,87 @@ export const vnet1Symbol = vnet1Key;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Load Balancer
+//
+///////////////////////////////////////////////////////////////////////////////
+export const publicIpForLoadBalancer1: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIp1Id,
+  name: publicIp1Name,
+  resourceGroup,
+  properties: {
+    ipAddress: publicIp1SourceIp,
+    ipConfiguration: reference(frontEndIp1Id),
+  },
+};
+
+export const natRule1: AzureLoadBalancerInboundNatRule = {
+  type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND,
+  id: natRule1Id,
+  name: natRule1Name,
+  resourceGroup,
+  properties: {
+    backendPort: 22,
+    backendIPConfiguration: reference(privateIp1),
+    frontendIPConfiguration: reference(frontEndIp1Id),
+    frontendPort: 5000,
+    protocol: 'TCP',
+  },
+};
+
+export const backendPool1: AzureLoadBalancerBackendPool = {
+  type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL,
+  id: backendPool1Id,
+  name: backendPool1Name,
+  resourceGroup,
+  properties: {
+    backendIPConfigurations: [reference(privateIp1), reference(privateIp2)],
+    loadBalancingRules: [reference(poolRule1Id)],
+  },
+};
+
+export const poolRule1: AzureLoadBalancerRule = {
+  type: AzureObjectType.LOAD_BALANCER_RULE,
+  id: poolRule1Id,
+  name: poolRule1Name,
+  resourceGroup,
+  properties: {
+    backendPort: 22,
+    backendAddressPool: reference(backendPool1),
+    frontendIPConfiguration: reference(frontEndIp1Id),
+    frontendPort: 5000,
+    protocol: 'TCP',
+  },
+};
+
+export const frontEndIpWithNatRule: AzureLoadBalancerFrontEndIp = {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
+  id: frontEndIp1Id,
+  name: frontEndIp1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [natRule1],
+    loadBalancingRules: [],
+    publicIPAddress: reference(publicIpForLoadBalancer1),
+  },
+};
+
+export const frontEndIpWithPoolRule: AzureLoadBalancerFrontEndIp = {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
+  id: frontEndIp1Id,
+  name: frontEndIp1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [poolRule1],
+    publicIPAddress: reference(publicIpForLoadBalancer1),
+  },
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Convenience functions
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -356,6 +461,26 @@ function nicId(name: string) {
 
 function publicIpId(name: string) {
   return `${resourceGroupId()}${networkProvider()}/publicIpAddresses/${name}`;
+}
+
+function loadBalancerId(name: string) {
+  return `${resourceGroupId()}${networkProvider()}/loadBalancers/${name}`;
+}
+
+function frontEndIpId(lbName: string, name: string) {
+  return `${loadBalancerId(lbName)}/frontendIPConfigurations/${name}`;
+}
+
+function natRuleId(lbName: string, name: string) {
+  return `${loadBalancerId(lbName)}/inboundNatRules/${name}`;
+}
+
+function poolRuleId(lbName: string, name: string) {
+  return `${loadBalancerId(lbName)}/loadBalancingRules/${name}`;
+}
+
+function backendPoolId(lbName: string, name: string) {
+  return `${loadBalancerId(lbName)}/backendAddressPools/${name}`;
 }
 
 function ipId(nic: string, ip: string) {
