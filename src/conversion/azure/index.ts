@@ -8,5 +8,6 @@ export * from './convert_vnet';
 export * from './converters';
 export * from './graph_services';
 export * from './name_shortener';
+export * from './node_services';
 export * from './symbol_table';
 export * from './walk';

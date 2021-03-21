@@ -15,10 +15,14 @@ import {
 import {
   createGraphServicesMock,
   subnet1,
+  subnet1InboundKey,
   subnet1SourceIps,
   subnet2,
+  subnet2InboundKey,
   subnet2SourceIps,
   vnet1,
+  vnet1Key,
+  vnet1Symbol,
   vnet1SourceIps,
 } from './sample_resource_graph';
 
@@ -39,9 +43,9 @@ export default function test() {
         ) => {
           let destination: string;
           if (subnetSpec === subnet1) {
-            destination = 'subnet1';
+            destination = subnet1InboundKey;
           } else if (subnetSpec === subnet2) {
-            destination = 'subnet2';
+            destination = subnet2InboundKey;
           } else {
             throw new TypeError('Unexpected subnet');
           }
@@ -61,32 +65,35 @@ export default function test() {
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.destination, 'vnet1');
+      assert.equal(result.destination, vnet1Key);
       assert.equal(result.constraints.destinationIp, vnet1SourceIps);
 
       // Verify that subnetConverter() was invoked correctly.
       const log = mocks.subnet.log();
       assert.equal(log[0].params[1], subnet1);
-      assert.equal(log[0].params[2], 'vnet1');
+      assert.equal(log[0].params[2], vnet1Key);
+      assert.equal(log[0].params[3], vnet1Symbol);
       assert.equal(log[1].params[1], subnet2);
-      assert.equal(log[1].params[2], 'vnet1');
+      assert.equal(log[1].params[2], vnet1Key);
+      assert.equal(log[0].params[3], vnet1Symbol);
 
       // Verify the service tag definition.
-      assert.deepEqual(services.symbols.getSymbolSpec('vnet1'), {
+      assert.deepEqual(services.symbols.getSymbolSpec(vnet1Symbol), {
         dimension: 'ip',
-        symbol: 'vnet1',
+        symbol: vnet1Symbol,
         range: vnet1SourceIps,
       });
 
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
-          key: 'vnet1',
+          key: vnet1Key,
           name: vnet1.id,
           range: {
             sourceIp: vnet1SourceIps,
           },
           routes: [
+            // TODO: VNet should route to its parent, not the internet.
             {
               destination: 'Internet',
               constraints: {
@@ -94,13 +101,13 @@ export default function test() {
               },
             },
             {
-              destination: 'subnet1',
+              destination: subnet1InboundKey,
               constraints: {
                 destinationIp: subnet1SourceIps,
               },
             },
             {
-              destination: 'subnet2',
+              destination: subnet2InboundKey,
               constraints: {
                 destinationIp: subnet2SourceIps,
               },

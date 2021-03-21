@@ -12,6 +12,7 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
+  * BUG: convertVNet() shouldn't route directly to the Internet.
   * Add node keys to sample_resource_graph.ts
   * Check for places to use createKeyVariant()
   * Consistant naming for converters (Ip vs IP, etc)

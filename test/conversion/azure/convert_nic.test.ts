@@ -15,13 +15,16 @@ import {
   privateIp2SourceIp,
   nic1,
   nic1Id,
-  nic1Name,
+  nic1InboundKey,
+  nic1OutboundKey,
   nicWithoutVm,
   nsg1,
   outboundRules,
   subnet1Id,
+  subnet1OutboundKey,
   vnet1Id,
   vm1,
+  vm1Key,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -39,17 +42,17 @@ export default function test() {
 
       mocks.vm.action(() => {
         return {
-          destination: 'vm1',
+          destination: vm1Key,
         };
       });
 
       // DESIGN NOTE: cannot call services.convert.nic() because our intent
       // is to test the real convertNIC(), instead of its mock.
-      const result = convertNIC(services, nic1, subnet1Id, vnet1Id);
+      const result = convertNIC(services, nic1, subnet1OutboundKey, vnet1Id);
       const {nodes: observedNodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify result.
-      assert.equal(result.destination, 'nic1/inbound');
+      assert.equal(result.destination, nic1InboundKey);
       assert.equal(
         result.constraints.destinationIp,
         `${privateIp1SourceIp},${privateIp2SourceIp}`
@@ -66,7 +69,7 @@ export default function test() {
       assert.equal(vmLog.length, 1);
       assert.equal(vmLog[0].params[1], vm1);
       assert.deepEqual(vmLog[0].params[2], {
-        destination: services.nodes.createKeyVariant(nic1Name, 'outbound'),
+        destination: nic1OutboundKey,
         constraints: {sourceIp: `${privateIp1SourceIp},${privateIp2SourceIp}`},
       });
 
@@ -77,24 +80,24 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         // Inbound
         {
-          key: services.nodes.createKeyVariant(nic1Name, 'inbound'),
+          key: nic1InboundKey,
           name: nic1Id + '/inbound',
           filters: inboundRules,
           routes: [
             {
-              destination: 'vm1',
+              destination: vm1Key,
             },
           ],
         },
 
         // Outbound
         {
-          key: services.nodes.createKeyVariant(nic1Name, 'outbound'),
+          key: nic1OutboundKey,
           name: nic1Id + '/outbound',
           filters: outboundRules,
           routes: [
             {
-              destination: subnet1Id,
+              destination: subnet1OutboundKey,
             },
           ],
         },

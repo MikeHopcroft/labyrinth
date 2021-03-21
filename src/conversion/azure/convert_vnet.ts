@@ -23,6 +23,8 @@ export function convertVNet(
   services.symbols.defineServiceTag(vNetServiceTag, destinationIp);
 
   // Create outbound rule (traffic leaving vnet).
+  // TODO: this should not route directly to the internet.
+  // It should route to its parent (which will likely be the AzureBackbone or Gateway)
   const routes: RoutingRuleSpec[] = [
     {
       destination: services.getInternetKey(),
