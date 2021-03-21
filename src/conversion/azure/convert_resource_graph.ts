@@ -26,6 +26,13 @@ export function convertResourceGraph(services: GraphServices) {
   // TODO: Allocate Key to avoid possible collisions
   const internetNodeKey = services.getInternetKey();
 
+  // Convert each VNet.
+  for (const vnet of services.index.withType(AzureVirtualNetwork)) {
+    const route = services.convert.vnet(services, vnet, azureGatewayKey);
+    vNetNodeKeys.push(route.destination);
+    gatewayRoutes.push(route);
+  }
+
   // Convert each Public Ips.
   for (const ipSpec of services.index.withType(AzurePublicIP)) {
     const {inbound, outbound} = services.convert.publicIp(
@@ -42,13 +49,6 @@ export function convertResourceGraph(services: GraphServices) {
     for (const route of outbound) {
       gatewayRoutes.push(route);
     }
-  }
-
-  // Convert each VNet.
-  for (const vnet of services.index.withType(AzureVirtualNetwork)) {
-    const route = services.convert.vnet(services, vnet, azureGatewayKey);
-    vNetNodeKeys.push(route.destination);
-    gatewayRoutes.push(route);
   }
 
   gatewayRoutes.push({
