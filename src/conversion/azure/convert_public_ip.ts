@@ -1,6 +1,6 @@
 import {RoutingRuleSpec} from '../../graph';
 
-import {AzureObjectType, AzurePublicIP} from './azure_types';
+import {AzureObjectType, AzurePrivateIP, AzurePublicIP} from './azure_types';
 import {GraphServices} from './graph_services';
 
 export interface PublicIpRoutes {
@@ -20,54 +20,109 @@ export function convertPublicIp(
     );
 
     if (ipconfig.type === AzureObjectType.PRIVATE_IP) {
-      return createNicRoutesForPublicIp(
-        publicIpSpec.properties.ipAddress,
-        ipconfig.properties.privateIPAddress,
-        internetKey,
-        gatewayKey
+      return publicIpWithPrivateIp(
+        services,
+        publicIpSpec,
+        ipconfig,
+        gatewayKey,
+        internetKey
       );
     } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
-      return services.convert.loadBalancerFrontend(
-        services,
-        ipconfig,
-        publicIpSpec,
-        gatewayKey
-      );
+      return loadBalancerFrontEndIp();
+    } else {
+      const message = `unsupported IP config type '${ipconfig.type}'`;
+      throw new TypeError(message);
     }
+  } else {
+    // This public ip exists in the resource graph, but is not bound to an
+    // internal ip address.
+    return isolatedPublicIp(services, publicIpSpec);
   }
-
-  return {inbound: [], outbound: []};
 }
 
-function createNicRoutesForPublicIp(
-  publicIp: string,
-  privateIp: string,
-  internetKey: string,
-  gatewayKey: string
+function publicIpWithPrivateIp(
+  services: GraphServices,
+  publicIpSpec: AzurePublicIP,
+  privateIpSpec: AzurePrivateIP,
+  gatewayKey: string,
+  internetKey: string
 ): PublicIpRoutes {
-  const inbound: RoutingRuleSpec[] = [
-    {
-      destination: gatewayKey,
-      constraints: {
-        destinationIp: publicIp,
-      },
-      override: {
-        destinationIp: privateIp,
-      },
-    },
-  ];
+  const keyPrefix = services.nodes.createKey(publicIpSpec);
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
 
-  const outbound = [
-    {
-      destination: internetKey,
-      constraints: {
-        sourceIp: privateIp,
+  // Create inbound node
+  services.nodes.add({
+    key: inboundKey,
+    routes: [
+      {
+        destination: gatewayKey,
+        override: {
+          destinationIp: privateIpSpec.properties.privateIPAddress,
+        },
       },
-      override: {
-        sourceIp: publicIp,
-      },
-    },
-  ];
+    ],
+  });
 
-  return {inbound, outbound};
+  // Create outbound node
+  services.nodes.add({
+    key: outboundKey,
+    routes: [
+      {
+        destination: internetKey,
+        override: {
+          sourceIp: publicIpSpec.properties.ipAddress,
+        },
+      },
+    ],
+  });
+
+  return {
+    inbound: [
+      {
+        destination: inboundKey,
+        constraints: {
+          destinationIp: publicIpSpec.properties.ipAddress,
+        },
+      },
+    ],
+    outbound: [
+      {
+        destination: outboundKey,
+        constraints: {
+          sourceIp: privateIpSpec.properties.privateIPAddress,
+        },
+      },
+    ],
+  };
+}
+
+function loadBalancerFrontEndIp(): PublicIpRoutes {
+  throw new TypeError('loadBalancerFrontEndIp() not implemented');
+}
+
+function isolatedPublicIp(
+  services: GraphServices,
+  publicIpSpec: AzurePublicIP
+): PublicIpRoutes {
+  const keyPrefix = services.nodes.createKey(publicIpSpec);
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+
+  // Create inbound node
+  services.nodes.add({
+    key: inboundKey,
+    routes: [],
+  });
+
+  return {
+    inbound: [
+      {
+        destination: inboundKey,
+        constraints: {
+          destinationIp: publicIpSpec.properties.ipAddress,
+        },
+      },
+    ],
+    outbound: [],
+  };
 }

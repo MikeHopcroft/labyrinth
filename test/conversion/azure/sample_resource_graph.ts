@@ -46,8 +46,10 @@ export function createGraphServicesMock() {
   };
 
   const index = new AzureObjectIndex([]);
-  const nodes = new NodeServices();
-  const services = new GraphServices(index, {converters: mocks, nodes});
+  const services = new GraphServices(index, {
+    converters: mocks,
+    nodes: nodeServices,
+  });
 
   return {services, mocks};
 }
@@ -95,10 +97,14 @@ export const publicIp1SubnetName = subnet1Name;
 
 export const publicIpWithPrivateName = 'publicIpWithPrivateIp1';
 export const publicIpWithPrivateId = publicIpId(publicIpWithPrivateName);
-export const publicIpWithPrivateSourceIp = '203.0.113.1';
+export const publicIpWithPrivateSourceIp = '203.0.113.2';
+
+export const isolatedPublicIpName = 'isolatedPublicIp';
+export const isolatedPublicIpId = publicIpId(isolatedPublicIpName);
+export const isolatedPublicIpSourceIp = '203.0.113.3';
 
 export const privateIpWithPublicName = 'privateIpWithPublic1';
-export const privateIpWithPublicId = ipId(nic1Name, publicIpWithPrivateName);
+export const privateIpWithPublicId = ipId(nic1Name, privateIpWithPublicName);
 
 export const vm1Name = 'vm1';
 export const vm1Id = vmId(vm1Name);
@@ -188,8 +194,29 @@ export const publicIpWithPrivate: AzurePublicIP = {
     ipConfiguration: reference(privateIpWithPublic),
   },
 };
-export const publicIpWithPrivateKey = nodeServices.createKey(
-  publicIpWithPrivate
+const publicIpWithPrivateKey = nodeServices.createKey(publicIpWithPrivate);
+export const publicIpWithPrivateInboundKey = nodeServices.createKeyVariant(
+  publicIpWithPrivateKey,
+  'inbound'
+);
+export const publicIpWithPrivateOutboundKey = nodeServices.createKeyVariant(
+  publicIpWithPrivateKey,
+  'outbound'
+);
+
+export const isolatedPublicIp: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: isolatedPublicIpId,
+  name: isolatedPublicIpName,
+  resourceGroup,
+  properties: {
+    ipAddress: isolatedPublicIpSourceIp,
+  },
+};
+const isolatedPublicIpKey = nodeServices.createKey(isolatedPublicIp);
+export const isolatedPublicIpInboundKey = nodeServices.createKeyVariant(
+  isolatedPublicIpKey,
+  'inbound'
 );
 
 ///////////////////////////////////////////////////////////////////////////
