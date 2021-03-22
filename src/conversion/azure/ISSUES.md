@@ -12,10 +12,16 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
+  * x normalizeCase() should normalize type and id fields
   * Unit test for resourceGraph
-  * x BUG: convertVNet() shouldn't route directly to the Internet.
-  * x Add node keys to sample_resource_graph.ts
-  * Check for places to use createKeyVariant()
+    * Extract createGateway()
+  * Consider adding ranges back to nodes
+  * Write design note
+  * Remove services.getInternetKey()
+    * The resource graph is the sole owner of this key
+    * The Internet service tag is another story
+  * Convenience function to initialize GraphServices.
+  * Move Azure-specific symbols to dedicated Azure universe.
   * Consistant naming for converters (Ip vs IP, etc)
     * nic: convertNIC,
     * resourceGraph: convertResourceGraph,
@@ -25,6 +31,9 @@
     * ip: convertIp,
     * publicIp: convertPublicIp,
     * vm: convertVM,
+  * x BUG: convertVNet() shouldn't route directly to the Internet.
+  * x Add node keys to sample_resource_graph.ts
+  * x Check for places to use createKeyVariant()
   * x VMs with multiple NICs
     * x Implement
     * x Unit test
@@ -33,13 +42,6 @@
   * x Intergrate with converter console application
     * x Smoke check with data/resource-graph-1.json
   * x Implement NAT for publicIp
-  * Add ranges back to nodes
-  * Write design note
-  * Remove services.getInternetKey()
-    * The resource graph is the sole owner of this key
-    * The Internet service tag is another story
-  * Convenience function to initialize GraphServices.
-  * Move Azure-specific symbols to dedicated Azure universe.
   * x Rename LocalIp to PrivateIp
   * x Rename NodeKeyAndSourceIp to NodeKeyAndDestinationIp
   * x Remove NodeKeyAndDestinationIp
