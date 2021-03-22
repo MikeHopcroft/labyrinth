@@ -23,6 +23,11 @@ export interface NSGRuleSpecs {
 // converters with resorting to monkey patching.
 //
 export interface IConverters {
+  ip(
+    services: GraphServices,
+    spec: AzureIPConfiguration,
+    parent: string
+  ): SimpleRoutingRuleSpec;
   loadBalancerFrontend(
     services: GraphServices,
     spec: AzureLoadBalancerFrontEndIp,
@@ -35,23 +40,6 @@ export interface IConverters {
     parent: string,
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
-  resourceGraph(services: GraphServices): void;
-  subnet(
-    services: GraphServices,
-    spec: AzureSubnet,
-    parent: string,
-    vnetSymbol: string
-  ): SimpleRoutingRuleSpec;
-  vnet(
-    services: GraphServices,
-    spec: AzureVirtualNetwork,
-    parent: string
-  ): SimpleRoutingRuleSpec;
-  ip(
-    services: GraphServices,
-    spec: AzureIPConfiguration,
-    parent: string
-  ): SimpleRoutingRuleSpec;
   nsg(
     spec: AzureNetworkSecurityGroup | undefined,
     vnetSymbol: string
@@ -62,9 +50,21 @@ export interface IConverters {
     gatewayKey: string,
     internetKey: string
   ): PublicIpRoutes;
+  resourceGraph(services: GraphServices): void;
+  subnet(
+    services: GraphServices,
+    spec: AzureSubnet,
+    parent: string,
+    vnetSymbol: string
+  ): SimpleRoutingRuleSpec;
   vm(
     services: GraphServices,
     spec: AzureVirtualMachine,
     parentRoute: RoutingRuleSpec
   ): RoutingRuleSpec;
+  vnet(
+    services: GraphServices,
+    spec: AzureVirtualNetwork,
+    parent: string
+  ): SimpleRoutingRuleSpec;
 }
