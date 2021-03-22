@@ -14,26 +14,60 @@ export function convertPublicIp(
   gatewayKey: string,
   internetKey: string
 ): PublicIpRoutes {
+  const keyPrefix = services.nodes.createKey(publicIpSpec);
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
+
+  let routes: PublicIpRoutes = {inbound: [], outbound: []};
+
   if (publicIpSpec.properties.ipConfiguration) {
     const ipconfig = services.index.dereference(
       publicIpSpec.properties.ipConfiguration
     );
 
     if (ipconfig.type === AzureObjectType.PRIVATE_IP) {
-      return createNicRoutesForPublicIp(
+      routes = createNicRoutesForPublicIp(
         publicIpSpec.properties.ipAddress,
         ipconfig.properties.privateIPAddress,
-        internetKey,
-        gatewayKey
+        gatewayKey,
+        internetKey
       );
     } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
-      return services.convert.loadBalancerFrontend(
+      routes = services.convert.loadBalancerFrontend(
         services,
         ipconfig,
         publicIpSpec,
         gatewayKey
       );
     }
+
+    if (routes.inbound.length > 0) {
+      // Create inbound node
+      services.nodes.add({
+        key: inboundKey,
+        routes: routes.inbound,
+      });
+    }
+
+    if (routes.outbound.length > 0) {
+      // Create outbound node
+
+      services.nodes.add({
+        key: outboundKey,
+        routes: routes.outbound,
+      });
+    }
+
+    const inbound: RoutingRuleSpec[] = [
+      {
+        destination: inboundKey,
+        constraints: {
+          destinationIp: publicIpSpec.properties.ipAddress,
+        },
+      },
+    ];
+
+    return {inbound, outbound: []};
   }
 
   return {inbound: [], outbound: []};
@@ -42,12 +76,12 @@ export function convertPublicIp(
 function createNicRoutesForPublicIp(
   publicIp: string,
   privateIp: string,
-  internetKey: string,
-  gatewayKey: string
+  inboundKey: string,
+  outboundKey: string
 ): PublicIpRoutes {
   const inbound: RoutingRuleSpec[] = [
     {
-      destination: gatewayKey,
+      destination: inboundKey,
       constraints: {
         destinationIp: publicIp,
       },
@@ -59,7 +93,7 @@ function createNicRoutesForPublicIp(
 
   const outbound = [
     {
-      destination: internetKey,
+      destination: outboundKey,
       constraints: {
         sourceIp: privateIp,
       },

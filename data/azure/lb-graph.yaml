@@ -1,4 +1,44 @@
 nodes:
+  - key: publicIp4/inbound
+    routes:
+      - destination: AzureGateway/inbound
+        constraints:
+          destinationPort: '80'
+          protocol: Tcp
+          destinationIp: 52.143.80.173
+        override:
+          destinationIp: 192.168.200.5
+  - key: publicIp5/inbound
+    routes:
+      - destination: AzureGateway/inbound
+        constraints:
+          destinationIp: 20.190.43.112
+        override:
+          destinationIp: 192.168.200.4
+  - key: publicIp5/outbound
+    routes:
+      - destination: Internet
+        constraints:
+          sourceIp: 192.168.200.4
+        override:
+          sourceIp: 20.190.43.112
+  - key: Internet
+    endpoint: true
+    routes:
+      - destination: publicIp1/inbound
+        constraints:
+          destinationIp: 51.143.10.199
+      - destination: publicIp2/inbound
+        constraints:
+          destinationIp: 51.143.51.71
+      - destination: publicIp4/inbound
+        constraints:
+          destinationIp: 52.143.80.173
+      - destination: publicIp5/inbound
+        constraints:
+          destinationIp: 20.190.43.112
+  - key: AzureGateway/outbound
+    routes: []
   - key: subnet1/inbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-test-vpn/providers/microsoft.network/virtualnetworks/x-test-vpn-vnet/subnets/gatewaysubnet/inbound
@@ -303,7 +343,7 @@ nodes:
     range:
       sourceIp: '192.168.200.0-192.168.202.31, 192.168.202.64/26'
     routes:
-      - destination: AzureGateway
+      - destination: AzureGateway/outbound
         constraints:
           destinationIp: 'except 192.168.200.0-192.168.202.31, 192.168.202.64/26'
       - destination: subnet1/inbound
@@ -321,32 +361,11 @@ nodes:
       - destination: subnet5/inbound
         constraints:
           destinationIp: 192.168.202.64/26
-  - key: AzureGateway
+  - key: AzureGateway/inbound
     routes:
       - destination: vnet1
         constraints:
           destinationIp: '192.168.200.0-192.168.202.31, 192.168.202.64/26'
-      - destination: Internet
-        constraints:
-          sourceIp: 192.168.200.4
-        override:
-          sourceIp: 20.190.43.112
-      - destination: Internet
-  - key: Internet
-    endpoint: true
-    routes:
-      - destination: AzureGateway
-        constraints:
-          destinationPort: '80'
-          protocol: Tcp
-          destinationIp: 52.143.80.173
-        override:
-          destinationIp: 192.168.200.5
-      - destination: AzureGateway
-        constraints:
-          destinationIp: 20.190.43.112
-        override:
-          destinationIp: 192.168.200.4
 symbols:
   - dimension: ip
     symbol: AzureLoadBalancer
