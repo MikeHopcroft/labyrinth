@@ -46,7 +46,7 @@ export function convertResourceGraph(services: GraphServices) {
 
   // Convert each VNet.
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
-    const route = services.convert.vnet(services, vnet);
+    const route = services.convert.vnet(services, vnet, azureGatewayKey);
     vNetNodeKeys.push(route.destination);
     gatewayRoutes.push(route);
   }
