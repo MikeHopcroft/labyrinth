@@ -8,7 +8,8 @@ import {GraphServices} from './graph_services';
 
 export function convertVNet(
   services: GraphServices,
-  spec: AzureVirtualNetwork
+  spec: AzureVirtualNetwork,
+  parent: string
 ): SimpleRoutingRuleSpec {
   const vNetNodeKey = services.nodes.createKey(spec);
   const vNetServiceTag = vNetNodeKey;
@@ -27,7 +28,7 @@ export function convertVNet(
   // It should route to its parent (which will likely be the AzureBackbone or Gateway)
   const routes: RoutingRuleSpec[] = [
     {
-      destination: services.getInternetKey(),
+      destination: parent,
       constraints: {destinationIp: `except ${destinationIp}`},
     },
   ];

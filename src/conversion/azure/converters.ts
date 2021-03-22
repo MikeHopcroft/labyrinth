@@ -37,7 +37,8 @@ export interface IConverters {
   ): SimpleRoutingRuleSpec;
   vnet(
     services: GraphServices,
-    spec: AzureVirtualNetwork
+    spec: AzureVirtualNetwork,
+    parent: string
   ): SimpleRoutingRuleSpec;
   ip(
     services: GraphServices,
