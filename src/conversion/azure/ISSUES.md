@@ -12,9 +12,10 @@
   * Materializers don't know specifics of other node materializations
 
 * Top 2
-  * x normalizeCase() should normalize type and id fields
   * Unit test for resourceGraph
     * Extract createGateway()
+  * Unit test for convertPublicIp()
+  * convertIp() should become convertPrivateIp()
   * Consider adding ranges back to nodes
   * Write design note
   * Remove services.getInternetKey()
@@ -31,6 +32,7 @@
     * ip: convertIp,
     * publicIp: convertPublicIp,
     * vm: convertVM,
+  * x normalizeCase() should normalize type and id fields
   * x BUG: convertVNet() shouldn't route directly to the Internet.
   * x Add node keys to sample_resource_graph.ts
   * x Check for places to use createKeyVariant()

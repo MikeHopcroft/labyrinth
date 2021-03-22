@@ -97,6 +97,9 @@ export default function test() {
       ];
 
       assert.deepEqual(nodes, expectedNodes);
+
+      // Need to rework this test.
+      assert.fail();
     });
   });
 }

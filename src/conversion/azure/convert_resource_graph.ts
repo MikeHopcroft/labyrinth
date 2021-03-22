@@ -1,4 +1,4 @@
-import {NodeSpec, RoutingRuleSpec} from '../../graph';
+import {RoutingRuleSpec} from '../../graph';
 
 import {AzurePublicIP, AzureVirtualNetwork} from './azure_types';
 import {GraphServices} from './graph_services';
@@ -16,43 +16,69 @@ export function convertResourceGraph(services: GraphServices) {
   // The Azure resource graph is considered to be a forest of AnyAzureObjects,
   // some of which are AzureVirtualNetworks.
 
-  // Materialize each virtual network, while saving its NodeKey for later use.
-  // Create routes from internet to each virtual network.
-  const vNetNodeKeys: string[] = [];
-  const gatewayRoutes: RoutingRuleSpec[] = [];
+  // TODO: Allocate internetNodeKey to avoid possible collisions
+  const internetKey = services.getInternetKey();
+  const gatewayKeyPrefix = 'AzureGateway';
+  const gatewayInboundKey = services.nodes.createKeyVariant(
+    gatewayKeyPrefix,
+    'inbound'
+  );
+  const gatewayOutboundKey = services.nodes.createKeyVariant(
+    gatewayKeyPrefix,
+    'outbound'
+  );
+
+  //
+  // Materialize each public ip.
+  //
+
   const internetRoutes: RoutingRuleSpec[] = [];
-
-  const azureGatewayKey = 'AzureGateway';
-  // TODO: Allocate Key to avoid possible collisions
-  const internetNodeKey = services.getInternetKey();
-
-  // Convert each Public Ips.
+  const gatewayOutboundRoutes: RoutingRuleSpec[] = [];
   for (const ipSpec of services.index.withType(AzurePublicIP)) {
     const {inbound, outbound} = services.convert.publicIp(
       services,
       ipSpec,
-      azureGatewayKey,
-      internetNodeKey
+      gatewayInboundKey,
+      internetKey
     );
-
-    if (inbound) {
-      internetRoutes.push(inbound);
-    }
-
+    internetRoutes.push(inbound);
     if (outbound) {
-      gatewayRoutes.push(outbound);
+      gatewayOutboundRoutes.push(outbound);
     }
   }
 
-  // Convert each VNet.
+  // Create internet node
+  services.nodes.add({
+    key: internetKey,
+    endpoint: true,
+    routes: internetRoutes,
+  });
+
+  //
+  // Create outbound gateway node
+  //
+  services.nodes.add({
+    key: gatewayOutboundKey,
+    routes: gatewayOutboundRoutes,
+  });
+
+  //
+  // Create inbound gateway node
+  //
+
+  // Materialize each virtual network, while saving its NodeKey for later use.
+  // Create routes from internet to each virtual network.
+  const vNetNodeKeys: string[] = [];
+  const gatewayInboundRoutes: RoutingRuleSpec[] = [];
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
-    const route = services.convert.vnet(services, vnet, azureGatewayKey);
+    const route = services.convert.vnet(services, vnet, gatewayOutboundKey);
     vNetNodeKeys.push(route.destination);
-    gatewayRoutes.push(route);
+    gatewayInboundRoutes.push(route);
   }
 
-  gatewayRoutes.push({
-    destination: internetNodeKey,
+  services.nodes.add({
+    key: gatewayInboundKey,
+    routes: gatewayInboundRoutes,
   });
 
   // Define a service tag for `Internet`, which is referenced in router rules
@@ -60,20 +86,5 @@ export function convertResourceGraph(services: GraphServices) {
   // any ip addresses not in the ranges of the VNets.
   // See https://docs.microsoft.com/en-us/azure/virtual-network/service-tags-overview
   const sourceIp = `except ${vNetNodeKeys.join(',')}`;
-  services.symbols.defineServiceTag(internetNodeKey, sourceIp);
-
-  // TODO: the routes should really be the routes to all of the public ips, not the vnets.
-  const azureGateway: NodeSpec = {
-    key: azureGatewayKey,
-    routes: gatewayRoutes,
-  };
-  services.nodes.add(azureGateway);
-
-  // TODO: the routes should really be the routes to all of the public ips, not the vnets.
-  const internetNode: NodeSpec = {
-    key: internetNodeKey,
-    endpoint: true,
-    routes: internetRoutes,
-  };
-  services.nodes.add(internetNode);
+  services.symbols.defineServiceTag(internetKey, sourceIp);
 }

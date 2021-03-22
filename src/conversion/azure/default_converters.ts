@@ -10,13 +10,13 @@ import {convertVNet} from './convert_vnet';
 
 export function defaultConverters(): IConverters {
   return {
+    ip: convertIp,
     nic: convertNIC,
+    nsg: convertNSG,
+    publicIp: convertPublicIp,
     resourceGraph: convertResourceGraph,
     subnet: convertSubnet,
-    vnet: convertVNet,
-    nsg: convertNSG,
-    ip: convertIp,
-    publicIp: convertPublicIp,
     vm: convertVM,
+    vnet: convertVNet,
   };
 }
