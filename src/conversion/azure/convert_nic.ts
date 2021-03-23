@@ -1,4 +1,4 @@
-import {NodeSpec, SimpleRoutingRuleSpec} from '../../graph';
+import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 
 import {
   AzureNetworkInterface,
@@ -23,7 +23,7 @@ export function convertNIC(
     throw new TypeError('NIC without VM are not supported');
   }
 
-  const keyPrefix = services.ids.createKey(spec);
+  const keyPrefix = services.nodes.createKey(spec);
 
   //
   // NSG rules
@@ -43,17 +43,23 @@ export function convertNIC(
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
-  const inboundKey = keyPrefix + '/inbound';
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
 
-  // Only include an outbound node if there are outbound NSG rules.
-  const outboundKey =
-    nsgRules.outboundRules.length > 0 ? keyPrefix + '/outbound' : parent;
+  // Route from VM to this NIC.
+  const sourceIp = spec.properties.ipConfigurations
+    .map(ip => ip.properties.privateIPAddress)
+    .join(',');
+  const routeFromVM: RoutingRuleSpec = {
+    destination: outboundKey,
+    constraints: {sourceIp},
+  };
 
-  // Create the route to the VM.
+  // Materialize the VM.
   const vmSpec = services.index.dereference<AzureVirtualMachine>(
     spec.properties.virtualMachine
   );
-  const vmRoute = services.convert.vm(services, vmSpec, outboundKey);
+  const routeToVM = services.convert.vm(services, vmSpec, routeFromVM);
 
   //
   // Construct inbound node
@@ -61,27 +67,23 @@ export function convertNIC(
   const inboundNode: NodeSpec = {
     key: inboundKey,
     name: spec.id + '/inbound',
-    routes: [vmRoute],
+    routes: [routeToVM],
   };
   if (nsgRules.inboundRules.length) {
     inboundNode.filters = nsgRules.inboundRules;
   }
-  services.addNode(inboundNode);
+  services.nodes.add(inboundNode);
 
-  //
-  // If there are outbound NSG rules, construct outbound node
-  //
-  if (nsgRules.outboundRules.length > 0) {
-    const outboundNode: NodeSpec = {
-      key: outboundKey,
-      name: spec.id + '/outbound',
-      routes: [{destination: parent}],
-    };
-    if (nsgRules.outboundRules.length) {
-      outboundNode.filters = nsgRules.outboundRules;
-    }
-    services.addNode(outboundNode);
+  const outboundNode: NodeSpec = {
+    key: outboundKey,
+    name: spec.id + '/outbound',
+    routes: [{destination: parent}],
+  };
+
+  if (nsgRules.outboundRules.length) {
+    outboundNode.filters = nsgRules.outboundRules;
   }
+  services.nodes.add(outboundNode);
 
   //
   // Return route for use by parent node.
@@ -91,12 +93,8 @@ export function convertNIC(
   // IpConfigs bound to multiple subnets. If this assumption were wrong,
   // we would have to filter this map to include only private IPs for the
   // subnet parent of this NIC.
-  const destinationIp = spec.properties.ipConfigurations
-    .map(ip => ip.properties.privateIPAddress)
-    .join(',');
-
   return {
     destination: inboundKey,
-    constraints: {destinationIp},
+    constraints: {destinationIp: sourceIp},
   };
 }

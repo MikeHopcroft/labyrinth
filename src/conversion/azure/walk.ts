@@ -1,4 +1,4 @@
-import {AzureTypedObject} from './azure_types';
+import {AzureObjectBase, AzureTypedObject} from './azure_types';
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -33,7 +33,7 @@ export function* walkAzureTypedObjects(
 export function* walkAzureObjectBases(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   root: any
-): IterableIterator<AzureTypedObject> {
+): IterableIterator<AzureObjectBase> {
   if (root && typeof root === 'object') {
     // NOTE: cannot use destructuring here because `root` is `any`.
     const id = root.id;

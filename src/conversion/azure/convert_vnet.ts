@@ -8,9 +8,10 @@ import {GraphServices} from './graph_services';
 
 export function convertVNet(
   services: GraphServices,
-  spec: AzureVirtualNetwork
+  spec: AzureVirtualNetwork,
+  parent: string
 ): SimpleRoutingRuleSpec {
-  const vNetNodeKey = services.ids.createKey(spec);
+  const vNetNodeKey = services.nodes.createKey(spec);
   const vNetServiceTag = vNetNodeKey;
 
   // Compute this VNet's address range by unioning up all of its address prefixes.
@@ -23,9 +24,11 @@ export function convertVNet(
   services.symbols.defineServiceTag(vNetServiceTag, destinationIp);
 
   // Create outbound rule (traffic leaving vnet).
+  // TODO: this should not route directly to the internet.
+  // It should route to its parent (which will likely be the AzureBackbone or Gateway)
   const routes: RoutingRuleSpec[] = [
     {
-      destination: services.getInternetKey(),
+      destination: parent,
       constraints: {destinationIp: `except ${destinationIp}`},
     },
   ];
@@ -41,7 +44,7 @@ export function convertVNet(
     routes.push(route);
   }
 
-  services.addNode({
+  services.nodes.add({
     key: vNetNodeKey,
     name: spec.id,
     range: {sourceIp: destinationIp},

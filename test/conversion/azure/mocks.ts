@@ -14,70 +14,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Mocked<PARAMS extends any[], RESULT> = (
-  ...params: PARAMS
-) => RESULT;
-
-// DESIGN NOTE 1: I would prefer to implement Behavior as a type union of
-// a SuccessBehavior and a ThrowBehavior, but I couldn't get it to work with
-// the type guards.
-//
-// DESIGN NOTE 2: Behavior.result should probably have type `string | Error`.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface Behavior<PARAMS extends any[], RESULT> {
-  params: PARAMS;
-  message?: string;
-  result?: RESULT;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createMock<PARAMS extends any[], RESULT>(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  prototypeFunction: Mocked<PARAMS, RESULT> | undefined = undefined
-) {
-  const log: Array<Behavior<PARAMS, RESULT>> = [];
-  let action: Mocked<PARAMS, RESULT> | undefined = undefined;
-  const f = (...params: PARAMS): RESULT => {
-    if (action) {
-      try {
-        const result = action(...params);
-        log.push({params, result});
-        return result;
-      } catch (e) {
-        log.push({params, message: e.message});
-        throw e;
-      }
-    } else {
-      const message = 'No mock defined.';
-      log.push({params, message: message});
-      throw new TypeError(message);
-    }
-  };
-
-  f.log = () => {
-    return log;
-  };
-
-  f.action = (fun: Mocked<PARAMS, RESULT>) => {
-    action = fun;
-  };
-
-  return f;
-
-  // return {
-  //   (): f,
-  // };
-  //   (): f,
-  //   log: () => {
-  //     return log;
-  //   },
-  //   action: (fun: Mocked<PARAMS, RESULT>) => {
-  //     action = fun;
-  //   },
-  // };
-}
-
 // ///////////////////////////////////////////////////////////////////////////////
 // //
 // // Usage example 1
@@ -128,3 +64,55 @@ export function createMock<PARAMS extends any[], RESULT>(
 // // After making calls to mock(), we can get back a log of all of the invocation
 // // details.
 // console.log(mock.log());
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Mocked<PARAMS extends any[], RESULT> = (
+  ...params: PARAMS
+) => RESULT;
+
+// DESIGN NOTE 1: I would prefer to implement Behavior as a type union of
+// a SuccessBehavior and a ThrowBehavior, but I couldn't get it to work with
+// the type guards.
+//
+// DESIGN NOTE 2: Behavior.result should probably have type `string | Error`.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface Behavior<PARAMS extends any[], RESULT> {
+  params: PARAMS;
+  message?: string;
+  result?: RESULT;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createMock<PARAMS extends any[], RESULT>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  prototypeFunction: Mocked<PARAMS, RESULT> | undefined = undefined
+) {
+  const log: Array<Behavior<PARAMS, RESULT>> = [];
+  let action: Mocked<PARAMS, RESULT> | undefined = undefined;
+  const f = (...params: PARAMS): RESULT => {
+    if (action) {
+      try {
+        const result = action(...params);
+        log.push({params, result});
+        return result;
+      } catch (e) {
+        log.push({params, message: e.message});
+        throw e;
+      }
+    } else {
+      const message = 'No mock defined.';
+      log.push({params, message: message});
+      throw new TypeError(message);
+    }
+  };
+
+  f.log = () => {
+    return log;
+  };
+
+  f.action = (fun: Mocked<PARAMS, RESULT>) => {
+    action = fun;
+  };
+
+  return f;
+}

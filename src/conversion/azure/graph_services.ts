@@ -1,34 +1,35 @@
-import {GraphSpec, NodeSpec} from '../../graph';
-import {AzureObjectIndex} from './azure_object_index';
+import {GraphSpec} from '../../graph';
 
+import {AzureObjectIndex} from './azure_object_index';
+import {defaultConverters} from './default_converters';
 import {IConverters} from './converters';
-import {NodeKeyGenerator} from './node_key_generator';
+import {NodeServices} from './node_services';
 import {SymbolTable} from './symbol_table';
 
+export interface GraphServicesOptions {
+  converters?: IConverters;
+  nodes?: NodeServices;
+  symbols?: SymbolTable;
+}
+
 export class GraphServices {
-  readonly ids = new NodeKeyGenerator();
   readonly index: AzureObjectIndex;
   readonly convert: IConverters;
-  private readonly nodes: NodeSpec[] = [];
+  readonly nodes = new NodeServices();
   readonly symbols: SymbolTable;
 
-  constructor(
-    converters: IConverters,
-    symbols: SymbolTable,
-    index: AzureObjectIndex
-  ) {
-    this.convert = converters;
-    this.symbols = symbols;
+  constructor(index: AzureObjectIndex, options: GraphServicesOptions = {}) {
     this.index = index;
-  }
-
-  // Add a Labyrinth node to the generated graph.
-  addNode(node: NodeSpec) {
-    this.nodes.push(node);
+    this.convert = options.converters ?? defaultConverters();
+    this.nodes = options.nodes ?? new NodeServices();
+    this.symbols = options.symbols ?? new SymbolTable([]);
   }
 
   getLabyrinthGraphSpec(): GraphSpec {
-    return {nodes: this.nodes, symbols: this.symbols.getAllSymbolSpecs()};
+    return {
+      nodes: [...this.nodes.nodes()],
+      symbols: this.symbols.getAllSymbolSpecs(),
+    };
   }
 
   // TODO: eventually we will probably need some scope management

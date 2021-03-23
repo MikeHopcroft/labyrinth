@@ -2,28 +2,9 @@ import {GraphSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
 import {AzureNetworkInterface, AzureResourceGraph} from './azure_types';
-import {IConverters} from './converters';
-import {convertIp} from './convert_ip';
-import {convertNIC} from './convert_nic';
-import {convertNSG} from './convert_nsg';
-import {convertResourceGraph} from './convert_resource_graph';
-import {convertSubnet} from './convert_subnet';
-import {convertVm} from './convert_vm';
-import {convertVNet} from './convert_vnet';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
 import {SymbolTable} from './symbol_table';
-
-// TODO: Move `converters` to own file.
-export const converters: IConverters = {
-  nic: convertNIC,
-  resourceGraph: convertResourceGraph,
-  subnet: convertSubnet,
-  vnet: convertVNet,
-  nsg: convertNSG,
-  ip: convertIp,
-  vm: convertVm,
-};
 
 export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   //
@@ -47,7 +28,7 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
     },
   ]);
   const index = new AzureObjectIndex(resourceGraphSpec);
-  const services = new GraphServices(converters, symbols, index);
+  const services = new GraphServices(index, {symbols});
 
   //
   // Initialize references
@@ -71,5 +52,3 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
 
   return graph;
 }
-
-export const DefaultConverterConfig = converters;
