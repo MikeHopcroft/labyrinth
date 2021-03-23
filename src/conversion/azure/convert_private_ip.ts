@@ -1,25 +1,14 @@
 import {SimpleRoutingRuleSpec} from '../../graph';
 
-import {AzureIPConfiguration, AzureObjectType} from './azure_types';
-
+import {AzurePrivateIP} from './azure_types';
 import {GraphServices} from './graph_services';
 
-function convertToIpAddress(ipItem: AzureIPConfiguration): string {
-  let ip: string;
-  if (ipItem.type === AzureObjectType.PRIVATE_IP) {
-    ip = ipItem.properties.privateIPAddress;
-  } else {
-    ip = ipItem.properties.ipAddress;
-  }
-  return ip;
-}
-
-export function convertIp(
+export function convertPrivateIp(
   services: GraphServices,
-  spec: AzureIPConfiguration,
+  spec: AzurePrivateIP,
   parent: string
 ): SimpleRoutingRuleSpec {
-  const sourceIp = convertToIpAddress(spec);
+  const sourceIp = spec.properties.privateIPAddress;
   const ipNodeKey = services.nodes.createKey(spec);
 
   const routes: SimpleRoutingRuleSpec[] = [
