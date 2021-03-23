@@ -39,18 +39,22 @@ export default function test() {
 
       // Verify return value
       const expectedResult: PublicIpRoutes = {
-        inbound: [{
-          destination: publicIpWithPrivateInboundKey,
-          constraints: {
-            destinationIp: publicIpWithPrivateSourceIp
-          }
-        }],
-        outbound: [{
-          destination: publicIpWithPrivateOutboundKey,
-          constraints: {
-            sourceIp: privateIp1SourceIp
-          }
-        }],
+        inbound: [
+          {
+            destination: publicIpWithPrivateInboundKey,
+            constraints: {
+              destinationIp: publicIpWithPrivateSourceIp,
+            },
+          },
+        ],
+        outbound: [
+          {
+            destination: publicIpWithPrivateOutboundKey,
+            constraints: {
+              sourceIp: privateIp1SourceIp,
+            },
+          },
+        ],
       };
       assert.deepEqual(result, expectedResult);
 
@@ -61,22 +65,26 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: publicIpWithPrivateInboundKey,
-          routes: [{
-            destination: gatewayKey,
-            override: {
-              destinationIp: privateIp1SourceIp
-            }
-          }]
+          routes: [
+            {
+              destination: gatewayKey,
+              override: {
+                destinationIp: privateIp1SourceIp,
+              },
+            },
+          ],
         },
         {
           key: publicIpWithPrivateOutboundKey,
-          routes: [{
-            destination: internetKey,
-            override: {
-              sourceIp: publicIpWithPrivateSourceIp
-            }
-          }]
-        }
+          routes: [
+            {
+              destination: internetKey,
+              override: {
+                sourceIp: publicIpWithPrivateSourceIp,
+              },
+            },
+          ],
+        },
       ];
       assert.deepEqual(nodes, expectedNodes);
     });
@@ -99,12 +107,14 @@ export default function test() {
 
       // Verify return value
       const expectedResult: PublicIpRoutes = {
-        inbound: [{
-          destination: isolatedPublicIpInboundKey,
-          constraints: {
-            destinationIp: isolatedPublicIpSourceIp
-          }
-        }],
+        inbound: [
+          {
+            destination: isolatedPublicIpInboundKey,
+            constraints: {
+              destinationIp: isolatedPublicIpSourceIp,
+            },
+          },
+        ],
         outbound: [],
       };
       assert.deepEqual(result, expectedResult);
@@ -116,7 +126,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: isolatedPublicIpInboundKey,
-          routes: []
+          routes: [],
         },
       ];
       assert.deepEqual(nodes, expectedNodes);

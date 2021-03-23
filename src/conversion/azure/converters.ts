@@ -23,11 +23,6 @@ export interface NSGRuleSpecs {
 // converters with resorting to monkey patching.
 //
 export interface IConverters {
-  ip(
-    services: GraphServices,
-    spec: AzureIPConfiguration,
-    parent: string
-  ): SimpleRoutingRuleSpec;
   loadBalancerFrontend(
     services: GraphServices,
     spec: AzureLoadBalancerFrontEndIp,
@@ -44,6 +39,11 @@ export interface IConverters {
     spec: AzureNetworkSecurityGroup | undefined,
     vnetSymbol: string
   ): NSGRuleSpecs;
+  privateIp(
+    services: GraphServices,
+    spec: AzureIPConfiguration,
+    parent: string
+  ): SimpleRoutingRuleSpec;
   publicIp(
     services: GraphServices,
     spec: AzurePublicIP,

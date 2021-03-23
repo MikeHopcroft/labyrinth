@@ -34,10 +34,10 @@ export function createGraphServicesMock() {
   const fake: IConverters = {} as IConverters;
 
   const mocks = {
-    ip: createMock(fake.ip),
     loadBalancerFrontend: createMock(fake.loadBalancerFrontend),
     nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
+    privateIp: createMock(fake.privateIp),
     publicIp: createMock(fake.publicIp),
     resourceGraph: createMock(fake.resourceGraph),
     subnet: createMock(fake.subnet),
