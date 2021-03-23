@@ -17,7 +17,7 @@ import {
   NodeServices,
   AzureLoadBalancerFrontEndIp,
   AzureLoadBalancerInboundNatRule,
-  AzureLoadBalancerRule,
+  AzureLoadBalancerInboundRule,
   AzureLoadBalancerBackendPool,
 } from '../../../src/conversion/azure';
 
@@ -415,7 +415,7 @@ export const backendPool1: AzureLoadBalancerBackendPool = {
   },
 };
 
-export const poolRule1: AzureLoadBalancerRule = {
+export const poolRule1: AzureLoadBalancerInboundRule = {
   type: AzureObjectType.LOAD_BALANCER_RULE,
   id: poolRule1Id,
   name: poolRule1Name,

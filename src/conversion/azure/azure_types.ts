@@ -182,7 +182,7 @@ export interface AzureLoadBalancerBackendPool extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL;
   properties: {
     backendIPConfigurations: AzureReference<AzureIPConfiguration>[];
-    loadBalancingRules: AzureReference<AzureLoadBalancerRule>[];
+    loadBalancingRules: AzureReference<AzureLoadBalancerInboundRule>[];
   };
 }
 
@@ -195,7 +195,7 @@ export interface AzureLoadBalancerFrontEndIp extends AzureTypedObject {
   properties: {
     inboundNatPools?: AzureReference<AzureLoadBalancerInboundNatPool>[];
     inboundNatRules?: AzureReference<AzureLoadBalancerInboundNatRule>[];
-    loadBalancingRules?: AzureReference<AzureLoadBalancerRule>[];
+    loadBalancingRules?: AzureReference<AzureLoadBalancerInboundRule>[];
     publicIPAddress: AzureReference<AzurePublicIP>;
   };
 }
@@ -222,7 +222,7 @@ export interface AzureLoadBalancerInboundNatRule extends AzureTypedObject {
   };
 }
 
-export interface AzureLoadBalancerRule extends AzureTypedObject {
+export interface AzureLoadBalancerInboundRule extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_RULE;
   properties: {
     backendAddressPool: AzureReference<AzureLoadBalancerBackendPool>;
@@ -240,7 +240,7 @@ export interface AzureLoadBalancer extends AzureTypedObject {
     frontendIPConfigurations: AzureLoadBalancerFrontEndIp[];
     inboundNatPools: AzureLoadBalancerInboundNatPool[];
     inboundNatRules: AzureLoadBalancerInboundNatRule[];
-    loadBalancingRules: AzureLoadBalancerRule[];
+    loadBalancingRules: AzureLoadBalancerInboundRule[];
   };
 }
 export type AnyAzureObject =
@@ -250,7 +250,7 @@ export type AnyAzureObject =
   | AzureLoadBalancerFrontEndIp
   | AzureLoadBalancerInboundNatPool
   | AzureLoadBalancerInboundNatRule
-  | AzureLoadBalancerRule
+  | AzureLoadBalancerInboundRule
   | AzureNetworkInterface
   | AzureNetworkSecurityGroup
   | AzureSecurityRule

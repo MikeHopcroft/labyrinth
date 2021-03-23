@@ -2,7 +2,7 @@ import {RoutingRuleSpec} from '../../../graph';
 import {AzureObjectIndex} from '../azure_object_index';
 import {
   AzureLoadBalancerBackendPool,
-  AzureLoadBalancerRule,
+  AzureLoadBalancerInboundRule,
   AzureObjectBase,
   AzurePrivateIP,
   AzurePublicIP,
@@ -11,7 +11,7 @@ import {GraphServices} from '../graph_services';
 
 export function createLoadBalancingRuleRoute(
   services: GraphServices,
-  spec: AzureLoadBalancerRule,
+  spec: AzureLoadBalancerInboundRule,
   frontEndIp: AzurePublicIP,
   gatewayKey: string
 ): RoutingRuleSpec {

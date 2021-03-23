@@ -3,7 +3,7 @@ import {RoutingRuleSpec} from '../../../graph';
 import {
   AzureLoadBalancerFrontEndIp,
   AzureLoadBalancerInboundNatRule,
-  AzureLoadBalancerRule,
+  AzureLoadBalancerInboundRule,
   AzurePublicIP,
 } from '../azure_types';
 import {PublicIpRoutes} from '../convert_public_ip';
@@ -21,7 +21,9 @@ export function convertLoadBalancerFrontEndIp(
   const inbound: RoutingRuleSpec[] = [];
 
   for (const lbRuleRef of spec.properties.loadBalancingRules ?? []) {
-    const lbRule = services.index.dereference<AzureLoadBalancerRule>(lbRuleRef);
+    const lbRule = services.index.dereference<AzureLoadBalancerInboundRule>(
+      lbRuleRef
+    );
     inbound.push(
       createLoadBalancingRuleRoute(services, lbRule, publicIpSpec, gatewayKey)
     );
