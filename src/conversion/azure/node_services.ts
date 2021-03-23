@@ -72,4 +72,8 @@ export class NodeServices {
   nodes(): IterableIterator<NodeSpec> {
     return this.keyToNode.values();
   }
+
+  clearNodes() {
+    this.keyToNode.clear();
+  }
 }

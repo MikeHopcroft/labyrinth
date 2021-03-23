@@ -45,6 +45,9 @@ export function createGraphServicesMock() {
     vm: createMock(fake.vm),
   };
 
+  // Need to clear out nodes from earlier runs.
+  nodeServices.clearNodes();
+
   const index = new AzureObjectIndex([]);
   const services = new GraphServices(index, {
     converters: mocks,
