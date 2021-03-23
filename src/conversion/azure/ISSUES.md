@@ -55,6 +55,9 @@
 
 
 * Top 2
+  * Unit tests for createPublicIp work in isolation, but fail after other tests have run.
+  * 
+  * Figure out case normalization for service tags
   * Unit test for resourceGraph
     * Extract createGateway()
   * Unit test for convertPublicIp()
