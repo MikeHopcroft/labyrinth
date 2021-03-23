@@ -76,7 +76,7 @@ export default function test() {
       assert.equal(log[0].params[3], vnet1Symbol);
       assert.equal(log[1].params[1], subnet2);
       assert.equal(log[1].params[2], vnet1Key);
-      assert.equal(log[0].params[3], vnet1Symbol);
+      assert.equal(log[1].params[3], vnet1Symbol);
 
       // Verify the service tag definition.
       assert.deepEqual(services.symbols.getSymbolSpec(vnet1Symbol), {
