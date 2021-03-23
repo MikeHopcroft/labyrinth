@@ -1,16 +1,16 @@
 import {RoutingRuleSpec} from '../../../graph';
 
 import {
+  AzureLoadBalancerBackendPool,
   AzureLoadBalancerFrontEndIp,
   AzureLoadBalancerInboundNatRule,
   AzureLoadBalancerInboundRule,
+  AzureLoadBalancerRule,
+  AzurePrivateIP,
   AzurePublicIP,
 } from '../azure_types';
 import {PublicIpRoutes} from '../convert_public_ip';
 import {GraphServices} from '../graph_services';
-
-import {createNatRoute} from './load_balancer_nat_rule';
-import {createLoadBalancingRuleRoute} from './load_balancer_rule';
 
 export function convertLoadBalancerFrontEndIp(
   services: GraphServices,
@@ -24,8 +24,18 @@ export function convertLoadBalancerFrontEndIp(
     const lbRule = services.index.dereference<AzureLoadBalancerInboundRule>(
       lbRuleRef
     );
+    const backendPool = services.index.dereference<AzureLoadBalancerBackendPool>(
+      lbRule.properties.backendAddressPool
+    );
+
+    const backendIPs = backendPool.properties.backendIPConfigurations.map(
+      ip =>
+        services.index.dereference<AzurePrivateIP>(ip).properties
+          .privateIPAddress
+    );
+
     inbound.push(
-      createLoadBalancingRuleRoute(services, lbRule, publicIpSpec, gatewayKey)
+      createInboundRoute(lbRule, publicIpSpec, gatewayKey, ...backendIPs)
     );
   }
 
@@ -33,8 +43,46 @@ export function convertLoadBalancerFrontEndIp(
     const natRule = services.index.dereference<AzureLoadBalancerInboundNatRule>(
       natRuleSpec
     );
-    inbound.push(createNatRoute(services, natRule, publicIpSpec, gatewayKey));
+    const backendIp = services.index.dereference<AzurePrivateIP>(
+      natRule.properties.backendIPConfiguration
+    );
+
+    inbound.push(
+      createInboundRoute(
+        natRule,
+        publicIpSpec,
+        gatewayKey,
+        backendIp.properties.privateIPAddress
+      )
+    );
   }
 
   return {inbound, outbound: []};
+}
+
+function createInboundRoute(
+  spec: AzureLoadBalancerRule,
+  frontEndIp: AzurePublicIP,
+  gatewayKey: string,
+  ...backendIps: string[]
+): RoutingRuleSpec {
+  const rule = spec.properties;
+
+  const ruleSpec: RoutingRuleSpec = {
+    destination: gatewayKey,
+    constraints: {
+      destinationPort: `${rule.frontendPort}`,
+      protocol: rule.protocol,
+      destinationIp: frontEndIp.properties.ipAddress,
+    },
+    override: {
+      destinationIp: backendIps.join(','),
+    },
+  };
+
+  if (rule.backendPort !== rule.frontendPort) {
+    ruleSpec.override!.destinationPort = `${rule.backendPort}`;
+  }
+
+  return ruleSpec;
 }

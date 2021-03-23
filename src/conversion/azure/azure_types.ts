@@ -233,6 +233,10 @@ export interface AzureLoadBalancerInboundRule extends AzureTypedObject {
   };
 }
 
+export type AzureLoadBalancerRule =
+  | AzureLoadBalancerInboundNatRule
+  | AzureLoadBalancerInboundRule;
+
 export interface AzureLoadBalancer extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER;
   properties: {
