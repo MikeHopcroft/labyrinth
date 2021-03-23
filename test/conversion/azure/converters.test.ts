@@ -1,6 +1,6 @@
 import 'mocha';
 
-import load_balancer from './convert_load_balancer';
+import load_balancer from './convert_load_balancer.test';
 import privateIp from './convert_private_ip.test';
 import publicIp from './convert_public_ip_test';
 import nic from './convert_nic.test';
