@@ -34,6 +34,11 @@ export function convert(
       symbol: 'Tcp',
       range: 'tcp',
     },
+    {
+      dimension: 'protocol',
+      symbol: 'TCP',
+      range: 'tcp',
+    },
   ]);
   const index = new AzureObjectIndex(resourceGraphSpec);
   const services = new GraphServices(index, {symbols});
