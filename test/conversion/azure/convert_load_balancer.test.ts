@@ -20,12 +20,6 @@ import {
 
 export default function test() {
   describe('convertLoadBalancer()', () => {
-    it('load balancer should be supported by public ip', () => {
-      assert.fail();
-      // TODO: REVIEW: do we need this test case?
-      // What was the orginal design intent?
-    });
-
     it('load balancer nat rule', () => {
       const {services} = createGraphServicesMock();
       services.index.add(natRule1);

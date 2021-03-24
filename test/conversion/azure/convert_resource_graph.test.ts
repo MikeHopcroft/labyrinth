@@ -9,7 +9,7 @@ import 'mocha';
 
 export default function test() {
   describe('convertResourceGraph()', () => {
-    it('simple', () => {
+    it.skip('simple', () => {
       // TODO: implement test.
       assert.fail();
     });
