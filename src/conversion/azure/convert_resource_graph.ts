@@ -18,13 +18,13 @@ export function convertResourceGraph(services: GraphServices) {
 
   // TODO: Allocate internetNodeKey to avoid possible collisions
   const internetKey = services.getInternetKey();
-  const gatewayKeyPrefix = 'AzureGateway';
-  const gatewayInboundKey = services.nodes.createKeyVariant(
-    gatewayKeyPrefix,
+  const backboneKeyPrefix = 'AzureBackbone';
+  const backboneInboundKey = services.nodes.createKeyVariant(
+    backboneKeyPrefix,
     'inbound'
   );
-  const gatewayOutboundKey = services.nodes.createKeyVariant(
-    gatewayKeyPrefix,
+  const backboneOutboundKey = services.nodes.createKeyVariant(
+    backboneKeyPrefix,
     'outbound'
   );
 
@@ -33,12 +33,12 @@ export function convertResourceGraph(services: GraphServices) {
   //
 
   const internetRoutes: RoutingRuleSpec[] = [];
-  const gatewayOutboundRoutes: RoutingRuleSpec[] = [];
+  const backboneOutboundRoutes: RoutingRuleSpec[] = [];
   for (const ipSpec of services.index.withType(AzurePublicIP)) {
     const {inbound, outbound} = services.convert.publicIp(
       services,
       ipSpec,
-      gatewayInboundKey,
+      backboneInboundKey,
       internetKey
     );
 
@@ -46,7 +46,7 @@ export function convertResourceGraph(services: GraphServices) {
       internetRoutes.push(route);
     }
     for (const route of outbound) {
-      gatewayOutboundRoutes.push(route);
+      backboneOutboundRoutes.push(route);
     }
   }
 
@@ -58,30 +58,30 @@ export function convertResourceGraph(services: GraphServices) {
   });
 
   //
-  // Create outbound gateway node
+  // Create outbound backbone node
   //
   services.nodes.add({
-    key: gatewayOutboundKey,
-    routes: gatewayOutboundRoutes,
+    key: backboneOutboundKey,
+    routes: backboneOutboundRoutes,
   });
 
   //
-  // Create inbound gateway node
+  // Create inbound backbone node
   //
 
   // Materialize each virtual network, while saving its NodeKey for later use.
   // Create routes from internet to each virtual network.
   const vNetNodeKeys: string[] = [];
-  const gatewayInboundRoutes: RoutingRuleSpec[] = [];
+  const backboneInboundRoutes: RoutingRuleSpec[] = [];
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
-    const route = services.convert.vnet(services, vnet, gatewayOutboundKey);
+    const route = services.convert.vnet(services, vnet, backboneOutboundKey);
     vNetNodeKeys.push(route.destination);
-    gatewayInboundRoutes.push(route);
+    backboneInboundRoutes.push(route);
   }
 
   services.nodes.add({
-    key: gatewayInboundKey,
-    routes: gatewayInboundRoutes,
+    key: backboneInboundKey,
+    routes: backboneInboundRoutes,
   });
 
   // Define a service tag for `Internet`, which is referenced in router rules

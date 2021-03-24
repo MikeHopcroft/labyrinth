@@ -17,7 +17,7 @@ export interface PublicIpRoutes {
 export function convertPublicIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
-  gatewayKey: string,
+  backboneKey: string,
   internetKey: string
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(publicIpSpec);
@@ -32,7 +32,7 @@ export function convertPublicIp(
         services,
         publicIpSpec,
         ipconfig,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
     } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
@@ -40,7 +40,7 @@ export function convertPublicIp(
         services,
         publicIpSpec,
         ipconfig,
-        gatewayKey
+        backboneKey
       );
     } else {
       // return {inbound: [], outbound: []};
@@ -58,7 +58,7 @@ function publicIpWithPrivateIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
   privateIpSpec: AzurePrivateIP,
-  gatewayKey: string,
+  backboneKey: string,
   internetKey: string
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(privateIpSpec);
@@ -72,7 +72,7 @@ function publicIpWithPrivateIp(
     key: inboundKey,
     routes: [
       {
-        destination: gatewayKey,
+        destination: backboneKey,
         override: {
           destinationIp: privateIpSpec.properties.privateIPAddress,
         },
@@ -117,7 +117,7 @@ function loadBalancerFrontEndIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
   lbIpSpec: AzureLoadBalancerFrontEndIp,
-  gatewayKey: string
+  backboneKey: string
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(lbIpSpec);
 
@@ -127,7 +127,7 @@ function loadBalancerFrontEndIp(
   const route = services.convert.loadBalancerFrontend(
     services,
     lbIpSpec,
-    gatewayKey
+    backboneKey
   );
 
   // Create inbound node

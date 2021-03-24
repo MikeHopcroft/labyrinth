@@ -110,7 +110,7 @@ export const AzurePublicIP = {type: AzureObjectType.PUBLIC_IP} as AzurePublicIP;
 export type AzureIPConfiguration = AzurePrivateIP | AzurePublicIP;
 
 // There will eventually be other Ip Configuration Types such as
-// firewall, VPN gateway, App Gateway, etc.
+// firewall, VPN backbone, App Gateway, etc.
 export type AnyIpConfiguration = AzurePrivateIP | AzureLoadBalancerFrontEndIp;
 
 export interface AzureNetworkInterface extends AzureTypedObject {

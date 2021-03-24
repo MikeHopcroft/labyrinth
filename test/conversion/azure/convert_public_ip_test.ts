@@ -29,7 +29,7 @@ export default function test() {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'backbone';
       const internetKey = 'internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
@@ -37,7 +37,7 @@ export default function test() {
       const result = convertPublicIp(
         services,
         publicIpWithPrivate,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
@@ -72,7 +72,7 @@ export default function test() {
           key: publicIpWithPrivateInboundKey,
           routes: [
             {
-              destination: gatewayKey,
+              destination: backboneKey,
               override: {
                 destinationIp: privateIp1SourceIp,
               },
@@ -98,7 +98,7 @@ export default function test() {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'backbone';
       const internetKey = 'internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
@@ -106,7 +106,7 @@ export default function test() {
       const result = convertPublicIp(
         services,
         isolatedPublicIp,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();

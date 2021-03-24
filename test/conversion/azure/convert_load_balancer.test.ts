@@ -22,14 +22,15 @@ export default function test() {
   describe('convertLoadBalancer()', () => {
     it('load balancer nat rule', () => {
       const {services} = createGraphServicesMock();
-      services.index.add(natRule1);
-      services.index.add(privateIp1);
 
-      const gatewayKey = 'gateway';
+      services.index.add(privateIp1);
+      services.index.add(natRule1);
+
+      const backboneKey = 'test-backbone';
       const route = convertLoadBalancerFrontEndIp(
         services,
         frontEndIpWithNatRule,
-        gatewayKey
+        backboneKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
@@ -48,7 +49,7 @@ export default function test() {
           key: frontEndIpWithNatRuleKey,
           routes: [
             {
-              destination: gatewayKey,
+              destination: backboneKey,
               constraints: {
                 destinationPort: natRule1.properties.frontendPort.toString(),
                 protocol: natRule1.properties.protocol,
@@ -71,11 +72,11 @@ export default function test() {
       services.index.add(privateIp1);
       services.index.add(privateIp2);
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'test-backbone';
       const route = convertLoadBalancerFrontEndIp(
         services,
         frontEndIpWithPoolRule,
-        gatewayKey
+        backboneKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
@@ -94,7 +95,7 @@ export default function test() {
           key: frontEndIpWithPoolRuleKey,
           routes: [
             {
-              destination: gatewayKey,
+              destination: backboneKey,
               constraints: {
                 destinationPort: natRule1.properties.frontendPort.toString(),
                 protocol: natRule1.properties.protocol,

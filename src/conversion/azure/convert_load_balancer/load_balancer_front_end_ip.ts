@@ -14,7 +14,7 @@ import {GraphServices} from '../graph_services';
 export function convertLoadBalancerFrontEndIp(
   services: GraphServices,
   spec: AzureLoadBalancerFrontEndIp,
-  gatewayKey: string
+  backboneKey: string
 ): RoutingRuleSpec {
   services.nodes.markTypeAsUsed(spec);
 
@@ -39,7 +39,7 @@ export function convertLoadBalancerFrontEndIp(
           .privateIPAddress
     );
 
-    routes.push(createInboundRoute(lbRule, gatewayKey, ...backendIPs));
+    routes.push(createInboundRoute(lbRule, backboneKey, ...backendIPs));
   }
 
   for (const natRuleSpec of spec.properties.inboundNatRules ?? []) {
@@ -56,7 +56,7 @@ export function convertLoadBalancerFrontEndIp(
     routes.push(
       createInboundRoute(
         natRule,
-        gatewayKey,
+        backboneKey,
         backendIp.properties.privateIPAddress
       )
     );
@@ -69,13 +69,13 @@ export function convertLoadBalancerFrontEndIp(
 
 function createInboundRoute(
   spec: AzureLoadBalancerRule,
-  gatewayKey: string,
+  backboneKey: string,
   ...backendIps: string[]
 ): RoutingRuleSpec {
   const rule = spec.properties;
 
   const ruleSpec: RoutingRuleSpec = {
-    destination: gatewayKey,
+    destination: backboneKey,
     constraints: {
       destinationPort: rule.frontendPort.toString(),
       protocol: rule.protocol,

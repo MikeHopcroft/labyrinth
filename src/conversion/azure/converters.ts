@@ -26,7 +26,7 @@ export interface IConverters {
   loadBalancerFrontend(
     services: GraphServices,
     spec: AzureLoadBalancerFrontEndIp,
-    gatewayKey: string
+    backboneKey: string
   ): RoutingRuleSpec;
   nic(
     services: GraphServices,
@@ -47,7 +47,7 @@ export interface IConverters {
   publicIp(
     services: GraphServices,
     spec: AzurePublicIP,
-    gatewayKey: string,
+    backboneKey: string,
     internetKey: string
   ): PublicIpRoutes;
   resourceGraph(services: GraphServices): void;
