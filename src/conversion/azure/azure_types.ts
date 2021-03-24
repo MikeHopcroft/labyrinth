@@ -61,6 +61,7 @@ export enum AzureObjectType {
 export const azureTypeNames = [
   [AzureObjectType.PRIVATE_IP, 'privateIp'],
   [AzureObjectType.PUBLIC_IP, 'publicIp'],
+  [AzureObjectType.LOAD_BALANCER_FRONT_END_IP, 'frontend'],
   [AzureObjectType.NIC, 'nic'],
   [AzureObjectType.NSG, 'nsg'],
   [AzureObjectType.SUBNET, 'subnet'],

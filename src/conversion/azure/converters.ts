@@ -26,9 +26,8 @@ export interface IConverters {
   loadBalancerFrontend(
     services: GraphServices,
     spec: AzureLoadBalancerFrontEndIp,
-    publicIpSpec: AzurePublicIP,
     gatewayKey: string
-  ): PublicIpRoutes;
+  ): RoutingRuleSpec;
   nic(
     services: GraphServices,
     spec: AzureNetworkInterface,

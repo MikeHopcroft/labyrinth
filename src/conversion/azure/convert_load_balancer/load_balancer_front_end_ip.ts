@@ -7,18 +7,18 @@ import {
   AzureLoadBalancerInboundRule,
   AzureLoadBalancerRule,
   AzurePrivateIP,
-  AzurePublicIP,
 } from '../azure_types';
-import {PublicIpRoutes} from '../convert_public_ip';
+
 import {GraphServices} from '../graph_services';
 
 export function convertLoadBalancerFrontEndIp(
   services: GraphServices,
   spec: AzureLoadBalancerFrontEndIp,
-  publicIpSpec: AzurePublicIP,
   gatewayKey: string
-): PublicIpRoutes {
-  const inbound: RoutingRuleSpec[] = [];
+): RoutingRuleSpec {
+  const key = services.nodes.createKey(spec);
+
+  const routes: RoutingRuleSpec[] = [];
 
   for (const lbRuleRef of spec.properties.loadBalancingRules ?? []) {
     const lbRule = services.index.dereference<AzureLoadBalancerInboundRule>(
@@ -34,9 +34,7 @@ export function convertLoadBalancerFrontEndIp(
           .privateIPAddress
     );
 
-    inbound.push(
-      createInboundRoute(lbRule, publicIpSpec, gatewayKey, ...backendIPs)
-    );
+    routes.push(createInboundRoute(lbRule, gatewayKey, ...backendIPs));
   }
 
   for (const natRuleSpec of spec.properties.inboundNatRules ?? []) {
@@ -47,22 +45,22 @@ export function convertLoadBalancerFrontEndIp(
       natRule.properties.backendIPConfiguration
     );
 
-    inbound.push(
+    routes.push(
       createInboundRoute(
         natRule,
-        publicIpSpec,
         gatewayKey,
         backendIp.properties.privateIPAddress
       )
     );
   }
 
-  return {inbound, outbound: []};
+  services.nodes.add({key, routes});
+
+  return {destination: key};
 }
 
 function createInboundRoute(
   spec: AzureLoadBalancerRule,
-  frontEndIp: AzurePublicIP,
   gatewayKey: string,
   ...backendIps: string[]
 ): RoutingRuleSpec {
@@ -73,7 +71,6 @@ function createInboundRoute(
     constraints: {
       destinationPort: `${rule.frontendPort}`,
       protocol: rule.protocol,
-      destinationIp: frontEndIp.properties.ipAddress,
     },
     override: {
       destinationIp: backendIps.join(','),

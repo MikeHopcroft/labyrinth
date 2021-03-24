@@ -106,6 +106,13 @@ export const isolatedPublicIpName = 'isolatedPublicIp';
 export const isolatedPublicIpId = publicIpId(isolatedPublicIpName);
 export const isolatedPublicIpSourceIp = '203.0.113.3';
 
+export const publicIpToFrontEndLoadBalancerName =
+  'publicIpToFrontEndLoadBalancer';
+export const publicIpToFrontEndLoadBalancerId = publicIpId(
+  publicIpToFrontEndLoadBalancerName
+);
+export const publicIpToFrontEndLoadBalancerIp = '203.0.113.4';
+
 export const privateIpWithPublicName = 'privateIpWithPublic1';
 export const privateIpWithPublicId = ipId(nic1Name, privateIpWithPublicName);
 
@@ -133,10 +140,9 @@ export const frontEndIp1Id = frontEndIpId(loadBalancer1Name, frontEndIp1Name);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IP Configurations
+// Private IP Configurations
 //
 ///////////////////////////////////////////////////////////////////////////////
-// TODO: should this be called `privateIp1`?
 export const privateIp1: AzurePrivateIP = {
   type: AzureObjectType.PRIVATE_IP,
   id: privateIp1Id,
@@ -161,6 +167,11 @@ export const privateIp2: AzurePrivateIP = {
 };
 export const privateIp2Key = nodeServices.createKey(privateIp2);
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Public IP Configurations
+//
+///////////////////////////////////////////////////////////////////////////////
 export const publicIp1: AzurePublicIP = {
   type: AzureObjectType.PUBLIC_IP,
   id: publicIp1Id,
@@ -222,6 +233,23 @@ export const isolatedPublicIpInboundKey = nodeServices.createKeyVariant(
   'inbound'
 );
 
+export const publicIpToFrontEndLoadBalancer: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIpToFrontEndLoadBalancerId,
+  name: publicIpToFrontEndLoadBalancerName,
+  resourceGroup,
+  properties: {
+    ipAddress: publicIpToFrontEndLoadBalancerIp,
+    ipConfiguration: reference(frontEndIp1Id),
+  },
+};
+const publicIpToFrontEndLoadBalancerKey = nodeServices.createKey(
+  publicIpToFrontEndLoadBalancer
+);
+export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createKeyVariant(
+  publicIpToFrontEndLoadBalancerKey,
+  'inbound'
+);
 ///////////////////////////////////////////////////////////////////////////
 //
 // Subnets
@@ -441,6 +469,7 @@ export const frontEndIpWithNatRule: AzureLoadBalancerFrontEndIp = {
     publicIPAddress: reference(publicIpForLoadBalancer1),
   },
 };
+export const frontEndIp1IdKey = nodeServices.createKey(frontEndIpWithNatRule);
 
 export const frontEndIpWithPoolRule: AzureLoadBalancerFrontEndIp = {
   type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,

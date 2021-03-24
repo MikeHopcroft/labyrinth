@@ -1,5 +1,6 @@
 export * from './azure_object_index';
 export * from './azure_types';
+export * from './convert_load_balancer';
 export * from './convert_nic';
 export * from './convert_private_ip';
 export * from './convert_public_ip';

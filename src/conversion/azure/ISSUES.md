@@ -56,7 +56,7 @@
 
 * Top 2
   * Unit tests for createPublicIp work in isolation, but fail after other tests have run.
-  * 
+  * Rename gateway to backbone
   * Figure out case normalization for service tags
   * Unit test for resourceGraph
     * Extract createGateway()

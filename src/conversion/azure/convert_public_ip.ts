@@ -1,6 +1,12 @@
 import {RoutingRuleSpec} from '../../graph';
 
-import {AzureObjectType, AzurePrivateIP, AzurePublicIP} from './azure_types';
+import {
+  AzureLoadBalancerFrontEndIp,
+  AzureObjectType,
+  AzurePrivateIP,
+  AzurePublicIP,
+} from './azure_types';
+
 import {GraphServices} from './graph_services';
 
 export interface PublicIpRoutes {
@@ -28,7 +34,12 @@ export function convertPublicIp(
         internetKey
       );
     } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
-      return loadBalancerFrontEndIp();
+      return loadBalancerFrontEndIp(
+        services,
+        publicIpSpec,
+        ipconfig,
+        gatewayKey
+      );
     } else {
       const message = `unsupported IP config type '${ipconfig.type}'`;
       throw new TypeError(message);
@@ -97,8 +108,38 @@ function publicIpWithPrivateIp(
   };
 }
 
-function loadBalancerFrontEndIp(): PublicIpRoutes {
-  throw new TypeError('loadBalancerFrontEndIp() not implemented');
+function loadBalancerFrontEndIp(
+  services: GraphServices,
+  publicIpSpec: AzurePublicIP,
+  lbIpSpec: AzureLoadBalancerFrontEndIp,
+  gatewayKey: string
+): PublicIpRoutes {
+  const keyPrefix = services.nodes.createKey(publicIpSpec);
+  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+
+  const route = services.convert.loadBalancerFrontend(
+    services,
+    lbIpSpec,
+    gatewayKey
+  );
+
+  // Create inbound node
+  services.nodes.add({
+    key: inboundKey,
+    routes: [route],
+  });
+
+  return {
+    inbound: [
+      {
+        destination: inboundKey,
+        constraints: {
+          destinationIp: publicIpSpec.properties.ipAddress,
+        },
+      },
+    ],
+    outbound: [],
+  };
 }
 
 function isolatedPublicIp(
