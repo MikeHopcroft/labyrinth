@@ -60,6 +60,7 @@ export enum AzureObjectType {
 
 // Type names used for Labyrinth node key generation. See NodeKeyGenerator.
 export const azureTypeNames = [
+  [AzureObjectType.LOAD_BALANCER, 'loadBalancer'],
   [AzureObjectType.PRIVATE_IP, 'privateIp'],
   [AzureObjectType.PUBLIC_IP, 'publicIp'],
   [AzureObjectType.LOAD_BALANCER_FRONT_END_IP, 'frontend'],
@@ -272,6 +273,11 @@ export interface AzureLoadBalancer extends AzureTypedObject {
     loadBalancingRules: AzureLoadBalancerInboundRule[];
   };
 }
+
+export const AzureLoadBalancer = {
+  type: AzureObjectType.LOAD_BALANCER,
+} as AzureLoadBalancer;
+
 export type AnyAzureObject =
   | AzureIPConfiguration
   | AzureLoadBalancer
@@ -288,3 +294,13 @@ export type AnyAzureObject =
   | AzureVirtualNetwork;
 
 export type AzureResourceGraph = AnyAzureObject[];
+
+export function getParentId(input: AzureObjectBase): AzureObjectBase {
+  const idParts = input.id.split('/');
+  idParts.pop();
+  idParts.pop();
+  return {
+    id: idParts.join('/'),
+    resourceGroup: input.resourceGroup,
+  };
+}
