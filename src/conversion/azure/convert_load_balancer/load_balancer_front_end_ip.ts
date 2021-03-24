@@ -69,7 +69,7 @@ function createInboundRoute(
   const ruleSpec: RoutingRuleSpec = {
     destination: gatewayKey,
     constraints: {
-      destinationPort: `${rule.frontendPort}`,
+      destinationPort: rule.frontendPort.toString(),
       protocol: rule.protocol,
     },
     override: {
@@ -78,7 +78,7 @@ function createInboundRoute(
   };
 
   if (rule.backendPort !== rule.frontendPort) {
-    ruleSpec.override!.destinationPort = `${rule.backendPort}`;
+    ruleSpec.override!.destinationPort = rule.backendPort.toString();
   }
 
   return ruleSpec;

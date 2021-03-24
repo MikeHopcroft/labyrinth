@@ -6,16 +6,12 @@ import {NodeSpec, RoutingRuleSpec} from '../../../src';
 import {convertPublicIp, PublicIpRoutes} from '../../../src/conversion/azure';
 
 import {
-  backendPool1,
   createGraphServicesMock,
-  frontEndIpWithNatRule,
+  // frontEndIpWithNatRule,
+  frontEndIpWithPoolRule,
   isolatedPublicIp,
   isolatedPublicIpInboundKey,
   isolatedPublicIpSourceIp,
-  natRule1,
-  poolRule1,
-  privateIp1,
-  privateIp2,
   privateIpWithPublic,
   privateIp1SourceIp,
   publicIpToFrontEndLoadBalancer,
@@ -144,11 +140,10 @@ export default function test() {
 
     it('front end load balancer - pool', () => {
       const {services, mocks} = createGraphServicesMock();
-      services.index.add(backendPool1);
-      services.index.add(privateIp1);
-      services.index.add(privateIp2);
-      // services.index.add(poolRule1);
-      // services.index.add(frontEndIpWithPoolRule);
+      // TODO: REVIEW: do we need to add this specific rule?
+      // Or just any rule that can be dereferenced?
+      // services.index.add(frontEndIpWithNatRule);
+      services.index.add(frontEndIpWithPoolRule);
 
       const route: RoutingRuleSpec = {
         destination: 'abc',
@@ -157,9 +152,6 @@ export default function test() {
       mocks.loadBalancerFrontend.action(() => {
         return route;
       });
-
-      services.index.add(natRule1);
-      services.index.add(frontEndIpWithNatRule);
 
       const gatewayKey = 'gateway';
       const internetKey = 'internet';
@@ -173,7 +165,6 @@ export default function test() {
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
-      console.log(JSON.stringify(nodes, null, 2));
 
       // Verify no symbol table additions.
       assert.equal(symbols.length, 0);
@@ -195,7 +186,8 @@ export default function test() {
       // Verify that loadBalancerFrontend() was invoked correctly.
       const log = mocks.loadBalancerFrontend.log();
       assert.equal(log.length, 1);
-      assert.equal(log[0].params[1], frontEndIpWithNatRule);
+      // assert.equal(log[0].params[1], frontEndIpWithNatRule);
+      assert.equal(log[0].params[1], frontEndIpWithPoolRule);
       assert.equal(log[0].params[2], gatewayKey);
 
       // Verify graph

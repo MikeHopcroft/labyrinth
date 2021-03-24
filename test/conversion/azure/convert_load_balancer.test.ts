@@ -1,134 +1,119 @@
 import {assert} from 'chai';
 import 'mocha';
+
+import {NodeSpec, RoutingRuleSpec} from '../../../src';
 import {convertLoadBalancerFrontEndIp} from '../../../src/conversion/azure/convert_load_balancer';
-import {convertPublicIp} from '../../../src/conversion/azure/convert_public_ip';
 
 import {
   backendPool1,
   backendPool1SourceIp,
   createGraphServicesMock,
   frontEndIpWithNatRule,
+  frontEndIpWithNatRuleKey,
   frontEndIpWithPoolRule,
+  frontEndIpWithPoolRuleKey,
   natRule1,
   poolRule1,
   privateIp1,
-  privateIp1SourceIp,
   privateIp2,
-  publicIp1,
-  publicIp1SourceIp,
-  publicIpForLoadBalancer1,
 } from './sample_resource_graph';
 
 export default function test() {
   describe('convertLoadBalancer()', () => {
     it('load balancer should be supported by public ip', () => {
       assert.fail();
-      //   const {services, mocks} = createGraphServicesMock();
-      //   const gatewayKey = 'gatewayKey';
-      //   const internetKey = 'internetKey';
-
-      //   const expectedRoutes = {
-      //     inbound: [
-      //       {
-      //         destination: 'MockedInbound',
-      //       },
-      //     ],
-      //     outbound: [
-      //       {
-      //         destination: 'MockedInbound',
-      //       },
-      //     ],
-      //   };
-
-      //   services.index.add(frontEndIpWithNatRule);
-
-      //   mocks.loadBalancerFrontend.action(() => {
-      //     return expectedRoutes;
-      //   });
-
-      //   convertPublicIp(
-      //     services,
-      //     publicIpForLoadBalancer1,
-      //     gatewayKey,
-      //     internetKey
-      //   );
-
-      //   const nicLog = mocks.loadBalancerFrontend.log();
-      //   assert.equal(nicLog.length, 1);
+      // TODO: REVIEW: do we need this test case?
+      // What was the orginal design intent?
     });
 
     it('load balancer nat rule', () => {
-      assert.fail();
-      //   const {services} = createGraphServicesMock();
-      //   const gatewayKey = 'test-gateway';
+      const {services} = createGraphServicesMock();
+      services.index.add(natRule1);
+      services.index.add(privateIp1);
 
-      //   services.index.add(privateIp1);
-      //   services.index.add(natRule1);
+      const gatewayKey = 'gateway';
+      const route = convertLoadBalancerFrontEndIp(
+        services,
+        frontEndIpWithNatRule,
+        gatewayKey
+      );
+      const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
-      //   const routes = convertLoadBalancerFrontEndIp(
-      //     services,
-      //     frontEndIpWithNatRule,
-      //     publicIp1,
-      //     gatewayKey
-      //   );
+      // Verify return value
+      const expectedRoute: RoutingRuleSpec = {
+        destination: frontEndIpWithNatRuleKey,
+      };
+      assert.deepEqual(route, expectedRoute);
 
-      //   const natRule = natRule1.properties;
-      //   const expected = {
-      //     inbound: [
-      //       {
-      //         constraints: {
-      //           destinationIp: publicIp1SourceIp,
-      //           destinationPort: `${natRule.frontendPort}`,
-      //           protocol: natRule.protocol,
-      //         },
-      //         destination: gatewayKey,
-      //         override: {
-      //           destinationIp: privateIp1SourceIp,
-      //           destinationPort: `${natRule.backendPort}`,
-      //         },
-      //       },
-      //     ],
-      //     outbound: [],
-      //   };
-      //   assert.deepEqual(routes, expected);
+      // Verify no symbol table additions.
+      assert.equal(symbols.length, 0);
+
+      // Verify graph
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: frontEndIpWithNatRuleKey,
+          routes: [
+            {
+              destination: gatewayKey,
+              constraints: {
+                destinationPort: natRule1.properties.frontendPort.toString(),
+                protocol: natRule1.properties.protocol,
+              },
+              override: {
+                destinationIp: privateIp1.properties.privateIPAddress,
+                destinationPort: natRule1.properties.backendPort.toString(),
+              },
+            },
+          ],
+        },
+      ];
+      assert.deepEqual(nodes, expectedNodes);
     });
 
     it('load balancer pool rule', () => {
-      assert.fail();
-      //   const {services} = createGraphServicesMock();
-      //   const gatewayKey = 'test-gateway';
+      const {services} = createGraphServicesMock();
+      services.index.add(backendPool1);
+      services.index.add(poolRule1);
+      services.index.add(privateIp1);
+      services.index.add(privateIp2);
 
-      //   services.index.add(poolRule1);
-      //   services.index.add(backendPool1);
-      //   services.index.add(privateIp1);
-      //   services.index.add(privateIp2);
+      const gatewayKey = 'gateway';
+      const route = convertLoadBalancerFrontEndIp(
+        services,
+        frontEndIpWithPoolRule,
+        gatewayKey
+      );
+      const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
-      //   const routes = convertLoadBalancerFrontEndIp(
-      //     services,
-      //     frontEndIpWithPoolRule,
-      //     publicIp1,
-      //     gatewayKey
-      //   );
+      // Verify return value
+      const expectedRoute: RoutingRuleSpec = {
+        destination: frontEndIpWithPoolRuleKey,
+      };
+      assert.deepEqual(route, expectedRoute);
 
-      //   const natRule = natRule1.properties;
-      //   const expected = {
-      //     inbound: [
-      //       {
-      //         constraints: {
-      //           destinationIp: publicIp1SourceIp,
-      //           destinationPort: `${natRule.frontendPort}`,
-      //           protocol: natRule.protocol,
-      //         },
-      //         destination: gatewayKey,
-      //         override: {
-      //           destinationIp: backendPool1SourceIp,
-      //           destinationPort: `${natRule.backendPort}`,
-      //         },
-      //       },
-      //     ],
-      //     outbound: [],
-      //   };
-      //   assert.deepEqual(routes, expected);
+      // Verify no symbol table additions.
+      assert.equal(symbols.length, 0);
+
+      // Verify graph
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: frontEndIpWithPoolRuleKey,
+          routes: [
+            {
+              destination: gatewayKey,
+              constraints: {
+                destinationPort: natRule1.properties.frontendPort.toString(),
+                protocol: natRule1.properties.protocol,
+              },
+              override: {
+                destinationIp: backendPool1SourceIp,
+                destinationPort: natRule1.properties.backendPort.toString(),
+              },
+            },
+          ],
+        },
+      ];
+      assert.deepEqual(nodes, expectedNodes);
     });
   });
 }

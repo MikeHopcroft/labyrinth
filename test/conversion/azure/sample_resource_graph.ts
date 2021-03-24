@@ -133,7 +133,6 @@ export const backendPool1Id = backendPoolId(
   loadBalancer1Name,
   backendPool1Name
 );
-export const backendPool1SourceIp = '10.0.0.1,10.0.0.2';
 
 export const frontEndIp1Name = 'frontEndIp';
 export const frontEndIp1Id = frontEndIpId(loadBalancer1Name, frontEndIp1Name);
@@ -250,6 +249,7 @@ export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createKeyVa
   publicIpToFrontEndLoadBalancerKey,
   'inbound'
 );
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // Subnets
@@ -432,16 +432,21 @@ export const natRule1: AzureLoadBalancerInboundNatRule = {
   },
 };
 
+const backendPoolIpConfigs = [privateIp1, privateIp2];
 export const backendPool1: AzureLoadBalancerBackendPool = {
   type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL,
   id: backendPool1Id,
   name: backendPool1Name,
   resourceGroup,
   properties: {
-    backendIPConfigurations: [reference(privateIp1), reference(privateIp2)],
+    // backendIPConfigurations: [reference(privateIp1), reference(privateIp2)],
+    backendIPConfigurations: backendPoolIpConfigs.map(reference),
     loadBalancingRules: [reference(poolRule1Id)],
   },
 };
+export const backendPool1SourceIp = backendPoolIpConfigs
+  .map(x => x.properties.privateIPAddress)
+  .join(',');
 
 export const poolRule1: AzureLoadBalancerInboundRule = {
   type: AzureObjectType.LOAD_BALANCER_RULE,
@@ -469,7 +474,10 @@ export const frontEndIpWithNatRule: AzureLoadBalancerFrontEndIp = {
     publicIPAddress: reference(publicIpForLoadBalancer1),
   },
 };
-export const frontEndIp1IdKey = nodeServices.createKey(frontEndIpWithNatRule);
+// export const frontEndIp1IdKey = nodeServices.createKey(frontEndIpWithNatRule);
+export const frontEndIpWithNatRuleKey = nodeServices.createKey(
+  frontEndIpWithNatRule
+);
 
 export const frontEndIpWithPoolRule: AzureLoadBalancerFrontEndIp = {
   type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
@@ -483,6 +491,9 @@ export const frontEndIpWithPoolRule: AzureLoadBalancerFrontEndIp = {
     publicIPAddress: reference(publicIpForLoadBalancer1),
   },
 };
+export const frontEndIpWithPoolRuleKey = nodeServices.createKey(
+  frontEndIpWithPoolRule
+);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
