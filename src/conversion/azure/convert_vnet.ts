@@ -11,6 +11,8 @@ export function convertVNet(
   spec: AzureVirtualNetwork,
   parent: string
 ): SimpleRoutingRuleSpec {
+  services.nodes.markTypeAsUsed(spec);
+
   const vNetNodeKey = services.nodes.createKey(spec);
   const vNetServiceTag = vNetNodeKey;
 

@@ -35,6 +35,7 @@ export interface IConverters {
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
   nsg(
+    services: GraphServices,
     spec: AzureNetworkSecurityGroup | undefined,
     vnetSymbol: string
   ): NSGRuleSpecs;

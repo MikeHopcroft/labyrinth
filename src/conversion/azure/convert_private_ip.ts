@@ -8,6 +8,8 @@ export function convertPrivateIp(
   spec: AzurePrivateIP,
   parent: string
 ): SimpleRoutingRuleSpec {
+  services.nodes.markTypeAsUsed(spec);
+
   const sourceIp = spec.properties.privateIPAddress;
   const ipNodeKey = services.nodes.createKey(spec);
 

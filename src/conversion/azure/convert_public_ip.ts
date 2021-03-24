@@ -20,6 +20,8 @@ export function convertPublicIp(
   gatewayKey: string,
   internetKey: string
 ): PublicIpRoutes {
+  services.nodes.markTypeAsUsed(publicIpSpec);
+
   if (publicIpSpec.properties.ipConfiguration) {
     const ipconfig = services.index.dereference(
       publicIpSpec.properties.ipConfiguration
@@ -41,6 +43,7 @@ export function convertPublicIp(
         gatewayKey
       );
     } else {
+      // return {inbound: [], outbound: []};
       const message = `unsupported IP config type '${ipconfig.type}'`;
       throw new TypeError(message);
     }
@@ -58,6 +61,8 @@ function publicIpWithPrivateIp(
   gatewayKey: string,
   internetKey: string
 ): PublicIpRoutes {
+  services.nodes.markTypeAsUsed(privateIpSpec);
+
   const keyPrefix = services.nodes.createKey(publicIpSpec);
   const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
   const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
@@ -114,6 +119,8 @@ function loadBalancerFrontEndIp(
   lbIpSpec: AzureLoadBalancerFrontEndIp,
   gatewayKey: string
 ): PublicIpRoutes {
+  services.nodes.markTypeAsUsed(lbIpSpec);
+
   const keyPrefix = services.nodes.createKey(publicIpSpec);
   const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
 

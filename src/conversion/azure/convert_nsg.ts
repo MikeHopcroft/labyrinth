@@ -2,6 +2,7 @@ import {ActionType, Constraint, RuleSpec} from '../../rules';
 import {removeUndefinedProperties} from '../../utilities';
 
 import {AzureNetworkSecurityGroup, AzureSecurityRule} from './azure_types';
+import {GraphServices} from './graph_services';
 
 interface IRules {
   readonly outboundRules: RuleSpec[];
@@ -9,18 +10,21 @@ interface IRules {
 }
 
 export function convertNSG(
-  nsg: AzureNetworkSecurityGroup,
+  services: GraphServices,
+  spec: AzureNetworkSecurityGroup,
   vnetSymbol: string
 ): IRules {
+  services.nodes.markTypeAsUsed(spec);
+
   const inboundRules: RuleSpec[] = [];
   const outboudRules: RuleSpec[] = [];
 
-  for (const rule of nsg.properties.defaultSecurityRules) {
-    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  for (const rule of spec.properties.defaultSecurityRules) {
+    writeRule(services, rule, vnetSymbol, inboundRules, outboudRules);
   }
 
-  for (const rule of nsg.properties.securityRules) {
-    writeRule(rule, vnetSymbol, inboundRules, outboudRules);
+  for (const rule of spec.properties.securityRules) {
+    writeRule(services, rule, vnetSymbol, inboundRules, outboudRules);
   }
 
   return {
@@ -30,12 +34,13 @@ export function convertNSG(
 }
 
 function writeRule(
+  services: GraphServices,
   rule: AzureSecurityRule,
   vnetSymbol: string,
   inbound: RuleSpec[],
   outbound: RuleSpec[]
 ) {
-  const r = convertRule(rule, vnetSymbol);
+  const r = convertRule(services, rule, vnetSymbol);
   if (rule.properties.direction === 'Inbound') {
     inbound.push(r);
   } else {
@@ -43,7 +48,13 @@ function writeRule(
   }
 }
 
-function convertRule(rule: AzureSecurityRule, vnetSymbol: string): RuleSpec {
+function convertRule(
+  services: GraphServices,
+  rule: AzureSecurityRule,
+  vnetSymbol: string
+): RuleSpec {
+  services.nodes.markTypeAsUsed(rule);
+
   const action =
     rule.properties.access === 'Allow' ? ActionType.ALLOW : ActionType.DENY;
   const priority = rule.properties.priority;

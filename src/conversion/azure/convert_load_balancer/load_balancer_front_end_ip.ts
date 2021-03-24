@@ -16,6 +16,8 @@ export function convertLoadBalancerFrontEndIp(
   spec: AzureLoadBalancerFrontEndIp,
   gatewayKey: string
 ): RoutingRuleSpec {
+  services.nodes.markTypeAsUsed(spec);
+
   const key = services.nodes.createKey(spec);
 
   const routes: RoutingRuleSpec[] = [];
@@ -24,9 +26,12 @@ export function convertLoadBalancerFrontEndIp(
     const lbRule = services.index.dereference<AzureLoadBalancerInboundRule>(
       lbRuleRef
     );
+    services.nodes.markTypeAsUsed(lbRule);
+
     const backendPool = services.index.dereference<AzureLoadBalancerBackendPool>(
       lbRule.properties.backendAddressPool
     );
+    services.nodes.markTypeAsUsed(backendPool);
 
     const backendIPs = backendPool.properties.backendIPConfigurations.map(
       ip =>
@@ -41,9 +46,12 @@ export function convertLoadBalancerFrontEndIp(
     const natRule = services.index.dereference<AzureLoadBalancerInboundNatRule>(
       natRuleSpec
     );
+    services.nodes.markTypeAsUsed(natRule);
+
     const backendIp = services.index.dereference<AzurePrivateIP>(
       natRule.properties.backendIPConfiguration
     );
+    services.nodes.markTypeAsUsed(backendIp);
 
     routes.push(
       createInboundRoute(

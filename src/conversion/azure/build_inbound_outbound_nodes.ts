@@ -31,7 +31,7 @@ export function buildInboundOutboundNodes(
     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
       nsgRef
     );
-    nsgRules = services.convert.nsg(nsgSpec, vnetSymbol);
+    nsgRules = services.convert.nsg(services, nsgSpec, vnetSymbol);
   }
 
   // TODO: come up with safer naming scheme. Want to avoid collisions

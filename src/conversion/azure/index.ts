@@ -13,4 +13,5 @@ export * from './graph_services';
 export * from './name_shortener';
 export * from './node_services';
 export * from './symbol_table';
+export * from './unused_types';
 export * from './walk';

@@ -17,6 +17,8 @@ export function convertNIC(
   parent: string,
   vnetSymbol: string
 ): SimpleRoutingRuleSpec {
+  services.nodes.markTypeAsUsed(spec);
+
   if (!spec.properties.virtualMachine) {
     // The NIC is not attached to a VM which means that it is not active
     // and cannot be routed to. In this case no NIC should be added
@@ -38,7 +40,7 @@ export function convertNIC(
     const nsgSpec = services.index.dereference<AzureNetworkSecurityGroup>(
       nsgRef
     );
-    nsgRules = services.convert.nsg(nsgSpec, vnetSymbol);
+    nsgRules = services.convert.nsg(services, nsgSpec, vnetSymbol);
   }
 
   // TODO: come up with safer naming scheme. Want to avoid collisions

@@ -10,6 +10,8 @@ export function convertSubnet(
   parent: string,
   vnetSymbol: string
 ): SimpleRoutingRuleSpec {
+  services.nodes.markTypeAsUsed(spec);
+
   // Materialize nics and add routes.
   const routeBuilder = (parent: string): SimpleRoutingRuleSpec[] => {
     const routes: SimpleRoutingRuleSpec[] = [];

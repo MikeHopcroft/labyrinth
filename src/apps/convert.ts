@@ -28,14 +28,27 @@ function main() {
     console.log(`Azure resource graph input file: ${infile}`);
     console.log(`Labyrinth graph output file: ${outfile}`);
     const root = FileSystem.readFileSyncAs<AnyAzureObject[]>(infile);
-    const graph = convert(root);
+    const {graph, unusedTypes} = convert(root);
     YAML.writeNodeGraphAsYamlFile(graph, outfile);
     console.log('Conversion complete.');
+    printTypeUsageReport(unusedTypes);
   } catch (e) {
     handleError(e);
   }
 
   return succeed(true);
+}
+
+function printTypeUsageReport(unusedTypes: Set<string>) {
+  if (unusedTypes.size > 0) {
+    console.log('Unsupported or ignored Azure resource graph types:');
+    const types = [...unusedTypes.values()].sort();
+    for (const [index, type] of types.entries()) {
+      console.log(`  ${index}: ${type}`);
+    }
+  } else {
+    console.log('All Azure resource graph types understood.');
+  }
 }
 
 function showUsage() {

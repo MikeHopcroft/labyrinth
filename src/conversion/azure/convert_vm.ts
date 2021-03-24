@@ -8,6 +8,8 @@ export function convertVM(
   spec: AzureVirtualMachine,
   parentRoute: RoutingRuleSpec
 ): RoutingRuleSpec {
+  services.nodes.markTypeAsUsed(spec);
+
   const key = services.nodes.createKey(spec);
   let node = services.nodes.get(key);
   if (!node) {

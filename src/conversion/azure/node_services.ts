@@ -9,6 +9,7 @@ export class NodeServices {
     {prefix: string; counter: number}
   >();
   private readonly keyToNode = new Map<string, NodeSpec>();
+  private readonly typesInUse = new Set<string>();
 
   constructor() {
     for (const [type, prefix] of azureTypeNames) {
@@ -75,5 +76,13 @@ export class NodeServices {
 
   clearNodes() {
     this.keyToNode.clear();
+  }
+
+  markTypeAsUsed(item: AzureTypedObject) {
+    this.typesInUse.add(item.type);
+  }
+
+  isTypeInUse(item: AzureTypedObject): boolean {
+    return this.typesInUse.has(item.type);
   }
 }

@@ -55,19 +55,20 @@
 
 
 * Top 2
-  * Unit tests for createPublicIp work in isolation, but fail after other tests have run.
-  * Rename gateway to backbone
+  * AzurePOP node
+  * x List Azure types not processed by conversion process
+  * Graph might want to print out the symbol table.
   * Figure out case normalization for service tags
+    * Azure uses TCP and tcp and Tcp
+  * RoutingRuleSpec
+    * Destination pools
+  * Rename gateway to backbone
   * Unit test for resourceGraph
     * Extract createGateway()
-  * Unit test for convertPublicIp()
-  * convertIp() should become convertPrivateIp()
   * Consider adding ranges back to nodes
-  * Write design note
   * Remove services.getInternetKey()
     * The resource graph is the sole owner of this key
     * The Internet service tag is another story
-  * Convenience function to initialize GraphServices.
   * Move Azure-specific symbols to dedicated Azure universe.
   * Consistant naming for converters (Ip vs IP, etc)
     * nic: convertNIC,
@@ -78,6 +79,11 @@
     * ip: convertIp,
     * publicIp: convertPublicIp,
     * vm: convertVM,
+  * Convenience function to initialize GraphServices.
+  * Write design note
+  * x convertIp() should become convertPrivateIp()
+  * x Unit test for convertPublicIp()
+  * x Unit tests for createPublicIp work in isolation, but fail after other tests have run.
   * x normalizeCase() should normalize type and id fields
   * x BUG: convertVNet() shouldn't route directly to the Internet.
   * x Add node keys to sample_resource_graph.ts

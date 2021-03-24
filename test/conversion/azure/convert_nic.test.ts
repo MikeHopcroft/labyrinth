@@ -61,8 +61,8 @@ export default function test() {
       // Verify that nsgConverter() was invoked correctly.
       const nsgLog = mocks.nsg.log();
       assert.equal(nsgLog.length, 1);
-      assert.equal(nsgLog[0].params[0], nsg1);
-      assert.equal(nsgLog[0].params[1], vnet1Id);
+      assert.equal(nsgLog[0].params[1], nsg1);
+      assert.equal(nsgLog[0].params[2], vnet1Id);
 
       // Verify that vmConverter() was invoked correctly.
       const vmLog = mocks.vm.log();

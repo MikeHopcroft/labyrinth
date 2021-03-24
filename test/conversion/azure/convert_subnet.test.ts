@@ -6,6 +6,7 @@ import {NodeSpec} from '../../../src';
 import {
   AzureNetworkSecurityGroup,
   convertSubnet,
+  GraphServices,
   NSGRuleSpecs,
 } from '../../../src/conversion/azure';
 
@@ -46,7 +47,10 @@ export default function test() {
       });
 
       mocks.nsg.action(
-        (nsgSpec: AzureNetworkSecurityGroup | undefined): NSGRuleSpecs => {
+        (
+          services: GraphServices,
+          nsgSpec: AzureNetworkSecurityGroup | undefined
+        ): NSGRuleSpecs => {
           if (nsgSpec === nsg1) {
             return {inboundRules, outboundRules};
           } else {
@@ -77,8 +81,8 @@ export default function test() {
       // Verify that nsgConverter() was invoked correctly.
       const nsgLog = mocks.nsg.log();
       assert.equal(nsgLog.length, 1);
-      assert.equal(nsgLog[0].params[0], nsg1);
-      assert.equal(nsgLog[0].params[1], vnet1Symbol);
+      assert.equal(nsgLog[0].params[1], nsg1);
+      assert.equal(nsgLog[0].params[2], vnet1Symbol);
 
       // Verify that correct nodes were created.
       const expectedNodes: NodeSpec[] = [

@@ -5,8 +5,16 @@ import {AzureNetworkInterface, AzureResourceGraph} from './azure_types';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
 import {SymbolTable} from './symbol_table';
+import {unusedTypes} from './unused_types';
 
-export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
+export interface ConversionResults {
+  graph: GraphSpec;
+  unusedTypes: Set<string>;
+}
+
+export function convert(
+  resourceGraphSpec: AzureResourceGraph
+): ConversionResults {
   //
   // Normalize casing in Azure Resource Graph type fields.
   //
@@ -50,5 +58,8 @@ export function convert(resourceGraphSpec: AzureResourceGraph): GraphSpec {
   // Emit the GraphSpec
   const graph = services.getLabyrinthGraphSpec();
 
-  return graph;
+  return {
+    graph,
+    unusedTypes: unusedTypes(services, resourceGraphSpec),
+  };
 }
