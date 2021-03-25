@@ -19,6 +19,8 @@ import {
   AzureLoadBalancerInboundNatRule,
   AzureLoadBalancerInboundRule,
   AzureLoadBalancerBackendPool,
+  ruleProtocol,
+  AzureLoadBalancer,
 } from '../../../src/conversion/azure';
 
 import {createMock} from './mocks';
@@ -34,6 +36,7 @@ export function createGraphServicesMock() {
   const fake: IConverters = {} as IConverters;
 
   const mocks = {
+    internalLoadBalancer: createMock(fake.internalLoadBalancer),
     loadBalancerFrontend: createMock(fake.loadBalancerFrontend),
     nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
@@ -112,6 +115,7 @@ export const publicIpToFrontEndLoadBalancerId = publicIpId(
   publicIpToFrontEndLoadBalancerName
 );
 export const publicIpToFrontEndLoadBalancerIp = '203.0.113.4';
+export const privateIpToLoadBalancer = '10.0.0.3';
 
 export const privateIpWithPublicName = 'privateIpWithPublic1';
 export const privateIpWithPublicId = ipId(nic1Name, privateIpWithPublicName);
@@ -249,6 +253,14 @@ export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createKeyVa
   publicIpToFrontEndLoadBalancerKey,
   'inbound'
 );
+
+export const publicIpWithoutIp: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIpWithPrivateId,
+  name: publicIpWithPrivateName,
+  resourceGroup,
+  properties: {},
+};
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -399,8 +411,13 @@ export const vnet1: AzureVirtualNetwork = {
     subnets: [subnet1, subnet2],
   },
 };
-export const vnet1Key = nodeServices.createKey(vnet1);
-export const vnet1Symbol = vnet1Key;
+export const vnet1KeyPrefix = nodeServices.createKey(vnet1);
+export const vnet1Key = nodeServices.createKeyVariant(vnet1KeyPrefix, 'router');
+export const vnet1KeyInbound = nodeServices.createKeyVariant(
+  vnet1KeyPrefix,
+  'inbound'
+);
+export const vnet1Symbol = vnet1KeyPrefix;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -428,7 +445,7 @@ export const natRule1: AzureLoadBalancerInboundNatRule = {
     backendIPConfiguration: reference(privateIp1),
     frontendIPConfiguration: reference(frontEndIp1Id),
     frontendPort: 5000,
-    protocol: 'TCP',
+    protocol: ruleProtocol.TCP,
   },
 };
 
@@ -458,7 +475,7 @@ export const poolRule1: AzureLoadBalancerInboundRule = {
     backendAddressPool: reference(backendPool1),
     frontendIPConfiguration: reference(frontEndIp1Id),
     frontendPort: 5000,
-    protocol: 'TCP',
+    protocol: ruleProtocol.TCP,
   },
 };
 
@@ -494,6 +511,34 @@ export const frontEndIpWithPoolRule: AzureLoadBalancerFrontEndIp = {
 export const frontEndIpWithPoolRuleKey = nodeServices.createKey(
   frontEndIpWithPoolRule
 );
+
+export const frontEndWithPrivateIp: AzureLoadBalancerFrontEndIp = {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
+  id: frontEndIp1Id,
+  name: frontEndIp1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [poolRule1],
+    privateIPAddress: privateIpToLoadBalancer,
+  },
+};
+
+export const loadBalancer1: AzureLoadBalancer = {
+  type: AzureObjectType.LOAD_BALANCER,
+  id: loadBalancer1Id,
+  name: loadBalancer1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [],
+    backendAddressPools: [],
+    frontendIPConfigurations: [frontEndWithPrivateIp],
+  },
+};
+export const loadBalancer1Key = nodeServices.createKey(loadBalancer1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //

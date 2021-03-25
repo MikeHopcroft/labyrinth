@@ -753,115 +753,7 @@
   },
   {
     "extendedLocation": null,
-    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Compute/virtualMachineScaleSets/vmss",
-    "identity": null,
-    "kind": "",
-    "location": "westus2",
-    "managedBy": "",
-    "name": "vmss",
-    "plan": null,
-    "properties": {
-      "doNotRunExtensionsOnOverprovisionedVMs": false,
-      "overprovision": true,
-      "platformFaultDomainCount": 5,
-      "provisioningState": "Succeeded",
-      "scaleInPolicy": {
-        "rules": ["Default"]
-      },
-      "singlePlacementGroup": true,
-      "uniqueId": "7d344ed1-b1fa-4632-91d6-b58def5e7507",
-      "upgradePolicy": {
-        "mode": "Manual"
-      },
-      "virtualMachineProfile": {
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        },
-        "extensionProfile": {
-          "extensions": []
-        },
-        "networkProfile": {
-          "networkInterfaceConfigurations": [
-            {
-              "name": "x-test-vpn-vnet-nic01",
-              "properties": {
-                "dnsSettings": {
-                  "dnsServers": []
-                },
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false,
-                "ipConfigurations": [
-                  {
-                    "name": "x-test-vpn-vnet-nic01-defaultIpConfiguration",
-                    "properties": {
-                      "loadBalancerBackendAddressPools": [
-                        {
-                          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vmss-pool",
-                          "resourceGroup": "vnet-test-01"
-                        }
-                      ],
-                      "primary": true,
-                      "privateIPAddressVersion": "IPv4",
-                      "subnet": {
-                        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-test-vpn/providers/Microsoft.Network/virtualNetworks/x-test-vpn-vnet/subnets/VMSS-Subnet",
-                        "resourceGroup": "x-test-vpn"
-                      }
-                    }
-                  }
-                ],
-                "primary": true
-              }
-            }
-          ]
-        },
-        "osProfile": {
-          "adminUsername": "azureuser",
-          "allowExtensionOperations": true,
-          "computerNamePrefix": "vmssuxjz3",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": true,
-            "provisionVMAgent": true
-          },
-          "requireGuestProvisionSignal": true,
-          "secrets": []
-        },
-        "priority": "Regular",
-        "storageProfile": {
-          "imageReference": {
-            "offer": "UbuntuServer",
-            "publisher": "Canonical",
-            "sku": "18.04-LTS",
-            "version": "latest"
-          },
-          "osDisk": {
-            "caching": "ReadWrite",
-            "createOption": "FromImage",
-            "diskSizeGB": 30,
-            "managedDisk": {
-              "storageAccountType": "Premium_LRS"
-            },
-            "osType": "Linux"
-          }
-        }
-      }
-    },
-    "resourceGroup": "vnet-test-01",
-    "sku": {
-      "capacity": 2,
-      "name": "Standard_B1s",
-      "tier": "Standard"
-    },
-    "subscriptionId": "00000000-0000-0000-0000-000000000000",
-    "tags": {},
-    "tenantId": "00000000-0000-0000-0000-000000000000",
-    "type": "microsoft.compute/virtualmachinescalesets",
-    "zones": null
-  },
-  {
-    "extendedLocation": null,
-    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Compute/virtualMachines/vnet-test-02",
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/VNET-TEST-01/providers/Microsoft.Compute/virtualMachines/vnet-test-02",
     "identity": null,
     "kind": "",
     "location": "westus2",
@@ -954,28 +846,28 @@
     "properties": {
       "backendAddressPools": [
         {
-          "etag": "W/\"ca4a67c9-5e08-48d0-ab1c-8409494c801d\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vmss-pool",
-          "name": "vmss-pool",
+          "etag": "W/\"e2eb7786-3a41-4b31-a542-85aebf5801b2\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool",
+          "name": "vm-pool",
           "properties": {
             "backendIPConfigurations": [
               {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Compute/virtualMachineScaleSets/vmss/virtualMachines/0/networkInterfaces/x-test-vpn-vnet-nic01/ipConfigurations/x-test-vpn-vnet-nic01-defaultIpConfiguration",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-02598/ipConfigurations/ipconfig1",
                 "resourceGroup": "vnet-test-01"
               },
               {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Compute/virtualMachineScaleSets/vmss/virtualMachines/4/networkInterfaces/x-test-vpn-vnet-nic01/ipConfigurations/x-test-vpn-vnet-nic01-defaultIpConfiguration",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-01167/ipConfigurations/ipconfig1",
                 "resourceGroup": "vnet-test-01"
               }
             ],
             "loadBalancerBackendAddresses": [
               {
-                "etag": "W/\"ca4a67c9-5e08-48d0-ab1c-8409494c801d\"",
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vmss-pool/loadBalancerBackendAddresses/5d245dbb-5b3b-44ff-90f2-af5f539e562d",
-                "name": "5d245dbb-5b3b-44ff-90f2-af5f539e562d",
+                "etag": "W/\"e2eb7786-3a41-4b31-a542-85aebf5801b2\"",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool/loadBalancerBackendAddresses/vnet-test-01_vnet-test-02598ipconfig1",
+                "name": "vnet-test-01_vnet-test-02598ipconfig1",
                 "properties": {
                   "networkInterfaceIPConfiguration": {
-                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Compute/virtualMachineScaleSets/vmss/virtualMachines/0/networkInterfaces/x-test-vpn-vnet-nic01/ipConfigurations/x-test-vpn-vnet-nic01-defaultIpConfiguration",
+                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-02598/ipConfigurations/ipconfig1",
                     "resourceGroup": "vnet-test-01"
                   },
                   "provisioningState": "Succeeded"
@@ -984,12 +876,12 @@
                 "type": "Microsoft.Network/loadBalancers/backendAddressPools/loadBalancerBackendAddresses"
               },
               {
-                "etag": "W/\"ca4a67c9-5e08-48d0-ab1c-8409494c801d\"",
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vmss-pool/loadBalancerBackendAddresses/af6dc193-2dc8-4eb3-b385-095503c02155",
-                "name": "af6dc193-2dc8-4eb3-b385-095503c02155",
+                "etag": "W/\"e2eb7786-3a41-4b31-a542-85aebf5801b2\"",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool/loadBalancerBackendAddresses/vnet-test-01_vnet-test-01167ipconfig1",
+                "name": "vnet-test-01_vnet-test-01167ipconfig1",
                 "properties": {
                   "networkInterfaceIPConfiguration": {
-                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Compute/virtualMachineScaleSets/vmss/virtualMachines/4/networkInterfaces/x-test-vpn-vnet-nic01/ipConfigurations/x-test-vpn-vnet-nic01-defaultIpConfiguration",
+                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-01167/ipConfigurations/ipconfig1",
                     "resourceGroup": "vnet-test-01"
                   },
                   "provisioningState": "Succeeded"
@@ -1012,7 +904,7 @@
       ],
       "frontendIPConfigurations": [
         {
-          "etag": "W/\"ca4a67c9-5e08-48d0-ab1c-8409494c801d\"",
+          "etag": "W/\"e2eb7786-3a41-4b31-a542-85aebf5801b2\"",
           "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/frontendIPConfigurations/LoadBalancerFrontEnd",
           "name": "LoadBalancerFrontEnd",
           "properties": {
@@ -1040,18 +932,18 @@
       "inboundNatRules": [],
       "loadBalancingRules": [
         {
-          "etag": "W/\"ca4a67c9-5e08-48d0-ab1c-8409494c801d\"",
+          "etag": "W/\"e2eb7786-3a41-4b31-a542-85aebf5801b2\"",
           "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/loadBalancingRules/ILB-Rule",
           "name": "ILB-Rule",
           "properties": {
             "allowBackendPortConflict": false,
             "backendAddressPool": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vmss-pool",
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool",
               "resourceGroup": "vnet-test-01"
             },
             "backendAddressPools": [
               {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vmss-pool",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool",
                 "resourceGroup": "vnet-test-01"
               }
             ],
@@ -1081,7 +973,7 @@
       "outboundRules": [],
       "probes": [
         {
-          "etag": "W/\"ca4a67c9-5e08-48d0-ab1c-8409494c801d\"",
+          "etag": "W/\"e2eb7786-3a41-4b31-a542-85aebf5801b2\"",
           "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/probes/SSH-Probe",
           "name": "SSH-Probe",
           "properties": {
@@ -1117,270 +1009,6 @@
   },
   {
     "extendedLocation": null,
-    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb",
-    "identity": null,
-    "kind": "",
-    "location": "westus2",
-    "managedBy": "",
-    "name": "vmss02-lb",
-    "plan": null,
-    "properties": {
-      "backendAddressPools": [
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool",
-          "name": "bepool",
-          "properties": {
-            "backendIPConfigurations": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-01167/ipConfigurations/ipconfig1",
-                "resourceGroup": "vnet-test-01"
-              },
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-02598/ipConfigurations/ipconfig1",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "loadBalancerBackendAddresses": [
-              {
-                "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool/loadBalancerBackendAddresses/vnet-test-01_vnet-test-01167ipconfig1",
-                "name": "vnet-test-01_vnet-test-01167ipconfig1",
-                "properties": {
-                  "networkInterfaceIPConfiguration": {
-                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-01167/ipConfigurations/ipconfig1",
-                    "resourceGroup": "vnet-test-01"
-                  },
-                  "provisioningState": "Succeeded"
-                },
-                "resourceGroup": "vnet-test-01",
-                "type": "Microsoft.Network/loadBalancers/backendAddressPools/loadBalancerBackendAddresses"
-              },
-              {
-                "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool/loadBalancerBackendAddresses/vnet-test-01_vnet-test-02598ipconfig1",
-                "name": "vnet-test-01_vnet-test-02598ipconfig1",
-                "properties": {
-                  "networkInterfaceIPConfiguration": {
-                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-02598/ipConfigurations/ipconfig1",
-                    "resourceGroup": "vnet-test-01"
-                  },
-                  "provisioningState": "Succeeded"
-                },
-                "resourceGroup": "vnet-test-01",
-                "type": "Microsoft.Network/loadBalancers/backendAddressPools/loadBalancerBackendAddresses"
-              }
-            ],
-            "loadBalancingRules": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/loadBalancingRules/LBRule",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "outboundRules": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/outboundRules/Outbound",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "provisioningState": "Succeeded"
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/backendAddressPools"
-        }
-      ],
-      "frontendIPConfigurations": [
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/LoadBalancerFrontEnd",
-          "name": "LoadBalancerFrontEnd",
-          "properties": {
-            "inboundNatPools": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/inboundNatPools/natpool",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "loadBalancingRules": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/loadBalancingRules/LBRule",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "outboundRules": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/outboundRules/Outbound",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "privateIPAddressVersion": "IPv4",
-            "privateIPAllocationMethod": "Dynamic",
-            "provisioningState": "Succeeded",
-            "publicIPAddress": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/publicIPAddresses/vmss02-ip",
-              "resourceGroup": "vnet-test-01"
-            }
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/frontendIPConfigurations"
-        },
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/Outbound",
-          "name": "Outbound",
-          "properties": {
-            "outboundRules": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/outboundRules/Outbound",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "privateIPAddressVersion": "IPv4",
-            "privateIPAllocationMethod": "Dynamic",
-            "provisioningState": "Succeeded",
-            "publicIPAddress": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/publicIPAddresses/outbound",
-              "resourceGroup": "vnet-test-01"
-            }
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/frontendIPConfigurations"
-        }
-      ],
-      "inboundNatPools": [
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/inboundNatPools/natpool",
-          "name": "natpool",
-          "properties": {
-            "allowBackendPortConflict": false,
-            "backendPort": 22,
-            "enableDestinationServiceEndpoint": false,
-            "enableFloatingIP": false,
-            "enableTcpReset": false,
-            "frontendIPConfiguration": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/LoadBalancerFrontEnd",
-              "resourceGroup": "vnet-test-01"
-            },
-            "frontendPortRangeEnd": 50119,
-            "frontendPortRangeStart": 50000,
-            "idleTimeoutInMinutes": 4,
-            "protocol": "Tcp",
-            "provisioningState": "Succeeded"
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/inboundNatPools"
-        }
-      ],
-      "inboundNatRules": [],
-      "loadBalancingRules": [
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/loadBalancingRules/LBRule",
-          "name": "LBRule",
-          "properties": {
-            "allowBackendPortConflict": false,
-            "backendAddressPool": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool",
-              "resourceGroup": "vnet-test-01"
-            },
-            "backendAddressPools": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "backendPort": 80,
-            "disableOutboundSnat": true,
-            "enableDestinationServiceEndpoint": false,
-            "enableFloatingIP": false,
-            "enableTcpReset": false,
-            "frontendIPConfiguration": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/LoadBalancerFrontEnd",
-              "resourceGroup": "vnet-test-01"
-            },
-            "frontendPort": 80,
-            "idleTimeoutInMinutes": 5,
-            "loadDistribution": "Default",
-            "probe": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/probes/tcpProbe",
-              "resourceGroup": "vnet-test-01"
-            },
-            "protocol": "Tcp",
-            "provisioningState": "Succeeded"
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/loadBalancingRules"
-        }
-      ],
-      "outboundRules": [
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/outboundRules/Outbound",
-          "name": "Outbound",
-          "properties": {
-            "allocatedOutboundPorts": 0,
-            "backendAddressPool": {
-              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool",
-              "resourceGroup": "vnet-test-01"
-            },
-            "enableTcpReset": true,
-            "frontendIPConfigurations": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/Outbound",
-                "resourceGroup": "vnet-test-01"
-              },
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/LoadBalancerFrontEnd",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "idleTimeoutInMinutes": 4,
-            "protocol": "All",
-            "provisioningState": "Succeeded"
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/outboundRules"
-        }
-      ],
-      "probes": [
-        {
-          "etag": "W/\"d3891a6c-a8d5-41ad-9d83-db596135fe9c\"",
-          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/probes/tcpProbe",
-          "name": "tcpProbe",
-          "properties": {
-            "intervalInSeconds": 5,
-            "loadBalancingRules": [
-              {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/loadBalancingRules/LBRule",
-                "resourceGroup": "vnet-test-01"
-              }
-            ],
-            "numberOfProbes": 2,
-            "port": 80,
-            "protocol": "Tcp",
-            "provisioningState": "Succeeded"
-          },
-          "resourceGroup": "vnet-test-01",
-          "type": "Microsoft.Network/loadBalancers/probes"
-        }
-      ],
-      "provisioningState": "Succeeded",
-      "resourceGuid": "7b435f7c-3fbd-4aee-8170-1d328fae4ce8"
-    },
-    "resourceGroup": "vnet-test-01",
-    "sku": {
-      "name": "Standard",
-      "tier": "Regional"
-    },
-    "subscriptionId": "00000000-0000-0000-0000-000000000000",
-    "tags": null,
-    "tenantId": "00000000-0000-0000-0000-000000000000",
-    "type": "microsoft.network/loadbalancers",
-    "zones": null
-  },
-  {
-    "extendedLocation": null,
     "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-01167",
     "identity": null,
     "kind": "",
@@ -1399,13 +1027,13 @@
       "hostedWorkloads": [],
       "ipConfigurations": [
         {
-          "etag": "W/\"c402d39d-b74f-442d-8979-399c15f587f0\"",
+          "etag": "W/\"7e79f94a-8033-461d-8ad3-7bb4f6932cb9\"",
           "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-01167/ipConfigurations/ipconfig1",
           "name": "ipconfig1",
           "properties": {
             "loadBalancerBackendAddressPools": [
               {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool",
                 "resourceGroup": "vnet-test-01"
               }
             ],
@@ -1462,13 +1090,13 @@
       "hostedWorkloads": [],
       "ipConfigurations": [
         {
-          "etag": "W/\"5aa9521b-d131-41be-8fe1-64bdd0bbe853\"",
+          "etag": "W/\"34f8053e-429e-4809-9878-4ec5ca9be833\"",
           "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/networkInterfaces/vnet-test-02598/ipConfigurations/ipconfig1",
           "name": "ipconfig1",
           "properties": {
             "loadBalancerBackendAddressPools": [
               {
-                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/backendAddressPools/bepool",
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/ilb/backendAddressPools/vm-pool",
                 "resourceGroup": "vnet-test-01"
               }
             ],
@@ -2220,10 +1848,6 @@
     "properties": {
       "idleTimeoutInMinutes": 4,
       "ipAddress": "20.47.120.40",
-      "ipConfiguration": {
-        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/Outbound",
-        "resourceGroup": "vnet-test-01"
-      },
       "ipTags": [
         {
           "ipTagType": "RoutingPreference",
@@ -2287,10 +1911,6 @@
     "properties": {
       "idleTimeoutInMinutes": 4,
       "ipAddress": "52.143.80.173",
-      "ipConfiguration": {
-        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/vnet-test-01/providers/Microsoft.Network/loadBalancers/vmss02-lb/frontendIPConfigurations/LoadBalancerFrontEnd",
-        "resourceGroup": "vnet-test-01"
-      },
       "ipTags": [],
       "provisioningState": "Succeeded",
       "publicIPAddressVersion": "IPv4",

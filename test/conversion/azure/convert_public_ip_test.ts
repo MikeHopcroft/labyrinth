@@ -21,15 +21,34 @@ import {
   publicIpWithPrivateOutboundKey,
   publicIpWithPrivateSourceIp,
   publicIpToFrontEndLoadBalancerInboundKey,
+  publicIpWithoutIp,
 } from './sample_resource_graph';
 
 export default function test() {
   describe('convertPublicIp()', () => {
+    it('support for unbound ip', () => {
+      const {services} = createGraphServicesMock();
+      services.index.add(privateIpWithPublic);
+
+      const backboneKey = 'backbone';
+      const internetKey = 'internet';
+
+      // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
+      // to test the real convertIp(), instead of its mock.
+      const result = convertPublicIp(
+        services,
+        publicIpWithoutIp,
+        backboneKey,
+        internetKey
+      );
+      assert.deepEqual(result, {inbound: [], outbound: []});
+    });
+
     it('publicIp with privateIp', () => {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'backbone';
       const internetKey = 'internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
@@ -37,7 +56,7 @@ export default function test() {
       const result = convertPublicIp(
         services,
         publicIpWithPrivate,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
@@ -72,7 +91,7 @@ export default function test() {
           key: publicIpWithPrivateInboundKey,
           routes: [
             {
-              destination: gatewayKey,
+              destination: backboneKey,
               override: {
                 destinationIp: privateIp1SourceIp,
               },
@@ -98,7 +117,7 @@ export default function test() {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'backbone';
       const internetKey = 'internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
@@ -106,7 +125,7 @@ export default function test() {
       const result = convertPublicIp(
         services,
         isolatedPublicIp,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
@@ -153,7 +172,7 @@ export default function test() {
         return route;
       });
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'backbone';
       const internetKey = 'internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
@@ -161,7 +180,7 @@ export default function test() {
       const result = convertPublicIp(
         services,
         publicIpToFrontEndLoadBalancer,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
@@ -188,7 +207,7 @@ export default function test() {
       assert.equal(log.length, 1);
       // assert.equal(log[0].params[1], frontEndIpWithNatRule);
       assert.equal(log[0].params[1], frontEndIpWithPoolRule);
-      assert.equal(log[0].params[2], gatewayKey);
+      assert.equal(log[0].params[2], backboneKey);
 
       // Verify graph
       const expectedNodes: NodeSpec[] = [

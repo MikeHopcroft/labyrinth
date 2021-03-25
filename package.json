@@ -22,6 +22,8 @@
   "repository": "https://github.com/MikeHopcroft/labyrinth",
   "scripts": {
     "docs": "node node_modules/prepress/build/src/apps/prepress.js documentation/src documentation",
+    "convert": "node build/src/apps/convert.js ./data/azure/graph-ilb-plb-overlapping-vnet.json ./build/convert.yaml > ./build/convert.txt",
+    "graph": "node build/src/apps/graph.js ./build/convert.yaml -f Internet -r -b -v > ./build/graph.txt",
     "test": "mocha",
     "test-coverage": "nyc mocha --config .mocharc-ts.json",
     "lint": "gts lint",
@@ -31,6 +33,7 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "pretest-coverage": "npm run compile",
+    "postdebug": "npm run convert",
     "posttest": "npm run lint",
     "watch": "npm-watch test",
     "watch:compile": "npm-watch compile"

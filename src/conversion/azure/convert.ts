@@ -1,7 +1,13 @@
 import {GraphSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
-import {AzureNetworkInterface, AzureResourceGraph} from './azure_types';
+import {
+  AzureLoadBalancer,
+  AzureLoadBalancerBackendPool,
+  AzureNetworkInterface,
+  AzurePrivateIP,
+  AzureResourceGraph,
+} from './azure_types';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
 import {SymbolTable} from './symbol_table';
@@ -9,7 +15,7 @@ import {unusedTypes} from './unused_types';
 
 export interface ConversionResults {
   graph: GraphSpec;
-  unusedTypes: Set<string>;
+  unusedTypes: Map<string, Set<string>>;
 }
 
 export function convert(
@@ -34,6 +40,11 @@ export function convert(
       symbol: 'Tcp',
       range: 'tcp',
     },
+    {
+      dimension: 'protocol',
+      symbol: 'TCP',
+      range: 'tcp',
+    },
   ]);
   const index = new AzureObjectIndex(resourceGraphSpec);
   const services = new GraphServices(index, {symbols});
@@ -46,6 +57,22 @@ export function convert(
       const subnet = ipConfig.properties.subnet;
       if (subnet) {
         services.index.addReference(nic, subnet);
+      }
+    }
+  }
+
+  // Setup references between Load Balancers and their Subnet
+  for (const lbSpec of index.withType(AzureLoadBalancer)) {
+    const poolRef = lbSpec.properties?.backendAddressPools[0];
+
+    if (poolRef) {
+      const pool = index.dereference<AzureLoadBalancerBackendPool>(poolRef);
+      const ipRef = pool.properties?.backendIPConfigurations[0];
+
+      if (ipRef) {
+        const ipConfig = index.dereference<AzurePrivateIP>(ipRef);
+        const vnetId = index.getParentId(ipConfig.properties.subnet);
+        services.index.addReference(lbSpec, vnetId);
       }
     }
   }

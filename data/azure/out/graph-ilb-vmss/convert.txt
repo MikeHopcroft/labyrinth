@@ -1,0 +1,3 @@
+Azure resource graph input file: graph-ilb-vmss.json
+Labyrinth graph output file: out\graph-ilb-vmss\convert.yaml
+Error: Unknown Azure resource graph id "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/vnet-test-01/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/x-test-vpn-vnet-nic01/ipconfigurations/x-test-vpn-vnet-nic01-defaultipconfiguration"

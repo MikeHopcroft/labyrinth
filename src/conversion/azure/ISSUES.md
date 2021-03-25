@@ -11,6 +11,13 @@
   * Materializers don't know specifics of other node specs
   * Materializers don't know specifics of other node materializations
 
+* Internal Load Balancer
+  * Inbound NSG Rules don't appear to comply
+  * Outbound NSG rules prevent vm from reaching nsg
+  * Move Load balancer to backbone
+    * Might simplfy that we can only look at the load balancer
+    * Load balancer should route back to backbone
+* How does the backbone handle vnets with overlapping subnets?
 * x azure_types
   * x dead/commented out code in azure_types - asAzureNetworkInterface
 * convert_nics.ts

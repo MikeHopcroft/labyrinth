@@ -5,11 +5,21 @@ import {walkAzureTypedObjects} from './walk';
 export function unusedTypes(
   services: GraphServices,
   spec: AzureResourceGraph
-): Set<string> {
-  const unused = new Set<string>();
+): Map<string, Set<string>> {
+  const unused = new Map<string, Set<string>>();
   for (const item of walkAzureTypedObjects(spec)) {
-    if (!services.nodes.isTypeInUse(item)) {
-      unused.add(item.type);
+    if (
+      services.index.isTopLevelResource(item) &&
+      !services.nodes.isTypeInUse(item)
+    ) {
+      let items = unused.get(item.type);
+
+      if (!items) {
+        items = new Set<string>();
+        unused.set(item.type, items);
+      }
+
+      items.add(item.id);
     }
   }
   return unused;

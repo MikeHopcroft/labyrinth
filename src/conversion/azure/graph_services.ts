@@ -5,6 +5,7 @@ import {defaultConverters} from './default_converters';
 import {IConverters} from './converters';
 import {NodeServices} from './node_services';
 import {SymbolTable} from './symbol_table';
+import {AzureTypedObject} from './azure_types';
 
 export interface GraphServicesOptions {
   converters?: IConverters;
@@ -30,6 +31,10 @@ export class GraphServices {
       nodes: [...this.nodes.nodes()],
       symbols: this.symbols.getAllSymbolSpecs(),
     };
+  }
+
+  trackUnsupportedSpec(caller: string, spec: AzureTypedObject) {
+    console.log(`Unsupported type '${spec.type}' used in '${caller}`);
   }
 
   // TODO: eventually we will probably need some scope management
