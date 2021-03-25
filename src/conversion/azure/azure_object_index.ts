@@ -91,4 +91,14 @@ export class AzureObjectIndex {
       },
     };
   }
+
+  getParentId(input: AzureObjectBase): AzureObjectBase {
+    const idParts = input.id.split('/');
+    idParts.pop();
+    idParts.pop();
+    return {
+      id: idParts.join('/'),
+      resourceGroup: input.resourceGroup,
+    };
+  }
 }

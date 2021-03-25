@@ -7,7 +7,6 @@ import {
   AzureNetworkInterface,
   AzurePrivateIP,
   AzureResourceGraph,
-  getParentId,
 } from './azure_types';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
@@ -72,7 +71,7 @@ export function convert(
 
       if (ipRef) {
         const ipConfig = index.dereference<AzurePrivateIP>(ipRef);
-        const vnetId = getParentId(ipConfig.properties.subnet);
+        const vnetId = index.getParentId(ipConfig.properties.subnet);
         services.index.addReference(lbSpec, vnetId);
       }
     }
