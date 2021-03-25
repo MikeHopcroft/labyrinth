@@ -43,15 +43,15 @@ export function convertPublicIp(
         backboneKey
       );
     } else {
-      // return {inbound: [], outbound: []};
-      const message = `unsupported IP config type '${ipconfig.type}'`;
-      throw new TypeError(message);
+      services.trackUnsupportedSpec('convertPublicIp', ipconfig);
     }
-  } else {
+  } else if (publicIpSpec.properties.ipAddress) {
     // This public ip exists in the resource graph, but is not bound to an
     // internal ip address.
     return isolatedPublicIp(services, publicIpSpec);
   }
+
+  return {inbound: [], outbound: []};
 }
 
 function publicIpWithPrivateIp(

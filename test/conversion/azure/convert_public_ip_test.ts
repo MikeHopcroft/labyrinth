@@ -21,10 +21,29 @@ import {
   publicIpWithPrivateOutboundKey,
   publicIpWithPrivateSourceIp,
   publicIpToFrontEndLoadBalancerInboundKey,
+  publicIpWithoutIp,
 } from './sample_resource_graph';
 
 export default function test() {
   describe('convertPublicIp()', () => {
+    it('support for unbound ip', () => {
+      const {services} = createGraphServicesMock();
+      services.index.add(privateIpWithPublic);
+
+      const backboneKey = 'backbone';
+      const internetKey = 'internet';
+
+      // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
+      // to test the real convertIp(), instead of its mock.
+      const result = convertPublicIp(
+        services,
+        publicIpWithoutIp,
+        backboneKey,
+        internetKey
+      );
+      assert.deepEqual(result, {inbound: [], outbound: []});
+    });
+
     it('publicIp with privateIp', () => {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);

@@ -254,6 +254,14 @@ export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createKeyVa
   'inbound'
 );
 
+export const publicIpWithoutIp: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIpWithPrivateId,
+  name: publicIpWithPrivateName,
+  resourceGroup,
+  properties: {},
+};
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // Subnets
