@@ -24,6 +24,7 @@ import {
   vnet1Key,
   vnet1Symbol,
   vnet1SourceIps,
+  vnet1KeyInbound,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -101,6 +102,15 @@ export default function test() {
                 destinationIp: `except ${vnet1SourceIps}`,
               },
             },
+            {
+              destination: vnet1KeyInbound,
+            },
+          ],
+        },
+        {
+          key: vnet1KeyInbound,
+          name: vnet1.id,
+          routes: [
             {
               destination: subnet1InboundKey,
               constraints: {

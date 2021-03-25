@@ -400,8 +400,13 @@ export const vnet1: AzureVirtualNetwork = {
     subnets: [subnet1, subnet2],
   },
 };
-export const vnet1Key = nodeServices.createKey(vnet1);
-export const vnet1Symbol = vnet1Key;
+export const vnet1KeyPrefix = nodeServices.createKey(vnet1);
+export const vnet1Key = nodeServices.createKeyVariant(vnet1KeyPrefix, 'router');
+export const vnet1KeyInbound = nodeServices.createKeyVariant(
+  vnet1KeyPrefix,
+  'inbound'
+);
+export const vnet1Symbol = vnet1KeyPrefix;
 
 ///////////////////////////////////////////////////////////////////////////////
 //

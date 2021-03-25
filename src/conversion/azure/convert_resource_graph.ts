@@ -75,8 +75,11 @@ export function convertResourceGraph(services: GraphServices) {
   const backboneInboundRoutes: RoutingRuleSpec[] = [];
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
     const route = services.convert.vnet(services, vnet, backboneOutboundKey);
-    vNetNodeKeys.push(route.destination);
     backboneInboundRoutes.push(route);
+
+    if (route.constraints && route.constraints.destinationIp) {
+      vNetNodeKeys.push(route.constraints.destinationIp);
+    }
   }
 
   services.nodes.add({
