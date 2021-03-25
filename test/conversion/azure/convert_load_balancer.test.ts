@@ -2,7 +2,10 @@ import {assert} from 'chai';
 import 'mocha';
 
 import {NodeSpec, RoutingRuleSpec} from '../../../src';
-import {convertLoadBalancerFrontEndIp} from '../../../src/conversion/azure/convert_load_balancer';
+import {
+  convertInternalLoadBalancer,
+  convertLoadBalancerFrontEndIp,
+} from '../../../src/conversion/azure/convert_load_balancer';
 
 import {
   backendPool1,
@@ -12,10 +15,13 @@ import {
   frontEndIpWithNatRuleKey,
   frontEndIpWithPoolRule,
   frontEndIpWithPoolRuleKey,
+  loadBalancer1,
+  loadBalancer1Key,
   natRule1,
   poolRule1,
   privateIp1,
   privateIp2,
+  privateIpToLoadBalancer,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -103,6 +109,73 @@ export default function test() {
               override: {
                 destinationIp: backendPool1SourceIp,
                 destinationPort: natRule1.properties.backendPort.toString(),
+              },
+            },
+          ],
+        },
+      ];
+      assert.deepEqual(nodes, expectedNodes);
+    });
+
+    it('Contract with route materialization', () => {
+      const {services, mocks} = createGraphServicesMock();
+
+      mocks.loadBalancerFrontend.action(() => {
+        return {
+          destination: 'foo',
+          constraints: {destinationIp: 'bar'},
+        };
+      });
+
+      const vnetKey = 'test-vnet';
+      convertInternalLoadBalancer(services, loadBalancer1, vnetKey);
+      // Verify that nsgConverter() was invoked correctly.
+      const frontLog = mocks.loadBalancerFrontend.log();
+      const frontendIp = loadBalancer1.properties.frontendIPConfigurations[0];
+      assert.equal(frontLog.length, 1);
+      assert.equal(frontLog[0].params[1], frontendIp);
+      assert.equal(frontLog[0].params[2], vnetKey);
+    });
+
+    it('internal load balancer', () => {
+      const {services, mocks} = createGraphServicesMock();
+
+      mocks.loadBalancerFrontend.action(() => {
+        return {
+          destination: 'foo',
+          constraints: {destinationIp: 'bar'},
+        };
+      });
+
+      const vnetKey = 'test-vnet';
+      const route = convertInternalLoadBalancer(
+        services,
+        loadBalancer1,
+        vnetKey
+      );
+      const {nodes, symbols} = services.getLabyrinthGraphSpec();
+
+      // Verify return value
+      const expectedRoute: RoutingRuleSpec = {
+        destination: loadBalancer1Key,
+        constraints: {
+          destinationIp: privateIpToLoadBalancer,
+        },
+      };
+      assert.deepEqual(route, expectedRoute);
+
+      // Verify no symbol table additions.
+      assert.equal(symbols.length, 0);
+
+      // Verify graph
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: loadBalancer1Key,
+          routes: [
+            {
+              destination: 'foo',
+              constraints: {
+                destinationIp: 'bar',
               },
             },
           ],

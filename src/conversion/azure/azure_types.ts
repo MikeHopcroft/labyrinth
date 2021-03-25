@@ -112,7 +112,10 @@ export type AzureIPConfiguration = AzurePrivateIP | AzurePublicIP;
 
 // There will eventually be other Ip Configuration Types such as
 // firewall, VPN backbone, App Gateway, etc.
-export type AnyIpConfiguration = AzurePrivateIP | AzureLoadBalancerFrontEndIp;
+export type AnyIpConfiguration =
+  | AzurePrivateIP
+  | AzureLoadBalancerFrontEndIp
+  | AzurePublicIP;
 
 export interface AzureNetworkInterface extends AzureTypedObject {
   type: AzureObjectType.NIC;
@@ -217,6 +220,10 @@ export interface AzureLoadBalancerFrontEndIp extends AzureTypedObject {
     subnet?: AzureReference<AzureSubnet>;
   };
 }
+
+export const AzureLoadBalancerFrontEndIp = {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
+} as AzureLoadBalancerFrontEndIp;
 
 export interface AzureLoadBalancerInboundNatPool extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_NAT_POOL_INBOUND;

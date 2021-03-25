@@ -69,13 +69,13 @@ export function convertLoadBalancerFrontEndIp(
 
 function createInboundRoute(
   spec: AzureLoadBalancerRule,
-  backboneKey: string,
+  subnetKey: string,
   ...backendIps: string[]
 ): RoutingRuleSpec {
   const rule = spec.properties;
 
   const ruleSpec: RoutingRuleSpec = {
-    destination: backboneKey,
+    destination: subnetKey,
     constraints: {
       destinationPort: rule.frontendPort.toString(),
       protocol: rule.protocol,

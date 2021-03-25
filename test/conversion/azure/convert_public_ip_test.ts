@@ -153,7 +153,7 @@ export default function test() {
         return route;
       });
 
-      const gatewayKey = 'gateway';
+      const backboneKey = 'backbone';
       const internetKey = 'internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
@@ -161,7 +161,7 @@ export default function test() {
       const result = convertPublicIp(
         services,
         publicIpToFrontEndLoadBalancer,
-        gatewayKey,
+        backboneKey,
         internetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
@@ -188,7 +188,7 @@ export default function test() {
       assert.equal(log.length, 1);
       // assert.equal(log[0].params[1], frontEndIpWithNatRule);
       assert.equal(log[0].params[1], frontEndIpWithPoolRule);
-      assert.equal(log[0].params[2], gatewayKey);
+      assert.equal(log[0].params[2], backboneKey);
 
       // Verify graph
       const expectedNodes: NodeSpec[] = [

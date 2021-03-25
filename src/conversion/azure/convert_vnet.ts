@@ -3,7 +3,8 @@ import DRange from 'drange';
 import {formatIpLiteral, parseIp} from '../../dimensions';
 import {RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 
-import {AzureVirtualNetwork} from './azure_types';
+import {AzureLoadBalancer, AzureVirtualNetwork} from './azure_types';
+import {isInternalLoadBalancer} from './convert_load_balancer';
 import {GraphServices} from './graph_services';
 
 export function convertVNet(
@@ -42,6 +43,19 @@ export function convertVNet(
       constraints: {destinationIp: `except ${destinationIp}`},
     },
   ];
+
+  // Materialize Internal Load Balancers and add Routes
+  for (const lbSpec of services.index.for(spec).withType(AzureLoadBalancer)) {
+    if (isInternalLoadBalancer(lbSpec)) {
+      const route = services.convert.internalLoadBalancer(
+        services,
+        lbSpec,
+        vNetInboundKey
+      );
+
+      routerRoutes.push(route);
+    }
+  }
 
   routerRoutes.push({
     destination: vNetInboundKey,

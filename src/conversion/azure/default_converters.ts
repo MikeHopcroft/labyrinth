@@ -1,5 +1,8 @@
 import {IConverters} from './converters';
-import {convertLoadBalancerFrontEndIp} from './convert_load_balancer';
+import {
+  convertInternalLoadBalancer,
+  convertLoadBalancerFrontEndIp,
+} from './convert_load_balancer';
 import {convertNIC} from './convert_nic';
 import {convertNSG} from './convert_nsg';
 import {convertPrivateIp} from './convert_private_ip';
@@ -11,6 +14,7 @@ import {convertVNet} from './convert_vnet';
 
 export function defaultConverters(): IConverters {
   return {
+    internalLoadBalancer: convertInternalLoadBalancer,
     loadBalancerFrontend: convertLoadBalancerFrontEndIp,
     nic: convertNIC,
     nsg: convertNSG,

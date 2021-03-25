@@ -20,6 +20,7 @@ import {
   AzureLoadBalancerInboundRule,
   AzureLoadBalancerBackendPool,
   ruleProtocol,
+  AzureLoadBalancer,
 } from '../../../src/conversion/azure';
 
 import {createMock} from './mocks';
@@ -35,6 +36,7 @@ export function createGraphServicesMock() {
   const fake: IConverters = {} as IConverters;
 
   const mocks = {
+    internalLoadBalancer: createMock(fake.internalLoadBalancer),
     loadBalancerFrontend: createMock(fake.loadBalancerFrontend),
     nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
@@ -113,6 +115,7 @@ export const publicIpToFrontEndLoadBalancerId = publicIpId(
   publicIpToFrontEndLoadBalancerName
 );
 export const publicIpToFrontEndLoadBalancerIp = '203.0.113.4';
+export const privateIpToLoadBalancer = '10.0.0.3';
 
 export const privateIpWithPublicName = 'privateIpWithPublic1';
 export const privateIpWithPublicId = ipId(nic1Name, privateIpWithPublicName);
@@ -500,6 +503,34 @@ export const frontEndIpWithPoolRule: AzureLoadBalancerFrontEndIp = {
 export const frontEndIpWithPoolRuleKey = nodeServices.createKey(
   frontEndIpWithPoolRule
 );
+
+export const frontEndWithPrivateIp: AzureLoadBalancerFrontEndIp = {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
+  id: frontEndIp1Id,
+  name: frontEndIp1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [poolRule1],
+    privateIPAddress: privateIpToLoadBalancer,
+  },
+};
+
+export const loadBalancer1: AzureLoadBalancer = {
+  type: AzureObjectType.LOAD_BALANCER,
+  id: loadBalancer1Id,
+  name: loadBalancer1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [],
+    backendAddressPools: [],
+    frontendIPConfigurations: [frontEndWithPrivateIp],
+  },
+};
+export const loadBalancer1Key = nodeServices.createKey(loadBalancer1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
