@@ -1,8 +1,4 @@
 Azure resource graph input file: graph-ilb-plb-overlapping-vnet.json
 Labyrinth graph output file: out\graph-ilb-plb-overlapping-vnet\convert.yaml
 Conversion complete.
-Unsupported or ignored Azure resource graph types:
-  0: microsoft.network/loadbalancers
-  1: microsoft.network/loadbalancers/backendaddresspools/loadbalancerbackendaddresses
-  2: microsoft.network/loadbalancers/probes
-  3: microsoft.network/networkinterfaces/ipconfigurations
+All Azure resource graph types understood.

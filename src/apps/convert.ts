@@ -39,12 +39,19 @@ function main() {
   return succeed(true);
 }
 
-function printTypeUsageReport(unusedTypes: Set<string>) {
+function printTypeUsageReport(unusedTypes: Map<string, Set<string>>) {
   if (unusedTypes.size > 0) {
     console.log('Unsupported or ignored Azure resource graph types:');
-    const types = [...unusedTypes.values()].sort();
+    const types = [...unusedTypes.keys()].sort();
     for (const [index, type] of types.entries()) {
       console.log(`  ${index}: ${type}`);
+      const keys = unusedTypes.get(type);
+      if (keys) {
+        const items = [...keys].sort();
+        for (const id of items) {
+          console.log(`        ${id}`);
+        }
+      }
     }
   } else {
     console.log('All Azure resource graph types understood.');

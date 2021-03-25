@@ -15,7 +15,7 @@ import {unusedTypes} from './unused_types';
 
 export interface ConversionResults {
   graph: GraphSpec;
-  unusedTypes: Set<string>;
+  unusedTypes: Map<string, Set<string>>;
 }
 
 export function convert(

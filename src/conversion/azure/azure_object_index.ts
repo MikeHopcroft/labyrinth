@@ -101,4 +101,9 @@ export class AzureObjectIndex {
       resourceGroup: input.resourceGroup,
     };
   }
+
+  isTopLevelResource(input: AzureObjectBase) {
+    const idParts = input.id.split('/');
+    return idParts.length === 9;
+  }
 }

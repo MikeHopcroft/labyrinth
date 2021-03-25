@@ -11,6 +11,7 @@ export function convertInternalLoadBalancer(
   const loadBalancerKey = services.nodes.createKey(spec);
   const lbRoutes: RoutingRuleSpec[] = [];
   const ips: string[] = [];
+  services.nodes.markTypeAsUsed(spec);
 
   for (const frontendSpec of spec.properties.frontendIPConfigurations) {
     if (!frontendSpec.properties.privateIPAddress) {
