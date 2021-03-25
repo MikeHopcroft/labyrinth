@@ -99,7 +99,7 @@ export interface AzurePublicIP extends AzureTypedObject {
   type: AzureObjectType.PUBLIC_IP;
   // TODO: should there be a `name` field?
   properties: {
-    ipAddress: string;
+    ipAddress?: string;
     ipConfiguration?: AzureReference<AnyIpConfiguration>;
     ipTags?: IpTag[];
   };

@@ -67,6 +67,10 @@ function publicIpWithPrivateIp(
   const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
   const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
 
+  if (!publicIpSpec.properties.ipAddress) {
+    throw new TypeError('Invalid Public IP Configuration');
+  }
+
   // Create inbound node
   services.nodes.add({
     key: inboundKey,
@@ -124,6 +128,10 @@ function loadBalancerFrontEndIp(
   const keyPrefix = services.nodes.createKey(publicIpSpec);
   const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
 
+  if (!publicIpSpec.properties.ipAddress) {
+    throw new TypeError('Invalid Public IP Configuration');
+  }
+
   const route = services.convert.loadBalancerFrontend(
     services,
     lbIpSpec,
@@ -155,6 +163,10 @@ function isolatedPublicIp(
 ): PublicIpRoutes {
   const keyPrefix = services.nodes.createKey(publicIpSpec);
   const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+
+  if (!publicIpSpec.properties.ipAddress) {
+    throw new TypeError('Invalid Public IP Configuration');
+  }
 
   // Create inbound node
   services.nodes.add({
