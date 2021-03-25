@@ -1,0 +1,17 @@
+Azure resource graph input file: graph-multiple-outbound-ips.json
+Labyrinth graph output file: out\graph-multiple-outbound-ips\convert.yaml
+Conversion complete.
+Unsupported or ignored Azure resource graph types:
+  0: microsoft.network/azurefirewalls
+  1: microsoft.network/azurefirewalls/azurefirewallipconfigurations
+  2: microsoft.network/connections
+  3: microsoft.network/firewallpolicies
+  4: microsoft.network/loadbalancers
+  5: microsoft.network/loadbalancers/backendaddresspools/loadbalancerbackendaddresses
+  6: microsoft.network/loadbalancers/inboundnatpools
+  7: microsoft.network/loadbalancers/outboundrules
+  8: microsoft.network/loadbalancers/probes
+  9: microsoft.network/localnetworkgateways
+  10: microsoft.network/networkinterfaces/ipconfigurations
+  11: microsoft.network/virtualnetworkgateways
+  12: microsoft.network/virtualnetworkgateways/ipconfigurations

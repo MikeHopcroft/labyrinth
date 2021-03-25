@@ -1,0 +1,15 @@
+Azure resource graph input file: graph-ilb-vm.json
+Labyrinth graph output file: out\graph-ilb-vm\convert.yaml
+Conversion complete.
+Unsupported or ignored Azure resource graph types:
+  0: microsoft.network/azurefirewalls
+  1: microsoft.network/azurefirewalls/azurefirewallipconfigurations
+  2: microsoft.network/connections
+  3: microsoft.network/firewallpolicies
+  4: microsoft.network/loadbalancers
+  5: microsoft.network/loadbalancers/backendaddresspools/loadbalancerbackendaddresses
+  6: microsoft.network/loadbalancers/probes
+  7: microsoft.network/localnetworkgateways
+  8: microsoft.network/networkinterfaces/ipconfigurations
+  9: microsoft.network/virtualnetworkgateways
+  10: microsoft.network/virtualnetworkgateways/ipconfigurations
