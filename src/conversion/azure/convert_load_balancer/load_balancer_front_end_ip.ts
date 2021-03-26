@@ -16,9 +16,19 @@ export function convertLoadBalancerFrontEndIp(
   spec: AzureLoadBalancerFrontEndIp,
   backboneKey: string
 ): RoutingRuleSpec {
-  services.nodes.markTypeAsUsed(spec);
-
   const key = services.nodes.createKey(spec);
+  const routes = createLoadBalancerRoutes(services, spec, backboneKey);
+  services.nodes.add({key, routes});
+  return {destination: key};
+}
+
+export function createLoadBalancerRoutes(
+  services: GraphServices,
+  spec: AzureLoadBalancerFrontEndIp,
+  backboneKey: string
+): RoutingRuleSpec[] {
+  services.nodes.markTypeAsUsed(spec);
+  services.nodes.markTypeAsUsed(spec);
 
   const routes: RoutingRuleSpec[] = [];
 
@@ -61,10 +71,7 @@ export function convertLoadBalancerFrontEndIp(
       )
     );
   }
-
-  services.nodes.add({key, routes});
-
-  return {destination: key};
+  return routes;
 }
 
 function createInboundRoute(
