@@ -412,6 +412,59 @@ describe('Graph', () => {
       const {cycles} = graph.analyze('internet', true);
       assert.equal(cycles.length, 0);
     });
+
+    it('NAT cycle exception', () => {
+      const nodes: NodeSpec[] = [
+        {
+          name: 'internet',
+          key: 'internet',
+          routes: [
+            {
+              destination: 'a',
+            },
+          ],
+        },
+        {
+          name: 'a',
+          key: 'a',
+          routes: [
+            {
+              destination: 'b',
+            },
+          ],
+        },
+        {
+          name: 'b',
+          key: 'b',
+          routes: [
+            {
+              destination: 'c',
+              override: {
+                destinationPort: '0',
+              },
+            },
+          ],
+        },
+        {
+          name: 'c',
+          key: 'c',
+          routes: [
+            {
+              destination: 'a',
+            },
+          ],
+        },
+      ];
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const message = trim(`
+        Encountered NAT cycle:
+        a => b => c => a
+          destination port: 0`);
+      assert.throws(() => {
+        graph.analyze('internet', true);
+      }, message);
+    });
   });
 
   // Forward propagate
