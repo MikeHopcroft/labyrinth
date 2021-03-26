@@ -62,11 +62,17 @@
 
 
 * Top 2
+  * Synthetic nodes
+  * Azure backbone shouldn't route IPs into VNets. These routes should come from public IPs
+  * VNet peerings
   * AzurePOP node
-  * x List Azure types not processed by conversion process
-  * Graph might want to print out the symbol table.
+  * Resource graph sanitizer - tokens, keys, etc.
+  * Sample resource graph output in md files.
+  * Detecting cycles with NAT
   * Figure out case normalization for service tags
     * Azure uses TCP and tcp and Tcp
+  * Move Azure-specific symbols to dedicated Azure universe.
+  * Graph might want to print out the symbol table.
   * RoutingRuleSpec
     * Destination pools
   * Rename gateway to backbone
@@ -76,7 +82,6 @@
   * Remove services.getInternetKey()
     * The resource graph is the sole owner of this key
     * The Internet service tag is another story
-  * Move Azure-specific symbols to dedicated Azure universe.
   * Consistant naming for converters (Ip vs IP, etc)
     * nic: convertNIC,
     * resourceGraph: convertResourceGraph,
@@ -88,6 +93,7 @@
     * vm: convertVM,
   * Convenience function to initialize GraphServices.
   * Write design note
+  * x List Azure types not processed by conversion process
   * x convertIp() should become convertPrivateIp()
   * x Unit test for convertPublicIp()
   * x Unit tests for createPublicIp work in isolation, but fail after other tests have run.
