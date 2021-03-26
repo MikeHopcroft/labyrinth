@@ -68,7 +68,7 @@
   * AzurePOP node
   * Resource graph sanitizer - tokens, keys, etc.
   * Sample resource graph output in md files.
-  * Detecting cycles with NAT
+  * x Detecting cycles with NAT
   * Figure out case normalization for service tags
     * Azure uses TCP and tcp and Tcp
   * Move Azure-specific symbols to dedicated Azure universe.
