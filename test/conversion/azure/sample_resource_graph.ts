@@ -211,6 +211,15 @@ export const publicIpWithPrivate: AzurePublicIP = {
     ipConfiguration: reference(privateIpWithPublic),
   },
 };
+
+export const publicWithPrivateMissingAddress: AzurePublicIP = {
+  type: AzureObjectType.PUBLIC_IP,
+  id: publicIpWithPrivateId,
+  name: publicIpWithPrivateName,
+  resourceGroup,
+  properties: {},
+};
+
 const publicIpWithPrivateKey = nodeServices.createKey(publicIpWithPrivate);
 export const publicIpWithPrivateInboundKey = nodeServices.createKeyVariant(
   publicIpWithPrivateKey,

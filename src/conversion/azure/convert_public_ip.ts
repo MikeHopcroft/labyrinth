@@ -27,7 +27,10 @@ export function convertPublicIp(
       publicIpSpec.properties.ipConfiguration
     );
 
-    if (ipconfig.type === AzureObjectType.PRIVATE_IP) {
+    if (
+      ipconfig.type === AzureObjectType.PRIVATE_IP &&
+      publicIpSpec.properties.ipAddress
+    ) {
       return publicIpWithPrivateIp(
         services,
         publicIpSpec,

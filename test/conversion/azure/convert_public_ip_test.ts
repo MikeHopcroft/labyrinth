@@ -22,6 +22,7 @@ import {
   publicIpWithPrivateSourceIp,
   publicIpToFrontEndLoadBalancerInboundKey,
   publicIpWithoutIp,
+  publicWithPrivateMissingAddress,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -111,6 +112,24 @@ export default function test() {
         },
       ];
       assert.deepEqual(nodes, expectedNodes);
+    });
+
+    it('publicIp bound to privateIp with no address', () => {
+      const {services} = createGraphServicesMock();
+      services.index.add(publicWithPrivateMissingAddress);
+
+      const backboneKey = 'backbone';
+      const internetKey = 'internet';
+
+      // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
+      // to test the real convertIp(), instead of its mock.
+      const result = convertPublicIp(
+        services,
+        publicWithPrivateMissingAddress,
+        backboneKey,
+        internetKey
+      );
+      assert.deepEqual(result, {inbound: [], outbound: []});
     });
 
     it('isolated publicIp', () => {
