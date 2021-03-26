@@ -184,7 +184,15 @@ export class Graph {
         // Consider marking the path object as a cycle
         // as an alternative to returning cycles.
         // NOTE: `path` cannot be undefined when flowNode.active.
-        cycles.push(this.extractCycle(path!, flow));
+        const cycle = this.extractCycle(path!, flow);
+        if (this.isNATCycle(cycle)) {
+          const message = `Encountered NAT cycle:\n${this.formatCycle(
+            cycle,
+            true
+          )}`;
+          throw new TypeError(message);
+        }
+        cycles.push(cycle);
       }
     } else {
       // If we're not at an endpoint or we're at the first node,
@@ -237,6 +245,15 @@ export class Graph {
     cycle.unshift({...p, routes});
 
     return cycle;
+  }
+
+  private isNATCycle(cycle: Cycle) {
+    for (const current of cycle) {
+      if (current.edge.edge.override) {
+        return true;
+      }
+    }
+    return false;
   }
 
   //
