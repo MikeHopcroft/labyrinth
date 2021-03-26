@@ -7,6 +7,7 @@ import {
   AzureNetworkInterface,
   AzurePrivateIP,
   AzureResourceGraph,
+  AzureSubnet,
 } from './azure_types';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
@@ -56,7 +57,17 @@ export function convert(
     for (const ipConfig of nic.properties.ipConfigurations) {
       const subnet = ipConfig.properties.subnet;
       if (subnet) {
+        const subnetSpec = services.index.dereference<AzureSubnet>(subnet);
         services.index.addReference(nic, subnet);
+        services.index.allocator.registerSubnet(
+          subnetSpec.id,
+          subnetSpec.properties.addressPrefix
+        );
+        services.index.allocator.reserve(
+          subnet.id,
+          ipConfig.id,
+          ipConfig.properties.privateIPAddress
+        );
       }
     }
   }

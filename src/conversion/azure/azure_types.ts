@@ -56,6 +56,7 @@ export enum AzureObjectType {
   SUBNET = 'microsoft.network/virtualnetworks/subnets',
   VIRTUAL_NETWORK = 'microsoft.network/virtualnetworks',
   VIRTUAL_MACHINE = 'microsoft.compute/virtualmachines',
+  VIRTUAL_MACHINE_SCALE_SET = 'microsoft.compute/virtualmachinescalesets',
 }
 
 // Type names used for Labyrinth node key generation. See NodeKeyGenerator.
@@ -285,6 +286,36 @@ export const AzureLoadBalancer = {
   type: AzureObjectType.LOAD_BALANCER,
 } as AzureLoadBalancer;
 
+export interface AzureVmssIpConfiguration {
+  name: string;
+  properties: {
+    subnet: AzureReference<AzureSubnet>;
+  };
+}
+
+export interface AzureVmssNetworkInterfaceConfig {
+  name: string;
+  properties: {
+    ipConfigurations: AzureVmssIpConfiguration[];
+    networkSecurityGroup: AzureReference<AzureNetworkSecurityGroup>;
+  };
+}
+
+export interface AzureVirtualMachineScaleSet extends AzureTypedObject {
+  type: AzureObjectType.VIRTUAL_MACHINE_SCALE_SET;
+  properties: {
+    virtualMachineProfile: {
+      networkProfile: {
+        networkInterfaceConfigurations: AzureVmssNetworkInterfaceConfig[];
+      };
+    };
+  };
+}
+
+export const AzureVirtualMachineScaleSet = {
+  type: AzureObjectType.VIRTUAL_MACHINE_SCALE_SET,
+} as AzureVirtualMachineScaleSet;
+
 export type AnyAzureObject =
   | AzureIPConfiguration
   | AzureLoadBalancer
@@ -298,6 +329,7 @@ export type AnyAzureObject =
   | AzureSecurityRule
   | AzureSubnet
   | AzureVirtualMachine
+  | AzureVirtualMachineScaleSet
   | AzureVirtualNetwork;
 
 export type AzureResourceGraph = AnyAzureObject[];

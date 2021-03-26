@@ -6,11 +6,13 @@ import {IConverters} from './converters';
 import {NodeServices} from './node_services';
 import {SymbolTable} from './symbol_table';
 import {AzureTypedObject} from './azure_types';
+import {AddressAllocator} from './address_allocator';
 
 export interface GraphServicesOptions {
   converters?: IConverters;
   nodes?: NodeServices;
   symbols?: SymbolTable;
+  allocator?: AddressAllocator;
 }
 
 export class GraphServices {
@@ -24,6 +26,8 @@ export class GraphServices {
     this.convert = options.converters ?? defaultConverters();
     this.nodes = options.nodes ?? new NodeServices();
     this.symbols = options.symbols ?? new SymbolTable([]);
+
+
   }
 
   getLabyrinthGraphSpec(): GraphSpec {
