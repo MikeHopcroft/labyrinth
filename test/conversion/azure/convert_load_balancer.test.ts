@@ -2,18 +2,12 @@ import {assert} from 'chai';
 import 'mocha';
 
 import {NodeSpec, RoutingRuleSpec} from '../../../src';
-import {convertInternalLoadBalancer} from '../../../src/conversion/azure/convert_load_balancer';
+import {convertLoadBalancer} from '../../../src/conversion/azure/convert_load_balancer';
 
 import {
   backendPool1,
-  backendPool1SourceIp,
   createGraphServicesMock,
-  frontEndIpWithNatRule,
-  frontEndIpWithNatRuleKey,
-  frontEndIpWithPoolRule,
-  frontEndIpWithPoolRuleKey,
   loadBalancer1,
-  loadBalancer1Key,
   loadBalancerNoRules,
   loadBalancerWithNatRule,
   loadBalancerWithNatRuleKey,
@@ -34,8 +28,7 @@ export default function test() {
       const {services} = createGraphServicesMock();
 
       assert.throws(
-        () =>
-          convertInternalLoadBalancer(services, loadBalancerNoRules, 'unused'),
+        () => convertLoadBalancer(services, loadBalancerNoRules, 'unused'),
         'Unable to process load balancer'
       );
     });
@@ -49,7 +42,7 @@ export default function test() {
       services.index.add(poolRule1);
 
       const subnetKey = 'test-subnet';
-      const route = convertInternalLoadBalancer(
+      const route = convertLoadBalancer(
         services,
         loadBalancerWithNatRule,
         subnetKey
@@ -99,11 +92,7 @@ export default function test() {
       services.index.add(privateIp2);
 
       const subnetKey = 'test-subnet';
-      const route = convertInternalLoadBalancer(
-        services,
-        loadBalancer1,
-        subnetKey
-      );
+      const route = convertLoadBalancer(services, loadBalancer1, subnetKey);
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify return value

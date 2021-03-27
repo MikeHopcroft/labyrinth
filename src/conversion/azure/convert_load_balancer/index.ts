@@ -1,1 +1,1 @@
-export * from './internal_load_balancer';
+export * from './load_balancer';

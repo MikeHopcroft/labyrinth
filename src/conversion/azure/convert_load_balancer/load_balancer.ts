@@ -12,7 +12,7 @@ import {
 } from '../azure_types';
 import {GraphServices} from '../graph_services';
 
-export function convertInternalLoadBalancer(
+export function convertLoadBalancer(
   services: GraphServices,
   spec: AzureLoadBalancer,
   vnetNodeKey: string

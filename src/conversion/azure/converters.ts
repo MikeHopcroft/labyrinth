@@ -23,7 +23,7 @@ export interface NSGRuleSpecs {
 // converters with resorting to monkey patching.
 //
 export interface IConverters {
-  internalLoadBalancer(
+  loadBalancer(
     services: GraphServices,
     spec: AzureLoadBalancer,
     vnetKey: string
