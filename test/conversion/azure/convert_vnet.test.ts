@@ -7,6 +7,7 @@ import {
   AzureSubnet,
   convertVNet,
   GraphServices,
+  VNetResult,
 } from '../../../src/conversion/azure';
 
 // DESIGN NOTE: considered namespacing these items, but their usage became
@@ -25,6 +26,8 @@ import {
   vnet1Symbol,
   vnet1SourceIps,
   vnet1KeyInbound,
+  publicIp1,
+  privateIp1SourceIp,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -63,7 +66,7 @@ export default function test() {
       // DESIGN NOTE: cannot call services.convert.vnet()  because our intent
       // is to test the real convertVNet(), instead of its mock.
       const parentKey = 'parent';
-      const result = convertVNet(services, vnet1, parentKey);
+      const result = convertVNet(services, vnet1, parentKey, parentKey).route;
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
@@ -129,5 +132,56 @@ export default function test() {
 
       assert.deepEqual(observedNodes, expectedNodes);
     });
+  });
+
+  it('Verify VNET Public IP Route', () => {
+    const {services, mocks} = createGraphServicesMock();
+
+    mocks.publicIp.action(() => {
+      return {
+        inbound: [
+          {
+            destination: 'public-inbound',
+          },
+        ],
+        outbound: [
+          {
+            destination: 'public-outbound',
+          },
+        ],
+      };
+    });
+
+    mocks.subnet.action(() => {
+      return {
+        destination: 'subnet-route',
+        constraints: {
+          destinationIp: privateIp1SourceIp,
+        },
+      };
+    });
+
+    services.index.addReference(publicIp1, vnet1);
+
+    const parentKey = 'parent';
+    convertVNet(services, vnet1, parentKey, parentKey);
+    const vnetNode = services.nodes.get(vnet1Key);
+
+    const expectedRoutes = [
+      {
+        destination: 'public-outbound',
+      },
+      {
+        constraints: {
+          destinationIp: `except ${vnet1SourceIps}`,
+        },
+        destination: parentKey,
+      },
+      {
+        destination: vnet1KeyInbound,
+      },
+    ];
+
+    assert.deepEqual(vnetNode?.routes, expectedRoutes);
   });
 }

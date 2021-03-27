@@ -23,6 +23,10 @@ export function convertPublicIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(publicIpSpec);
 
+  const outboundInternetKey = whenPublicIpPrefersInternet(publicIpSpec)
+    ? internetKey
+    : backboneKey;
+
   if (publicIpSpec.properties.ipConfiguration) {
     const ipconfig = services.index.dereference(
       publicIpSpec.properties.ipConfiguration
@@ -36,8 +40,7 @@ export function convertPublicIp(
         services,
         publicIpSpec,
         ipconfig,
-        backboneKey,
-        internetKey
+        outboundInternetKey
       );
     } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
       return loadBalancedPublicIp(services, publicIpSpec, ipconfig);
@@ -57,8 +60,7 @@ function publicIpWithPrivateIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
   privateIpSpec: AzurePrivateIP,
-  backboneKey: string,
-  internetKey: string
+  outboundInternetKey: string
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(privateIpSpec);
 
@@ -70,12 +72,17 @@ function publicIpWithPrivateIp(
     throw new TypeError('Invalid Public IP Configuration');
   }
 
+  const vnetId = services.index.getParentId(privateIpSpec.properties.subnet);
+  const vnetSpec = services.index.dereference(vnetId);
+  const vnetKey = services.nodes.createKey(vnetSpec);
+  const vnetRouterKey = services.nodes.createKeyVariant(vnetKey, 'router');
+
   // Create inbound node
   services.nodes.add({
     key: inboundKey,
     routes: [
       {
-        destination: backboneKey,
+        destination: vnetRouterKey,
         override: {
           destinationIp: privateIpSpec.properties.privateIPAddress,
         },
@@ -88,7 +95,7 @@ function publicIpWithPrivateIp(
     key: outboundKey,
     routes: [
       {
-        destination: internetKey,
+        destination: outboundInternetKey,
         override: {
           sourceIp: publicIpSpec.properties.ipAddress,
         },
@@ -96,6 +103,7 @@ function publicIpWithPrivateIp(
     ],
   });
 
+  // TODO: Public IPs should be bound as part of the virutal network process
   return {
     inbound: [
       {
@@ -185,4 +193,12 @@ function isolatedPublicIp(
     ],
     outbound: [],
   };
+}
+
+function whenPublicIpPrefersInternet(spec: AzurePublicIP): boolean {
+  const tag = spec.properties.ipTags?.find(
+    x => x.ipTagType === 'RoutingPreference'
+  );
+
+  return tag?.tag === 'Internet';
 }

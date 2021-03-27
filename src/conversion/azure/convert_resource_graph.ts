@@ -1,6 +1,6 @@
 import {RoutingRuleSpec} from '../../graph';
 
-import {AzurePublicIP, AzureVirtualNetwork} from './azure_types';
+import {AzureVirtualNetwork} from './azure_types';
 import {GraphServices} from './graph_services';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,18 +34,28 @@ export function convertResourceGraph(services: GraphServices) {
 
   const internetRoutes: RoutingRuleSpec[] = [];
   const backboneOutboundRoutes: RoutingRuleSpec[] = [];
-  for (const ipSpec of services.index.withType(AzurePublicIP)) {
-    const {inbound, outbound} = services.convert.publicIp(
+
+  // Materialize each virtual network, while saving its NodeKey for later use.
+  // Create routes from internet to each virtual network.
+  const vNetNodeKeys: string[] = [];
+  const backboneInboundRoutes: RoutingRuleSpec[] = [];
+  for (const vnet of services.index.withType(AzureVirtualNetwork)) {
+    const vnetResult = services.convert.vnet(
       services,
-      ipSpec,
-      backboneInboundKey,
+      vnet,
+      backboneOutboundKey,
       internetKey
     );
+    const route = vnetResult.route;
 
-    for (const route of inbound) {
+    if (route.constraints && route.constraints.destinationIp) {
+      vNetNodeKeys.push(route.constraints.destinationIp);
+    }
+
+    for (const route of vnetResult.publicRoutes.inbound) {
       internetRoutes.push(route);
     }
-    for (const route of outbound) {
+    for (const route of vnetResult.publicRoutes.outbound) {
       backboneOutboundRoutes.push(route);
     }
   }
@@ -71,22 +81,6 @@ export function convertResourceGraph(services: GraphServices) {
     key: backboneOutboundKey,
     routes: backboneOutboundRoutes,
   });
-
-  //
-  // Create inbound backbone node
-  //
-
-  // Materialize each virtual network, while saving its NodeKey for later use.
-  // Create routes from internet to each virtual network.
-  const vNetNodeKeys: string[] = [];
-  const backboneInboundRoutes: RoutingRuleSpec[] = [];
-  for (const vnet of services.index.withType(AzureVirtualNetwork)) {
-    const route = services.convert.vnet(services, vnet, backboneOutboundKey);
-
-    if (route.constraints && route.constraints.destinationIp) {
-      vNetNodeKeys.push(route.constraints.destinationIp);
-    }
-  }
 
   services.nodes.add({
     key: backboneInboundKey,

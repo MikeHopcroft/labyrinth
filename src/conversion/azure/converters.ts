@@ -19,6 +19,11 @@ export interface NSGRuleSpecs {
   readonly inboundRules: RuleSpec[];
 }
 
+export interface VNetResult {
+  route: SimpleRoutingRuleSpec;
+  publicRoutes: PublicIpRoutes;
+}
+
 // DESIGN NOTE: IConverters exists to allow mocking of individual
 // converters with resorting to monkey patching.
 //
@@ -65,6 +70,7 @@ export interface IConverters {
   vnet(
     services: GraphServices,
     spec: AzureVirtualNetwork,
-    parent: string
-  ): SimpleRoutingRuleSpec;
+    backboneOutboundKey: string,
+    internetKey: string
+  ): VNetResult;
 }

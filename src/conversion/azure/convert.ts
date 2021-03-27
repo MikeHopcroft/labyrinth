@@ -2,10 +2,13 @@ import {GraphSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
 import {
+  AnyIpConfiguration,
   AzureLoadBalancer,
   AzureLoadBalancerBackendPool,
   AzureNetworkInterface,
+  AzureObjectType,
   AzurePrivateIP,
+  AzurePublicIP,
   AzureResourceGraph,
   AzureSubnet,
 } from './azure_types';
@@ -82,6 +85,22 @@ export function convert(
     }
   }
 
+  // Setup references between public ips and their vnets
+  for (const publicIp of services.index.withType(AzurePublicIP)) {
+    if (publicIp.properties.ipConfiguration) {
+      const ipConfig = services.index.dereference<AnyIpConfiguration>(
+        publicIp.properties.ipConfiguration
+      );
+
+      if (ipConfig.type !== AzureObjectType.PUBLIC_IP) {
+        if (ipConfig.properties.subnet) {
+          const vnet = services.index.getParentId(ipConfig.properties.subnet);
+          services.index.addReference(publicIp, vnet);
+        }
+      }
+    }
+  }
+
   // Setup references between Load Balancers and their Subnet
   for (const lbSpec of index.withType(AzureLoadBalancer)) {
     const poolRef = lbSpec.properties?.backendAddressPools[0];
@@ -93,7 +112,22 @@ export function convert(
       if (ipRef) {
         const ipConfig = index.dereference<AzurePrivateIP>(ipRef);
         const vnetId = index.getParentId(ipConfig.properties.subnet);
+
         services.index.addReference(lbSpec, vnetId);
+
+        // There can be a case where load balancer has multiple IPs, but not
+        // all are actively bound. In this case the graph ends up with what
+        // appears to be broken routes. This walk will ensure that public ips
+        // associated with a load balancer all route correctly. It's also like
+        // that an ip in this state will result in 1 or more unbound rules
+        for (const ip of lbSpec.properties.frontendIPConfigurations.map(
+          x => x.properties.publicIPAddress
+        )) {
+          if (ip) {
+            const publicIp = index.dereference<AzurePublicIP>(ip);
+            services.index.addReference(publicIp, vnetId);
+          }
+        }
       }
     }
   }
