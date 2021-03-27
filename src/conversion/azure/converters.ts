@@ -27,7 +27,7 @@ export interface IConverters {
     services: GraphServices,
     spec: AzureLoadBalancer,
     vnetKey: string
-  ): SimpleRoutingRuleSpec;
+  ): SimpleRoutingRuleSpec | undefined;
   nic(
     services: GraphServices,
     spec: AzureNetworkInterface,

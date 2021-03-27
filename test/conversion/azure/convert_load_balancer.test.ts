@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NodeSpec, RoutingRuleSpec} from '../../../src';
+import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../../src';
 import {convertLoadBalancer} from '../../../src/conversion/azure/convert_load_balancer';
 
 import {
@@ -24,13 +24,15 @@ import {
 
 export default function test() {
   describe('convertLoadBalancer()', () => {
-    it('Unconfigured throws', () => {
+    it('Unconfigured return undefined', () => {
       const {services} = createGraphServicesMock();
 
-      assert.throws(
-        () => convertLoadBalancer(services, loadBalancerNoRules, 'unused'),
-        'Unable to process load balancer'
+      const route = convertLoadBalancer(
+        services,
+        loadBalancerNoRules,
+        'unused'
       );
+      assert.equal(undefined, route);
     });
 
     it('load balancer nat rule', () => {
@@ -50,7 +52,7 @@ export default function test() {
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify return value
-      const expectedRoute: RoutingRuleSpec = {
+      const expectedRoute: SimpleRoutingRuleSpec = {
         destination: loadBalancerWithNatRuleKey,
         constraints: {
           destinationIp: publicIp1SourceIp,
@@ -96,7 +98,7 @@ export default function test() {
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify return value
-      const expectedRoute: RoutingRuleSpec = {
+      const expectedRoute: SimpleRoutingRuleSpec = {
         destination: loadBalancerWithNatRuleKey,
         constraints: {
           destinationIp: privateIpToLoadBalancer,

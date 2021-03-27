@@ -16,9 +16,9 @@ export function convertLoadBalancer(
   services: GraphServices,
   spec: AzureLoadBalancer,
   vnetNodeKey: string
-): SimpleRoutingRuleSpec {
+): SimpleRoutingRuleSpec | undefined {
   if (!spec.properties.frontendIPConfigurations[0]) {
-    throw new TypeError('Unable to process load balancer');
+    return undefined;
   }
 
   const loadBalancerKey = services.nodes.createKey(spec);

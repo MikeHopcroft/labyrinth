@@ -46,13 +46,13 @@ export function convertVNet(
 
   // Materialize Internal Load Balancers and add Routes
   for (const lbSpec of services.index.for(spec).withType(AzureLoadBalancer)) {
-    if (isInternalLoadBalancer(lbSpec)) {
-      const route = services.convert.loadBalancer(
-        services,
-        lbSpec,
-        vNetInboundKey
-      );
+    const route = services.convert.loadBalancer(
+      services,
+      lbSpec,
+      vNetInboundKey
+    );
 
+    if (route) {
       routerRoutes.push(route);
     }
   }
