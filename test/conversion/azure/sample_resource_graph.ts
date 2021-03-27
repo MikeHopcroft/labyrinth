@@ -37,7 +37,6 @@ export function createGraphServicesMock() {
 
   const mocks = {
     internalLoadBalancer: createMock(fake.internalLoadBalancer),
-    loadBalancerFrontend: createMock(fake.loadBalancerFrontend),
     nic: createMock(fake.nic),
     nsg: createMock(fake.nsg),
     privateIp: createMock(fake.privateIp),
@@ -549,6 +548,37 @@ export const loadBalancer1: AzureLoadBalancer = {
 };
 export const loadBalancer1Key = nodeServices.createKey(loadBalancer1);
 
+export const loadBalancerWithNatRule: AzureLoadBalancer = {
+  type: AzureObjectType.LOAD_BALANCER,
+  id: loadBalancer1Id,
+  name: loadBalancer1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [],
+    backendAddressPools: [],
+    frontendIPConfigurations: [frontEndIpWithNatRule],
+  },
+};
+export const loadBalancerWithNatRuleKey = nodeServices.createKey(loadBalancer1);
+
+export const loadBalancerNoRules: AzureLoadBalancer = {
+  type: AzureObjectType.LOAD_BALANCER,
+  id: loadBalancer1Id,
+  name: loadBalancer1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [],
+    backendAddressPools: [],
+    frontendIPConfigurations: [],
+  },
+};
+export const loadBalancerNoRuleKey = nodeServices.createKey(
+  loadBalancerNoRules
+);
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Convenience functions

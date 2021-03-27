@@ -1,6 +1,7 @@
 import {RoutingRuleSpec} from '../../graph';
 
 import {
+  AzureLoadBalancer,
   AzureLoadBalancerFrontEndIp,
   AzureObjectType,
   AzurePrivateIP,
@@ -39,12 +40,7 @@ export function convertPublicIp(
         internetKey
       );
     } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
-      return loadBalancerFrontEndIp(
-        services,
-        publicIpSpec,
-        ipconfig,
-        backboneKey
-      );
+      return loadBalancedPublicIp(services, publicIpSpec, ipconfig);
     } else {
       services.trackUnsupportedSpec('convertPublicIp', ipconfig);
     }
@@ -120,11 +116,10 @@ function publicIpWithPrivateIp(
   };
 }
 
-function loadBalancerFrontEndIp(
+function loadBalancedPublicIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
-  lbIpSpec: AzureLoadBalancerFrontEndIp,
-  backboneKey: string
+  lbIpSpec: AzureLoadBalancerFrontEndIp
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(lbIpSpec);
 
@@ -135,16 +130,18 @@ function loadBalancerFrontEndIp(
     throw new TypeError('Invalid Public IP Configuration');
   }
 
-  const route = services.convert.loadBalancerFrontend(
-    services,
-    lbIpSpec,
-    backboneKey
-  );
+  const lbRef = services.index.getParentId(lbIpSpec);
+  const lbSpec = services.index.dereference<AzureLoadBalancer>(lbRef);
+  const lbKey = services.nodes.createKey(lbSpec);
 
   // Create inbound node
   services.nodes.add({
     key: inboundKey,
-    routes: [route],
+    routes: [
+      {
+        destination: lbKey,
+      },
+    ],
   });
 
   return {

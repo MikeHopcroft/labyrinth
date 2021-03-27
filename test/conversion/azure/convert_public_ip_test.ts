@@ -23,6 +23,8 @@ import {
   publicIpToFrontEndLoadBalancerInboundKey,
   publicIpWithoutIp,
   publicWithPrivateMissingAddress,
+  loadBalancer1,
+  loadBalancer1Key,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -176,20 +178,11 @@ export default function test() {
       assert.deepEqual(nodes, expectedNodes);
     });
 
-    it('front end load balancer - pool', () => {
-      const {services, mocks} = createGraphServicesMock();
-      // TODO: REVIEW: do we need to add this specific rule?
-      // Or just any rule that can be dereferenced?
-      // services.index.add(frontEndIpWithNatRule);
+    it('load balanced public ip', () => {
+      const {services} = createGraphServicesMock();
+
+      services.index.add(loadBalancer1);
       services.index.add(frontEndIpWithPoolRule);
-
-      const route: RoutingRuleSpec = {
-        destination: 'abc',
-      };
-
-      mocks.loadBalancerFrontend.action(() => {
-        return route;
-      });
 
       const backboneKey = 'backbone';
       const internetKey = 'internet';
@@ -221,18 +214,15 @@ export default function test() {
       };
       assert.deepEqual(result, expectedResult);
 
-      // Verify that loadBalancerFrontend() was invoked correctly.
-      const log = mocks.loadBalancerFrontend.log();
-      assert.equal(log.length, 1);
-      // assert.equal(log[0].params[1], frontEndIpWithNatRule);
-      assert.equal(log[0].params[1], frontEndIpWithPoolRule);
-      assert.equal(log[0].params[2], backboneKey);
-
       // Verify graph
       const expectedNodes: NodeSpec[] = [
         {
           key: publicIpToFrontEndLoadBalancerInboundKey,
-          routes: [route],
+          routes: [
+            {
+              destination: loadBalancer1Key,
+            },
+          ],
         },
       ];
       assert.deepEqual(nodes, expectedNodes);
