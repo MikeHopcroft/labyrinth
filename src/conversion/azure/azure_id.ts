@@ -203,7 +203,9 @@ function getLevel(parts: string[]): ResourceLevels {
     case ResourceLevels.SubResource3:
       return ResourceLevels.SubResource3;
     default:
-      throw new TypeError(`Unsupported resource level '${parts.length}'`);
+      throw new TypeError(
+        `Unsupported resource level '${parts.length}' '${parts.join('/')}'`
+      );
   }
 }
 

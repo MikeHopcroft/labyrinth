@@ -648,10 +648,7 @@ function subnetId(vnet: string, subnet: string) {
 }
 
 function nsgId(name: string) {
-  return (
-    resourceGroupId() +
-    `/providers/microsoft.network/networksecuritygroups/${name}`
-  );
+  return `${resourceGroupId()}${networkProvider()}/networkSecurityGroups/${name}`;
 }
 
 function nicId(name: string) {
