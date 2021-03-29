@@ -2,6 +2,7 @@ import {
   AzureObjectBase,
   AzureReference,
   AzureVirtualMachineScaleSet,
+  AzureVmssIpConfiguration,
 } from './azure_types';
 
 export interface AzureVMSSIpResult {
@@ -81,6 +82,16 @@ export function asNicConfigSpecId(input: AzureVMSSIpResult) {
   ]
     .join('/')
     .toLowerCase();
+}
+
+export function asIpConfigSpecId(
+  ref: AzureObjectBase,
+  ipConfig: AzureVmssIpConfiguration
+): AzureObjectBase {
+  return {
+    id: `${ref.id}/${ResourceTypes.IpConfigurations}/${ipConfig.name}`.toLowerCase(),
+    resourceGroup: ref.resourceGroup,
+  };
 }
 
 export function parseAsVMSSIpConfiguration(

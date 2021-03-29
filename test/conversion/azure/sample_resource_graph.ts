@@ -21,6 +21,9 @@ import {
   AzureLoadBalancerBackendPool,
   ruleProtocol,
   AzureLoadBalancer,
+  AzureVirtualMachineScaleSet,
+  AzureVmssNetworkInterfaceConfig,
+  AzureVmssIpConfiguration,
 } from '../../../src/conversion/azure';
 
 import {createMock} from './mocks';
@@ -64,7 +67,7 @@ export function createGraphServicesMock() {
 // Names and ids
 //
 ///////////////////////////////////////////////////////////////////////////////
-export const resourceGroup = 'anyResourceGroup';
+export const resourceGroup = 'anyresourcegroup';
 export const subscription = '00000000-0000-0000-0000-000000000000';
 
 export const vnet1Name = 'vnet1';
@@ -85,60 +88,66 @@ export const subnet2SourceIps = '10.0.1.0/8';
 export const nic1Name = 'nic1';
 export const nic1Id = nicId(nic1Name);
 
-export const privateIp1Name = 'privateIp1';
+export const privateIp1Name = 'privateip1';
 export const privateIp1Id = ipId(nic1Name, privateIp1Name);
 export const privateIp1SourceIp = '10.0.0.1';
 export const privateIp1SubnetName = subnet1Name;
 
-export const privateIp2Name = 'privateIp2';
+export const privateIp2Name = 'privateip2';
 export const privateIp2Id = ipId(nic1Name, privateIp2Name);
 export const privateIp2SourceIp = '10.0.0.2';
 export const privateIp2SubnetName = subnet1Name;
 
-export const publicIp1Name = 'publicIp1';
+export const publicIp1Name = 'publicip1';
 export const publicIp1Id = ipId(nic1Name, publicIp1Name);
 export const publicIp1SourceIp = '203.0.113.1';
 export const publicIp1SubnetName = subnet1Name;
 
-export const publicIpWithPrivateName = 'publicIpWithPrivateIp1';
+export const publicIpWithPrivateName = 'publicipwithprivateip1';
 export const publicIpWithPrivateId = publicIpId(publicIpWithPrivateName);
 export const publicIpWithPrivateSourceIp = '203.0.113.2';
 
-export const isolatedPublicIpName = 'isolatedPublicIp';
+export const isolatedPublicIpName = 'isolatedpublicip';
 export const isolatedPublicIpId = publicIpId(isolatedPublicIpName);
 export const isolatedPublicIpSourceIp = '203.0.113.3';
 
 export const publicIpToFrontEndLoadBalancerName =
-  'publicIpToFrontEndLoadBalancer';
+  'publicoptofrontendloadbalancer';
 export const publicIpToFrontEndLoadBalancerId = publicIpId(
   publicIpToFrontEndLoadBalancerName
 );
 export const publicIpToFrontEndLoadBalancerIp = '203.0.113.4';
 export const privateIpToLoadBalancer = '10.0.0.3';
 
-export const privateIpWithPublicName = 'privateIpWithPublic1';
+export const privateIpWithPublicName = 'privateipwithpublic1';
 export const privateIpWithPublicId = ipId(nic1Name, privateIpWithPublicName);
 
 export const vm1Name = 'vm1';
 export const vm1Id = vmId(vm1Name);
 
-export const loadBalancer1Name = 'loadBalancer1';
+export const loadBalancer1Name = 'loadbalancer1';
 export const loadBalancer1Id = loadBalancerId(loadBalancer1Name);
 
-export const natRule1Name = 'natRule1';
+export const natRule1Name = 'natrule1';
 export const natRule1Id = natRuleId(loadBalancer1Name, natRule1Name);
 
-export const poolRule1Name = 'poolRule1';
+export const poolRule1Name = 'poolrule1';
 export const poolRule1Id = poolRuleId(loadBalancer1Name, poolRule1Name);
 
-export const backendPool1Name = 'backendPool';
+export const backendPool1Name = 'backendpool';
 export const backendPool1Id = backendPoolId(
   loadBalancer1Name,
   backendPool1Name
 );
 
-export const frontEndIp1Name = 'frontEndIp';
+export const frontEndIp1Name = 'frontendip';
 export const frontEndIp1Id = frontEndIpId(loadBalancer1Name, frontEndIp1Name);
+
+export const vmss1Name = 'vmss';
+export const vmssId1 = vmssId(vmss1Name);
+export const vmssNicName = 'vmss-default-NetworkInterfacce';
+export const vmssIpConfigName = 'vmss-default-IpConfiguration';
+export const vmssVm0NicId = vmssNicId(vmssId1, 0, vmssNicName);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -579,6 +588,42 @@ export const loadBalancerNoRules: AzureLoadBalancer = {
 export const loadBalancerNoRuleKey = nodeServices.createKey(
   loadBalancerNoRules
 );
+
+///subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/vnet-test-01/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/x-test-vpn-vnet-nic01
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Virtual Machine Scale Sets
+//
+///////////////////////////////////////////////////////////////////////////////
+export const vmssIpConfig: AzureVmssIpConfiguration = {
+  name: vmssIpConfigName,
+  properties: {
+    subnet: subnet1,
+  },
+};
+
+export const vmssNetworkConfig: AzureVmssNetworkInterfaceConfig = {
+  name: vmssNicName,
+  properties: {
+    ipConfigurations: [vmssIpConfig],
+  },
+};
+
+export const vmss1: AzureVirtualMachineScaleSet = {
+  type: AzureObjectType.VIRTUAL_MACHINE_SCALE_SET,
+  id: vmssId1,
+  name: vmss1Name,
+  resourceGroup,
+  properties: {
+    virtualMachineProfile: {
+      networkProfile: {
+        networkInterfaceConfigurations: [vmssNetworkConfig],
+      },
+    },
+  },
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Convenience functions
@@ -587,15 +632,15 @@ export const loadBalancerNoRuleKey = nodeServices.createKey(
 
 // DESIGN NOTE: for now there is only one subscription and one resource group.
 function resourceGroupId() {
-  return `/subscriptions/${subscription}/resourceGroups/${resourceGroup}/providers`;
+  return `/subscriptions/${subscription}/resourcegroups/${resourceGroup}/providers`;
 }
 
 function networkProvider() {
-  return '/Microsoft.Network';
+  return '/microsoft.network';
 }
 
 function vnetId(vnet: string) {
-  return `${resourceGroupId()}${networkProvider()}/virtualNetworks/${vnet}`;
+  return `${resourceGroupId()}${networkProvider()}/virtualnetworks/${vnet}`;
 }
 
 function subnetId(vnet: string, subnet: string) {
@@ -605,44 +650,52 @@ function subnetId(vnet: string, subnet: string) {
 function nsgId(name: string) {
   return (
     resourceGroupId() +
-    `/providers/Microsoft.Network/networkSecurityGroups/${name}`
+    `/providers/microsoft.network/networksecuritygroups/${name}`
   );
 }
 
 function nicId(name: string) {
-  return `${resourceGroupId()}${networkProvider()}/virtualInterfaces/${name}`;
+  return `${resourceGroupId()}${networkProvider()}/virtualinterfaces/${name}`;
 }
 
 function publicIpId(name: string) {
-  return `${resourceGroupId()}${networkProvider()}/publicIpAddresses/${name}`;
+  return `${resourceGroupId()}${networkProvider()}/publicipaddresses/${name}`;
 }
 
 function loadBalancerId(name: string) {
-  return `${resourceGroupId()}${networkProvider()}/loadBalancers/${name}`;
+  return `${resourceGroupId()}${networkProvider()}/loadbalancers/${name}`;
 }
 
 function frontEndIpId(lbName: string, name: string) {
-  return `${loadBalancerId(lbName)}/frontendIPConfigurations/${name}`;
+  return `${loadBalancerId(lbName)}/frontendipconfigurations/${name}`;
 }
 
 function natRuleId(lbName: string, name: string) {
-  return `${loadBalancerId(lbName)}/inboundNatRules/${name}`;
+  return `${loadBalancerId(lbName)}/inboundnatrules/${name}`;
 }
 
 function poolRuleId(lbName: string, name: string) {
-  return `${loadBalancerId(lbName)}/loadBalancingRules/${name}`;
+  return `${loadBalancerId(lbName)}/loadbalancingrules/${name}`;
 }
 
 function backendPoolId(lbName: string, name: string) {
-  return `${loadBalancerId(lbName)}/backendAddressPools/${name}`;
+  return `${loadBalancerId(lbName)}/backendaddresspools/${name}`;
 }
 
 function ipId(nic: string, ip: string) {
-  return `${nicId(nic)}/ipConfigurations/${ip}`;
+  return `${nicId(nic)}/ipconfigurations/${ip}`;
 }
 
 function vmId(name: string) {
-  return `${resourceGroupId()}Microsoft.Compute/virtualMachines/${name}`;
+  return `${resourceGroupId()}/microsoft.compute/virtualmachines/${name}`;
+}
+
+function vmssId(name: string) {
+  return `${resourceGroupId()}/microsoft.compute/virtualmachinescalesets/${name}`;
+}
+
+function vmssNicId(vmssId: string, vmIndex: number, nicName: string) {
+  return `${vmssId}/virtualmachines/${vmIndex}/networkinterfaces/${nicName}`;
 }
 
 function reference(item: AnyAzureObject | string): AzureObjectBase {

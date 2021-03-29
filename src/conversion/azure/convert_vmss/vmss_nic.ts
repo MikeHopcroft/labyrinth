@@ -1,4 +1,5 @@
 import {
+  asIpConfigSpecId,
   AzureVMSSIpResult,
   getIpConfigWithNic,
   parseAsVMSSNicConfiguration,
@@ -18,7 +19,7 @@ export function createVmssNetworkIntefaceSpec(
   ref: AzureObjectBase,
   index: AzureObjectIndex
 ): AzureNetworkInterface {
-  const id = ref.id;
+  const id = ref.id.toLowerCase();
   const vmssId = parseAsVMSSNicConfiguration(ref);
   const vmssSpec = index.dereference<AzureVirtualMachineScaleSet>(
     vmssId.vmssId
@@ -26,13 +27,7 @@ export function createVmssNetworkIntefaceSpec(
   const vmssNicSpec = getIpConfigWithNic(vmssId, vmssSpec, true).nicSpec;
   const ipConfigurations = [
     ...vmssNicSpec.properties.ipConfigurations.map(x =>
-      createVmssIpSpec(
-        {
-          id: `${id}/ipConfigurations/${x.name}`,
-          resourceGroup: ref.resourceGroup,
-        },
-        index
-      )
+      createVmssIpSpec(asIpConfigSpecId(ref, x), index)
     ),
   ];
 

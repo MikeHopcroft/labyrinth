@@ -297,7 +297,7 @@ export interface AzureVmssNetworkInterfaceConfig {
   name: string;
   properties: {
     ipConfigurations: AzureVmssIpConfiguration[];
-    networkSecurityGroup: AzureReference<AzureNetworkSecurityGroup>;
+    networkSecurityGroup?: AzureReference<AzureNetworkSecurityGroup>;
   };
 }
 
