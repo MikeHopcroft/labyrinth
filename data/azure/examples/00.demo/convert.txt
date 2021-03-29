@@ -1,0 +1,4 @@
+Azure resource graph input file: D:\src\Hopcroft\labyrinth\data\azure\examples\00.demo\resource-graph.json
+Labyrinth graph output file: D:\src\Hopcroft\labyrinth\data\azure\examples\00.demo\convert.yaml
+Conversion complete.
+All Azure resource graph types understood.

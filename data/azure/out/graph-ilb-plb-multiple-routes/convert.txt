@@ -1,4 +1,0 @@
-Azure resource graph input file: graph-ilb-plb-multiple-routes.json
-Labyrinth graph output file: out\graph-ilb-plb-multiple-routes\convert.yaml
-Conversion complete.
-All Azure resource graph types understood.

@@ -1,0 +1,4 @@
+Azure resource graph input file: D:\src\Hopcroft\labyrinth\data\azure\examples\04.graph-load-balancers\resource-graph.json
+Labyrinth graph output file: D:\src\Hopcroft\labyrinth\data\azure\examples\04.graph-load-balancers\convert.yaml
+Conversion complete.
+All Azure resource graph types understood.

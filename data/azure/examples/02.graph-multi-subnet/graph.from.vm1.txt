@@ -1,0 +1,233 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+  Backprojecting paths past NAT rewrites. (-b)
+  Paths are not expanded (use -e flag to enable path expansion).
+
+Nodes:
+  AzureBackbone
+  Internet
+  another
+  default
+  vm-001
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm-001-ip
+  vm-001505
+  vm-002
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm-002-ip
+  vm-002237
+  x-example-vnet
+
+Nodes reachable from vm-001 (vm1/outbound):
+
+AzureBackbone (AzureBackbone/outbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+Internet:
+  flow:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+vm-001505 (nic1/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117, 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default => vm-001505
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.4
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet => default => vm-001505
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+
+vm-001505 (nic1/outbound):
+  flow:
+    source ip: 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505
+      source ip: 172.16.0.4
+
+vm-002237 (nic2/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15, 172.16.0.20
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => another => vm-002237
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.20
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+
+vm-001-ip (publicIp1/endpoint):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+
+vm-001-ip (publicIp1/outbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+vm-002-ip (publicIp2/endpoint):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+
+default (subnet1/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117, 172.16.0.0/28
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.0/28
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet => default
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+
+another (subnet2/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15, 172.16.0.16/28
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => another
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.16/28
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+
+vm-001 (vm1/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117, 172.16.0.4
+    destination port: https
+    protocol: TCP
+
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117, 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default => vm-001505 => vm-001
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.4
+      destination port: https
+      protocol: TCP
+
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.4
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+      destination port: https
+      protocol: TCP
+
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+
+vm-002 (vm2/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15, 172.16.0.20
+    destination port: http, 3389
+    protocol: TCP
+
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15, 172.16.0.20
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => another => vm-002237 => vm-002
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.20
+      destination port: http, 3389
+      protocol: TCP
+
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.20
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+      destination port: http, 3389
+      protocol: TCP
+
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+
+x-example-vnet (vnet1/inbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15, 52.250.65.117, vnet1
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: vnet1
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+
+x-example-vnet (vnet1/outbound):
+  flow:
+    source ip: 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet
+      source ip: 172.16.0.4
+
+x-example-vnet (vnet1/router):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: 51.141.166.15, 52.250.65.117, vnet1
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: vnet1
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+

@@ -1,0 +1,36 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints only (use -r flag to display routing nodes). 
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+  Backprojecting paths past NAT rewrites. (-b)
+  Paths are not expanded (use -e flag to enable path expansion).
+
+Endpoints
+  jump-box
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm0
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm1
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm2
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+
+Nodes that can reach vm1 (vm3/inbound):
+
+jump-box (vm1/outbound):
+  flow:
+    source ip: 10.0.88.4
+    destination ip: 10.0.100.5
+    destination port: ssh
+
+  paths:
+    jump-box => jump-box948 => jump-box-subnet => virtual-network => public-services-subnet => vm1318 => vm1
+      source ip: 10.0.88.4
+      destination ip: 10.0.100.5
+      destination port: ssh
+

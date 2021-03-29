@@ -1,0 +1,341 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+  Backprojecting paths past NAT rewrites. (-b)
+  Paths are not expanded (use -e flag to enable path expansion).
+
+Nodes:
+  AzureBackbone
+  Internet
+  UnboundRule
+  another
+  default
+  ilb
+  public-lb
+  public-lb-ip
+  vm-001
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm-001-internet
+  vm-001505
+  vm-002
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm-002237
+  vm-2-001
+    vm6/inbound:  (endpoint)
+    vm6/outbound:  (endpoint)
+  vm-2-001-ip
+  vm-2-001449
+  vm-lb-01
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm-lb-016
+  vmss
+  vmss-0
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+  vmss-4
+    vm5/inbound:  (endpoint)
+    vm5/outbound:  (endpoint)
+  x-example-vnet
+  x-example-vnet-2
+  x-example-vnet-nic01
+
+Nodes reachable from Internet:
+
+public-lb (loadBalancer1):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+
+  paths:
+    Internet => public-lb-ip => public-lb
+      source ip: Internet
+      destination ip: 52.247.250.222
+
+vm-001505 (nic1/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.40
+
+  paths:
+    Internet => vm-001-internet => x-example-vnet => default => vm-001505
+      source ip: Internet
+      destination ip: 20.47.120.40
+
+vm-lb-016 (nic2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 800
+      protocol: TCP
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3389
+      protocol: TCP
+
+x-example-vnet-nic01 (nic4/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 3242
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => vmss => x-example-vnet-nic01
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3242
+      protocol: TCP
+
+x-example-vnet-nic01 (nic5/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 3242
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => vmss => x-example-vnet-nic01
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3242
+      protocol: TCP
+
+vm-2-001449 (nic6/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.58
+
+  paths:
+    Internet => vm-2-001-ip => x-example-vnet-2 => default => vm-2-001449
+      source ip: Internet
+      destination ip: 20.47.120.58
+
+vm-001-internet (publicIp1/endpoint):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.40
+
+  paths:
+    Internet => vm-001-internet
+      source ip: Internet
+      destination ip: 20.47.120.40
+
+public-lb-ip (publicIp2/endpoint):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+
+  paths:
+    Internet => public-lb-ip
+      source ip: Internet
+      destination ip: 52.247.250.222
+
+vm-2-001-ip (publicIp3/endpoint):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.58
+
+  paths:
+    Internet => vm-2-001-ip
+      source ip: Internet
+      destination ip: 20.47.120.58
+
+default (subnet1/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.40
+
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    Internet => vm-001-internet => x-example-vnet => default
+      source ip: Internet
+      destination ip: 20.47.120.40
+    Internet => public-lb-ip => public-lb => x-example-vnet => default
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 800
+      protocol: TCP
+    Internet => public-lb-ip => public-lb => x-example-vnet => default
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3389
+      protocol: TCP
+
+vmss (subnet3/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 3242
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => vmss
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3242
+      protocol: TCP
+
+default (subnet4/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.58
+
+  paths:
+    Internet => vm-2-001-ip => x-example-vnet-2 => default
+      source ip: Internet
+      destination ip: 20.47.120.58
+
+vm-001 (vm1/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.40
+    destination port: https
+    protocol: TCP
+
+    source ip: AzureLoadBalancer
+    destination ip: 20.47.120.40
+
+  paths:
+    Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+      source ip: Internet
+      destination ip: 20.47.120.40
+      destination port: https
+      protocol: TCP
+
+      source ip: AzureLoadBalancer
+      destination ip: 20.47.120.40
+
+vm-lb-01 (vm2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 800
+      protocol: TCP
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3389
+      protocol: TCP
+
+vmss-0 (vm4/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 3242
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => vmss => x-example-vnet-nic01 => vmss-0
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3242
+      protocol: TCP
+
+vmss-4 (vm5/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 3242
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => vmss => x-example-vnet-nic01 => vmss-4
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3242
+      protocol: TCP
+
+vm-2-001 (vm6/inbound):
+  flow:
+    source ip: AzureLoadBalancer
+    destination ip: 20.47.120.58
+
+  paths:
+    Internet => vm-2-001-ip => x-example-vnet-2 => default => vm-2-001449 => vm-2-001
+      source ip: AzureLoadBalancer
+      destination ip: 20.47.120.58
+
+x-example-vnet (vnet1/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.40
+
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 800, 3242, 3389
+    protocol: TCP
+
+  paths:
+    Internet => vm-001-internet => x-example-vnet
+      source ip: Internet
+      destination ip: 20.47.120.40
+    Internet => public-lb-ip => public-lb => x-example-vnet
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 800
+      protocol: TCP
+    Internet => public-lb-ip => public-lb => x-example-vnet
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3242
+      protocol: TCP
+    Internet => public-lb-ip => public-lb => x-example-vnet
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3389
+      protocol: TCP
+
+x-example-vnet (vnet1/router):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.40
+
+  paths:
+    Internet => vm-001-internet => x-example-vnet
+      source ip: Internet
+      destination ip: 20.47.120.40
+
+x-example-vnet-2 (vnet2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.58
+
+  paths:
+    Internet => vm-2-001-ip => x-example-vnet-2
+      source ip: Internet
+      destination ip: 20.47.120.58
+
+x-example-vnet-2 (vnet2/router):
+  flow:
+    source ip: Internet
+    destination ip: 20.47.120.58
+
+  paths:
+    Internet => vm-2-001-ip => x-example-vnet-2
+      source ip: Internet
+      destination ip: 20.47.120.58
+
