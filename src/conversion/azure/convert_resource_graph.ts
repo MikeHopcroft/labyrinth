@@ -58,6 +58,13 @@ export function convertResourceGraph(services: GraphServices) {
   });
 
   //
+  // Add final default outbound route for the backbone to internet
+  //
+  backboneOutboundRoutes.push({
+    destination: internetKey,
+  });
+
+  //
   // Create outbound backbone node
   //
   services.nodes.add({
