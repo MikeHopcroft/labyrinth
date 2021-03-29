@@ -89,6 +89,24 @@ export default function test() {
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
+          key: vnet1KeyInbound,
+          name: vnet1.id,
+          routes: [
+            {
+              destination: subnet1InboundKey,
+              constraints: {
+                destinationIp: subnet1SourceIps,
+              },
+            },
+            {
+              destination: subnet2InboundKey,
+              constraints: {
+                destinationIp: subnet2SourceIps,
+              },
+            },
+          ],
+        },
+        {
           key: vnet1Key,
           name: vnet1.id,
           range: {
@@ -104,24 +122,6 @@ export default function test() {
             },
             {
               destination: vnet1KeyInbound,
-            },
-          ],
-        },
-        {
-          key: vnet1KeyInbound,
-          name: vnet1.id,
-          routes: [
-            {
-              destination: subnet1InboundKey,
-              constraints: {
-                destinationIp: subnet1SourceIps,
-              },
-            },
-            {
-              destination: subnet2InboundKey,
-              constraints: {
-                destinationIp: subnet2SourceIps,
-              },
             },
           ],
         },

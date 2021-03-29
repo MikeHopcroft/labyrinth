@@ -22,8 +22,7 @@ export default function test() {
     it('validate default creation of internet and backbone', () => {
       const expectedNodes = [
         {
-          endpoint: true,
-          key: 'Internet',
+          key: 'AzureBackbone/inbound',
           routes: [],
         },
         {
@@ -35,7 +34,8 @@ export default function test() {
           ],
         },
         {
-          key: 'AzureBackbone/inbound',
+          endpoint: true,
+          key: 'Internet',
           routes: [],
         },
       ];

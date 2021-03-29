@@ -1,4 +1,4 @@
-import {GraphSpec} from '../../graph';
+import {GraphSpec, NodeSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
 import {defaultConverters} from './default_converters';
@@ -26,13 +26,11 @@ export class GraphServices {
     this.convert = options.converters ?? defaultConverters();
     this.nodes = options.nodes ?? new NodeServices();
     this.symbols = options.symbols ?? new SymbolTable([]);
-
-
   }
 
   getLabyrinthGraphSpec(): GraphSpec {
     return {
-      nodes: [...this.nodes.nodes()],
+      nodes: [...this.nodes.nodes()].sort(this.sortByKey),
       symbols: this.symbols.getAllSymbolSpecs(),
     };
   }
@@ -46,5 +44,9 @@ export class GraphServices {
   // depending on VNet context.
   getInternetKey() {
     return 'Internet';
+  }
+
+  private sortByKey(a: NodeSpec, b: NodeSpec) {
+    return a.key.localeCompare(b.key);
   }
 }
