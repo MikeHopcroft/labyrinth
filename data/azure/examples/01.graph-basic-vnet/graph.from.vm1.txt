@@ -1,0 +1,140 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  nic1/inbound: 
+  nic1/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  subnet1/inbound: 
+  vm1/inbound:  (endpoint)
+  vm1/outbound:  (endpoint)
+  vnet1/inbound: 
+  vnet1/outbound: 
+  vnet1/router: vnet1
+
+Nodes reachable from vm1/outbound:
+
+AzureBackbone/outbound:
+  routes:
+    source ip: 52.250.65.117
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+Internet:
+  routes:
+    source ip: 52.250.65.117
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+nic1/inbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default => vm-001505
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.4
+
+nic1/outbound:
+  routes:
+    source ip: 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505
+      source ip: 172.16.0.4
+
+publicIp1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/outbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+subnet1/inbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: 172.16.0.0/28
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.0/28
+
+vm1/inbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: 172.16.0.4
+
+    source ip: 172.16.0.4
+    destination ip: 172.16.0.4
+    destination port: https
+    protocol: TCP
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default => vm-001505 => vm-001
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.4
+
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.4
+      destination port: https
+      protocol: TCP
+
+vnet1/inbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: vnet1
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: vnet1
+
+vnet1/outbound:
+  routes:
+    source ip: 172.16.0.4
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+      source ip: 172.16.0.4
+      destination ip: vnet1
+
+vnet1/router:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: vnet1
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet
+      source ip: 172.16.0.4
+      destination ip: vnet1
+

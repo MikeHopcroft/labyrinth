@@ -1,0 +1,841 @@
+[
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-VNET-EXAMPLES/providers/Microsoft.Compute/virtualMachines/VM-001",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "VM-001",
+    "plan": null,
+    "properties": {
+      "diagnosticsProfile": {
+        "bootDiagnostics": {
+          "enabled": true
+        }
+      },
+      "extended": {
+        "instanceView": {
+          "computerName": "VM-001",
+          "powerState": {
+            "code": "PowerState/running",
+            "displayStatus": "VM running",
+            "level": "Info"
+          }
+        }
+      },
+      "hardwareProfile": {
+        "vmSize": "Standard_B1s"
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-001505",
+            "resourceGroup": "x-vnet-examples"
+          }
+        ]
+      },
+      "osProfile": {
+        "adminUsername": "azureuser",
+        "allowExtensionOperations": true,
+        "computerName": "VM-001",
+        "linuxConfiguration": {
+          "disablePasswordAuthentication": true,
+          "patchSettings": {
+            "patchMode": "ImageDefault"
+          },
+          "provisionVMAgent": true,
+
+        },
+        "requireGuestProvisionSignal": true,
+        "secrets": []
+      },
+      "provisioningState": "Updating",
+      "storageProfile": {
+        "dataDisks": [],
+        "imageReference": {
+          "exactVersion": "18.04.202103250",
+          "offer": "UbuntuServer",
+          "publisher": "Canonical",
+          "sku": "18.04-LTS",
+          "version": "latest"
+        },
+        "osDisk": {
+          "caching": "ReadWrite",
+          "createOption": "FromImage",
+          "diskSizeGB": 30,
+          "managedDisk": {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Compute/disks/VM-001_disk1_f7fc687712f64e679ec1290d6722003e",
+            "resourceGroup": "x-vnet-examples",
+            "storageAccountType": "Premium_LRS"
+          },
+          "name": "VM-001_disk1_f7fc687712f64e679ec1290d6722003e",
+          "osType": "Linux"
+        }
+      },
+      "vmId": "d62a2f1b-a0bb-4c8a-8803-8fe2a5842ce7"
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.compute/virtualmachines",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Compute/virtualMachines/VM-002",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "VM-002",
+    "plan": null,
+    "properties": {
+      "diagnosticsProfile": {
+        "bootDiagnostics": {
+          "enabled": true
+        }
+      },
+      "extended": {
+        "instanceView": {
+          "computerName": "VM-002",
+          "powerState": {
+            "code": "PowerState/running",
+            "displayStatus": "VM running",
+            "level": "Info"
+          }
+        }
+      },
+      "hardwareProfile": {
+        "vmSize": "Standard_B1s"
+      },
+      "networkProfile": {
+        "networkInterfaces": [
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-002237",
+            "resourceGroup": "x-vnet-examples"
+          }
+        ]
+      },
+      "osProfile": {
+        "adminUsername": "azureuser",
+        "allowExtensionOperations": true,
+        "computerName": "VM-002",
+        "linuxConfiguration": {
+          "disablePasswordAuthentication": true,
+          "patchSettings": {
+            "patchMode": "ImageDefault"
+          },
+          "provisionVMAgent": true,
+        
+        },
+        "requireGuestProvisionSignal": true,
+        "secrets": []
+      },
+      "provisioningState": "Succeeded",
+      "storageProfile": {
+        "dataDisks": [],
+        "imageReference": {
+          "exactVersion": "18.04.202103250",
+          "offer": "UbuntuServer",
+          "publisher": "Canonical",
+          "sku": "18.04-LTS",
+          "version": "latest"
+        },
+        "osDisk": {
+          "caching": "ReadWrite",
+          "createOption": "FromImage",
+          "diskSizeGB": 30,
+          "managedDisk": {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Compute/disks/VM-002_disk1_34a49bc58ba74c3ab4132142727907a5",
+            "resourceGroup": "x-vnet-examples",
+            "storageAccountType": "Premium_LRS"
+          },
+          "name": "VM-002_disk1_34a49bc58ba74c3ab4132142727907a5",
+          "osType": "Linux"
+        }
+      },
+      "vmId": "8a813200-a914-4906-bb03-40fa0748eec5"
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.compute/virtualmachines",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-001505",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "vm-001505",
+    "plan": null,
+    "properties": {
+      "dnsSettings": {
+        "appliedDnsServers": [],
+        "dnsServers": [],
+        "internalDomainNameSuffix": "swdmyqrvugpedjyi1qxumbjyse.xx.internal.cloudapp.net"
+      },
+      "enableAcceleratedNetworking": false,
+      "enableIPForwarding": false,
+      "hostedWorkloads": [],
+      "ipConfigurations": [
+        {
+          "etag": "W/\"a2049356-a40b-4d41-ad96-1ddec7bcc4ba\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-001505/ipConfigurations/ipconfig1",
+          "name": "ipconfig1",
+          "properties": {
+            "primary": true,
+            "privateIPAddress": "172.16.0.4",
+            "privateIPAddressVersion": "IPv4",
+            "privateIPAllocationMethod": "Dynamic",
+            "provisioningState": "Succeeded",
+            "publicIPAddress": {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/publicIPAddresses/VM-001-ip",
+              "resourceGroup": "x-vnet-examples"
+            },
+            "subnet": {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/virtualNetworks/x-example-vnet/subnets/default",
+              "resourceGroup": "x-vnet-examples"
+            }
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+        }
+      ],
+      "macAddress": "00-0D-3A-6C-E4-73",
+      "networkSecurityGroup": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg",
+        "resourceGroup": "x-vnet-examples"
+      },
+      "nicType": "Standard",
+      "primary": true,
+      "provisioningState": "Succeeded",
+      "resourceGuid": "a55c3267-77b2-4ec6-8b8a-4313a11cf31b",
+      "tapConfigurations": [],
+      "virtualMachine": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Compute/virtualMachines/VM-001",
+        "resourceGroup": "x-vnet-examples"
+      }
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/networkinterfaces",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-002237",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "vm-002237",
+    "plan": null,
+    "properties": {
+      "dnsSettings": {
+        "appliedDnsServers": [],
+        "dnsServers": [],
+        "internalDomainNameSuffix": "swdmyqrvugpedjyi1qxumbjyse.xx.internal.cloudapp.net"
+      },
+      "enableAcceleratedNetworking": false,
+      "enableIPForwarding": false,
+      "hostedWorkloads": [],
+      "ipConfigurations": [
+        {
+          "etag": "W/\"4184fb85-9961-4bd4-811a-efac80ceff4d\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-002237/ipConfigurations/ipconfig1",
+          "name": "ipconfig1",
+          "properties": {
+            "primary": true,
+            "privateIPAddress": "172.16.0.20",
+            "privateIPAddressVersion": "IPv4",
+            "privateIPAllocationMethod": "Dynamic",
+            "provisioningState": "Succeeded",
+            "publicIPAddress": {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/publicIPAddresses/VM-002-ip",
+              "resourceGroup": "x-vnet-examples"
+            },
+            "subnet": {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/virtualNetworks/x-example-vnet/subnets/another",
+              "resourceGroup": "x-vnet-examples"
+            }
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkInterfaces/ipConfigurations"
+        }
+      ],
+      "macAddress": "00-0D-3A-FE-A6-79",
+      "networkSecurityGroup": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg",
+        "resourceGroup": "x-vnet-examples"
+      },
+      "nicType": "Standard",
+      "primary": true,
+      "provisioningState": "Succeeded",
+      "resourceGuid": "045acc16-9316-471c-9a54-7937b24d547e",
+      "tapConfigurations": [],
+      "virtualMachine": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Compute/virtualMachines/VM-002",
+        "resourceGroup": "x-vnet-examples"
+      }
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/networkinterfaces",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "VM-001-nsg",
+    "plan": null,
+    "properties": {
+      "defaultSecurityRules": [
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/defaultSecurityRules/AllowVnetInBound",
+          "name": "AllowVnetInBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow inbound traffic from all VMs in VNET",
+            "destinationAddressPrefix": "VirtualNetwork",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 65000,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "VirtualNetwork",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/defaultSecurityRules/AllowAzureLoadBalancerInBound",
+          "name": "AllowAzureLoadBalancerInBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow inbound traffic from azure load balancer",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 65001,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "AzureLoadBalancer",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/defaultSecurityRules/DenyAllInBound",
+          "name": "DenyAllInBound",
+          "properties": {
+            "access": "Deny",
+            "description": "Deny all inbound traffic",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 65500,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/defaultSecurityRules/AllowVnetOutBound",
+          "name": "AllowVnetOutBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+            "destinationAddressPrefix": "VirtualNetwork",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 65000,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "VirtualNetwork",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/defaultSecurityRules/AllowInternetOutBound",
+          "name": "AllowInternetOutBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow outbound traffic from all VMs to Internet",
+            "destinationAddressPrefix": "Internet",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 65001,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/defaultSecurityRules/DenyAllOutBound",
+          "name": "DenyAllOutBound",
+          "properties": {
+            "access": "Deny",
+            "description": "Deny all outbound traffic",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 65500,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        }
+      ],
+      "networkInterfaces": [
+        {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-001505",
+          "resourceGroup": "x-vnet-examples"
+        }
+      ],
+      "provisioningState": "Succeeded",
+      "resourceGuid": "860b00f4-c47c-403c-893d-b61b0fd5099f",
+      "securityRules": [
+        {
+          "etag": "W/\"fe2cb497-9551-4515-9167-0c34be9785ec\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-001-nsg/securityRules/HTTPS",
+          "name": "HTTPS",
+          "properties": {
+            "access": "Allow",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "443",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 300,
+            "protocol": "TCP",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/securityRules"
+        }
+      ]
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/networksecuritygroups",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "VM-002-nsg",
+    "plan": null,
+    "properties": {
+      "defaultSecurityRules": [
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/defaultSecurityRules/AllowVnetInBound",
+          "name": "AllowVnetInBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow inbound traffic from all VMs in VNET",
+            "destinationAddressPrefix": "VirtualNetwork",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 65000,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "VirtualNetwork",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/defaultSecurityRules/AllowAzureLoadBalancerInBound",
+          "name": "AllowAzureLoadBalancerInBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow inbound traffic from azure load balancer",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 65001,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "AzureLoadBalancer",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/defaultSecurityRules/DenyAllInBound",
+          "name": "DenyAllInBound",
+          "properties": {
+            "access": "Deny",
+            "description": "Deny all inbound traffic",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 65500,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/defaultSecurityRules/AllowVnetOutBound",
+          "name": "AllowVnetOutBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+            "destinationAddressPrefix": "VirtualNetwork",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 65000,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "VirtualNetwork",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/defaultSecurityRules/AllowInternetOutBound",
+          "name": "AllowInternetOutBound",
+          "properties": {
+            "access": "Allow",
+            "description": "Allow outbound traffic from all VMs to Internet",
+            "destinationAddressPrefix": "Internet",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 65001,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        },
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/defaultSecurityRules/DenyAllOutBound",
+          "name": "DenyAllOutBound",
+          "properties": {
+            "access": "Deny",
+            "description": "Deny all outbound traffic",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "*",
+            "destinationPortRanges": [],
+            "direction": "Outbound",
+            "priority": 65500,
+            "protocol": "*",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/defaultSecurityRules"
+        }
+      ],
+      "networkInterfaces": [
+        {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-002237",
+          "resourceGroup": "x-vnet-examples"
+        }
+      ],
+      "provisioningState": "Succeeded",
+      "resourceGuid": "9bbd2dd9-58bb-46d6-934b-3e647d648de0",
+      "securityRules": [
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/securityRules/RDP",
+          "name": "RDP",
+          "properties": {
+            "access": "Allow",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "3389",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 300,
+            "protocol": "TCP",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/securityRules"
+        },
+        {
+          "etag": "W/\"8ee98448-ccc5-49a4-b096-0384da174f01\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkSecurityGroups/VM-002-nsg/securityRules/HTTP",
+          "name": "HTTP",
+          "properties": {
+            "access": "Allow",
+            "destinationAddressPrefix": "*",
+            "destinationAddressPrefixes": [],
+            "destinationPortRange": "80",
+            "destinationPortRanges": [],
+            "direction": "Inbound",
+            "priority": 320,
+            "protocol": "TCP",
+            "provisioningState": "Succeeded",
+            "sourceAddressPrefix": "*",
+            "sourceAddressPrefixes": [],
+            "sourcePortRange": "*",
+            "sourcePortRanges": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/networkSecurityGroups/securityRules"
+        }
+      ]
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/networksecuritygroups",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/publicIPAddresses/VM-001-ip",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "VM-001-ip",
+    "plan": null,
+    "properties": {
+      "idleTimeoutInMinutes": 4,
+      "ipAddress": "52.250.65.117",
+      "ipConfiguration": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-001505/ipConfigurations/ipconfig1",
+        "resourceGroup": "x-vnet-examples"
+      },
+      "ipTags": [],
+      "provisioningState": "Succeeded",
+      "publicIPAddressVersion": "IPv4",
+      "publicIPAllocationMethod": "Dynamic",
+      "resourceGuid": "1318350d-8fe0-4ad1-a630-78ff0e4cebce"
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": {
+      "name": "Basic",
+      "tier": "Regional"
+    },
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/publicipaddresses",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/publicIPAddresses/VM-002-ip",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "VM-002-ip",
+    "plan": null,
+    "properties": {
+      "idleTimeoutInMinutes": 4,
+      "ipAddress": "51.141.166.15",
+      "ipConfiguration": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-002237/ipConfigurations/ipconfig1",
+        "resourceGroup": "x-vnet-examples"
+      },
+      "ipTags": [],
+      "provisioningState": "Succeeded",
+      "publicIPAddressVersion": "IPv4",
+      "publicIPAllocationMethod": "Static",
+      "resourceGuid": "573042f1-5d72-4f48-94b1-f8350811533c"
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": {
+      "name": "Basic",
+      "tier": "Regional"
+    },
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/publicipaddresses",
+    "zones": null
+  },
+  {
+    "extendedLocation": null,
+    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/virtualNetworks/x-example-vnet",
+    "identity": null,
+    "kind": "",
+    "location": "westus2",
+    "managedBy": "",
+    "name": "x-example-vnet",
+    "plan": null,
+    "properties": {
+      "addressSpace": {
+        "addressPrefixes": [
+          "172.16.0.0/24"
+        ]
+      },
+      "enableDdosProtection": false,
+      "provisioningState": "Succeeded",
+      "resourceGuid": "42cc8695-a135-419e-a708-dc2f46053894",
+      "subnets": [
+        {
+          "etag": "W/\"d5a5b426-af89-402d-b700-86121b012df0\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/virtualNetworks/x-example-vnet/subnets/default",
+          "name": "default",
+          "properties": {
+            "addressPrefix": "172.16.0.0/28",
+            "delegations": [],
+            "ipConfigurations": [
+              {
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-001505/ipConfigurations/ipconfig1",
+                "resourceGroup": "x-vnet-examples"
+              }
+            ],
+            "privateEndpointNetworkPolicies": "Enabled",
+            "privateLinkServiceNetworkPolicies": "Enabled",
+            "provisioningState": "Succeeded"
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/virtualNetworks/subnets"
+        },
+        {
+          "etag": "W/\"d5a5b426-af89-402d-b700-86121b012df0\"",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/virtualNetworks/x-example-vnet/subnets/another",
+          "name": "another",
+          "properties": {
+            "addressPrefix": "172.16.0.16/28",
+            "delegations": [],
+            "ipConfigurations": [
+              {
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/x-vnet-examples/providers/Microsoft.Network/networkInterfaces/vm-002237/ipConfigurations/ipconfig1",
+                "resourceGroup": "x-vnet-examples"
+              }
+            ],
+            "privateEndpointNetworkPolicies": "Enabled",
+            "privateLinkServiceNetworkPolicies": "Enabled",
+            "provisioningState": "Succeeded",
+            "serviceEndpoints": []
+          },
+          "resourceGroup": "x-vnet-examples",
+          "type": "Microsoft.Network/virtualNetworks/subnets"
+        }
+      ],
+      "virtualNetworkPeerings": []
+    },
+    "resourceGroup": "x-vnet-examples",
+    "sku": null,
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "tags": null,
+    "tenantId": "00000000-0000-0000-0000-000000000000",
+    "type": "microsoft.network/virtualnetworks",
+    "zones": null
+  }
+]

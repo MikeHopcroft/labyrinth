@@ -1,0 +1,415 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  loadBalancer1: 
+  loadBalancer2: 
+  nic1/inbound: 
+  nic1/outbound: 
+  nic2/inbound: 
+  nic2/outbound: 
+  nic3/inbound: 
+  nic3/outbound: 
+  nic4/inbound: 
+  nic4/outbound: 
+  nic5/inbound: 
+  nic5/outbound: 
+  nic6/inbound: 
+  nic6/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  publicIp2/inbound: 
+  publicIp3/inbound: 
+  publicIp3/outbound: 
+  subnet1/inbound: 
+  subnet2/inbound: 
+  subnet3/inbound: 
+  subnet4/inbound: 
+  subnet5/inbound: 
+  UnboundRule: 
+  vm1/inbound:  (endpoint)
+  vm1/outbound:  (endpoint)
+  vm2/inbound:  (endpoint)
+  vm2/outbound:  (endpoint)
+  vm3/inbound:  (endpoint)
+  vm3/outbound:  (endpoint)
+  vm4/inbound:  (endpoint)
+  vm4/outbound:  (endpoint)
+  vm5/inbound:  (endpoint)
+  vm5/outbound:  (endpoint)
+  vm6/inbound:  (endpoint)
+  vm6/outbound:  (endpoint)
+  vnet1/inbound: 
+  vnet1/outbound: 
+  vnet1/router: vnet1
+  vnet2/inbound: 
+  vnet2/outbound: 
+  vnet2/router: vnet2
+
+Nodes that can reach Internet:
+
+AzureBackbone/outbound:
+  routes:
+    (universe)
+
+  paths:
+    AzureBackbone => Internet
+      (universe)
+
+loadBalancer1:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+loadBalancer2:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/outbound:
+  routes:
+    destination ip: Internet
+
+  paths:
+    vm-001505 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+    vm-001505 => x-example-vnet => vm-001-internet => Internet
+      destination ip: Internet
+
+nic2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic2/outbound:
+  routes:
+    destination ip: except vnet1
+
+  paths:
+    vm-lb-016 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: except vnet1
+    vm-lb-016 => x-example-vnet => vm-001-internet => Internet
+      destination ip: except vnet1
+
+nic3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic3/outbound:
+  routes:
+    destination ip: Internet
+
+  paths:
+    vm-002237 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+    vm-002237 => x-example-vnet => vm-001-internet => Internet
+      destination ip: Internet
+
+nic4/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic4/outbound:
+  routes:
+    destination ip: except vnet1
+
+  paths:
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: except vnet1
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet
+      destination ip: except vnet1
+
+nic5/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic5/outbound:
+  routes:
+    destination ip: except vnet1
+
+  paths:
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: except vnet1
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet
+      destination ip: except vnet1
+
+nic6/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic6/outbound:
+  routes:
+    destination ip: Internet
+
+  paths:
+    vm-2-001449 => x-example-vnet-2 => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+    vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet
+      destination ip: Internet
+
+publicIp1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/outbound:
+  routes:
+    (universe)
+
+  paths:
+    vm-001-internet => Internet
+      (universe)
+
+publicIp2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp3/outbound:
+  routes:
+    (universe)
+
+  paths:
+    vm-2-001-ip => Internet
+      (universe)
+
+subnet1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet4/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet5/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+UnboundRule:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/outbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet
+      destination ip: Internet
+
+vm2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm2/outbound:
+  routes:
+    source ip: 172.16.0.5
+    destination ip: except vnet1
+
+  paths:
+    vm-lb-01 => vm-lb-016 => x-example-vnet => AzureBackbone => Internet
+      source ip: 172.16.0.5
+      destination ip: except vnet1
+
+vm3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm3/outbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet
+      source ip: 172.16.0.20
+      destination ip: Internet
+
+vm4/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm4/outbound:
+  routes:
+    source ip: 172.16.0.33
+    destination ip: except vnet1
+
+  paths:
+    vmss-0 => x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
+      source ip: 172.16.0.33
+      destination ip: except vnet1
+
+vm5/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm5/outbound:
+  routes:
+    source ip: 172.16.0.34
+    destination ip: except vnet1
+
+  paths:
+    vmss-4 => x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
+      source ip: 172.16.0.34
+      destination ip: except vnet1
+
+vm6/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm6/outbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-2-001 => vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet
+      destination ip: Internet
+
+vnet1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet1/outbound:
+  routes:
+    destination ip: except vnet1
+
+  paths:
+    x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: except vnet1
+    x-example-vnet => vm-001-internet => Internet
+      destination ip: except vnet1
+
+vnet1/router:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet2/outbound:
+  routes:
+    destination ip: Internet
+
+  paths:
+    x-example-vnet-2 => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+    x-example-vnet-2 => vm-2-001-ip => Internet
+      destination ip: Internet
+
+vnet2/router:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+

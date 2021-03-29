@@ -1,0 +1,190 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/inbound: 
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  nic1/inbound: 
+  nic1/outbound: 
+  nic2/inbound: 
+  nic2/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  publicIp2/inbound: 
+  publicIp2/outbound: 
+  subnet1/inbound: 
+  subnet2/inbound: 
+  vm1:  (endpoint)
+  vm2:  (endpoint)
+  vnet1/inbound: 
+  vnet1/router: vnet1
+
+Nodes that can reach Internet:
+
+AzureBackbone/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+AzureBackbone/outbound:
+  routes:
+    (universe)
+
+  paths:
+    AzureBackbone/outbound => Internet
+      (universe)
+
+nic1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/outbound:
+  routes:
+    source ip: 172.16.0.4, 172.16.0.20
+
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    nic1/outbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound => Internet
+      destination ip: Internet
+
+      destination ip: vnet1
+    nic1/outbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound => Internet
+      destination ip: Internet
+
+      destination ip: vnet1
+    nic1/outbound => vnet1/router => AzureBackbone/outbound => Internet
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: Internet
+
+nic2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic2/outbound:
+  routes:
+    source ip: 172.16.0.4, 172.16.0.20
+
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    nic2/outbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound => Internet
+      destination ip: Internet
+
+      destination ip: vnet1
+    nic2/outbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound => Internet
+      destination ip: Internet
+
+      destination ip: vnet1
+    nic2/outbound => vnet1/router => AzureBackbone/outbound => Internet
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: Internet
+
+publicIp1/inbound:
+  routes:
+    source ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    publicIp1/inbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound => Internet
+      (universe)
+    publicIp1/inbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound => Internet
+      (universe)
+
+publicIp1/outbound:
+  routes:
+    (universe)
+
+  paths:
+    publicIp1/outbound => AzureBackbone/outbound => Internet
+      (universe)
+
+publicIp2/inbound:
+  routes:
+    source ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    publicIp2/inbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound => Internet
+      (universe)
+    publicIp2/inbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound => Internet
+      (universe)
+
+publicIp2/outbound:
+  routes:
+    (universe)
+
+  paths:
+    publicIp2/outbound => AzureBackbone/outbound => Internet
+      (universe)
+
+subnet1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1:
+  routes:
+    source ip: 172.16.0.4
+
+  paths:
+    vm1 => nic1/outbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound => Internet
+      destination ip: Internet
+
+      destination ip: vnet1
+
+vm2:
+  routes:
+    source ip: 172.16.0.20
+
+  paths:
+    vm2 => nic2/outbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound => Internet
+      destination ip: Internet
+
+      destination ip: vnet1
+
+vnet1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet1/router:
+  routes:
+    source ip: 172.16.0.4, 172.16.0.20
+
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    vnet1/router => publicIp1/outbound => AzureBackbone/outbound => Internet
+      (universe)
+    vnet1/router => publicIp2/outbound => AzureBackbone/outbound => Internet
+      (universe)
+    vnet1/router => AzureBackbone/outbound => Internet
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: Internet
+

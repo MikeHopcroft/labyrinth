@@ -1,0 +1,409 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  loadBalancer1: 
+  loadBalancer2: 
+  nic1/inbound: 
+  nic1/outbound: 
+  nic2/inbound: 
+  nic2/outbound: 
+  nic3/inbound: 
+  nic3/outbound: 
+  nic4/inbound: 
+  nic4/outbound: 
+  nic5/inbound: 
+  nic5/outbound: 
+  nic6/inbound: 
+  nic6/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  publicIp2/inbound: 
+  publicIp3/inbound: 
+  publicIp3/outbound: 
+  subnet1/inbound: 
+  subnet2/inbound: 
+  subnet3/inbound: 
+  subnet4/inbound: 
+  UnboundRule: 
+  vm1/inbound:  (endpoint)
+  vm1/outbound:  (endpoint)
+  vm2/inbound:  (endpoint)
+  vm2/outbound:  (endpoint)
+  vm3/inbound:  (endpoint)
+  vm3/outbound:  (endpoint)
+  vm4/inbound:  (endpoint)
+  vm4/outbound:  (endpoint)
+  vm5/inbound:  (endpoint)
+  vm5/outbound:  (endpoint)
+  vm6/inbound:  (endpoint)
+  vm6/outbound:  (endpoint)
+  vnet1/inbound: 
+  vnet1/outbound: 
+  vnet1/router: vnet1
+  vnet2/inbound: 
+  vnet2/outbound: 
+  vnet2/router: vnet2
+
+Nodes that can reach vm2/inbound:
+
+AzureBackbone/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+Internet:
+  routes:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+
+loadBalancer1:
+  routes:
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+    public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+
+loadBalancer2:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/outbound:
+  routes:
+    source ip: vnet1
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-001505 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: vnet1
+      destination ip: 172.16.0.5
+
+nic2/inbound:
+  routes:
+    (universe)
+
+  paths:
+    vm-lb-016 => vm-lb-01
+      (universe)
+
+nic2/outbound:
+  routes:
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-lb-016 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+nic3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic3/outbound:
+  routes:
+    source ip: vnet1
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-002237 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: vnet1
+      destination ip: 172.16.0.5
+
+nic4/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic4/outbound:
+  routes:
+    destination ip: 172.16.0.5
+
+  paths:
+    x-example-vnet-nic01 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+nic5/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic5/outbound:
+  routes:
+    destination ip: 172.16.0.5
+
+  paths:
+    x-example-vnet-nic01 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+nic6/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic6/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp2/inbound:
+  routes:
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+    public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+
+publicIp3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp3/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet1/inbound:
+  routes:
+    destination ip: 172.16.0.5
+
+  paths:
+    default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+subnet2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet4/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+UnboundRule:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/outbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.4
+      destination ip: 172.16.0.5
+
+vm2/outbound:
+  routes:
+    source ip: 172.16.0.5
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-lb-01 => vm-lb-016 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.5
+      destination ip: 172.16.0.5
+
+vm3/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm3/outbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.5
+
+vm4/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm4/outbound:
+  routes:
+    source ip: 172.16.0.33
+    destination ip: 172.16.0.5
+
+  paths:
+    vmss-0 => x-example-vnet-nic01 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.33
+      destination ip: 172.16.0.5
+
+vm5/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm5/outbound:
+  routes:
+    source ip: 172.16.0.34
+    destination ip: 172.16.0.5
+
+  paths:
+    vmss-4 => x-example-vnet-nic01 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.34
+      destination ip: 172.16.0.5
+
+vm6/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm6/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet1/inbound:
+  routes:
+    destination ip: 172.16.0.5
+
+  paths:
+    x-example-vnet => default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+vnet1/outbound:
+  routes:
+    destination ip: 172.16.0.5
+
+  paths:
+    x-example-vnet => default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+vnet1/router:
+  routes:
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+    destination ip: 172.16.0.5
+
+  paths:
+    x-example-vnet => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+    x-example-vnet => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+
+    x-example-vnet => default => vm-lb-016 => vm-lb-01
+      destination ip: 172.16.0.5
+
+vnet2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet2/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet2/router:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+

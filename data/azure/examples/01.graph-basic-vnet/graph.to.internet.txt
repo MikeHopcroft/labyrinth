@@ -1,0 +1,112 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  nic1/inbound: 
+  nic1/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  subnet1/inbound: 
+  vm1/inbound:  (endpoint)
+  vm1/outbound:  (endpoint)
+  vnet1/inbound: 
+  vnet1/outbound: 
+  vnet1/router: vnet1
+
+Nodes that can reach Internet:
+
+AzureBackbone/outbound:
+  routes:
+    (universe)
+
+  paths:
+    AzureBackbone => Internet
+      (universe)
+
+nic1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/outbound:
+  routes:
+    destination ip: Internet
+
+  paths:
+    vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      destination ip: Internet
+    vm-001505 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+
+publicIp1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/outbound:
+  routes:
+    (universe)
+
+  paths:
+    vm-001-ip => AzureBackbone => Internet
+      (universe)
+
+subnet1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/outbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      destination ip: Internet
+
+vnet1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet1/outbound:
+  routes:
+    destination ip: Internet
+
+  paths:
+    x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      destination ip: Internet
+    x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+
+vnet1/router:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+

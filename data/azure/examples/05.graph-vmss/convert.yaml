@@ -1,0 +1,489 @@
+nodes:
+  - key: AzureBackbone/outbound
+    friendlyName: AzureBackbone
+    routes:
+      - destination: Internet
+  - key: Internet
+    endpoint: true
+    routes:
+      - destination: publicIp1/inbound
+        constraints:
+          destinationIp: 52.250.65.117
+          sourceIp: Internet
+      - destination: publicIp2/inbound
+        constraints:
+          destinationIp: 52.247.250.222
+          sourceIp: Internet
+  - key: loadBalancer1
+    friendlyName: public-lb
+    routes:
+      - destination: vnet1/inbound
+        constraints:
+          destinationIp: 52.247.250.222
+          destinationPort: '800'
+          protocol: Tcp
+        override:
+          destinationIp: 172.16.0.5
+          destinationPort: '8000'
+      - destination: vnet1/inbound
+        constraints:
+          destinationIp: 52.247.250.222
+          destinationPort: '3242'
+          protocol: Tcp
+        override:
+          destinationIp: '172.16.0.33,172.16.0.34,172.16.0.35'
+          destinationPort: '2342'
+      - destination: vnet1/inbound
+        constraints:
+          destinationIp: 52.247.250.222
+          destinationPort: '3389'
+          protocol: Tcp
+        override:
+          destinationIp: 172.16.0.5
+  - key: loadBalancer2
+    friendlyName: ilb
+    routes:
+      - destination: vnet1/inbound
+        constraints:
+          destinationIp: 172.16.0.21
+          destinationPort: '3022'
+          protocol: Tcp
+        override:
+          destinationIp: 172.16.0.20
+          destinationPort: '22'
+      - destination: UnboundRule
+        constraints:
+          destinationIp: 172.16.0.21
+          destinationPort: '4000'
+          protocol: Tcp
+  - key: nic1/inbound
+    friendlyName: vm-001505
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-001505/inbound
+    routes:
+      - destination: vm1/inbound
+    filters:
+      - action: allow
+        priority: 300
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '443'
+          protocol: TCP
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: vnet1
+          sourcePort: '*'
+          destinationIp: vnet1
+          destinationPort: '*'
+          protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: AzureLoadBalancer
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '*'
+          protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '*'
+          protocol: '*'
+  - key: nic1/outbound
+    friendlyName: vm-001505
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-001505/outbound
+    routes:
+      - destination: vnet1/outbound
+    filters:
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: vnet1
+          sourcePort: '*'
+          destinationIp: vnet1
+          destinationPort: '*'
+          protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: Internet
+          destinationPort: '*'
+          protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '*'
+          protocol: '*'
+  - key: nic2/inbound
+    friendlyName: vm-lb-016
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-lb-016/inbound
+    routes:
+      - destination: vm2/inbound
+  - key: nic2/outbound
+    friendlyName: vm-lb-016
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-lb-016/outbound
+    routes:
+      - destination: vnet1/outbound
+  - key: nic3/inbound
+    friendlyName: vm-002237
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-002237/inbound
+    routes:
+      - destination: vm3/inbound
+    filters:
+      - action: allow
+        priority: 300
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '3389'
+          protocol: TCP
+      - action: allow
+        priority: 320
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '80'
+          protocol: TCP
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: vnet1
+          sourcePort: '*'
+          destinationIp: vnet1
+          destinationPort: '*'
+          protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: AzureLoadBalancer
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '*'
+          protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '*'
+          protocol: '*'
+  - key: nic3/outbound
+    friendlyName: vm-002237
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-002237/outbound
+    routes:
+      - destination: vnet1/outbound
+    filters:
+      - action: allow
+        priority: 65000
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: vnet1
+          sourcePort: '*'
+          destinationIp: vnet1
+          destinationPort: '*'
+          protocol: '*'
+      - action: allow
+        priority: 65001
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: Internet
+          destinationPort: '*'
+          protocol: '*'
+      - action: deny
+        priority: 65500
+        id: 1
+        source: data/azure/resource-graph-1.json
+        constraints:
+          sourceIp: '*'
+          sourcePort: '*'
+          destinationIp: '*'
+          destinationPort: '*'
+          protocol: '*'
+  - key: nic4/inbound
+    friendlyName: x-example-vnet-nic01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/x-example-vnet-nic01/inbound
+    routes:
+      - destination: vm4/inbound
+  - key: nic4/outbound
+    friendlyName: x-example-vnet-nic01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/x-example-vnet-nic01/outbound
+    routes:
+      - destination: vnet1/outbound
+  - key: nic5/inbound
+    friendlyName: x-example-vnet-nic01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/2/networkinterfaces/x-example-vnet-nic01/inbound
+    routes:
+      - destination: vm5/inbound
+  - key: nic5/outbound
+    friendlyName: x-example-vnet-nic01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/2/networkinterfaces/x-example-vnet-nic01/outbound
+    routes:
+      - destination: vnet1/outbound
+  - key: nic6/inbound
+    friendlyName: x-example-vnet-nic01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/4/networkinterfaces/x-example-vnet-nic01/inbound
+    routes:
+      - destination: vm6/inbound
+  - key: nic6/outbound
+    friendlyName: x-example-vnet-nic01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/4/networkinterfaces/x-example-vnet-nic01/outbound
+    routes:
+      - destination: vnet1/outbound
+  - key: publicIp1/inbound
+    friendlyName: vm-001-ip
+    routes:
+      - destination: vnet1/router
+        override:
+          destinationIp: 172.16.0.4
+  - key: publicIp1/outbound
+    friendlyName: vm-001-ip
+    routes:
+      - destination: AzureBackbone/outbound
+        override:
+          sourceIp: 52.250.65.117
+  - key: publicIp2/inbound
+    friendlyName: public-lb-ip
+    routes:
+      - destination: loadBalancer1
+  - key: subnet1/inbound
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet/subnets/default/inbound
+    friendlyName: default
+    routes:
+      - destination: nic1/inbound
+        constraints:
+          destinationIp: 172.16.0.4
+      - destination: nic2/inbound
+        constraints:
+          destinationIp: 172.16.0.5
+  - key: subnet2/inbound
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet/subnets/another/inbound
+    friendlyName: another
+    routes:
+      - destination: nic3/inbound
+        constraints:
+          destinationIp: 172.16.0.20
+  - key: subnet3/inbound
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet/subnets/vmss/inbound
+    friendlyName: vmss
+    routes:
+      - destination: nic4/inbound
+        constraints:
+          destinationIp: 172.16.0.33
+      - destination: nic5/inbound
+        constraints:
+          destinationIp: 172.16.0.34
+      - destination: nic6/inbound
+        constraints:
+          destinationIp: 172.16.0.35
+  - key: UnboundRule
+    routes: []
+  - key: vm1/inbound
+    friendlyName: vm-001
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachines/vm-001
+    endpoint: true
+    routes: []
+  - key: vm1/outbound
+    friendlyName: vm-001
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachines/vm-001/outbound
+    endpoint: true
+    routes:
+      - destination: nic1/outbound
+        constraints:
+          sourceIp: 172.16.0.4
+  - key: vm2/inbound
+    friendlyName: vm-lb-01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachines/vm-lb-01
+    endpoint: true
+    routes: []
+  - key: vm2/outbound
+    friendlyName: vm-lb-01
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachines/vm-lb-01/outbound
+    endpoint: true
+    routes:
+      - destination: nic2/outbound
+        constraints:
+          sourceIp: 172.16.0.5
+  - key: vm3/inbound
+    friendlyName: vm-002
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachines/vm-002
+    endpoint: true
+    routes: []
+  - key: vm3/outbound
+    friendlyName: vm-002
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachines/vm-002/outbound
+    endpoint: true
+    routes:
+      - destination: nic3/outbound
+        constraints:
+          sourceIp: 172.16.0.20
+  - key: vm4/inbound
+    friendlyName: vmss-0
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0
+    endpoint: true
+    routes: []
+  - key: vm4/outbound
+    friendlyName: vmss-0
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/outbound
+    endpoint: true
+    routes:
+      - destination: nic4/outbound
+        constraints:
+          sourceIp: 172.16.0.33
+  - key: vm5/inbound
+    friendlyName: vmss-2
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/2
+    endpoint: true
+    routes: []
+  - key: vm5/outbound
+    friendlyName: vmss-2
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/2/outbound
+    endpoint: true
+    routes:
+      - destination: nic5/outbound
+        constraints:
+          sourceIp: 172.16.0.34
+  - key: vm6/inbound
+    friendlyName: vmss-4
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/4
+    endpoint: true
+    routes: []
+  - key: vm6/outbound
+    friendlyName: vmss-4
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/4/outbound
+    endpoint: true
+    routes:
+      - destination: nic6/outbound
+        constraints:
+          sourceIp: 172.16.0.35
+  - key: vnet1/inbound
+    friendlyName: x-example-vnet
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
+    routes:
+      - destination: subnet1/inbound
+        constraints:
+          destinationIp: 172.16.0.0/28
+      - destination: subnet2/inbound
+        constraints:
+          destinationIp: 172.16.0.16/28
+      - destination: subnet3/inbound
+        constraints:
+          destinationIp: 172.16.0.32/28
+  - key: vnet1/outbound
+    friendlyName: x-example-vnet
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
+    routes:
+      - destination: vnet1/router
+        constraints:
+          destinationIp: 172.16.0.0/24
+      - destination: publicIp1/outbound
+        constraints:
+          sourceIp: 172.16.0.4
+      - destination: AzureBackbone/outbound
+  - key: vnet1/router
+    friendlyName: x-example-vnet
+    name: >-
+      /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
+    range:
+      sourceIp: 172.16.0.0/24
+    routes:
+      - destination: loadBalancer2
+        constraints:
+          destinationIp: 172.16.0.21
+      - destination: loadBalancer1
+        constraints:
+          destinationIp: 52.247.250.222
+      - destination: vnet1/inbound
+        constraints:
+          destinationIp: 172.16.0.0/24
+symbols:
+  - dimension: ip
+    symbol: AzureLoadBalancer
+    range: 168.63.129.16
+  - dimension: protocol
+    symbol: Udp
+    range: udp
+  - dimension: protocol
+    symbol: UDP
+    range: udp
+  - dimension: protocol
+    symbol: Tcp
+    range: tcp
+  - dimension: protocol
+    symbol: TCP
+    range: tcp
+  - dimension: ip
+    symbol: vnet1
+    range: 172.16.0.0/24
+  - dimension: ip
+    symbol: Internet
+    range: except 172.16.0.0/24

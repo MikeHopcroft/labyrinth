@@ -1,4 +1,0 @@
-Azure resource graph input file: graph-ilb-plb-overlapping-vnet.json
-Labyrinth graph output file: out\graph-ilb-plb-overlapping-vnet\convert.yaml
-Conversion complete.
-All Azure resource graph types understood.

@@ -1,0 +1,128 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  nic1/inbound: 
+  nic1/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  subnet1/inbound: 
+  vm1/inbound:  (endpoint)
+  vm1/outbound:  (endpoint)
+  vnet1/inbound: 
+  vnet1/outbound: 
+  vnet1/router: vnet1
+
+Nodes reachable from Internet:
+
+AzureBackbone/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic1/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => vm-001-ip => x-example-vnet => default => vm-001505
+      source ip: Internet
+      destination ip: 52.250.65.117
+
+nic1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 52.250.65.117
+
+  paths:
+    Internet => vm-001-ip
+      source ip: Internet
+      destination ip: 52.250.65.117
+
+publicIp1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet1/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => vm-001-ip => x-example-vnet => default
+      source ip: Internet
+      destination ip: 52.250.65.117
+
+vm1/inbound:
+  routes:
+    source ip: AzureLoadBalancer
+    destination ip: 172.16.0.4
+
+    source ip: Internet
+    destination ip: 172.16.0.4
+    destination port: https
+    protocol: TCP
+
+  paths:
+    Internet => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
+      source ip: AzureLoadBalancer
+      destination ip: 52.250.65.117
+
+      source ip: Internet
+      destination ip: 52.250.65.117
+      destination port: https
+      protocol: TCP
+
+vm1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet1/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => vm-001-ip => x-example-vnet
+      source ip: Internet
+      destination ip: 52.250.65.117
+
+vnet1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vnet1/router:
+  routes:
+    source ip: Internet
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => vm-001-ip => x-example-vnet
+      source ip: Internet
+      destination ip: 52.250.65.117
+

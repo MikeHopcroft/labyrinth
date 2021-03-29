@@ -1,0 +1,219 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/inbound: 
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  nic1/inbound: 
+  nic1/outbound: 
+  nic2/inbound: 
+  nic2/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  publicIp2/inbound: 
+  publicIp2/outbound: 
+  subnet1/inbound: 
+  subnet2/inbound: 
+  vm1:  (endpoint)
+  vm2:  (endpoint)
+  vnet1/inbound: 
+  vnet1/router: vnet1
+
+Nodes reachable from Internet:
+
+AzureBackbone/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+AzureBackbone/outbound:
+  routes:
+    source ip: 51.141.166.15, 52.250.65.117
+    destination ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+    Internet => publicIp1/inbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound
+      source ip: 172.16.0.20
+      destination ip: 52.250.65.117
+    Internet => publicIp2/inbound => vnet1/router => publicIp1/outbound => AzureBackbone/outbound
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+    Internet => publicIp2/inbound => vnet1/router => publicIp2/outbound => AzureBackbone/outbound
+      source ip: 172.16.0.20
+      destination ip: 51.141.166.15
+
+nic1/inbound:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => vnet1/inbound => subnet1/inbound => nic1/inbound
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 52.250.65.117
+
+nic1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic2/inbound:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.20
+
+  paths:
+    Internet => publicIp2/inbound => vnet1/router => vnet1/inbound => subnet2/inbound => nic2/inbound
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 51.141.166.15
+
+nic2/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/inbound:
+  routes:
+    destination ip: 52.250.65.117
+
+  paths:
+    Internet => publicIp1/inbound
+      destination ip: 52.250.65.117
+
+publicIp1/outbound:
+  routes:
+    source ip: 172.16.0.4
+    destination ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => publicIp1/outbound
+      source ip: 172.16.0.4
+      destination ip: 52.250.65.117
+    Internet => publicIp2/inbound => vnet1/router => publicIp1/outbound
+      source ip: 172.16.0.4
+      destination ip: 51.141.166.15
+
+publicIp2/inbound:
+  routes:
+    destination ip: 51.141.166.15
+
+  paths:
+    Internet => publicIp2/inbound
+      destination ip: 51.141.166.15
+
+publicIp2/outbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => publicIp2/outbound
+      source ip: 172.16.0.20
+      destination ip: 52.250.65.117
+    Internet => publicIp2/inbound => vnet1/router => publicIp2/outbound
+      source ip: 172.16.0.20
+      destination ip: 51.141.166.15
+
+subnet1/inbound:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => vnet1/inbound => subnet1/inbound
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 52.250.65.117
+
+subnet2/inbound:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.20
+
+  paths:
+    Internet => publicIp2/inbound => vnet1/router => vnet1/inbound => subnet2/inbound
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 51.141.166.15
+
+vm1:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.4
+    destination port: https
+    protocol: TCP
+
+    source ip: AzureLoadBalancer, 172.16.0.0/30, 172.16.0.5-172.16.0.19, 172.16.0.21-172.16.0.255
+    destination ip: 172.16.0.4
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => vnet1/inbound => subnet1/inbound => nic1/inbound => vm1
+      source ip: AzureLoadBalancer
+      destination ip: 52.250.65.117
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.16.0.19, 172.16.0.21-172.16.0.255
+      destination ip: 52.250.65.117
+
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 52.250.65.117
+      destination port: https
+      protocol: TCP
+
+vm2:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.20
+    destination port: http, 3389
+    protocol: TCP
+
+    source ip: AzureLoadBalancer, 172.16.0.0/30, 172.16.0.5-172.16.0.19, 172.16.0.21-172.16.0.255
+    destination ip: 172.16.0.20
+
+  paths:
+    Internet => publicIp2/inbound => vnet1/router => vnet1/inbound => subnet2/inbound => nic2/inbound => vm2
+      source ip: AzureLoadBalancer
+      destination ip: 51.141.166.15
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.16.0.19, 172.16.0.21-172.16.0.255
+      destination ip: 51.141.166.15
+
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 51.141.166.15
+      destination port: http, 3389
+      protocol: TCP
+
+vnet1/inbound:
+  routes:
+    source ip: except 172.16.0.4, 172.16.0.20
+    destination ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router => vnet1/inbound
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 52.250.65.117
+    Internet => publicIp2/inbound => vnet1/router => vnet1/inbound
+      source ip: except 172.16.0.4, 172.16.0.20
+      destination ip: 51.141.166.15
+
+vnet1/router:
+  routes:
+    destination ip: 172.16.0.4, 172.16.0.20
+
+  paths:
+    Internet => publicIp1/inbound => vnet1/router
+      destination ip: 52.250.65.117
+    Internet => publicIp2/inbound => vnet1/router
+      destination ip: 51.141.166.15
+

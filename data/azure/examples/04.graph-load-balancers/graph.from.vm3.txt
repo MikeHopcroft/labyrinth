@@ -1,0 +1,316 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Backprojecting paths past NAT rewrites. (-b)
+
+Nodes:
+  AzureBackbone/outbound: 
+  Internet:  (endpoint)
+  loadBalancer1: 
+  loadBalancer2: 
+  nic1/inbound: 
+  nic1/outbound: 
+  nic2/inbound: 
+  nic2/outbound: 
+  nic3/inbound: 
+  nic3/outbound: 
+  publicIp1/inbound: 
+  publicIp1/outbound: 
+  publicIp2/inbound: 
+  subnet1/inbound: 
+  subnet2/inbound: 
+  UnboundRule: 
+  vm1/inbound:  (endpoint)
+  vm1/outbound:  (endpoint)
+  vm2/inbound:  (endpoint)
+  vm2/outbound:  (endpoint)
+  vm3/inbound:  (endpoint)
+  vm3/outbound:  (endpoint)
+  vnet1/inbound: 
+  vnet1/outbound: 
+  vnet1/router: vnet1
+
+Nodes reachable from vm3/outbound:
+
+AzureBackbone/outbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone
+      source ip: 172.16.0.20
+      destination ip: Internet
+
+Internet:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet
+      source ip: 172.16.0.20
+      destination ip: Internet
+
+loadBalancer1:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+loadBalancer2:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+
+nic1/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-001505
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.4
+
+nic1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic2/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-lb-016
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.5
+
+nic2/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+nic3/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another => vm-002237
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet => another => vm-002237
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.20
+
+nic3/outbound:
+  routes:
+    source ip: 172.16.0.20
+
+  paths:
+    vm-002 => vm-002237
+      source ip: 172.16.0.20
+
+publicIp1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+publicIp2/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+subnet1/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.0/28
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.0/28
+
+subnet2/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.16-172.16.0.20, 172.16.0.22-172.16.0.31
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet => another
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.16-172.16.0.20, 172.16.0.22-172.16.0.31
+
+UnboundRule:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+    destination port: 4000
+    protocol: TCP
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => UnboundRule
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 4000
+      protocol: TCP
+
+vm1/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4
+    destination port: https
+    protocol: TCP
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-001505 => vm-001
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.4
+
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.4
+      destination port: https
+      protocol: TCP
+
+vm1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm2/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.5
+
+vm2/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm3/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+    destination port: ssh, http, 3389
+    protocol: TCP
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another => vm-002237 => vm-002
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet => another => vm-002237 => vm-002
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.20
+
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.20
+      destination port: http, 3389
+      protocol: TCP
+
+vnet1/inbound:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.0-172.16.0.20, 172.16.0.22-172.16.0.255
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.0-172.16.0.20, 172.16.0.22-172.16.0.255
+
+vnet1/outbound:
+  routes:
+    source ip: 172.16.0.20
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: Internet
+
+      source ip: 172.16.0.20
+      destination ip: vnet1
+
+vnet1/router:
+  routes:
+    source ip: 172.16.0.20
+    destination ip: vnet1
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: vnet1
+

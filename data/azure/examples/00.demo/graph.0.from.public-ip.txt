@@ -1,0 +1,95 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints only (use -r flag to display routing nodes). 
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+Paths are forward propagated (use -b flag to enable backprojection).
+
+Endpoints:
+  Internet: 
+  vm1/inbound: 
+  vm1/outbound: 
+  vm2/inbound: 
+  vm2/outbound: 
+  vm3/inbound: 
+  vm3/outbound: 
+  vm4/inbound: 
+  vm4/outbound: 
+
+Nodes reachable from publicIp2/inbound:
+
+Internet:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/inbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm1/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm2/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 10.0.100.4
+    destination port: 8080, 8443
+    protocol: TCP
+
+  paths:
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => vm0
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => vm0
+
+vm2/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm3/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 10.0.100.5
+    destination port: 8080, 8443
+    protocol: TCP
+
+  paths:
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => vm1
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => vm1
+
+vm3/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
+vm4/inbound:
+  routes:
+    source ip: Internet
+    destination ip: 10.0.100.6
+    destination port: 8080, 8443
+    protocol: TCP
+
+  paths:
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm2400 => vm2
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm2400 => vm2
+
+vm4/outbound:
+  routes:
+    (no routes)
+
+  paths:
+    (no paths)
+
