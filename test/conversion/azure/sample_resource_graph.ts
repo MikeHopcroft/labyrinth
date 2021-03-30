@@ -405,8 +405,7 @@ export const nicWithoutVm: AzureNetworkInterface = {
   name: nic1Name,
   resourceGroup,
   properties: {
-    ipConfigurations: [privateIp1, privateIp2],
-    networkSecurityGroup: reference(nsg1),
+    ipConfigurations: [privateIp1],
   },
 };
 export const nicWithoutVmKey = nodeServices.createKey(nicWithoutVm);

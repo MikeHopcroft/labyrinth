@@ -1,4 +1,4 @@
-import {GraphSpec, NodeSpec} from '../../graph';
+import {GraphSpec, NodeSpec, RoutingRuleSpec} from '../../graph';
 
 import {AzureObjectIndex} from './azure_object_index';
 import {defaultConverters} from './default_converters';
@@ -39,6 +39,20 @@ export class GraphServices {
     console.log(`Unsupported type '${spec.type}' used in '${caller}`);
   }
 
+  createUnboundNicAndReturnRoute(): RoutingRuleSpec {
+    const key = 'UnboundNetworkInterface';
+
+    if (!this.nodes.get(key)) {
+      this.nodes.add({
+        key,
+        routes: [],
+      });
+    }
+
+    return {
+      destination: key,
+    };
+  }
   // TODO: eventually we will probably need some scope management
   // around the internet key, since it will be a different symbol,
   // depending on VNet context.

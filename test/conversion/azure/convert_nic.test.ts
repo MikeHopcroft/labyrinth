@@ -106,12 +106,20 @@ export default function test() {
       assert.deepEqual(observedNodes, expectedNodes);
     });
 
-    it('Guard check for missing VM', () => {
+    it('Mising VM should result in unbounded node', () => {
       const {services} = createGraphServicesMock();
 
-      assert.throws(() => {
-        convertNIC(services, nicWithoutVm, subnet1Id, vnet1Id);
-      }, 'NIC without VM are not supported');
+      convertNIC(services, nicWithoutVm, subnet1Id, vnet1Id);
+      const inboundNode = services.nodes.get(nic1InboundKey);
+      assert.deepEqual(inboundNode, {
+        key: nic1InboundKey,
+        name: `${nic1Id}/inbound`,
+        routes: [
+          {
+            destination: 'UnboundNetworkInterface',
+          },
+        ],
+      });
     });
   });
 }
