@@ -241,7 +241,7 @@ export interface AzureLoadBalancerInboundNatRule extends AzureTypedObject {
   type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND;
   properties: {
     backendPort: number;
-    backendIPConfiguration: AzureReference<AzureIPConfiguration>;
+    backendIPConfiguration?: AzureReference<AzureIPConfiguration>;
     frontendIPConfiguration: AzureReference<AzureLoadBalancerFrontEndIp>;
     frontendPort: number;
     protocol: ruleProtocol;

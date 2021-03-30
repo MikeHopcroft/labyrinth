@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../../src';
+import {NodeSpec, SimpleRoutingRuleSpec} from '../../../src';
 import {convertLoadBalancer} from '../../../src/conversion/azure/convert_load_balancer';
 
 import {
@@ -11,6 +11,7 @@ import {
   loadBalancerNoRules,
   loadBalancerWithNatRule,
   loadBalancerWithNatRuleKey,
+  loadBalancerWithUnboundNatRule,
   natRule1,
   poolRule1,
   privateIp1,
@@ -20,6 +21,7 @@ import {
   privateIpToLoadBalancer,
   publicIp1,
   publicIp1SourceIp,
+  unboundNatRule1,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -81,6 +83,41 @@ export default function test() {
               },
             },
           ],
+        },
+      ];
+      assert.deepEqual(nodes, expectedNodes);
+    });
+
+    it('Unbound nat rule', () => {
+      const {services} = createGraphServicesMock();
+
+      services.index.add(publicIp1);
+      services.index.add(unboundNatRule1);
+
+      const subnetKey = 'test-subnet';
+      convertLoadBalancer(services, loadBalancerWithUnboundNatRule, subnetKey);
+      const {nodes} = services.getLabyrinthGraphSpec();
+
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: loadBalancerWithNatRuleKey,
+          routes: [
+            {
+              destination: 'UnboundRule',
+              constraints: {
+                destinationIp: publicIp1SourceIp,
+                destinationPort: '5000',
+                protocol: 'Tcp',
+              },
+              override: {
+                destinationPort: '22',
+              },
+            },
+          ],
+        },
+        {
+          key: 'UnboundRule',
+          routes: [],
         },
       ];
       assert.deepEqual(nodes, expectedNodes);

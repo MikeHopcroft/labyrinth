@@ -68,7 +68,6 @@ export function createLoadBalancerRoutes(
   backboneKey: string
 ): RoutingRuleSpec[] {
   services.nodes.markTypeAsUsed(spec);
-  services.nodes.markTypeAsUsed(spec);
 
   const routes: RoutingRuleSpec[] = [];
 
@@ -77,7 +76,6 @@ export function createLoadBalancerRoutes(
       lbRuleRef
     );
     services.nodes.markTypeAsUsed(lbRule);
-
     const backendPool = services.index.dereference<AzureLoadBalancerBackendPool>(
       lbRule.properties.backendAddressPool
     );
@@ -100,17 +98,26 @@ export function createLoadBalancerRoutes(
     );
     services.nodes.markTypeAsUsed(natRule);
 
-    const backendIp = services.index.dereference<AzurePrivateIP>(
-      natRule.properties.backendIPConfiguration
-    );
-    services.nodes.markTypeAsUsed(backendIp);
+    const backendIps: string[] = [];
+    let routeDestination = backboneKey;
+
+    if (natRule.properties.backendIPConfiguration) {
+      const backendIp = services.index.dereference<AzurePrivateIP>(
+        natRule.properties.backendIPConfiguration
+      );
+      services.nodes.markTypeAsUsed(backendIp);
+      backendIps.push(backendIp.properties.privateIPAddress);
+    } else {
+      const unboundRuleKey = services.createUnboundRuleAndReturnKey();
+      routeDestination = unboundRuleKey;
+    }
 
     routes.push(
       createInboundRoute(
         natRule,
         destinationIp,
-        backboneKey,
-        backendIp.properties.privateIPAddress
+        routeDestination,
+        ...backendIps
       )
     );
   }
@@ -132,16 +139,35 @@ function createInboundRoute(
       destinationPort: rule.frontendPort.toString(),
       protocol: rule.protocol,
     },
-    override: {
-      destinationIp: backendIps.join(','),
-    },
   };
 
-  if (rule.backendPort !== rule.frontendPort) {
-    ruleSpec.override!.destinationPort = rule.backendPort.toString();
+  const overrides = getOverrides(spec, ...backendIps);
+
+  if (overrides) {
+    ruleSpec.override = overrides;
+  }
+  return ruleSpec;
+}
+
+function getOverrides(spec: AzureLoadBalancerRule, ...backendIps: string[]) {
+  const rule = spec.properties;
+  let override: {destinationPort?: string; destinationIp?: string} | undefined;
+
+  if (backendIps.length > 0) {
+    override = {
+      destinationIp: backendIps.join(','),
+    };
   }
 
-  return ruleSpec;
+  if (rule.backendPort !== rule.frontendPort) {
+    if (!override) {
+      override = {};
+    }
+
+    override.destinationPort = rule.backendPort.toString();
+  }
+
+  return override;
 }
 
 function getIp(

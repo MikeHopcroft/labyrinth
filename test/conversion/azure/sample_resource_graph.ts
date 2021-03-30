@@ -131,6 +131,12 @@ export const loadBalancer1Id = loadBalancerId(loadBalancer1Name);
 export const natRule1Name = 'natrule1';
 export const natRule1Id = natRuleId(loadBalancer1Name, natRule1Name);
 
+export const unboundNatRule1Name = 'unboundnatrule1';
+export const unboundNatRule1Id = natRuleId(
+  loadBalancer1Name,
+  unboundNatRule1Name
+);
+
 export const poolRule1Name = 'poolrule1';
 export const poolRule1Id = poolRuleId(loadBalancer1Name, poolRule1Name);
 
@@ -465,6 +471,20 @@ export const natRule1: AzureLoadBalancerInboundNatRule = {
   },
 };
 
+export const unboundNatRule1: AzureLoadBalancerInboundNatRule = {
+  type: AzureObjectType.LOAD_BALANCER_NAT_RULE_INBOUND,
+  id: unboundNatRule1Id,
+  name: unboundNatRule1Name,
+  resourceGroup,
+  properties: {
+    backendPort: 22,
+    backendIPConfiguration: undefined,
+    frontendIPConfiguration: reference(frontEndIp1Id),
+    frontendPort: 5000,
+    protocol: ruleProtocol.TCP,
+  },
+};
+
 const backendPoolIpConfigs = [privateIp1, privateIp2];
 export const backendPool1: AzureLoadBalancerBackendPool = {
   type: AzureObjectType.LOAD_BALANCER_BACKEND_POOL,
@@ -541,6 +561,19 @@ export const frontEndWithPrivateIp: AzureLoadBalancerFrontEndIp = {
   },
 };
 
+export const frontEndIpWithUnboundNatRule: AzureLoadBalancerFrontEndIp = {
+  type: AzureObjectType.LOAD_BALANCER_FRONT_END_IP,
+  id: frontEndIp1Id,
+  name: frontEndIp1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [unboundNatRule1],
+    loadBalancingRules: [],
+    publicIPAddress: reference(publicIpForLoadBalancer1),
+  },
+};
+
 export const loadBalancer1: AzureLoadBalancer = {
   type: AzureObjectType.LOAD_BALANCER,
   id: loadBalancer1Id,
@@ -586,6 +619,23 @@ export const loadBalancerNoRules: AzureLoadBalancer = {
 };
 export const loadBalancerNoRuleKey = nodeServices.createKey(
   loadBalancerNoRules
+);
+
+export const loadBalancerWithUnboundNatRule: AzureLoadBalancer = {
+  type: AzureObjectType.LOAD_BALANCER,
+  id: loadBalancer1Id,
+  name: loadBalancer1Name,
+  resourceGroup,
+  properties: {
+    inboundNatPools: [],
+    inboundNatRules: [],
+    loadBalancingRules: [],
+    backendAddressPools: [],
+    frontendIPConfigurations: [frontEndIpWithUnboundNatRule],
+  },
+};
+export const loadBalancerWithUnboundNatRuleKey = nodeServices.createKey(
+  loadBalancerWithUnboundNatRule
 );
 
 ///subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/vnet-test-01/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/x-test-vpn-vnet-nic01
