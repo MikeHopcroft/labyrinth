@@ -19,10 +19,10 @@ export function convertVNet(
 ): VNetResult {
   services.nodes.markTypeAsUsed(spec);
 
-  const vNetKeyPrefix = services.nodes.createKey(spec);
+  const vNetServiceTag = services.nodes.createKey(spec);
   const vNetRouterKey = services.nodes.createRouterKey(spec);
-  const vNetServiceTag = vNetKeyPrefix;
   const vNetInboundKey = services.nodes.createInboundKey(spec);
+  const vNetOutboundKey = services.nodes.createOutboundKey(spec);
 
   // Compute this VNet's address range by unioning up all of its address prefixes.
   const addressRange = new DRange();
@@ -38,6 +38,15 @@ export function convertVNet(
   // It should route to its parent (which will likely be the AzureBackbone or Gateway)
   const routerRoutes: RoutingRuleSpec[] = [];
   const publicInbound: RoutingRuleSpec[] = [];
+  const outboundRoutes: RoutingRuleSpec[] = [
+    {
+      destination: vNetRouterKey,
+      constraints: {
+        destinationIp,
+      },
+    },
+  ];
+
   // Materialize Internal Load Balancers and add Routes
   for (const ipSpec of services.index.for(spec).withType(AzurePublicIP)) {
     const route = services.convert.publicIp(
@@ -48,7 +57,7 @@ export function convertVNet(
     );
 
     publicInbound.push(...route.inbound);
-    routerRoutes.push(...route.outbound);
+    outboundRoutes.push(...route.outbound);
   }
 
   // Materialize Internal Load Balancers and add Routes
@@ -64,15 +73,14 @@ export function convertVNet(
     }
   }
 
-  routerRoutes.push(
-    {
-      destination: backboneKey,
-      constraints: {destinationIp: `except ${destinationIp}`},
-    },
-    {
-      destination: vNetInboundKey,
-    }
-  );
+  outboundRoutes.push({
+    destination: backboneKey,
+  });
+
+  routerRoutes.push({
+    destination: vNetInboundKey,
+    constraints: {destinationIp: `${destinationIp}`},
+  });
 
   const inboundRoutes: RoutingRuleSpec[] = [];
   // Materialize subnets and create routes to each.
@@ -80,7 +88,7 @@ export function convertVNet(
     const route = services.convert.subnet(
       services,
       subnetSpec,
-      vNetRouterKey,
+      vNetOutboundKey,
       vNetServiceTag
     );
     inboundRoutes.push(route);
@@ -97,6 +105,12 @@ export function convertVNet(
     key: vNetInboundKey,
     name: spec.id,
     routes: inboundRoutes,
+  });
+
+  services.nodes.add({
+    key: vNetOutboundKey,
+    name: spec.id,
+    routes: outboundRoutes,
   });
 
   return {

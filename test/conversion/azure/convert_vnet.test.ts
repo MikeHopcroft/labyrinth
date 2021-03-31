@@ -7,7 +7,6 @@ import {
   AzureSubnet,
   convertVNet,
   GraphServices,
-  VNetResult,
 } from '../../../src/conversion/azure';
 
 // DESIGN NOTE: considered namespacing these items, but their usage became
@@ -22,12 +21,13 @@ import {
   subnet2InboundKey,
   subnet2SourceIps,
   vnet1,
-  vnet1Key,
   vnet1Symbol,
   vnet1SourceIps,
-  vnet1KeyInbound,
+  vnet1InboundKey,
   publicIp1,
   privateIp1SourceIp,
+  vnet1OutboundKey,
+  vnet1RouterKey,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -71,16 +71,16 @@ export default function test() {
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.destination, vnet1Key);
+      assert.equal(result.destination, vnet1RouterKey);
       assert.equal(result.constraints.destinationIp, vnet1SourceIps);
 
       // Verify that subnetConverter() was invoked correctly.
       const log = mocks.subnet.log();
       assert.equal(log[0].params[1], subnet1);
-      assert.equal(log[0].params[2], vnet1Key);
+      assert.equal(log[0].params[2], vnet1OutboundKey);
       assert.equal(log[0].params[3], vnet1Symbol);
       assert.equal(log[1].params[1], subnet2);
-      assert.equal(log[1].params[2], vnet1Key);
+      assert.equal(log[1].params[2], vnet1OutboundKey);
       assert.equal(log[1].params[3], vnet1Symbol);
 
       // Verify the service tag definition.
@@ -93,7 +93,7 @@ export default function test() {
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
-          key: vnet1KeyInbound,
+          key: vnet1InboundKey,
           name: vnet1.id,
           routes: [
             {
@@ -111,21 +111,32 @@ export default function test() {
           ],
         },
         {
-          key: vnet1Key,
+          key: vnet1OutboundKey,
+          name: vnet1.id,
+          routes: [
+            {
+              destination: vnet1RouterKey,
+              constraints: {
+                destinationIp: `${vnet1SourceIps}`,
+              },
+            },
+            {
+              destination: outboundKey,
+            },
+          ],
+        },
+        {
+          key: vnet1RouterKey,
           name: vnet1.id,
           range: {
             sourceIp: vnet1SourceIps,
           },
           routes: [
-            // TODO: VNet should route to its parent, not the internet.
             {
-              destination: outboundKey,
+              destination: vnet1InboundKey,
               constraints: {
-                destinationIp: `except ${vnet1SourceIps}`,
+                destinationIp: `${vnet1SourceIps}`,
               },
-            },
-            {
-              destination: vnet1KeyInbound,
             },
           ],
         },
@@ -166,20 +177,20 @@ export default function test() {
 
     const outboundKey = 'parent';
     convertVNet(services, vnet1, outboundKey, outboundKey);
-    const vnetNode = services.nodes.get(vnet1Key);
+    const vnetNode = services.nodes.get(vnet1OutboundKey);
 
     const expectedRoutes = [
+      {
+        constraints: {
+          destinationIp: `${vnet1SourceIps}`,
+        },
+        destination: vnet1RouterKey,
+      },
       {
         destination: 'public-outbound',
       },
       {
-        constraints: {
-          destinationIp: `except ${vnet1SourceIps}`,
-        },
-        destination: outboundKey,
-      },
-      {
-        destination: vnet1KeyInbound,
+        destination: 'parent',
       },
     ];
 

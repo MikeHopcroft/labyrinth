@@ -26,7 +26,7 @@ import {
   loadBalancer1,
   loadBalancer1Key,
   vnet1,
-  vnet1Key,
+  vnet1RouterKey,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -97,7 +97,7 @@ export default function test() {
           key: publicIpWithPrivateInboundKey,
           routes: [
             {
-              destination: vnet1Key,
+              destination: vnet1RouterKey,
               override: {
                 destinationIp: privateIp1SourceIp,
               },
