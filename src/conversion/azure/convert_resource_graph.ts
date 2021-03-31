@@ -18,13 +18,8 @@ export function convertResourceGraph(services: GraphServices) {
 
   // TODO: Allocate internetNodeKey to avoid possible collisions
   const internetKey = services.getInternetKey();
-  const backboneKeyPrefix = 'AzureBackbone';
-  const backboneInboundKey = services.nodes.createKeyVariant(
-    backboneKeyPrefix,
-    'inbound'
-  );
   const backboneOutboundKey = services.nodes.createKeyVariant(
-    backboneKeyPrefix,
+    'AzureBackbone',
     'outbound'
   );
 
@@ -38,7 +33,6 @@ export function convertResourceGraph(services: GraphServices) {
   // Materialize each virtual network, while saving its NodeKey for later use.
   // Create routes from internet to each virtual network.
   const vNetNodeKeys: string[] = [];
-  const backboneInboundRoutes: RoutingRuleSpec[] = [];
   for (const vnet of services.index.withType(AzureVirtualNetwork)) {
     const vnetResult = services.convert.vnet(
       services,
@@ -80,11 +74,6 @@ export function convertResourceGraph(services: GraphServices) {
   services.nodes.add({
     key: backboneOutboundKey,
     routes: backboneOutboundRoutes,
-  });
-
-  services.nodes.add({
-    key: backboneInboundKey,
-    routes: backboneInboundRoutes,
   });
 
   // Define a service tag for `Internet`, which is referenced in router rules
