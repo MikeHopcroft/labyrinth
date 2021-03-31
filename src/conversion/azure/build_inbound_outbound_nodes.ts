@@ -11,9 +11,9 @@ import {GraphServices} from './graph_services';
 export function buildInboundOutboundNodes(
   services: GraphServices,
   spec: AzureTypedObject,
-  routeBuilder: (parent: string) => SimpleRoutingRuleSpec[],
+  routeBuilder: (outboundNodeKey: string) => SimpleRoutingRuleSpec[],
   nsgRef: AzureReference<AzureNetworkSecurityGroup> | undefined,
-  parent: string,
+  outboundRouteKey: string,
   vnetSymbol: string,
   addressRange: string | undefined = undefined
 ): SimpleRoutingRuleSpec {
@@ -40,7 +40,7 @@ export function buildInboundOutboundNodes(
   const outboundKey =
     nsgRules.outboundRules.length > 0
       ? services.nodes.createOutboundKey(spec)
-      : parent;
+      : outboundRouteKey;
 
   const inboundRoutes = routeBuilder(outboundKey);
 
@@ -64,7 +64,7 @@ export function buildInboundOutboundNodes(
     const outboundNode: NodeSpec = {
       key: outboundKey,
       name: spec.id + '/outbound',
-      routes: [{destination: parent}],
+      routes: [{destination: outboundRouteKey}],
     };
     if (nsgRules.outboundRules.length) {
       outboundNode.filters = nsgRules.outboundRules;

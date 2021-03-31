@@ -15,7 +15,7 @@ import {GraphServices} from './graph_services';
 export function convertNIC(
   services: GraphServices,
   spec: AzureNetworkInterface,
-  parent: string,
+  outboundNodeKey: string,
   vnetSymbol: string
 ): SimpleRoutingRuleSpec {
   services.nodes.markTypeAsUsed(spec);
@@ -71,7 +71,7 @@ export function convertNIC(
   const outboundNode: NodeSpec = {
     key: outboundKey,
     name: spec.id + '/outbound',
-    routes: [{destination: parent}],
+    routes: [{destination: outboundNodeKey}],
   };
 
   if (nsgRules.outboundRules.length) {

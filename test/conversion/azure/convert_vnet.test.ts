@@ -65,8 +65,9 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.vnet()  because our intent
       // is to test the real convertVNet(), instead of its mock.
-      const parentKey = 'parent';
-      const result = convertVNet(services, vnet1, parentKey, parentKey).route;
+      const outboundKey = 'parent';
+      const result = convertVNet(services, vnet1, outboundKey, outboundKey)
+        .route;
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
@@ -118,7 +119,7 @@ export default function test() {
           routes: [
             // TODO: VNet should route to its parent, not the internet.
             {
-              destination: parentKey,
+              destination: outboundKey,
               constraints: {
                 destinationIp: `except ${vnet1SourceIps}`,
               },
@@ -163,8 +164,8 @@ export default function test() {
 
     services.index.addReference(publicIp1, vnet1);
 
-    const parentKey = 'parent';
-    convertVNet(services, vnet1, parentKey, parentKey);
+    const outboundKey = 'parent';
+    convertVNet(services, vnet1, outboundKey, outboundKey);
     const vnetNode = services.nodes.get(vnet1Key);
 
     const expectedRoutes = [
@@ -175,7 +176,7 @@ export default function test() {
         constraints: {
           destinationIp: `except ${vnet1SourceIps}`,
         },
-        destination: parentKey,
+        destination: outboundKey,
       },
       {
         destination: vnet1KeyInbound,

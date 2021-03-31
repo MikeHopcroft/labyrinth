@@ -36,7 +36,7 @@ export interface IConverters {
   nic(
     services: GraphServices,
     spec: AzureNetworkInterface,
-    parent: string,
+    outboundNodeKey: string,
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
   nsg(
@@ -47,7 +47,7 @@ export interface IConverters {
   privateIp(
     services: GraphServices,
     spec: AzureIPConfiguration,
-    parent: string
+    outboundNodeKey: string
   ): SimpleRoutingRuleSpec;
   publicIp(
     services: GraphServices,
@@ -59,13 +59,13 @@ export interface IConverters {
   subnet(
     services: GraphServices,
     spec: AzureSubnet,
-    parent: string,
+    outboundNodeKey: string,
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
   vm(
     services: GraphServices,
     spec: AzureVirtualMachine,
-    parentRoute: RoutingRuleSpec
+    outboundRoute: RoutingRuleSpec
   ): RoutingRuleSpec;
   vnet(
     services: GraphServices,
