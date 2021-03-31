@@ -64,9 +64,8 @@ function publicIpWithPrivateIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(privateIpSpec);
 
-  const keyPrefix = services.nodes.createKey(publicIpSpec);
-  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
-  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
+  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
+  const outboundKey = services.nodes.createOutboundKey(publicIpSpec);
 
   if (!publicIpSpec.properties.ipAddress) {
     throw new TypeError('Invalid Public IP Configuration');
@@ -74,8 +73,7 @@ function publicIpWithPrivateIp(
 
   const vnetId = services.index.getParentId(privateIpSpec.properties.subnet);
   const vnetSpec = services.index.dereference(vnetId);
-  const vnetKey = services.nodes.createKey(vnetSpec);
-  const vnetRouterKey = services.nodes.createKeyVariant(vnetKey, 'router');
+  const vnetRouterKey = services.nodes.createRouterKey(vnetSpec);
 
   // Create inbound node
   services.nodes.add({
@@ -131,8 +129,7 @@ function loadBalancedPublicIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(lbIpSpec);
 
-  const keyPrefix = services.nodes.createKey(publicIpSpec);
-  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
 
   if (!publicIpSpec.properties.ipAddress) {
     throw new TypeError('Invalid Public IP Configuration');
@@ -169,8 +166,7 @@ function isolatedPublicIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP
 ): PublicIpRoutes {
-  const keyPrefix = services.nodes.createKey(publicIpSpec);
-  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
 
   if (!publicIpSpec.properties.ipAddress) {
     throw new TypeError('Invalid Public IP Configuration');

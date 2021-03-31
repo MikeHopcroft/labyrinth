@@ -17,8 +17,6 @@ export function buildInboundOutboundNodes(
   vnetSymbol: string,
   addressRange: string | undefined = undefined
 ): SimpleRoutingRuleSpec {
-  const keyPrefix = services.nodes.createKey(spec);
-
   //
   // NSG rules
   //
@@ -36,12 +34,12 @@ export function buildInboundOutboundNodes(
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
-  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
+  const inboundKey = services.nodes.createInboundKey(spec);
 
   // Only include an outbound node if there are outbound NSG rules.
   const outboundKey =
     nsgRules.outboundRules.length > 0
-      ? services.nodes.createKeyVariant(keyPrefix, 'outbound')
+      ? services.nodes.createOutboundKey(spec)
       : parent;
 
   const inboundRoutes = routeBuilder(outboundKey);

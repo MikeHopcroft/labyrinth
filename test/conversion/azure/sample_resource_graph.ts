@@ -234,14 +234,11 @@ export const publicWithPrivateMissingAddress: AzurePublicIP = {
   properties: {},
 };
 
-const publicIpWithPrivateKey = nodeServices.createKey(publicIpWithPrivate);
-export const publicIpWithPrivateInboundKey = nodeServices.createKeyVariant(
-  publicIpWithPrivateKey,
-  'inbound'
+export const publicIpWithPrivateInboundKey = nodeServices.createInboundKey(
+  publicIpWithPrivate
 );
-export const publicIpWithPrivateOutboundKey = nodeServices.createKeyVariant(
-  publicIpWithPrivateKey,
-  'outbound'
+export const publicIpWithPrivateOutboundKey = nodeServices.createOutboundKey(
+  publicIpWithPrivate
 );
 
 export const isolatedPublicIp: AzurePublicIP = {
@@ -253,10 +250,8 @@ export const isolatedPublicIp: AzurePublicIP = {
     ipAddress: isolatedPublicIpSourceIp,
   },
 };
-const isolatedPublicIpKey = nodeServices.createKey(isolatedPublicIp);
-export const isolatedPublicIpInboundKey = nodeServices.createKeyVariant(
-  isolatedPublicIpKey,
-  'inbound'
+export const isolatedPublicIpInboundKey = nodeServices.createInboundKey(
+  isolatedPublicIp
 );
 
 export const publicIpToFrontEndLoadBalancer: AzurePublicIP = {
@@ -269,12 +264,8 @@ export const publicIpToFrontEndLoadBalancer: AzurePublicIP = {
     ipConfiguration: reference(frontEndIp1Id),
   },
 };
-const publicIpToFrontEndLoadBalancerKey = nodeServices.createKey(
+export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createInboundKey(
   publicIpToFrontEndLoadBalancer
-);
-export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createKeyVariant(
-  publicIpToFrontEndLoadBalancerKey,
-  'inbound'
 );
 
 export const publicIpWithoutIp: AzurePublicIP = {
@@ -301,15 +292,8 @@ export const subnet1: AzureSubnet = {
     networkSecurityGroup: reference(nsg1Id),
   },
 };
-const subnet1Key = nodeServices.createKey(subnet1);
-export const subnet1InboundKey = nodeServices.createKeyVariant(
-  subnet1Key,
-  'inbound'
-);
-export const subnet1OutboundKey = nodeServices.createKeyVariant(
-  subnet1Key,
-  'outbound'
-);
+export const subnet1InboundKey = nodeServices.createInboundKey(subnet1);
+export const subnet1OutboundKey = nodeServices.createOutboundKey(subnet1);
 
 export const subnet2: AzureSubnet = {
   type: AzureObjectType.SUBNET,
@@ -322,15 +306,8 @@ export const subnet2: AzureSubnet = {
     networkSecurityGroup: reference(nsg1Id),
   },
 };
-const subnet2Key = nodeServices.createKey(subnet2);
-export const subnet2InboundKey = nodeServices.createKeyVariant(
-  subnet2Key,
-  'inbound'
-);
-export const subnet2OutboundKey = nodeServices.createKeyVariant(
-  subnet2Key,
-  'outbound'
-);
+export const subnet2InboundKey = nodeServices.createInboundKey(subnet2);
+export const subnet2OutboundKey = nodeServices.createOutboundKey(subnet2);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -398,12 +375,8 @@ export const nic1: AzureNetworkInterface = {
     virtualMachine: reference(vm1),
   },
 };
-const nic1Key = nodeServices.createKey(nic1);
-export const nic1InboundKey = nodeServices.createKeyVariant(nic1Key, 'inbound');
-export const nic1OutboundKey = nodeServices.createKeyVariant(
-  nic1Key,
-  'outbound'
-);
+export const nic1InboundKey = nodeServices.createInboundKey(nic1);
+export const nic1OutboundKey = nodeServices.createOutboundKey(nic1);
 
 export const nicWithoutVm: AzureNetworkInterface = {
   type: AzureObjectType.NIC,
@@ -433,13 +406,9 @@ export const vnet1: AzureVirtualNetwork = {
     subnets: [subnet1, subnet2],
   },
 };
-export const vnet1KeyPrefix = nodeServices.createKey(vnet1);
-export const vnet1Key = nodeServices.createKeyVariant(vnet1KeyPrefix, 'router');
-export const vnet1KeyInbound = nodeServices.createKeyVariant(
-  vnet1KeyPrefix,
-  'inbound'
-);
-export const vnet1Symbol = vnet1KeyPrefix;
+export const vnet1Key = nodeServices.createRouterKey(vnet1);
+export const vnet1KeyInbound = nodeServices.createInboundKey(vnet1);
+export const vnet1Symbol = nodeServices.createKey(vnet1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //

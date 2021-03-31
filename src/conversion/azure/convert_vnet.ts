@@ -20,15 +20,9 @@ export function convertVNet(
   services.nodes.markTypeAsUsed(spec);
 
   const vNetKeyPrefix = services.nodes.createKey(spec);
-  const vNetRouterKey = services.nodes.createKeyVariant(
-    vNetKeyPrefix,
-    'router'
-  );
+  const vNetRouterKey = services.nodes.createRouterKey(spec);
   const vNetServiceTag = vNetKeyPrefix;
-  const vNetInboundKey = services.nodes.createKeyVariant(
-    vNetKeyPrefix,
-    'inbound'
-  );
+  const vNetInboundKey = services.nodes.createInboundKey(spec);
 
   // Compute this VNet's address range by unioning up all of its address prefixes.
   const addressRange = new DRange();

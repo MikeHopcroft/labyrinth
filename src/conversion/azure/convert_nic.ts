@@ -20,9 +20,6 @@ export function convertNIC(
 ): SimpleRoutingRuleSpec {
   services.nodes.markTypeAsUsed(spec);
 
-  const keyPrefix = services.nodes.createKey(spec);
-
-  //
   // NSG rules
   //
   const nsgRef = spec.properties.networkSecurityGroup;
@@ -40,8 +37,8 @@ export function convertNIC(
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
-  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
-  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
+  const inboundKey = services.nodes.createInboundKey(spec);
+  const outboundKey = services.nodes.createOutboundKey(spec);
 
   // Route from VM to this NIC.
   const sourceIp = spec.properties.ipConfigurations
