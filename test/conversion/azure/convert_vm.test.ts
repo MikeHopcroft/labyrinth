@@ -11,8 +11,9 @@ import {convertVM} from '../../../src/conversion/azure';
 import {
   createGraphServicesMock,
   vm1,
-  vm1Key,
+  vm1InboundKey,
   vm1Id,
+  vm1OutboundKey,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -37,11 +38,11 @@ export default function test() {
       const {nodes: observedNodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify result1.
-      assert.equal(result1.destination, vm1Key);
+      assert.equal(result1.destination, vm1InboundKey);
       assert.equal(result1.constraints, undefined);
 
       // Verify result2.
-      assert.equal(result2.destination, vm1Key);
+      assert.equal(result2.destination, vm1InboundKey);
       assert.equal(result2.constraints, undefined);
 
       // Verify no symbol table additions.
@@ -51,8 +52,14 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           endpoint: true,
-          key: vm1Key,
+          key: vm1InboundKey,
           name: vm1Id,
+          routes: [],
+        },
+        {
+          endpoint: true,
+          key: vm1OutboundKey,
+          name: `${vm1Id}/outbound`,
           routes: [route1, route2],
         },
       ];

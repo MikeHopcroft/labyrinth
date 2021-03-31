@@ -24,7 +24,7 @@ import {
   subnet1OutboundKey,
   vnet1Id,
   vm1,
-  vm1Key,
+  vm1InboundKey,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -42,7 +42,7 @@ export default function test() {
 
       mocks.vm.action(() => {
         return {
-          destination: vm1Key,
+          destination: vm1InboundKey,
         };
       });
 
@@ -85,7 +85,7 @@ export default function test() {
           filters: inboundRules,
           routes: [
             {
-              destination: vm1Key,
+              destination: vm1InboundKey,
             },
           ],
         },

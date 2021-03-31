@@ -357,7 +357,8 @@ export const vm1: AzureVirtualMachine = {
   name: vm1Name,
   resourceGroup,
 };
-export const vm1Key = nodeServices.createKey(vm1);
+export const vm1InboundKey = nodeServices.createInboundKey(vm1);
+export const vm1OutboundKey = nodeServices.createOutboundKey(vm1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //

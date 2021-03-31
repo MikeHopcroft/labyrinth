@@ -65,7 +65,7 @@ export interface IConverters {
   vm(
     services: GraphServices,
     spec: AzureVirtualMachine,
-    outboundRoute: RoutingRuleSpec
+    outboundNicRoute: RoutingRuleSpec
   ): RoutingRuleSpec;
   vnet(
     services: GraphServices,

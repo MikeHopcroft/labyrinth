@@ -6,23 +6,39 @@ import {GraphServices} from './graph_services';
 export function convertVM(
   services: GraphServices,
   spec: AzureVirtualMachine,
-  parentRoute: RoutingRuleSpec
+  outboundNicRoute: RoutingRuleSpec
 ): RoutingRuleSpec {
   services.nodes.markTypeAsUsed(spec);
 
-  const key = services.nodes.createKey(spec);
+  const inboundKey = services.nodes.createInboundKey(spec);
+  const outboundKey = services.nodes.createOutboundKey(spec);
+
+  createOrRetrieveNode(services, inboundKey, spec.id);
+  const outboundNode = createOrRetrieveNode(
+    services,
+    outboundKey,
+    `${spec.id}/outbound`
+  );
+  outboundNode.routes.push(outboundNicRoute);
+
+  return {destination: inboundKey};
+}
+
+function createOrRetrieveNode(
+  services: GraphServices,
+  key: string,
+  name: string
+) {
   let node = services.nodes.get(key);
   if (!node) {
     node = {
       key,
-      name: spec.id,
+      name,
       endpoint: true,
       routes: [],
     };
     services.nodes.add(node);
   }
 
-  node.routes.push(parentRoute);
-
-  return {destination: key};
+  return node;
 }
