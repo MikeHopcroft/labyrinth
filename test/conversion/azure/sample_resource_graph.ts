@@ -77,6 +77,10 @@ export const vnet1SourceIps = '10.0.0.0/16';
 export const nsg1Name = 'nsg1';
 export const nsg1Id = nsgId(nsg1Name);
 
+export const nsgWithRules1Name = 'nsg-rules1';
+export const nsgWithRules1Id = nsgId(nsgWithRules1Name);
+export const nsgDefaultRule1 = nsgId(nsgWithRules1Name);
+
 export const subnet1Name = 'subnet1';
 export const subnet1Id = subnetId(vnet1Name, subnet1Name);
 export const subnet1SourceIps = '10.0.0.0/8';
@@ -345,6 +349,61 @@ export const nsg1: AzureNetworkSecurityGroup = {
   },
 };
 export const nsg1Key = nodeServices.createKey(nsg1);
+
+export const nsgWithRules1: AzureNetworkSecurityGroup = {
+  type: AzureObjectType.NSG,
+  id: nsg1Id,
+  name: nsg1Name,
+  resourceGroup,
+  properties: {
+    defaultSecurityRules: [
+      {
+        id: nsgDefaultRuleId(nsg1Id, 'AllowVNetInBound'),
+        name: 'AllowVNetInBound',
+        resourceGroup,
+        type: AzureObjectType.DEFAULT_SECURITY_RULE,
+        properties: {
+          access: 'Allow',
+          destinationAddressPrefix: 'VirtualNetwork',
+          destinationAddressPrefixes: [],
+          destinationPortRange: '*',
+          destinationPortRanges: [],
+          direction: 'Inbound',
+          priority: 65000,
+          protocol: '*',
+          sourceAddressPrefix: 'VirtualNetwork',
+          sourceAddressPrefixes: [],
+          sourcePortRange: '*',
+          sourcePortRanges: [],
+        },
+      },
+    ],
+    securityRules: [
+      {
+        id: nsgRuleId(nsg1Id, 'Rule100'),
+        name: 'Rule100',
+        resourceGroup,
+        type: AzureObjectType.SECURITY_RULE,
+        properties: {
+          access: 'Allow',
+          destinationAddressPrefix: 'VirtualNetwork',
+          destinationAddressPrefixes: [],
+          destinationPortRange: '*',
+          destinationPortRanges: [],
+          direction: 'Inbound',
+          priority: 100,
+          protocol: '*',
+          sourceAddressPrefix: 'VirtualNetwork',
+          sourceAddressPrefixes: [],
+          sourcePortRange: '*',
+          sourcePortRanges: [],
+        },
+      },
+    ],
+    subnets: [reference(subnet1Id)],
+  },
+};
+export const nsgWitRules1Key = nodeServices.createKey(nsgWithRules1);
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -669,6 +728,14 @@ function subnetId(vnet: string, subnet: string) {
 
 function nsgId(name: string) {
   return `${resourceGroupId()}${networkProvider()}/networkSecurityGroups/${name}`;
+}
+
+function nsgDefaultRuleId(nsgId: string, name: string) {
+  return `${nsgId}/defaultSecurtiyRules/${name}`;
+}
+
+function nsgRuleId(nsgId: string, name: string) {
+  return `${nsgId}/securityRules/${name}`;
 }
 
 function nicId(name: string) {
