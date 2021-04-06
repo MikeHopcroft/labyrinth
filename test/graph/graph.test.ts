@@ -892,6 +892,66 @@ describe('Graph', () => {
   });
 
   describe('Backward propagate', () => {
+    it('Linear unidirectional - Inbound', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          endpoint: true,
+          routes: [
+            {
+              destination: 'b',
+              constraints: {sourcePort: '1'},
+            },
+          ],
+        },
+        {
+          key: 'b',
+          routes: [
+            {
+              destination: 'c',
+              constraints: {destinationPort: '2'},
+            },
+          ],
+        },
+        {
+          key: 'c',
+          routes: [
+            {
+              destination: 'd',
+              constraints: {protocol: 'tcp'},
+            },
+          ],
+        },
+        {
+          key: 'd',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = false;
+
+      const traversedPath = paths(graph, 'd', 'a', {outbound});
+
+      assert.equal(
+        traversedPath,
+        trim(`
+          a:
+            routes:
+              source port: 1
+              destination port: 2
+              protocol: tcp
+
+            paths:
+              a => b => c => d
+                source port: 1
+                destination port: 2
+                protocol: tcp`)
+      );
+    });
+
     it('Linear with two NATs', () => {
       const nodes: NodeSpec[] = [
         {

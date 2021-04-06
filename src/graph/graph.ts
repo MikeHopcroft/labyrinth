@@ -351,11 +351,9 @@ export class Graph {
         p = p.previous;
       }
     } else {
+      keys.push(p.edge.edge.from);
       while (p) {
         keys.push(p.edge.edge.to);
-        if (!p.previous) {
-          keys.push(p.edge.edge.from);
-        }
         p = p.previous;
       }
     }
