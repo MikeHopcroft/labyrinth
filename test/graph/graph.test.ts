@@ -952,6 +952,63 @@ describe('Graph', () => {
       );
     });
 
+    it('To node linear with NAT', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          endpoint: true,
+          routes: [
+            {
+              destination: 'b',
+              constraints: {destinationIp: '52.156.96.94'},
+            },
+          ],
+        },
+        {
+          key: 'b',
+          routes: [
+            {
+              destination: 'c',
+              override: {
+                destinationIp: '10.0.0.1',
+              },
+            },
+          ],
+        },
+        {
+          key: 'c',
+          routes: [
+            {
+              destination: 'd',
+              constraints: {destinationIp: '10.0.0.0/16'},
+            },
+          ],
+        },
+        {
+          key: 'd',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = false;
+
+      const traversedPath = paths(graph, 'd', 'a', {outbound});
+      assert.equal(
+        traversedPath,
+        trim(`
+          a:
+            routes:
+              destination ip: 52.156.96.94
+          
+            paths:
+              a => b => c => d
+                destination ip: 52.156.96.94`)
+      );
+    });
+
     it('Linear with two NATs', () => {
       const nodes: NodeSpec[] = [
         {

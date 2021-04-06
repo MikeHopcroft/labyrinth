@@ -149,7 +149,8 @@ export class Graph {
       initialPath,
       flowNodes,
       flowEdges,
-      cycles
+      cycles,
+      outbound
     );
 
     return {cycles, flows: flowNodes};
@@ -161,7 +162,8 @@ export class Graph {
     path: Path | undefined,
     flowNodes: FlowNode[],
     flowEdges: FlowEdge[][],
-    cycles: Path[][]
+    cycles: Path[][],
+    forwardTraversal: boolean
   ) {
     const flowNode = flowNodes[fromIndex];
 
@@ -199,11 +201,16 @@ export class Graph {
       // visit adjacent nodes.
       if (!flowNode.node.isEndpoint || !path) {
         flowNode.active = true;
+
         for (const edge of flowEdges[fromIndex]) {
           let routes = flow.intersect(edge.edge.routes, this.simplifier);
 
           if (edge.edge.override) {
-            routes = routes.overrideDimensions(edge.edge.override);
+            if (forwardTraversal) {
+              routes = routes.overrideDimensions(edge.edge.override);
+            } else {
+              routes = routes.clearOverrides(edge.edge.override);
+            }
           }
 
           if (!routes.isEmpty()) {
@@ -217,7 +224,8 @@ export class Graph {
               },
               flowNodes,
               flowEdges,
-              cycles
+              cycles,
+              forwardTraversal
             );
           }
         }
