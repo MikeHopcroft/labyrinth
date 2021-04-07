@@ -52,7 +52,7 @@
   * NAT
   * Incorporate into some sort of gateway outside the VNet, probably
 * services.ids.createVarient(key, string)
-* delete deprecated folder
+* x delete deprecated folder
 * Look for linter error for if on constant expression
 * Node like a default gateway that routes outbound traffic to public ips, if necessary
 * Consider unit test convenience function:
@@ -62,22 +62,23 @@
 
 
 * Top 2
+  * range decoding: a-b becomes a,b when a and b are adjacent
+  * AzurePOP node
+    * Return traffic routing with TCP flags
   * Synthetic nodes
   * Azure backbone shouldn't route IPs into VNets. These routes should come from public IPs
   * VNet peerings
-  * AzurePOP node
-  * Resource graph sanitizer - tokens, keys, etc.
-  * Sample resource graph output in md files.
-  * x Detecting cycles with NAT
+  * Resource graph sanitizer script - tokens, keys, etc.
+  * Consider putting sample resource graph output in md files. Not sure this would add value.
   * Figure out case normalization for service tags
     * Azure uses TCP and tcp and Tcp
   * Move Azure-specific symbols to dedicated Azure universe.
   * Graph might want to print out the symbol table.
   * RoutingRuleSpec
     * Destination pools
-  * Rename gateway to backbone
+    * Do we still want this feature?
   * Unit test for resourceGraph
-    * Extract createGateway()
+    * Extract createGateway()/createBackbone()
   * Consider adding ranges back to nodes
   * Remove services.getInternetKey()
     * The resource graph is the sole owner of this key
@@ -93,6 +94,8 @@
     * vm: convertVM,
   * Convenience function to initialize GraphServices.
   * Write design note
+  * x Rename gateway to backbone
+  * x Detecting cycles with NAT
   * x List Azure types not processed by conversion process
   * x convertIp() should become convertPrivateIp()
   * x Unit test for convertPublicIp()
