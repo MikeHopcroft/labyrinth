@@ -55,7 +55,7 @@ export default function test() {
       services.index.add(vnet1);
 
       const backboneKey = 'backbone';
-      const internetKey = 'internet';
+      const internetKey = 'Internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
@@ -74,6 +74,7 @@ export default function test() {
             destination: publicIpWithPrivateInboundKey,
             constraints: {
               destinationIp: publicIpWithPrivateSourceIp,
+              sourceIp: internetKey,
             },
           },
         ],
@@ -142,7 +143,7 @@ export default function test() {
       services.index.add(privateIpWithPublic);
 
       const backboneKey = 'backbone';
-      const internetKey = 'internet';
+      const internetKey = 'Internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
@@ -161,6 +162,7 @@ export default function test() {
             destination: isolatedPublicIpInboundKey,
             constraints: {
               destinationIp: isolatedPublicIpSourceIp,
+              sourceIp: internetKey,
             },
           },
         ],
@@ -188,7 +190,7 @@ export default function test() {
       services.index.add(frontEndIpWithPoolRule);
 
       const backboneKey = 'backbone';
-      const internetKey = 'internet';
+      const internetKey = 'Internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
@@ -210,6 +212,7 @@ export default function test() {
             destination: publicIpToFrontEndLoadBalancerInboundKey,
             constraints: {
               destinationIp: publicIpToFrontEndLoadBalancerIp,
+              sourceIp: internetKey,
             },
           },
         ],

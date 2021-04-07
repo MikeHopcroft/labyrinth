@@ -104,12 +104,7 @@ function publicIpWithPrivateIp(
   // TODO: Public IPs should be bound as part of the virutal network process
   return {
     inbound: [
-      {
-        destination: inboundKey,
-        constraints: {
-          destinationIp: publicIpSpec.properties.ipAddress,
-        },
-      },
+      publicIpInbound(services, inboundKey, publicIpSpec.properties.ipAddress),
     ],
     outbound: [
       {
@@ -151,12 +146,7 @@ function loadBalancedPublicIp(
 
   return {
     inbound: [
-      {
-        destination: inboundKey,
-        constraints: {
-          destinationIp: publicIpSpec.properties.ipAddress,
-        },
-      },
+      publicIpInbound(services, inboundKey, publicIpSpec.properties.ipAddress),
     ],
     outbound: [],
   };
@@ -180,14 +170,23 @@ function isolatedPublicIp(
 
   return {
     inbound: [
-      {
-        destination: inboundKey,
-        constraints: {
-          destinationIp: publicIpSpec.properties.ipAddress,
-        },
-      },
+      publicIpInbound(services, inboundKey, publicIpSpec.properties.ipAddress),
     ],
     outbound: [],
+  };
+}
+
+function publicIpInbound(
+  services: GraphServices,
+  destination: string,
+  destinationIp: string
+) {
+  return {
+    destination,
+    constraints: {
+      destinationIp,
+      sourceIp: services.getInternetKey(),
+    },
   };
 }
 
