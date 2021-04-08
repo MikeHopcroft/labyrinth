@@ -1,9 +1,4 @@
-import {
-  asIpConfigSpecId,
-  AzureVMSSIpResult,
-  getIpConfigWithNic,
-  parseAsVMSSNicConfiguration,
-} from '../azure_id';
+import {asRootId, AzureId} from '../azure_id';
 import {AzureObjectIndex} from '../azure_object_index';
 import {
   AzureNetworkInterface,
@@ -12,6 +7,11 @@ import {
   AzureVirtualMachine,
   AzureVirtualMachineScaleSet,
 } from '../azure_types';
+import {
+  asIpConfigSpecId,
+  getNetworkConfigRecipe,
+  parseAsVMSSNicConfiguration,
+} from './vmss_id';
 
 import {createVmssIpSpec} from './vmss_ip';
 
@@ -20,11 +20,11 @@ export function createVmssNetworkIntefaceSpec(
   index: AzureObjectIndex
 ): AzureNetworkInterface {
   const id = ref.id;
-  const vmssId = parseAsVMSSNicConfiguration(ref);
+  const azureId = parseAsVMSSNicConfiguration(ref);
   const vmssSpec = index.dereference<AzureVirtualMachineScaleSet>(
-    vmssId.vmssId
+    asRootId(azureId)
   );
-  const vmssNicSpec = getIpConfigWithNic(vmssId, vmssSpec, true).nicSpec;
+  const vmssNicSpec = getNetworkConfigRecipe(vmssSpec, azureId);
   const ipConfigurations = [
     ...vmssNicSpec.properties.ipConfigurations.map(x =>
       createVmssIpSpec(asIpConfigSpecId(ref, x), index)
@@ -41,7 +41,7 @@ export function createVmssNetworkIntefaceSpec(
       ipConfigurations,
       virtualMachine: createVmssVmSepc(
         index.getParentId({id, resourceGroup: ''}).id,
-        vmssId,
+        azureId,
         vmssSpec,
         index
       ),
@@ -58,13 +58,13 @@ export function createVmssNetworkIntefaceSpec(
 
 export function createVmssVmSepc(
   id: string,
-  vmssId: AzureVMSSIpResult,
+  vmssId: AzureId,
   vmssSpec: AzureVirtualMachineScaleSet,
   index: AzureObjectIndex
 ): AzureVirtualMachine {
   const vm: AzureVirtualMachine = {
     id: id,
-    name: `${vmssSpec.name}-${vmssId.logicalId}`,
+    name: `${vmssSpec.name}-${vmssId.subResource?.name}`,
     resourceGroup: vmssSpec.resourceGroup,
     type: AzureObjectType.VIRTUAL_MACHINE,
   };

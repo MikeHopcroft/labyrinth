@@ -1,4 +1,4 @@
-import {getIpConfigWithNic, parseAsVMSSIpConfiguration} from '../azure_id';
+import {asRootId} from '../azure_id';
 import {AzureObjectIndex} from '../azure_object_index';
 import {
   AzureObjectBase,
@@ -7,6 +7,11 @@ import {
   AzureSubnet,
   AzureVirtualMachineScaleSet,
 } from '../azure_types';
+import {
+  getIpConfigRecipe,
+  getNetworkConfigRecipe,
+  parseAsVMSSIpConfiguration,
+} from './vmss_id';
 
 export function createVmssIpSpec(
   ref: AzureObjectBase,
@@ -16,22 +21,23 @@ export function createVmssIpSpec(
     return index.dereference(ref);
   }
 
-  const vmssId = parseAsVMSSIpConfiguration(ref);
+  const azureId = parseAsVMSSIpConfiguration(ref);
   const vmssSpec = index.dereference<AzureVirtualMachineScaleSet>(
-    vmssId.vmssId
+    asRootId(azureId)
   );
-  const vmssIpSpec = getIpConfigWithNic(vmssId, vmssSpec).ipconfigSpec;
+  const nicRecipe = getNetworkConfigRecipe(vmssSpec, azureId);
+  const ipRecipe = getIpConfigRecipe(nicRecipe, azureId);
 
-  const subnet = index.dereference<AzureSubnet>(vmssIpSpec.properties.subnet);
+  const subnet = index.dereference<AzureSubnet>(ipRecipe.properties.subnet);
   index.allocator.registerSubnet(subnet.id, subnet.properties.addressPrefix);
 
   const ip: AzurePrivateIP = {
     id: ref.id,
     type: AzureObjectType.PRIVATE_IP,
-    name: vmssIpSpec.name,
+    name: ipRecipe.name,
     resourceGroup: vmssSpec.resourceGroup,
     properties: {
-      subnet: vmssIpSpec.properties.subnet,
+      subnet: ipRecipe.properties.subnet,
       privateIPAddress: index.allocator.allocate(subnet.id, ref.id),
     },
   };
