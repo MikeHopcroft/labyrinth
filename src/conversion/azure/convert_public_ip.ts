@@ -23,9 +23,11 @@ export function convertPublicIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(publicIpSpec);
 
-  const outboundInternetKey = whenPublicIpPrefersInternet(publicIpSpec)
-    ? internetKey
-    : backboneKey;
+  const outboundRoutingKey = selectRoutingPreference(
+    publicIpSpec,
+    internetKey,
+    backboneKey
+  );
 
   if (publicIpSpec.properties.ipAddress) {
     const publicIp = publicIpSpec.properties.ipAddress;
@@ -41,7 +43,7 @@ export function convertPublicIp(
           publicIpSpec,
           publicIp,
           ipconfig,
-          outboundInternetKey
+          outboundRoutingKey
         );
       } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
         return loadBalancedPublicIp(services, publicIpSpec, publicIp, ipconfig);
@@ -176,10 +178,18 @@ function publicIpInbound(
   };
 }
 
-function whenPublicIpPrefersInternet(spec: AzurePublicIP): boolean {
+function selectRoutingPreference(
+  spec: AzurePublicIP,
+  internetKey: string,
+  backboneKey: string
+): string {
   const tag = spec.properties.ipTags?.find(
     x => x.ipTagType === 'RoutingPreference'
   );
 
-  return tag?.tag === 'Internet';
+  if (tag?.tag === 'Internet') {
+    return internetKey;
+  }
+
+  return backboneKey;
 }
