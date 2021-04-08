@@ -166,7 +166,6 @@ export class Graph {
     forwardTraversal: boolean
   ) {
     const flowNode = flowNodes[fromIndex];
-
     if (path) {
       // If we're not at the start node, combine the inbound flow with existing
       // flow and add the path to the node's collection of existing paths.
@@ -203,14 +202,30 @@ export class Graph {
         flowNode.active = true;
 
         for (const edge of flowEdges[fromIndex]) {
-          let routes = flow.intersect(edge.edge.routes, this.simplifier);
+          let overrideFlow = flow;
 
-          if (edge.edge.override) {
-            if (forwardTraversal) {
-              routes = routes.overrideDimensions(edge.edge.override);
+          if (!forwardTraversal && edge.edge.override) {
+            const overrides = Disjunction.create<AnyRuleSpec>([
+              edge.edge.override,
+            ]);
+
+            if (overrideFlow.intersect(overrides).isEmpty()) {
+              // If a traversal over the edge will not produce a set which
+              // intersects with our existing flow, then do not traverse
+              // this path
+              continue;
             } else {
-              routes = routes.clearOverrides(edge.edge.override);
+              overrideFlow = overrideFlow.clearOverrides(edge.edge.override);
             }
+          }
+
+          let routes = overrideFlow.intersect(
+            edge.edge.routes,
+            this.simplifier
+          );
+
+          if (forwardTraversal && edge.edge.override) {
+            routes = routes.overrideDimensions(edge.edge.override);
           }
 
           if (!routes.isEmpty()) {

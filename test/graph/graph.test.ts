@@ -952,6 +952,164 @@ describe('Graph', () => {
       );
     });
 
+    it('Validate overrides will intersect on TO route', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a1',
+          routes: [
+            {
+              destination: 'vr',
+              override: {destinationIp: '10.0.88.4'},
+            },
+          ],
+        },
+        {
+          key: 'vr',
+          routes: [
+            {
+              destination: 'vi',
+              constraints: {destinationIp: '10.0.0.0/16'},
+            },
+          ],
+        },
+        {
+          key: 'vi',
+          routes: [
+            {
+              destination: 's2',
+              constraints: {destinationIp: '10.0.100.0/24'},
+            },
+          ],
+        },
+        {
+          key: 's2',
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = false;
+
+      const traversedPath = paths(graph, 's2', 'a1', {outbound});
+      assert.equal(
+        traversedPath,
+        trim(`
+        a1:
+          routes:
+            (no routes)
+
+          paths:
+            (no paths)`)
+      );
+    });
+
+    it('Validate overrides intersection and no flow side affects', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'I',
+          endpoint: true,
+          routes: [
+            {
+              destination: 'a1',
+              constraints: {destinationIp: '52.0.0.1'},
+            },
+            {
+              destination: 'a2',
+              constraints: {destinationIp: '53.0.0.53'},
+            },
+          ],
+        },
+        {
+          key: 'a1',
+          routes: [
+            {
+              destination: 'vr',
+              override: {destinationIp: '10.0.88.4'},
+            },
+          ],
+        },
+        {
+          key: 'a2',
+          routes: [
+            {
+              destination: 'l',
+            },
+          ],
+        },
+        {
+          key: 'l',
+          routes: [
+            {
+              destination: 'vi',
+              constraints: {
+                destinationIp: '53.0.0.53',
+                destinationPort: '80',
+              },
+              override: {
+                destinationIp: '10.0.100.4',
+                destinationPort: '8080',
+              },
+            },
+          ],
+        },
+        {
+          key: 'vr',
+          routes: [
+            {
+              destination: 'l',
+              constraints: {destinationIp: '53.0.0.53'},
+            },
+            {
+              destination: 'vi',
+              constraints: {destinationIp: '10.0.0.0/16'},
+            },
+          ],
+        },
+        {
+          key: 'vi',
+          routes: [
+            {
+              destination: 's1',
+              constraints: {destinationIp: '10.0.88.0/24'},
+            },
+            {
+              destination: 's2',
+              constraints: {destinationIp: '10.0.100.0/24'},
+            },
+          ],
+        },
+        {
+          key: 's1',
+          routes: [],
+        },
+        {
+          key: 's2',
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+      const outbound = false;
+
+      const traversedPath = paths(graph, 's2', 'I', {outbound});
+      console.log(traversedPath);
+      assert.equal(
+        traversedPath,
+        trim(`
+        I:
+          routes:
+            destination ip: 53.0.0.53
+            destination port: http
+        
+          paths:
+            I => a2 => l => vi => s2
+              destination ip: 53.0.0.53
+              destination port: http`)
+      );
+    });
+
     it('To node linear with NAT', () => {
       const nodes: NodeSpec[] = [
         {
@@ -1124,8 +1282,10 @@ describe('Graph', () => {
       const backProject = true;
       const outbound = true;
 
+      const result = paths(graph, 'client', 'serverA', {outbound, backProject});
+      console.log(result);
       assert.equal(
-        paths(graph, 'client', 'serverA', {outbound, backProject}),
+        result,
         trim(`
           serverA:
             routes:
