@@ -1,5 +1,4 @@
 import {AddressAllocator} from './address_allocator';
-import {isValidVMSSIpConfigId, isValidVMSSIpNic} from './azure_id';
 import {
   AnyAzureObject,
   AzureObjectBase,
@@ -7,7 +6,6 @@ import {
   AzureReference,
   AzureResourceGraph,
 } from './azure_types';
-import {createVmssIpSpec, createVmssNetworkIntefaceSpec} from './convert_vmss';
 
 import {walkAzureTypedObjects} from './walk';
 
@@ -68,15 +66,11 @@ export class AzureObjectIndex {
   // Also, do we wanta dereference() method that knows about AzureReferences
   // or should we just rely on the basic getItem()?
   dereference<T extends AnyAzureObject>(ref: AzureReference<T>) {
-    let item = this.idToAzureObject.get(ref.id);
+    const item = this.idToAzureObject.get(ref.id);
 
     if (item === undefined) {
-      item = realizeSyntheticSpec(ref, this);
-
-      if (item === undefined) {
-        const message = `Unknown Azure resource graph id "${ref.id}"`;
-        throw new TypeError(message);
-      }
+      const message = `Unknown Azure resource graph id "${ref.id}"`;
+      throw new TypeError(message);
     }
     return item as T;
   }
@@ -116,19 +110,4 @@ export class AzureObjectIndex {
     const idParts = input.id.split('/');
     return idParts.length === 9;
   }
-}
-
-function realizeSyntheticSpec(
-  ref: AzureObjectBase,
-  index: AzureObjectIndex
-): AnyAzureObject | undefined {
-  if (isValidVMSSIpConfigId(ref.id)) {
-    const nic = index.getParentId(ref);
-    createVmssNetworkIntefaceSpec(nic, index);
-    return createVmssIpSpec(ref, index);
-  } else if (isValidVMSSIpNic(ref.id)) {
-    return createVmssNetworkIntefaceSpec(ref, index);
-  }
-
-  return undefined;
 }

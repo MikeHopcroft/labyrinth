@@ -1,21 +1,26 @@
 import {GraphSpec} from '../../graph';
 
+import {isValidVMSSIpConfigId, isValidVMSSIpNic} from './azure_id';
 import {AzureObjectIndex} from './azure_object_index';
 import {
+  AnyAzureObject,
   AnyIpConfiguration,
   AzureLoadBalancer,
   AzureLoadBalancerBackendPool,
   AzureNetworkInterface,
+  AzureObjectBase,
   AzureObjectType,
   AzurePrivateIP,
   AzurePublicIP,
   AzureResourceGraph,
   AzureSubnet,
 } from './azure_types';
+import {createVmssIpSpec, createVmssNetworkIntefaceSpec} from './convert_vmss';
 import {GraphServices} from './graph_services';
 import {normalizeCase} from './normalize_case';
 import {SymbolTable} from './symbol_table';
 import {unusedTypes} from './unused_types';
+import {walkAzureObjectBases} from './walk';
 
 export interface ConversionResults {
   graph: GraphSpec;
@@ -85,6 +90,15 @@ export function convert(
     }
   }
 
+  // Hydrate synthetic types such as Virtual Machine Scale Set NICs
+  for (const ref of walkAzureObjectBases(resourceGraphSpec)) {
+    if (index.has(ref.id)) {
+      continue;
+    }
+
+    realizeIfSynthetic(ref, index);
+  }
+
   // Setup references between public ips and their vnets
   for (const publicIp of services.index.withType(AzurePublicIP)) {
     if (publicIp.properties.ipConfiguration) {
@@ -144,4 +158,19 @@ export function convert(
     graph,
     unusedTypes: unusedTypes(services, resourceGraphSpec),
   };
+}
+
+function realizeIfSynthetic(
+  ref: AzureObjectBase,
+  index: AzureObjectIndex
+): AnyAzureObject | undefined {
+  if (isValidVMSSIpConfigId(ref.id)) {
+    const nic = index.getParentId(ref);
+    createVmssNetworkIntefaceSpec(nic, index);
+    return createVmssIpSpec(ref, index);
+  } else if (isValidVMSSIpNic(ref.id)) {
+    return createVmssNetworkIntefaceSpec(ref, index);
+  }
+
+  return undefined;
 }
