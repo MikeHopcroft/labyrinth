@@ -1,5 +1,5 @@
 import {AzureResourceGraph, AzureTypedObject} from './azure_types';
-import {walkAzureObjectBases} from './walk';
+import {walkGraph} from './walk';
 
 // DESIGN NOTE: Azure resource graphs use an inconsistent mixture of upper and
 // lower casing in the AzureTypedObject's `type` field. This codebase assumes
@@ -10,11 +10,17 @@ import {walkAzureObjectBases} from './walk';
 // resource graph. The input graph is side effected. The `id` fields are not
 // changed.
 export function normalizeCase(resourceGraphSpec: AzureResourceGraph) {
-  for (const item of walkAzureObjectBases(resourceGraphSpec)) {
-    item.id = item.id.toLowerCase();
-    const typedItem = item as AzureTypedObject;
-    if (typedItem.type) {
-      typedItem.type = typedItem.type.toLowerCase();
+  for (const item of walkGraph<AzureTypedObject>(resourceGraphSpec)) {
+    if (item.id) {
+      item.id = item.id.toLowerCase();
+    }
+
+    if (item.name) {
+      item.name = item.name.toLowerCase();
+    }
+
+    if (item.type) {
+      item.type = item.type.toLowerCase();
     }
   }
 }
