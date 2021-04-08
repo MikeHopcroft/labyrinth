@@ -27,30 +27,32 @@ export function convertPublicIp(
     ? internetKey
     : backboneKey;
 
-  if (publicIpSpec.properties.ipConfiguration) {
-    const ipconfig = services.index.dereference(
-      publicIpSpec.properties.ipConfiguration
-    );
+  if (publicIpSpec.properties.ipAddress) {
+    const publicIp = publicIpSpec.properties.ipAddress;
 
-    if (
-      ipconfig.type === AzureObjectType.PRIVATE_IP &&
-      publicIpSpec.properties.ipAddress
-    ) {
-      return publicIpWithPrivateIp(
-        services,
-        publicIpSpec,
-        ipconfig,
-        outboundInternetKey
+    if (publicIpSpec.properties.ipConfiguration) {
+      const ipconfig = services.index.dereference(
+        publicIpSpec.properties.ipConfiguration
       );
-    } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
-      return loadBalancedPublicIp(services, publicIpSpec, ipconfig);
+
+      if (ipconfig.type === AzureObjectType.PRIVATE_IP) {
+        return publicIpWithPrivateIp(
+          services,
+          publicIpSpec,
+          publicIp,
+          ipconfig,
+          outboundInternetKey
+        );
+      } else if (ipconfig.type === AzureObjectType.LOAD_BALANCER_FRONT_END_IP) {
+        return loadBalancedPublicIp(services, publicIpSpec, publicIp, ipconfig);
+      } else {
+        services.trackUnsupportedSpec('convertPublicIp', ipconfig);
+      }
     } else {
-      services.trackUnsupportedSpec('convertPublicIp', ipconfig);
+      // This public ip exists in the resource graph, but is not bound to an
+      // internal ip address.
+      return isolatedPublicIp(services, publicIpSpec, publicIp);
     }
-  } else if (publicIpSpec.properties.ipAddress) {
-    // This public ip exists in the resource graph, but is not bound to an
-    // internal ip address.
-    return isolatedPublicIp(services, publicIpSpec);
   }
 
   return {inbound: [], outbound: []};
@@ -59,6 +61,7 @@ export function convertPublicIp(
 function publicIpWithPrivateIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
+  publicIp: string,
   privateIpSpec: AzurePrivateIP,
   outboundInternetKey: string
 ): PublicIpRoutes {
@@ -66,10 +69,6 @@ function publicIpWithPrivateIp(
 
   const inboundKey = services.nodes.createInboundKey(publicIpSpec);
   const outboundKey = services.nodes.createOutboundKey(publicIpSpec);
-
-  if (!publicIpSpec.properties.ipAddress) {
-    throw new TypeError('Invalid Public IP Configuration');
-  }
 
   const vnetId = services.index.getParentId(privateIpSpec.properties.subnet);
   const vnetSpec = services.index.dereference(vnetId);
@@ -95,7 +94,7 @@ function publicIpWithPrivateIp(
       {
         destination: outboundInternetKey,
         override: {
-          sourceIp: publicIpSpec.properties.ipAddress,
+          sourceIp: publicIp,
         },
       },
     ],
@@ -103,9 +102,7 @@ function publicIpWithPrivateIp(
 
   // TODO: Public IPs should be bound as part of the virutal network process
   return {
-    inbound: [
-      publicIpInbound(services, inboundKey, publicIpSpec.properties.ipAddress),
-    ],
+    inbound: [publicIpInbound(services, inboundKey, publicIp)],
     outbound: [
       {
         destination: outboundKey,
@@ -120,16 +117,12 @@ function publicIpWithPrivateIp(
 function loadBalancedPublicIp(
   services: GraphServices,
   publicIpSpec: AzurePublicIP,
+  publicIp: string,
   lbIpSpec: AzureLoadBalancerFrontEndIp
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(lbIpSpec);
 
   const inboundKey = services.nodes.createInboundKey(publicIpSpec);
-
-  if (!publicIpSpec.properties.ipAddress) {
-    throw new TypeError('Invalid Public IP Configuration');
-  }
-
   const lbRef = services.index.getParentId(lbIpSpec);
   const lbSpec = services.index.dereference<AzureLoadBalancer>(lbRef);
   const lbKey = services.nodes.createKey(lbSpec);
@@ -145,22 +138,17 @@ function loadBalancedPublicIp(
   });
 
   return {
-    inbound: [
-      publicIpInbound(services, inboundKey, publicIpSpec.properties.ipAddress),
-    ],
+    inbound: [publicIpInbound(services, inboundKey, publicIp)],
     outbound: [],
   };
 }
 
 function isolatedPublicIp(
   services: GraphServices,
-  publicIpSpec: AzurePublicIP
+  publicIpSpec: AzurePublicIP,
+  publicIp: string
 ): PublicIpRoutes {
   const inboundKey = services.nodes.createInboundKey(publicIpSpec);
-
-  if (!publicIpSpec.properties.ipAddress) {
-    throw new TypeError('Invalid Public IP Configuration');
-  }
 
   // Create inbound node
   services.nodes.add({
@@ -169,9 +157,7 @@ function isolatedPublicIp(
   });
 
   return {
-    inbound: [
-      publicIpInbound(services, inboundKey, publicIpSpec.properties.ipAddress),
-    ],
+    inbound: [publicIpInbound(services, inboundKey, publicIp)],
     outbound: [],
   };
 }
