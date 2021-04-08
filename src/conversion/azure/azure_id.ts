@@ -79,9 +79,7 @@ export function asNicConfigSpecId(input: AzureVMSSIpResult) {
     input.logicalId,
     ResourceTypes.NetworkInterfaces,
     input.interfaceConfig,
-  ]
-    .join('/')
-    .toLowerCase();
+  ].join('/');
 }
 
 export function asIpConfigSpecId(
@@ -89,7 +87,7 @@ export function asIpConfigSpecId(
   ipConfig: AzureVmssIpConfiguration
 ): AzureObjectBase {
   return {
-    id: `${ref.id}/${ResourceTypes.IpConfigurations}/${ipConfig.name}`.toLowerCase(),
+    id: `${ref.id}/${ResourceTypes.IpConfigurations}/${ipConfig.name}`,
     resourceGroup: ref.resourceGroup,
   };
 }
@@ -121,7 +119,7 @@ export function getIpConfigWithNic(
   useDefault = false
 ) {
   const networkConfig = vmssSpec.properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.find(
-    input => equalsIgnoreCase(input.name, vmssIds.interfaceConfig)
+    input => input.name === vmssIds.interfaceConfig
   );
 
   if (!networkConfig) {
@@ -130,8 +128,8 @@ export function getIpConfigWithNic(
     );
   }
 
-  let ipconfigSpec = networkConfig.properties.ipConfigurations.find(input =>
-    equalsIgnoreCase(input.name, vmssIds.ipConfig)
+  let ipconfigSpec = networkConfig.properties.ipConfigurations.find(
+    input => input.name === vmssIds.ipConfig
   );
 
   if (!ipconfigSpec) {
@@ -189,7 +187,7 @@ function isTypeAndLevel(
 }
 
 function normalizeAndSplitId(input: string): string[] {
-  return input.toLowerCase().split('/');
+  return input.split('/');
 }
 
 function getLevel(parts: string[]): ResourceLevels {
@@ -207,8 +205,4 @@ function getLevel(parts: string[]): ResourceLevels {
         `Unsupported resource level '${parts.length}' '${parts.join('/')}'`
       );
   }
-}
-
-function equalsIgnoreCase(inputA: string, inputB: string) {
-  return inputA?.toLowerCase() === inputB?.toLowerCase();
 }

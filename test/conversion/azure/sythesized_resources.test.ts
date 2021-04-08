@@ -31,27 +31,5 @@ export default function test() {
       const result = isValidVMSSIpNic(input);
       assert.equal(result, true);
     });
-
-    it('id should be normalized on sythesis', () => {
-      const expectedIpConfigId =
-        '/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/anyresourcegroup/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/vmss-default-networkinterfacce/ipconfigurations/vmss-default-ipconfiguration';
-      const expectedNicId =
-        '/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/anyresourcegroup/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/0/networkinterfaces/vmss-default-networkinterfacce';
-
-      const {services} = createGraphServicesMock();
-      services.index.add(subnet1);
-      services.index.add(vmss1);
-      const input = vmssVm0NicId;
-
-      const result = createVmssNetworkIntefaceSpec(
-        {id: input, resourceGroup: 'test'},
-        services.index
-      );
-      assert.equal(result.id, expectedNicId);
-      assert.equal(
-        result.properties.ipConfigurations[0].id,
-        expectedIpConfigId
-      );
-    });
   });
 }

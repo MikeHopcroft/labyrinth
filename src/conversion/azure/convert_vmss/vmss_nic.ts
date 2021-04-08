@@ -19,7 +19,7 @@ export function createVmssNetworkIntefaceSpec(
   ref: AzureObjectBase,
   index: AzureObjectIndex
 ): AzureNetworkInterface {
-  const id = ref.id.toLowerCase();
+  const id = ref.id;
   const vmssId = parseAsVMSSNicConfiguration(ref);
   const vmssSpec = index.dereference<AzureVirtualMachineScaleSet>(
     vmssId.vmssId
