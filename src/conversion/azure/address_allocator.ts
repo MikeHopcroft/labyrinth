@@ -53,23 +53,23 @@ class SubnetAllocation {
   }
 
   allocate(ipId: string): string {
-    let newIp = this.idsToIps.get(ipId);
-
-    if (!newIp) {
-      while (this.ipsAllocated.has(this.index)) {
-        this.index++;
-      }
-
-      if (this.index > this.max) {
-        throw new TypeError(
-          `Ran out of ips while attempting to allocate for ${ipId}`
-        );
-      }
-
-      this.ipsAllocated.add(this.index);
-      newIp = ip.fromLong(this.index);
-      this.idsToIps.set(ipId, newIp);
+    if (this.idsToIps.get(ipId)) {
+      throw new TypeError(`Attempt to allocate an ip twice '${ipId}'`);
     }
+
+    while (this.ipsAllocated.has(this.index)) {
+      this.index++;
+    }
+
+    if (this.index > this.max) {
+      throw new TypeError(
+        `Ran out of ips while attempting to allocate for ${ipId}`
+      );
+    }
+
+    this.ipsAllocated.add(this.index);
+    const newIp = ip.fromLong(this.index);
+    this.idsToIps.set(ipId, newIp);
 
     return newIp;
   }

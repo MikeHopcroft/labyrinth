@@ -30,13 +30,14 @@ export default function test() {
       assert.equal(actualIp, '10.0.0.2');
     });
 
-    it('id requested twice', () => {
+    it('throw if id requested twice', () => {
       const allocator = new AddressAllocator();
       allocator.registerSubnet(subnet1Id, subnet1SourceIps);
+      allocator.allocate(subnet1Id, privateIp1Id);
 
-      const originalIp = allocator.allocate(subnet1Id, privateIp1Id);
-      const secondRequest = allocator.allocate(subnet1Id, privateIp1Id);
-      assert.equal(secondRequest, originalIp);
+      assert.throws(() => {
+        allocator.allocate(subnet1Id, privateIp1Id);
+      });
     });
 
     it('throws error if same id requested for different subnets', () => {
