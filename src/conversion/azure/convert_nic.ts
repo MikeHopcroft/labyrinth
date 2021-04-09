@@ -60,6 +60,7 @@ export function convertNIC(
   //
   const inboundNode: NodeSpec = {
     key: inboundKey,
+    friendlyName: spec.name,
     name: spec.id + '/inbound',
     routes: [routeToVM],
   };
@@ -70,6 +71,7 @@ export function convertNIC(
 
   const outboundNode: NodeSpec = {
     key: outboundKey,
+    friendlyName: spec.name,
     name: spec.id + '/outbound',
     routes: [{destination: outboundNodeKey}],
   };

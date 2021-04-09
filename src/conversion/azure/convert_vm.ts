@@ -13,9 +13,10 @@ export function convertVM(
   const inboundKey = services.nodes.createInboundKey(spec);
   const outboundKey = services.nodes.createOutboundKey(spec);
 
-  createOrRetrieveNode(services, inboundKey, spec.id);
+  createOrRetrieveNode(services, spec, inboundKey, spec.id);
   const outboundNode = createOrRetrieveNode(
     services,
+    spec,
     outboundKey,
     `${spec.id}/outbound`
   );
@@ -26,6 +27,7 @@ export function convertVM(
 
 function createOrRetrieveNode(
   services: GraphServices,
+  spec: AzureVirtualMachine,
   key: string,
   name: string
 ) {
@@ -33,6 +35,7 @@ function createOrRetrieveNode(
   if (!node) {
     node = {
       key,
+      friendlyName: spec.name,
       name,
       endpoint: true,
       routes: [],

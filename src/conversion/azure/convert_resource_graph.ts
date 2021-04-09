@@ -73,6 +73,7 @@ export function convertResourceGraph(services: GraphServices) {
   //
   services.nodes.add({
     key: backboneOutboundKey,
+    friendlyName: 'AzureBackbone',
     routes: backboneOutboundRoutes,
   });
 

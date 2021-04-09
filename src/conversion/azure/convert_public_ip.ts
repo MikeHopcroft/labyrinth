@@ -79,6 +79,7 @@ function publicIpWithPrivateIp(
   // Create inbound node
   services.nodes.add({
     key: inboundKey,
+    friendlyName: publicIpSpec.name,
     routes: [
       {
         destination: vnetRouterKey,
@@ -92,6 +93,7 @@ function publicIpWithPrivateIp(
   // Create outbound node
   services.nodes.add({
     key: outboundKey,
+    friendlyName: publicIpSpec.name,
     routes: [
       {
         destination: outboundInternetKey,
@@ -132,6 +134,7 @@ function loadBalancedPublicIp(
   // Create inbound node
   services.nodes.add({
     key: inboundKey,
+    friendlyName: publicIpSpec.name,
     routes: [
       {
         destination: lbKey,
@@ -155,6 +158,7 @@ function isolatedPublicIp(
   // Create inbound node
   services.nodes.add({
     key: inboundKey,
+    friendlyName: publicIpSpec.name,
     routes: [],
   });
 
