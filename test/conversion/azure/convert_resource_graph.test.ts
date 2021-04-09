@@ -21,6 +21,7 @@ export default function test() {
       const expectedNodes = [
         {
           key: 'AzureBackbone/outbound',
+          friendlyName: 'AzureBackbone',
           routes: [
             {
               destination: 'Internet',

@@ -53,12 +53,14 @@ export default function test() {
         {
           endpoint: true,
           key: vm1InboundKey,
+          friendlyName: vm1.name,
           name: vm1Id,
           routes: [],
         },
         {
           endpoint: true,
           key: vm1OutboundKey,
+          friendlyName: vm1.name,
           name: `${vm1Id}/outbound`,
           routes: [route1, route2],
         },
