@@ -19,11 +19,13 @@ export function convertNSG(
   const inboundRules: RuleSpec[] = [];
   const outboudRules: RuleSpec[] = [];
 
-  for (const rule of spec.properties.defaultSecurityRules) {
+  for (const rule of spec.properties.securityRules.sort(sortByPriority)) {
     writeRule(services, rule, vnetSymbol, inboundRules, outboudRules);
   }
 
-  for (const rule of spec.properties.securityRules) {
+  for (const rule of spec.properties.defaultSecurityRules.sort(
+    sortByPriority
+  )) {
     writeRule(services, rule, vnetSymbol, inboundRules, outboudRules);
   }
 
@@ -31,6 +33,16 @@ export function convertNSG(
     outboundRules: outboudRules,
     inboundRules: inboundRules,
   };
+}
+
+function sortByPriority(a: AzureSecurityRule, b: AzureSecurityRule): number {
+  if (a.properties.priority === b.properties.priority) {
+    return 0;
+  } else if (a.properties.priority >= b.properties.priority) {
+    return 1;
+  } else {
+    return -1;
+  }
 }
 
 function writeRule(

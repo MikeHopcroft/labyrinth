@@ -1,29 +1,28 @@
 import DRange from 'drange';
 
 import {formatIpLiteral, parseIp} from '../../dimensions';
-import {RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
+import {RoutingRuleSpec} from '../../graph';
 
-import {AzureLoadBalancer, AzureVirtualNetwork} from './azure_types';
-import {isInternalLoadBalancer} from './convert_load_balancer';
+import {
+  AzureLoadBalancer,
+  AzurePublicIP,
+  AzureVirtualNetwork,
+} from './azure_types';
+import {VNetResult} from './converters';
 import {GraphServices} from './graph_services';
 
 export function convertVNet(
   services: GraphServices,
   spec: AzureVirtualNetwork,
-  parent: string
-): SimpleRoutingRuleSpec {
+  backboneKey: string,
+  internetKey: string
+): VNetResult {
   services.nodes.markTypeAsUsed(spec);
 
-  const vNetKeyPrefix = services.nodes.createKey(spec);
-  const vNetRouterKey = services.nodes.createKeyVariant(
-    vNetKeyPrefix,
-    'router'
-  );
-  const vNetServiceTag = vNetKeyPrefix;
-  const vNetInboundKey = services.nodes.createKeyVariant(
-    vNetKeyPrefix,
-    'inbound'
-  );
+  const vNetServiceTag = services.nodes.createKey(spec);
+  const vNetRouterKey = services.nodes.createRouterKey(spec);
+  const vNetInboundKey = services.nodes.createInboundKey(spec);
+  const vNetOutboundKey = services.nodes.createOutboundKey(spec);
 
   // Compute this VNet's address range by unioning up all of its address prefixes.
   const addressRange = new DRange();
@@ -37,28 +36,50 @@ export function convertVNet(
   // Create outbound rule (traffic leaving vnet).
   // TODO: this should not route directly to the internet.
   // It should route to its parent (which will likely be the AzureBackbone or Gateway)
-  const routerRoutes: RoutingRuleSpec[] = [
+  const routerRoutes: RoutingRuleSpec[] = [];
+  const publicInbound: RoutingRuleSpec[] = [];
+  const outboundRoutes: RoutingRuleSpec[] = [
     {
-      destination: parent,
-      constraints: {destinationIp: `except ${destinationIp}`},
+      destination: vNetRouterKey,
+      constraints: {
+        destinationIp,
+      },
     },
   ];
 
   // Materialize Internal Load Balancers and add Routes
-  for (const lbSpec of services.index.for(spec).withType(AzureLoadBalancer)) {
-    if (isInternalLoadBalancer(lbSpec)) {
-      const route = services.convert.internalLoadBalancer(
-        services,
-        lbSpec,
-        vNetInboundKey
-      );
+  for (const ipSpec of services.index.for(spec).withType(AzurePublicIP)) {
+    const route = services.convert.publicIp(
+      services,
+      ipSpec,
+      backboneKey,
+      internetKey
+    );
 
+    publicInbound.push(...route.inbound);
+    outboundRoutes.push(...route.outbound);
+  }
+
+  // Materialize Internal Load Balancers and add Routes
+  for (const lbSpec of services.index.for(spec).withType(AzureLoadBalancer)) {
+    const route = services.convert.loadBalancer(
+      services,
+      lbSpec,
+      vNetInboundKey
+    );
+
+    if (route) {
       routerRoutes.push(route);
     }
   }
 
+  outboundRoutes.push({
+    destination: backboneKey,
+  });
+
   routerRoutes.push({
     destination: vNetInboundKey,
+    constraints: {destinationIp: `${destinationIp}`},
   });
 
   const inboundRoutes: RoutingRuleSpec[] = [];
@@ -67,7 +88,7 @@ export function convertVNet(
     const route = services.convert.subnet(
       services,
       subnetSpec,
-      vNetRouterKey,
+      vNetOutboundKey,
       vNetServiceTag
     );
     inboundRoutes.push(route);
@@ -86,8 +107,20 @@ export function convertVNet(
     routes: inboundRoutes,
   });
 
+  services.nodes.add({
+    key: vNetOutboundKey,
+    name: spec.id,
+    routes: outboundRoutes,
+  });
+
   return {
-    destination: vNetRouterKey,
-    constraints: {destinationIp},
+    route: {
+      destination: vNetRouterKey,
+      constraints: {destinationIp},
+    },
+    publicRoutes: {
+      inbound: publicInbound,
+      outbound: [],
+    },
   };
 }

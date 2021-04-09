@@ -21,10 +21,13 @@ import {
   subnet2InboundKey,
   subnet2SourceIps,
   vnet1,
-  vnet1Key,
   vnet1Symbol,
   vnet1SourceIps,
-  vnet1KeyInbound,
+  vnet1InboundKey,
+  publicIp1,
+  privateIp1SourceIp,
+  vnet1OutboundKey,
+  vnet1RouterKey,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -62,21 +65,22 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.vnet()  because our intent
       // is to test the real convertVNet(), instead of its mock.
-      const parentKey = 'parent';
-      const result = convertVNet(services, vnet1, parentKey);
+      const outboundKey = 'parent';
+      const result = convertVNet(services, vnet1, outboundKey, outboundKey)
+        .route;
       const {nodes: observedNodes} = services.getLabyrinthGraphSpec();
 
       // Verify the return value.
-      assert.equal(result.destination, vnet1Key);
+      assert.equal(result.destination, vnet1RouterKey);
       assert.equal(result.constraints.destinationIp, vnet1SourceIps);
 
       // Verify that subnetConverter() was invoked correctly.
       const log = mocks.subnet.log();
       assert.equal(log[0].params[1], subnet1);
-      assert.equal(log[0].params[2], vnet1Key);
+      assert.equal(log[0].params[2], vnet1OutboundKey);
       assert.equal(log[0].params[3], vnet1Symbol);
       assert.equal(log[1].params[1], subnet2);
-      assert.equal(log[1].params[2], vnet1Key);
+      assert.equal(log[1].params[2], vnet1OutboundKey);
       assert.equal(log[1].params[3], vnet1Symbol);
 
       // Verify the service tag definition.
@@ -89,26 +93,7 @@ export default function test() {
       // Verify that correct VNet node(s) were created in services.
       const expectedNodes: NodeSpec[] = [
         {
-          key: vnet1Key,
-          name: vnet1.id,
-          range: {
-            sourceIp: vnet1SourceIps,
-          },
-          routes: [
-            // TODO: VNet should route to its parent, not the internet.
-            {
-              destination: parentKey,
-              constraints: {
-                destinationIp: `except ${vnet1SourceIps}`,
-              },
-            },
-            {
-              destination: vnet1KeyInbound,
-            },
-          ],
-        },
-        {
-          key: vnet1KeyInbound,
+          key: vnet1InboundKey,
           name: vnet1.id,
           routes: [
             {
@@ -125,9 +110,90 @@ export default function test() {
             },
           ],
         },
+        {
+          key: vnet1OutboundKey,
+          name: vnet1.id,
+          routes: [
+            {
+              destination: vnet1RouterKey,
+              constraints: {
+                destinationIp: `${vnet1SourceIps}`,
+              },
+            },
+            {
+              destination: outboundKey,
+            },
+          ],
+        },
+        {
+          key: vnet1RouterKey,
+          name: vnet1.id,
+          range: {
+            sourceIp: vnet1SourceIps,
+          },
+          routes: [
+            {
+              destination: vnet1InboundKey,
+              constraints: {
+                destinationIp: `${vnet1SourceIps}`,
+              },
+            },
+          ],
+        },
       ];
 
       assert.deepEqual(observedNodes, expectedNodes);
     });
+  });
+
+  it('Verify VNET Public IP Route', () => {
+    const {services, mocks} = createGraphServicesMock();
+
+    mocks.publicIp.action(() => {
+      return {
+        inbound: [
+          {
+            destination: 'public-inbound',
+          },
+        ],
+        outbound: [
+          {
+            destination: 'public-outbound',
+          },
+        ],
+      };
+    });
+
+    mocks.subnet.action(() => {
+      return {
+        destination: 'subnet-route',
+        constraints: {
+          destinationIp: privateIp1SourceIp,
+        },
+      };
+    });
+
+    services.index.addReference(publicIp1, vnet1);
+
+    const outboundKey = 'parent';
+    convertVNet(services, vnet1, outboundKey, outboundKey);
+    const vnetNode = services.nodes.get(vnet1OutboundKey);
+
+    const expectedRoutes = [
+      {
+        constraints: {
+          destinationIp: `${vnet1SourceIps}`,
+        },
+        destination: vnet1RouterKey,
+      },
+      {
+        destination: 'public-outbound',
+      },
+      {
+        destination: 'parent',
+      },
+    ];
+
+    assert.deepEqual(vnetNode?.routes, expectedRoutes);
   });
 }

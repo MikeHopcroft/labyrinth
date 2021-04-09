@@ -3,6 +3,7 @@ import {NodeSpec, RoutingRuleSpec, SimpleRoutingRuleSpec} from '../../graph';
 import {
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
+  AzureReference,
   AzureVirtualMachine,
 } from './azure_types';
 
@@ -14,20 +15,11 @@ import {GraphServices} from './graph_services';
 export function convertNIC(
   services: GraphServices,
   spec: AzureNetworkInterface,
-  parent: string,
+  outboundNodeKey: string,
   vnetSymbol: string
 ): SimpleRoutingRuleSpec {
   services.nodes.markTypeAsUsed(spec);
 
-  if (!spec.properties.virtualMachine) {
-    // The NIC is not attached to a VM which means that it is not active
-    // and cannot be routed to. In this case no NIC should be added
-    throw new TypeError('NIC without VM are not supported');
-  }
-
-  const keyPrefix = services.nodes.createKey(spec);
-
-  //
   // NSG rules
   //
   const nsgRef = spec.properties.networkSecurityGroup;
@@ -45,8 +37,8 @@ export function convertNIC(
 
   // TODO: come up with safer naming scheme. Want to avoid collisions
   // with other names.
-  const inboundKey = services.nodes.createKeyVariant(keyPrefix, 'inbound');
-  const outboundKey = services.nodes.createKeyVariant(keyPrefix, 'outbound');
+  const inboundKey = services.nodes.createInboundKey(spec);
+  const outboundKey = services.nodes.createOutboundKey(spec);
 
   // Route from VM to this NIC.
   const sourceIp = spec.properties.ipConfigurations
@@ -57,11 +49,11 @@ export function convertNIC(
     constraints: {sourceIp},
   };
 
-  // Materialize the VM.
-  const vmSpec = services.index.dereference<AzureVirtualMachine>(
+  const routeToVM = createVmRoute(
+    services,
+    routeFromVM,
     spec.properties.virtualMachine
   );
-  const routeToVM = services.convert.vm(services, vmSpec, routeFromVM);
 
   //
   // Construct inbound node
@@ -79,7 +71,7 @@ export function convertNIC(
   const outboundNode: NodeSpec = {
     key: outboundKey,
     name: spec.id + '/outbound',
-    routes: [{destination: parent}],
+    routes: [{destination: outboundNodeKey}],
   };
 
   if (nsgRules.outboundRules.length) {
@@ -99,4 +91,27 @@ export function convertNIC(
     destination: inboundKey,
     constraints: {destinationIp: sourceIp},
   };
+}
+
+function createVmRoute(
+  services: GraphServices,
+  routeFromVM: RoutingRuleSpec,
+  vmRef?: AzureReference<AzureVirtualMachine>
+): RoutingRuleSpec {
+  // The NIC is not attached to a VM which means that it is not active
+  // and cannot be routed to. In this case no valid route can be created.
+  //
+  // Three possible paths could be taken here. First, the code could throw.
+  // Second, it could returned undefined. Finally, it could create a route
+  // to an Unbound Node.
+  //
+  // The third option has been choosen as this provides the user with the
+  // most relevant information and does not attempt to hide or obscure
+  // the route.
+  if (vmRef) {
+    const vmSpec = services.index.dereference<AzureVirtualMachine>(vmRef);
+    return services.convert.vm(services, vmSpec, routeFromVM);
+  }
+
+  return services.createUnboundNicAndReturnRoute();
 }

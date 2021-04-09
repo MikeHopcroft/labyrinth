@@ -19,6 +19,7 @@ const input = [
       name: 'nameB',
       resourceGroup: 'rg',
       type: 'typeB',
+      properties: {},
     },
     other: {
       // Not an AzureTypedObject
@@ -40,6 +41,7 @@ const input = [
         name: 'nameD',
         resourceGroup: 'rg',
         type: 'typeD',
+        properties: {},
       },
       {
         // Should not be included.
@@ -52,6 +54,7 @@ const input = [
         name: 'nameE',
         resourceGroup: 'rg',
         type: 'typeE',
+        properties: {},
       },
     ],
   },
@@ -61,12 +64,20 @@ const input = [
     name: 'nameF',
     resourceGroup: 'rg',
     type: 'typeF',
+    properties: {},
   },
   {
     // Not an AzureTypedObject
     id: 'r',
     name: 'nameR',
     resourceGroup: 'rg',
+  },
+  {
+    // Should NOT be included
+    id: 'z',
+    name: 'nameZ',
+    resourceGroup: 'rg',
+    type: 'typeZ',
   },
 ];
 
@@ -80,7 +91,7 @@ export default function test() {
     });
 
     it('walkAzureObjectBases()', () => {
-      const expected = ['a', 'b', 'q', 'c', 'd', 'e', 'f', 'r'];
+      const expected = ['a', 'b', 'q', 'c', 'd', 'e', 'f', 'r', 'z'];
       const output = [...walkAzureObjectBases(input)].map(x => x.id);
 
       assert.deepEqual(output, expected);

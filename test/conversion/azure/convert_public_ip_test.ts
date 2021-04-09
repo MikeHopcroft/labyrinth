@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NodeSpec, RoutingRuleSpec} from '../../../src';
+import {NodeSpec} from '../../../src';
 
 import {convertPublicIp, PublicIpRoutes} from '../../../src/conversion/azure';
 
@@ -22,6 +22,11 @@ import {
   publicIpWithPrivateSourceIp,
   publicIpToFrontEndLoadBalancerInboundKey,
   publicIpWithoutIp,
+  publicWithPrivateMissingAddress,
+  loadBalancer1,
+  loadBalancer1Key,
+  vnet1,
+  vnet1RouterKey,
 } from './sample_resource_graph';
 
 export default function test() {
@@ -47,9 +52,10 @@ export default function test() {
     it('publicIp with privateIp', () => {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);
+      services.index.add(vnet1);
 
       const backboneKey = 'backbone';
-      const internetKey = 'internet';
+      const internetKey = 'Internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
@@ -68,15 +74,16 @@ export default function test() {
             destination: publicIpWithPrivateInboundKey,
             constraints: {
               destinationIp: publicIpWithPrivateSourceIp,
+              sourceIp: internetKey,
             },
           },
         ],
         outbound: [
           {
-            destination: publicIpWithPrivateOutboundKey,
             constraints: {
               sourceIp: privateIp1SourceIp,
             },
+            destination: publicIpWithPrivateOutboundKey,
           },
         ],
       };
@@ -91,7 +98,7 @@ export default function test() {
           key: publicIpWithPrivateInboundKey,
           routes: [
             {
-              destination: backboneKey,
+              destination: vnet1RouterKey,
               override: {
                 destinationIp: privateIp1SourceIp,
               },
@@ -102,7 +109,7 @@ export default function test() {
           key: publicIpWithPrivateOutboundKey,
           routes: [
             {
-              destination: internetKey,
+              destination: backboneKey,
               override: {
                 sourceIp: publicIpWithPrivateSourceIp,
               },
@@ -113,12 +120,30 @@ export default function test() {
       assert.deepEqual(nodes, expectedNodes);
     });
 
+    it('publicIp bound to privateIp with no address', () => {
+      const {services} = createGraphServicesMock();
+      services.index.add(publicWithPrivateMissingAddress);
+
+      const backboneKey = 'backbone';
+      const internetKey = 'internet';
+
+      // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
+      // to test the real convertIp(), instead of its mock.
+      const result = convertPublicIp(
+        services,
+        publicWithPrivateMissingAddress,
+        backboneKey,
+        internetKey
+      );
+      assert.deepEqual(result, {inbound: [], outbound: []});
+    });
+
     it('isolated publicIp', () => {
       const {services} = createGraphServicesMock();
       services.index.add(privateIpWithPublic);
 
       const backboneKey = 'backbone';
-      const internetKey = 'internet';
+      const internetKey = 'Internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
@@ -137,6 +162,7 @@ export default function test() {
             destination: isolatedPublicIpInboundKey,
             constraints: {
               destinationIp: isolatedPublicIpSourceIp,
+              sourceIp: internetKey,
             },
           },
         ],
@@ -157,23 +183,14 @@ export default function test() {
       assert.deepEqual(nodes, expectedNodes);
     });
 
-    it('front end load balancer - pool', () => {
-      const {services, mocks} = createGraphServicesMock();
-      // TODO: REVIEW: do we need to add this specific rule?
-      // Or just any rule that can be dereferenced?
-      // services.index.add(frontEndIpWithNatRule);
+    it('load balanced public ip', () => {
+      const {services} = createGraphServicesMock();
+
+      services.index.add(loadBalancer1);
       services.index.add(frontEndIpWithPoolRule);
 
-      const route: RoutingRuleSpec = {
-        destination: 'abc',
-      };
-
-      mocks.loadBalancerFrontend.action(() => {
-        return route;
-      });
-
       const backboneKey = 'backbone';
-      const internetKey = 'internet';
+      const internetKey = 'Internet';
 
       // DESIGN NOTE: cannot call services.convert.ip()  because our intent is
       // to test the real convertIp(), instead of its mock.
@@ -195,6 +212,7 @@ export default function test() {
             destination: publicIpToFrontEndLoadBalancerInboundKey,
             constraints: {
               destinationIp: publicIpToFrontEndLoadBalancerIp,
+              sourceIp: internetKey,
             },
           },
         ],
@@ -202,18 +220,15 @@ export default function test() {
       };
       assert.deepEqual(result, expectedResult);
 
-      // Verify that loadBalancerFrontend() was invoked correctly.
-      const log = mocks.loadBalancerFrontend.log();
-      assert.equal(log.length, 1);
-      // assert.equal(log[0].params[1], frontEndIpWithNatRule);
-      assert.equal(log[0].params[1], frontEndIpWithPoolRule);
-      assert.equal(log[0].params[2], backboneKey);
-
       // Verify graph
       const expectedNodes: NodeSpec[] = [
         {
           key: publicIpToFrontEndLoadBalancerInboundKey,
-          routes: [route],
+          routes: [
+            {
+              destination: loadBalancer1Key,
+            },
+          ],
         },
       ];
       assert.deepEqual(nodes, expectedNodes);

@@ -6,7 +6,7 @@ import {GraphServices} from './graph_services';
 export function convertPrivateIp(
   services: GraphServices,
   spec: AzurePrivateIP,
-  parent: string
+  outboundNodeKey: string
 ): SimpleRoutingRuleSpec {
   services.nodes.markTypeAsUsed(spec);
 
@@ -15,7 +15,7 @@ export function convertPrivateIp(
 
   const routes: SimpleRoutingRuleSpec[] = [
     {
-      destination: parent,
+      destination: outboundNodeKey,
       constraints: {destinationIp: `except ${sourceIp}`},
     },
   ];

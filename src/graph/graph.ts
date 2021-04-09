@@ -149,7 +149,8 @@ export class Graph {
       initialPath,
       flowNodes,
       flowEdges,
-      cycles
+      cycles,
+      outbound
     );
 
     return {cycles, flows: flowNodes};
@@ -161,10 +162,10 @@ export class Graph {
     path: Path | undefined,
     flowNodes: FlowNode[],
     flowEdges: FlowEdge[][],
-    cycles: Path[][]
+    cycles: Path[][],
+    forwardTraversal: boolean
   ) {
     const flowNode = flowNodes[fromIndex];
-
     if (path) {
       // If we're not at the start node, combine the inbound flow with existing
       // flow and add the path to the node's collection of existing paths.
@@ -199,10 +200,31 @@ export class Graph {
       // visit adjacent nodes.
       if (!flowNode.node.isEndpoint || !path) {
         flowNode.active = true;
-        for (const edge of flowEdges[fromIndex]) {
-          let routes = flow.intersect(edge.edge.routes, this.simplifier);
 
-          if (edge.edge.override) {
+        for (const edge of flowEdges[fromIndex]) {
+          let overrideFlow = flow;
+
+          if (!forwardTraversal && edge.edge.override) {
+            const overrides = Disjunction.create<AnyRuleSpec>([
+              edge.edge.override,
+            ]);
+
+            if (overrideFlow.intersect(overrides).isEmpty()) {
+              // If a traversal over the edge will not produce a set which
+              // intersects with our existing flow, then do not traverse
+              // this path
+              continue;
+            } else {
+              overrideFlow = overrideFlow.clearOverrides(edge.edge.override);
+            }
+          }
+
+          let routes = overrideFlow.intersect(
+            edge.edge.routes,
+            this.simplifier
+          );
+
+          if (forwardTraversal && edge.edge.override) {
             routes = routes.overrideDimensions(edge.edge.override);
           }
 
@@ -217,7 +239,8 @@ export class Graph {
               },
               flowNodes,
               flowEdges,
-              cycles
+              cycles,
+              forwardTraversal
             );
           }
         }
@@ -351,11 +374,9 @@ export class Graph {
         p = p.previous;
       }
     } else {
+      keys.push(p.edge.edge.from);
       while (p) {
         keys.push(p.edge.edge.to);
-        if (!p.previous) {
-          keys.push(p.edge.edge.from);
-        }
         p = p.previous;
       }
     }

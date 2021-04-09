@@ -54,6 +54,21 @@ export class NodeServices {
     }
   }
 
+  createRouterKey(item: AzureTypedObject) {
+    const prefix = this.createKey(item);
+    return this.createKeyVariant(prefix, 'router');
+  }
+
+  createInboundKey(item: AzureTypedObject) {
+    const prefix = this.createKey(item);
+    return this.createKeyVariant(prefix, 'inbound');
+  }
+
+  createOutboundKey(item: AzureTypedObject) {
+    const prefix = this.createKey(item);
+    return this.createKeyVariant(prefix, 'outbound');
+  }
+
   createKeyVariant(key: string, suffix: string) {
     return key + '/' + suffix;
   }

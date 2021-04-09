@@ -24,7 +24,7 @@ import {
   subnet1InboundKey,
   subnet1OutboundKey,
   subnet1SourceIps,
-  vnet1Key,
+  vnet1RouterKey,
   vnet1Symbol,
 } from './sample_resource_graph';
 
@@ -61,7 +61,12 @@ export default function test() {
 
       // DESIGN NOTE: cannot call services.convert.vnet() because our intent
       // is to test the real convertVNet(), instead of its mock.
-      const result = convertSubnet(services, subnet1, vnet1Key, vnet1Symbol);
+      const result = convertSubnet(
+        services,
+        subnet1,
+        vnet1RouterKey,
+        vnet1Symbol
+      );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify no symbol table additions.
@@ -106,7 +111,7 @@ export default function test() {
           filters: outboundRules,
           routes: [
             {
-              destination: vnet1Key,
+              destination: vnet1RouterKey,
             },
           ],
         },

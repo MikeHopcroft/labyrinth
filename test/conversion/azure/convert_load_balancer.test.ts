@@ -1,48 +1,64 @@
 import {assert} from 'chai';
 import 'mocha';
 
-import {NodeSpec, RoutingRuleSpec} from '../../../src';
-import {
-  convertInternalLoadBalancer,
-  convertLoadBalancerFrontEndIp,
-} from '../../../src/conversion/azure/convert_load_balancer';
+import {NodeSpec, SimpleRoutingRuleSpec} from '../../../src';
+import {convertLoadBalancer} from '../../../src/conversion/azure/convert_load_balancer';
 
 import {
   backendPool1,
-  backendPool1SourceIp,
   createGraphServicesMock,
-  frontEndIpWithNatRule,
-  frontEndIpWithNatRuleKey,
-  frontEndIpWithPoolRule,
-  frontEndIpWithPoolRuleKey,
   loadBalancer1,
-  loadBalancer1Key,
+  loadBalancerNoRules,
+  loadBalancerWithNatRule,
+  loadBalancerWithNatRuleKey,
+  loadBalancerWithUnboundNatRule,
   natRule1,
   poolRule1,
   privateIp1,
+  privateIp1SourceIp,
   privateIp2,
+  privateIp2SourceIp,
   privateIpToLoadBalancer,
+  publicIp1,
+  publicIp1SourceIp,
+  unboundNatRule1,
 } from './sample_resource_graph';
 
 export default function test() {
   describe('convertLoadBalancer()', () => {
+    it('Unconfigured return undefined', () => {
+      const {services} = createGraphServicesMock();
+
+      const route = convertLoadBalancer(
+        services,
+        loadBalancerNoRules,
+        'unused'
+      );
+      assert.equal(undefined, route);
+    });
+
     it('load balancer nat rule', () => {
       const {services} = createGraphServicesMock();
 
+      services.index.add(publicIp1);
       services.index.add(privateIp1);
       services.index.add(natRule1);
+      services.index.add(poolRule1);
 
-      const backboneKey = 'test-backbone';
-      const route = convertLoadBalancerFrontEndIp(
+      const subnetKey = 'test-subnet';
+      const route = convertLoadBalancer(
         services,
-        frontEndIpWithNatRule,
-        backboneKey
+        loadBalancerWithNatRule,
+        subnetKey
       );
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify return value
-      const expectedRoute: RoutingRuleSpec = {
-        destination: frontEndIpWithNatRuleKey,
+      const expectedRoute: SimpleRoutingRuleSpec = {
+        destination: loadBalancerWithNatRuleKey,
+        constraints: {
+          destinationIp: publicIp1SourceIp,
+        },
       };
       assert.deepEqual(route, expectedRoute);
 
@@ -52,17 +68,18 @@ export default function test() {
       // Verify graph
       const expectedNodes: NodeSpec[] = [
         {
-          key: frontEndIpWithNatRuleKey,
+          key: loadBalancerWithNatRuleKey,
           routes: [
             {
-              destination: backboneKey,
+              destination: subnetKey,
               constraints: {
-                destinationPort: natRule1.properties.frontendPort.toString(),
-                protocol: natRule1.properties.protocol,
+                destinationIp: publicIp1SourceIp,
+                destinationPort: '5000',
+                protocol: 'Tcp',
               },
               override: {
-                destinationIp: privateIp1.properties.privateIPAddress,
-                destinationPort: natRule1.properties.backendPort.toString(),
+                destinationIp: privateIp1SourceIp,
+                destinationPort: '22',
               },
             },
           ],
@@ -71,93 +88,55 @@ export default function test() {
       assert.deepEqual(nodes, expectedNodes);
     });
 
-    it('load balancer pool rule', () => {
+    it('Unbound nat rule', () => {
       const {services} = createGraphServicesMock();
-      services.index.add(backendPool1);
+
+      services.index.add(publicIp1);
+      services.index.add(unboundNatRule1);
+
+      const subnetKey = 'test-subnet';
+      convertLoadBalancer(services, loadBalancerWithUnboundNatRule, subnetKey);
+      const {nodes} = services.getLabyrinthGraphSpec();
+
+      const expectedNodes: NodeSpec[] = [
+        {
+          key: loadBalancerWithNatRuleKey,
+          routes: [
+            {
+              destination: 'UnboundRule',
+              constraints: {
+                destinationIp: publicIp1SourceIp,
+                destinationPort: '5000',
+                protocol: 'Tcp',
+              },
+              override: {
+                destinationPort: '22',
+              },
+            },
+          ],
+        },
+        {
+          key: 'UnboundRule',
+          routes: [],
+        },
+      ];
+      assert.deepEqual(nodes, expectedNodes);
+    });
+
+    it('internal load balancer with pool rool', () => {
+      const {services} = createGraphServicesMock();
       services.index.add(poolRule1);
+      services.index.add(backendPool1);
       services.index.add(privateIp1);
       services.index.add(privateIp2);
 
-      const backboneKey = 'test-backbone';
-      const route = convertLoadBalancerFrontEndIp(
-        services,
-        frontEndIpWithPoolRule,
-        backboneKey
-      );
+      const subnetKey = 'test-subnet';
+      const route = convertLoadBalancer(services, loadBalancer1, subnetKey);
       const {nodes, symbols} = services.getLabyrinthGraphSpec();
 
       // Verify return value
-      const expectedRoute: RoutingRuleSpec = {
-        destination: frontEndIpWithPoolRuleKey,
-      };
-      assert.deepEqual(route, expectedRoute);
-
-      // Verify no symbol table additions.
-      assert.equal(symbols.length, 0);
-
-      // Verify graph
-      const expectedNodes: NodeSpec[] = [
-        {
-          key: frontEndIpWithPoolRuleKey,
-          routes: [
-            {
-              destination: backboneKey,
-              constraints: {
-                destinationPort: natRule1.properties.frontendPort.toString(),
-                protocol: natRule1.properties.protocol,
-              },
-              override: {
-                destinationIp: backendPool1SourceIp,
-                destinationPort: natRule1.properties.backendPort.toString(),
-              },
-            },
-          ],
-        },
-      ];
-      assert.deepEqual(nodes, expectedNodes);
-    });
-
-    it('Contract with route materialization', () => {
-      const {services, mocks} = createGraphServicesMock();
-
-      mocks.loadBalancerFrontend.action(() => {
-        return {
-          destination: 'foo',
-          constraints: {destinationIp: 'bar'},
-        };
-      });
-
-      const vnetKey = 'test-vnet';
-      convertInternalLoadBalancer(services, loadBalancer1, vnetKey);
-      // Verify that nsgConverter() was invoked correctly.
-      const frontLog = mocks.loadBalancerFrontend.log();
-      const frontendIp = loadBalancer1.properties.frontendIPConfigurations[0];
-      assert.equal(frontLog.length, 1);
-      assert.equal(frontLog[0].params[1], frontendIp);
-      assert.equal(frontLog[0].params[2], vnetKey);
-    });
-
-    it('internal load balancer', () => {
-      const {services, mocks} = createGraphServicesMock();
-
-      mocks.loadBalancerFrontend.action(() => {
-        return {
-          destination: 'foo',
-          constraints: {destinationIp: 'bar'},
-        };
-      });
-
-      const vnetKey = 'test-vnet';
-      const route = convertInternalLoadBalancer(
-        services,
-        loadBalancer1,
-        vnetKey
-      );
-      const {nodes, symbols} = services.getLabyrinthGraphSpec();
-
-      // Verify return value
-      const expectedRoute: RoutingRuleSpec = {
-        destination: loadBalancer1Key,
+      const expectedRoute: SimpleRoutingRuleSpec = {
+        destination: loadBalancerWithNatRuleKey,
         constraints: {
           destinationIp: privateIpToLoadBalancer,
         },
@@ -170,12 +149,18 @@ export default function test() {
       // Verify graph
       const expectedNodes: NodeSpec[] = [
         {
-          key: loadBalancer1Key,
+          key: loadBalancerWithNatRuleKey,
           routes: [
             {
-              destination: 'foo',
+              destination: subnetKey,
               constraints: {
-                destinationIp: 'bar',
+                destinationIp: privateIpToLoadBalancer,
+                destinationPort: '5000',
+                protocol: 'Tcp',
+              },
+              override: {
+                destinationIp: `${privateIp1SourceIp},${privateIp2SourceIp}`,
+                destinationPort: '22',
               },
             },
           ],

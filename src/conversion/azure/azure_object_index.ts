@@ -1,3 +1,4 @@
+import {AddressAllocator} from './address_allocator';
 import {
   AnyAzureObject,
   AzureObjectBase,
@@ -9,6 +10,7 @@ import {
 import {walkAzureTypedObjects} from './walk';
 
 export class AzureObjectIndex {
+  readonly allocator: AddressAllocator;
   private readonly idToAzureObject = new Map<string, AnyAzureObject>();
   private readonly typeToAzureObjects = new Map<
     AzureObjectType,
@@ -20,6 +22,7 @@ export class AzureObjectIndex {
   >();
 
   constructor(spec: AzureResourceGraph) {
+    this.allocator = new AddressAllocator();
     for (const item of walkAzureTypedObjects(spec)) {
       this.add(item as AnyAzureObject);
     }
@@ -64,6 +67,7 @@ export class AzureObjectIndex {
   // or should we just rely on the basic getItem()?
   dereference<T extends AnyAzureObject>(ref: AzureReference<T>) {
     const item = this.idToAzureObject.get(ref.id);
+
     if (item === undefined) {
       const message = `Unknown Azure resource graph id "${ref.id}"`;
       throw new TypeError(message);

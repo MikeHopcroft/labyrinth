@@ -4,7 +4,6 @@ import {RuleSpec} from '../../rules';
 import {
   AzureIPConfiguration,
   AzureLoadBalancer,
-  AzureLoadBalancerFrontEndIp,
   AzureNetworkInterface,
   AzureNetworkSecurityGroup,
   AzurePublicIP,
@@ -20,24 +19,24 @@ export interface NSGRuleSpecs {
   readonly inboundRules: RuleSpec[];
 }
 
+export interface VNetResult {
+  route: SimpleRoutingRuleSpec;
+  publicRoutes: PublicIpRoutes;
+}
+
 // DESIGN NOTE: IConverters exists to allow mocking of individual
 // converters with resorting to monkey patching.
 //
 export interface IConverters {
-  internalLoadBalancer(
+  loadBalancer(
     services: GraphServices,
     spec: AzureLoadBalancer,
     vnetKey: string
-  ): SimpleRoutingRuleSpec;
-  loadBalancerFrontend(
-    services: GraphServices,
-    spec: AzureLoadBalancerFrontEndIp,
-    backboneKey: string
-  ): RoutingRuleSpec;
+  ): SimpleRoutingRuleSpec | undefined;
   nic(
     services: GraphServices,
     spec: AzureNetworkInterface,
-    parent: string,
+    outboundNodeKey: string,
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
   nsg(
@@ -48,7 +47,7 @@ export interface IConverters {
   privateIp(
     services: GraphServices,
     spec: AzureIPConfiguration,
-    parent: string
+    outboundNodeKey: string
   ): SimpleRoutingRuleSpec;
   publicIp(
     services: GraphServices,
@@ -60,17 +59,18 @@ export interface IConverters {
   subnet(
     services: GraphServices,
     spec: AzureSubnet,
-    parent: string,
+    outboundNodeKey: string,
     vnetSymbol: string
   ): SimpleRoutingRuleSpec;
   vm(
     services: GraphServices,
     spec: AzureVirtualMachine,
-    parentRoute: RoutingRuleSpec
+    outboundNicRoute: RoutingRuleSpec
   ): RoutingRuleSpec;
   vnet(
     services: GraphServices,
     spec: AzureVirtualNetwork,
-    parent: string
-  ): SimpleRoutingRuleSpec;
+    backboneOutboundKey: string,
+    internetKey: string
+  ): VNetResult;
 }
