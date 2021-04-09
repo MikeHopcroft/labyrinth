@@ -75,6 +75,14 @@ export interface GraphFormattingOptions {
   // Specifies whether Graph.formatPath() should display flows (routes) for
   // each path.
   verbose?: boolean;
+
+  // Specifices whether to shorten paths and collapse paths based on their
+  // key prefix:
+  // Before
+  //  ip => vnet/router => vnet/inbound => vm/inbound
+  // Shortened
+  // ip => vnet => vm
+  shortenAndCollapse?: boolean;
 }
 
 export class Graph {
@@ -346,7 +354,7 @@ export class Graph {
       } else {
         lines.push('  paths:');
         for (const path of flowNode.paths) {
-          lines.push(`    ${this.formatPath(path, outbound)}`);
+          lines.push(`    ${this.formatPath(path, outbound, options)}`);
 
           if (options.backProject) {
             const routes = this.backPropagate(path);
@@ -361,7 +369,11 @@ export class Graph {
     return lines.join('\n');
   }
 
-  formatPath(path: Path, outbound: boolean): string {
+  formatPath(
+    path: Path,
+    outbound: boolean,
+    options: GraphFormattingOptions
+  ): string {
     const keys: string[] = [];
     let p: Path | undefined = path;
 
@@ -380,6 +392,18 @@ export class Graph {
         p = p.previous;
       }
     }
-    return keys.join(' => ');
+
+    return keys
+      .map(key => this.node(key))
+      .map(node =>
+        options.shortenAndCollapse
+          ? node.spec.friendlyName ?? node.key
+          : node.key
+      )
+      .filter(
+        (key, index, keys) =>
+          !options.shortenAndCollapse || index === 0 || keys[index - 1] !== key
+      )
+      .join(' => ');
   }
 }

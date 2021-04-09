@@ -37,6 +37,7 @@ function main() {
   const modelSpoofing = !!args.s;
   const outbound = !!args.f;
   const showRouters = !!args.r;
+  const shortenAndCollapse = !!args.x;
   const toNode = args.t;
   const verbose = !!args.v;
   const showPaths = backProject || verbose || !!args.p;
@@ -50,6 +51,7 @@ function main() {
     showPaths,
     showRouters,
     verbose,
+    shortenAndCollapse,
   };
 
   try {
