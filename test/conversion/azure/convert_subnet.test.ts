@@ -95,6 +95,7 @@ export default function test() {
         {
           key: subnet1InboundKey,
           name: subnet1Id + '/inbound',
+          friendlyName: subnet1.name,
           filters: inboundRules,
           routes: [
             {
@@ -107,6 +108,7 @@ export default function test() {
         // Outbound
         {
           key: subnet1OutboundKey,
+          friendlyName: subnet1.name,
           name: subnet1Id + '/outbound',
           filters: outboundRules,
           routes: [

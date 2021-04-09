@@ -94,6 +94,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: vnet1InboundKey,
+          friendlyName: vnet1.name,
           name: vnet1.id,
           routes: [
             {
@@ -112,6 +113,7 @@ export default function test() {
         },
         {
           key: vnet1OutboundKey,
+          friendlyName: vnet1.name,
           name: vnet1.id,
           routes: [
             {
@@ -127,6 +129,7 @@ export default function test() {
         },
         {
           key: vnet1RouterKey,
+          friendlyName: vnet1.name,
           name: vnet1.id,
           range: {
             sourceIp: vnet1SourceIps,

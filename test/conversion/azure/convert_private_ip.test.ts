@@ -39,6 +39,7 @@ export default function test() {
       {
         key: privateIp1Key,
         name: privateIp1Id,
+        friendlyName: privateIp1.name,
         endpoint: true,
         range: {sourceIp: privateIp1SourceIp},
         routes: [

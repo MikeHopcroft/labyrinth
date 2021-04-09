@@ -96,6 +96,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: publicIpWithPrivateInboundKey,
+          friendlyName: publicIpWithPrivate.name,
           routes: [
             {
               destination: vnet1RouterKey,
@@ -107,6 +108,7 @@ export default function test() {
         },
         {
           key: publicIpWithPrivateOutboundKey,
+          friendlyName: publicIpWithPrivate.name,
           routes: [
             {
               destination: backboneKey,
@@ -177,6 +179,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: isolatedPublicIpInboundKey,
+          friendlyName: isolatedPublicIp.name,
           routes: [],
         },
       ];
@@ -224,6 +227,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: publicIpToFrontEndLoadBalancerInboundKey,
+          friendlyName: publicIpToFrontEndLoadBalancer.name,
           routes: [
             {
               destination: loadBalancer1Key,
