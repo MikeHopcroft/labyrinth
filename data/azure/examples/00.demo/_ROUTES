@@ -1,5 +1,5 @@
 0.from.public-ip -f publicIp2/inbound -p -x
 1.backtrace.public-ip -f publicIp2/inbound -p -b -x
-2.to.VM2 -t vm2/inbound -p -b -x 
-3.backtrace.public-ip -f publicIp1/inbound -p -b -x
+2.to.VM1 -t vm3/inbound -p -b -x 
+3.to.JumpBox -t vm1/inbound -p -b -x
 

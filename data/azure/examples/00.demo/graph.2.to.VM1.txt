@@ -16,7 +16,7 @@ Endpoints:
   vm4/inbound: 
   vm4/outbound: 
 
-Nodes that can reach vm2/inbound:
+Nodes that can reach vm3/inbound:
 
 Internet:
   routes:
@@ -26,9 +26,9 @@ Internet:
     protocol: TCP
 
   paths:
-    Internet => public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => vm0
+    Internet => public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => vm1
 
-    Internet => public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => vm0
+    Internet => public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => vm1
 
 
 vm1/inbound:
@@ -41,23 +41,23 @@ vm1/inbound:
 vm1/outbound:
   routes:
     source ip: 10.0.88.4
-    destination ip: 10.0.100.4
+    destination ip: 10.0.100.5
     destination port: ssh
 
   paths:
-    jump-box => jump-box948 => jump-box-subnet => virtual-network => public-services-subnet => vm0148 => vm0
+    jump-box => jump-box948 => jump-box-subnet => virtual-network => public-services-subnet => vm1318 => vm1
       source ip: 10.0.88.4
-      destination ip: 10.0.100.4
+      destination ip: 10.0.100.5
       destination port: ssh
 
-vm2/outbound:
+vm2/inbound:
   routes:
     (no routes)
 
   paths:
     (no paths)
 
-vm3/inbound:
+vm2/outbound:
   routes:
     (no routes)
 
