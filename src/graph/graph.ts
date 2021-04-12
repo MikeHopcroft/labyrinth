@@ -1,3 +1,4 @@
+import { AnyArrayType } from 'io-ts';
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
@@ -292,16 +293,30 @@ export class Graph {
   // This flow does not have any NAT or port mapping applied.
   //
   backPropagate(path: Path): Disjunction<AnyRuleSpec> {
+    // console.log('============================= backPropagate ===========================');
     let routes = Disjunction.universe<AnyRuleSpec>();
     let step: Path | undefined = path;
     while (step) {
       if (step.edge) {
+        // console.log(`===Edge from ${step.edge.edge.from} to ${step.edge.edge.to}===`);
         const override = step.edge.edge.override;
         if (override) {
-          routes = routes.clearOverrides(override);
+          // console.log('  override');
+          // console.log('    clearOverride:');
+          // console.log(override.format({prefix: '      '}));
+          routes = routes.clearOverrides(override);  // TODO: simplify on clearOverrides?
+          // console.log('  ');
+          // console.log('    routes:');
+          // console.log(routes.format({prefix: '      '}));
         }
-        routes = routes.intersect(step.edge.edge.routes);
-      }
+        // console.log('  intersect');
+        // console.log('    with');
+        // console.log(step.edge.edge.routes.format({prefix: '      '}));
+        routes = routes.intersect(step.edge.edge.routes, this.simplifier);
+        // console.log('  ');
+        // console.log('    routes:');
+        // console.log(routes.format({prefix: '      '}));
+    }
       step = step.previous;
     }
 
@@ -330,7 +345,7 @@ export class Graph {
     return lines.join('\n');
   }
 
-  formatFlow(flowNode: FlowNode, options: GraphFormattingOptions): string {
+  formatFlowOld(flowNode: FlowNode, options: GraphFormattingOptions): string {
     const outbound = !!options.outbound;
 
     const key = flowNode.node.key;
@@ -356,12 +371,58 @@ export class Graph {
         for (const path of flowNode.paths) {
           lines.push(`    ${this.formatPath(path, outbound, options)}`);
 
-          if (options.backProject) {
+          if (options.backProject && outbound) {
             const routes = this.backPropagate(path);
             lines.push(routes.format({prefix: '      '}));
           } else if (options.verbose) {
             lines.push(path.routes.format({prefix: '      '}));
           }
+        }
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  formatFlow(flowNode: FlowNode, options: GraphFormattingOptions): string {
+    const outbound = !!options.outbound;
+
+    let routesForPaths : Array<Disjunction<AnyRuleSpec>> = [];
+    let totalFlow = Disjunction.emptySet<AnyRuleSpec>();
+    if (options.backProject && outbound) {
+      for (const path of flowNode.paths) {
+        const route = this.backPropagate(path);
+        routesForPaths.push(route);
+        totalFlow = totalFlow.union(route, this.simplifier);
+      }
+    } else {
+      for (const path of flowNode.paths) {
+        routesForPaths.push(path.routes);
+      }
+      totalFlow = flowNode.routes;
+    }
+
+    const lines: string[] = [];
+    lines.push(`${flowNode.node.key}:`);
+
+    const flow = totalFlow.format({prefix: '    '});
+    lines.push('  flow:');
+    if (flow === '') {
+      lines.push('    (no flow)');
+    } else {
+      lines.push(flow);
+    }
+
+    if (options.showPaths) {
+      lines.push('');
+      if (flowNode.paths.length === 0) {
+        lines.push('  paths:');
+        lines.push('    (no paths)');
+      } else {
+        lines.push('  paths:');
+        for (const [i, path] of flowNode.paths.entries()) {
+          lines.push(`    ${this.formatPath(path, outbound, options)}`);
+          lines.push(routesForPaths[i].format({prefix: '      '}));
         }
       }
     }

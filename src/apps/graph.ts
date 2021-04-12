@@ -116,7 +116,8 @@ function main() {
           }
         } else if (
           fromNode !== flow.node.spec.key &&
-          (showRouters || flow.node.isEndpoint)
+          (showRouters || flow.node.isEndpoint) &&
+          !flow.routes.isEmpty()
         ) {
           console.log(graph.formatFlow(flow, options));
           console.log();
@@ -156,7 +157,8 @@ function main() {
       for (const flow of flows) {
         if (
           toNode !== flow.node.spec.key &&
-          (showRouters || flow.node.isEndpoint)
+          (showRouters || flow.node.isEndpoint) &&
+          !flow.routes.isEmpty()
         ) {
           console.log(graph.formatFlow(flow, options));
           console.log();
