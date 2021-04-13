@@ -301,30 +301,17 @@ export class Graph {
   // Compute the flow along the path, as viewed from the start of the path.
   // This flow does not have any NAT or port mapping applied.
   //
+  // TODO: rename to backProject
   backPropagate(path: Path): Disjunction<AnyRuleSpec> {
-    // console.log('============================= backPropagate ===========================');
     let routes = Disjunction.universe<AnyRuleSpec>();
     let step: Path | undefined = path;
     while (step) {
       if (step.edge) {
-        // console.log(`===Edge from ${step.edge.edge.from} to ${step.edge.edge.to}===`);
         const override = step.edge.edge.override;
         if (override) {
-          // console.log('  override');
-          // console.log('    clearOverride:');
-          // console.log(override.format({prefix: '      '}));
           routes = routes.clearOverrides(override); // TODO: simplify on clearOverrides?
-          // console.log('  ');
-          // console.log('    routes:');
-          // console.log(routes.format({prefix: '      '}));
         }
-        // console.log('  intersect');
-        // console.log('    with');
-        // console.log(step.edge.edge.routes.format({prefix: '      '}));
         routes = routes.intersect(step.edge.edge.routes, this.simplifier);
-        // console.log('  ');
-        // console.log('    routes:');
-        // console.log(routes.format({prefix: '      '}));
       }
       step = step.previous;
     }
@@ -341,6 +328,7 @@ export class Graph {
     return index;
   }
 
+  // Similar to withKey(), but throws if node is not found.
   node(key: string): Node {
     return this.nodes[this.nodeIndex(key)];
   }
@@ -412,7 +400,7 @@ export class Graph {
     }
 
     const lines: string[] = [];
-    lines.push(`${flowNode.node.key}:`);
+    lines.push(`${formatNodeName(flowNode.node)}:`);
 
     const flow = totalFlow.format({prefix: '    '});
     lines.push('  flow:');
@@ -495,5 +483,25 @@ export class Graph {
         return undefined;
       },
     };
+  }
+
+  // Similar to node(), but returns undefined if node is not found.
+  withKey(key: string): Node | undefined {
+    const index = this.keyToIndex.get(key);
+    if (index !== undefined) {
+      return this.nodes[index];
+    }
+    return undefined;
+  }
+}
+
+export function formatNodeName(node: Node): string {
+  if (
+    node.key === node.spec.friendlyName ||
+    node.spec.friendlyName === undefined
+  ) {
+    return node.key;
+  } else {
+    return `${node.spec.friendlyName} (${node.key})`;
   }
 }
