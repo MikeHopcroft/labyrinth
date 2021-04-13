@@ -301,7 +301,8 @@ export class Graph {
   // Compute the flow along the path, as viewed from the start of the path.
   // This flow does not have any NAT or port mapping applied.
   //
-  backPropagate(path: Path): Disjunction<AnyRuleSpec> {
+  backProjectAlongPath(path: Path): Disjunction<AnyRuleSpec> {
+    // console.log('============================= backPropagate ===========================');
     let routes = Disjunction.universe<AnyRuleSpec>();
     let step: Path | undefined = path;
     while (step) {
@@ -367,7 +368,7 @@ export class Graph {
           lines.push(`    ${this.formatPath(path, outbound, options)}`);
 
           if (options.backProject && outbound) {
-            const routes = this.backPropagate(path);
+            const routes = this.backProjectAlongPath(path);
             lines.push(routes.format({prefix: '      '}));
           } else if (options.verbose) {
             lines.push(path.routes.format({prefix: '      '}));
@@ -386,7 +387,7 @@ export class Graph {
     let totalFlow = Disjunction.emptySet<AnyRuleSpec>();
     if (options.backProject && outbound) {
       for (const path of flowNode.paths) {
-        const route = this.backPropagate(path);
+        const route = this.backProjectAlongPath(path);
         routesForPaths.push(route);
         totalFlow = totalFlow.union(route, this.simplifier);
       }
