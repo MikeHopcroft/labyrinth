@@ -15,6 +15,12 @@ import {RoutingRule, parseRoutingRuleSpec} from './routing_rule';
 import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
 
+export enum NodeType {
+  SOURCE,
+  SINK,
+  ROUTER,
+}
+
 const initialRangeSpec: RuleSpec = {
   action: ActionType.ALLOW,
   priority: 0,
@@ -139,6 +145,17 @@ export class Node {
       };
       // console.log(JSON.stringify(edge, null, 2));
       this.outboundEdges.push(edge);
+    }
+  }
+
+  getType(): NodeType {
+    // TODO: update this code once the Node.type field has been added.
+    if (this.key.endsWith('/outbound')) {
+      return NodeType.SOURCE;
+    } else if (this.key.endsWith('/inbound')) {
+      return NodeType.SINK;
+    } else {
+      return NodeType.ROUTER;
     }
   }
 }

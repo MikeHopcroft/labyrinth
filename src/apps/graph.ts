@@ -271,20 +271,19 @@ function showUsage() {
 }
 
 function listEndpoints(graph: Graph, showRouters: boolean) {
-  if (showRouters) {
-    console.log('Nodes:');
-    for (const node of graph.nodes) {
-      console.log(
-        `  ${node.key}: ${node.range.format().slice(11)}${
-          node.isEndpoint ? ' (endpoint)' : ''
-        }`
-      );
-    }
-  } else {
-    console.log('Endpoints:');
-    for (const node of graph.nodes) {
-      if (node.isEndpoint) {
-        console.log(`  ${node.key}: ${node.range.format().slice(11)}`);
+  console.log(showRouters ? 'Nodes:' : 'Endpoints');
+
+  const friendlyNames = [...graph.friendlyNames()].sort();
+  for (const name of friendlyNames) {
+    const nodes = graph.withFriendlyName(name);
+    if (showRouters || nodes.endpoints().length > 0) {
+      console.log(`  ${name}`);
+      for (const node of nodes.all()) {
+        console.log(
+          `    ${node.key}: ${node.range.format().slice(11)}${
+            node.isEndpoint ? ' (endpoint)' : ''
+          }`
+        );
       }
     }
   }

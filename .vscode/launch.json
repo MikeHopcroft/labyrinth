@@ -57,7 +57,14 @@
       "program": "${workspaceFolder}/build/src/apps/graph.js",
       // "args": ["junk/resource-graph.yaml", "-f=Internet"],
       // "args": ["junk/resource-graph.yaml", "-f=jumpbox/default", "-t=data.nic/blob-blob.privateEndpoint"],
-      "args": ["junk/foo2.yaml", "-f=a", "-r", "-s", "-v"],
+      // "args": ["junk/foo2.yaml", "-f=a", "-r", "-s", "-v"],
+      "args" : [
+        "data/azure/examples/00.demo/convert.yaml",
+        "-f=publicIp2/inbound",
+        "-p",
+        "-b",
+        "-r"
+      ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"

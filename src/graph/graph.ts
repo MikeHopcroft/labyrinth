@@ -1,8 +1,7 @@
-import { AnyArrayType } from 'io-ts';
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
-import {Node} from './node';
+import {Node, NodeType} from './node';
 import {AnyRuleSpec} from './types';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,6 +92,8 @@ export class Graph {
   private readonly inboundTo: FlowEdge[][];
   private readonly outboundFrom: FlowEdge[][] = [];
 
+  private readonly friendlyNameToNode = new Map<string, Node[]>();
+
   constructor(
     simplifier: Simplifier<AnyRuleSpec>,
     nodes: IterableIterator<Node>
@@ -107,6 +108,14 @@ export class Graph {
         throw new TypeError(message);
       }
       this.keyToIndex.set(node.key, index);
+
+      const friendlyName = node.spec.friendlyName ?? node.key;
+      const sameFriendly = this.friendlyNameToNode.get(friendlyName);
+      if (sameFriendly) {
+        sameFriendly.push(node);
+      } else {
+        this.friendlyNameToNode.set(friendlyName, [node]);
+      }
     }
 
     // Index edges by `from` field.
@@ -304,7 +313,7 @@ export class Graph {
           // console.log('  override');
           // console.log('    clearOverride:');
           // console.log(override.format({prefix: '      '}));
-          routes = routes.clearOverrides(override);  // TODO: simplify on clearOverrides?
+          routes = routes.clearOverrides(override); // TODO: simplify on clearOverrides?
           // console.log('  ');
           // console.log('    routes:');
           // console.log(routes.format({prefix: '      '}));
@@ -316,7 +325,7 @@ export class Graph {
         // console.log('  ');
         // console.log('    routes:');
         // console.log(routes.format({prefix: '      '}));
-    }
+      }
       step = step.previous;
     }
 
@@ -387,7 +396,7 @@ export class Graph {
   formatFlow(flowNode: FlowNode, options: GraphFormattingOptions): string {
     const outbound = !!options.outbound;
 
-    let routesForPaths : Array<Disjunction<AnyRuleSpec>> = [];
+    const routesForPaths: Array<Disjunction<AnyRuleSpec>> = [];
     let totalFlow = Disjunction.emptySet<AnyRuleSpec>();
     if (options.backProject && outbound) {
       for (const path of flowNode.paths) {
@@ -466,5 +475,25 @@ export class Graph {
           !options.shortenAndCollapse || index === 0 || keys[index - 1] !== key
       )
       .join(' => ');
+  }
+
+  *friendlyNames(): IterableIterator<string> {
+    yield* this.friendlyNameToNode.keys();
+  }
+
+  withFriendlyName(friendlyName: string) {
+    const nodes = this.friendlyNameToNode.get(friendlyName) ?? [];
+    return {
+      all: () => nodes,
+      endpoints: () => nodes.filter(node => node.isEndpoint),
+      withType: (type: NodeType): Node | undefined => {
+        for (const node of nodes) {
+          if (type === node.getType()) {
+            return node;
+          }
+        }
+        return undefined;
+      },
+    };
   }
 }
