@@ -10,14 +10,14 @@ import {
   // frontEndIpWithNatRule,
   frontEndIpWithPoolRule,
   isolatedPublicIp,
-  isolatedPublicIpInboundKey,
+  isolatedPublicIpEndpointKey,
   isolatedPublicIpSourceIp,
   privateIpWithPublic,
   privateIp1SourceIp,
   publicIpToFrontEndLoadBalancer,
   publicIpToFrontEndLoadBalancerIp,
   publicIpWithPrivate,
-  publicIpWithPrivateInboundKey,
+  publicIpWithPrivateEndpointKey,
   publicIpWithPrivateOutboundKey,
   publicIpWithPrivateSourceIp,
   publicIpToFrontEndLoadBalancerInboundKey,
@@ -71,7 +71,7 @@ export default function test() {
       const expectedResult: PublicIpRoutes = {
         inbound: [
           {
-            destination: publicIpWithPrivateInboundKey,
+            destination: publicIpWithPrivateEndpointKey,
             constraints: {
               destinationIp: publicIpWithPrivateSourceIp,
               sourceIp: internetKey,
@@ -95,7 +95,7 @@ export default function test() {
       // Verify graph
       const expectedNodes: NodeSpec[] = [
         {
-          key: publicIpWithPrivateInboundKey,
+          key: publicIpWithPrivateEndpointKey,
           friendlyName: publicIpWithPrivate.name,
           routes: [
             {
@@ -161,7 +161,7 @@ export default function test() {
       const expectedResult: PublicIpRoutes = {
         inbound: [
           {
-            destination: isolatedPublicIpInboundKey,
+            destination: isolatedPublicIpEndpointKey,
             constraints: {
               destinationIp: isolatedPublicIpSourceIp,
               sourceIp: internetKey,
@@ -178,7 +178,7 @@ export default function test() {
       // Verify graph
       const expectedNodes: NodeSpec[] = [
         {
-          key: isolatedPublicIpInboundKey,
+          key: isolatedPublicIpEndpointKey,
           friendlyName: isolatedPublicIp.name,
           routes: [],
         },

@@ -69,7 +69,7 @@ function publicIpWithPrivateIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(privateIpSpec);
 
-  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
+  const inboundKey = services.nodes.createEndpointKey(publicIpSpec);
   const outboundKey = services.nodes.createOutboundKey(publicIpSpec);
 
   const vnetId = services.index.getParentId(privateIpSpec.properties.subnet);
@@ -126,7 +126,7 @@ function loadBalancedPublicIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(lbIpSpec);
 
-  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
+  const inboundKey = services.nodes.createEndpointKey(publicIpSpec);
   const lbRef = services.index.getParentId(lbIpSpec);
   const lbSpec = services.index.dereference<AzureLoadBalancer>(lbRef);
   const lbKey = services.nodes.createKey(lbSpec);
@@ -153,7 +153,7 @@ function isolatedPublicIp(
   publicIpSpec: AzurePublicIP,
   publicIp: string
 ): PublicIpRoutes {
-  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
+  const inboundKey = services.nodes.createEndpointKey(publicIpSpec);
 
   // Create inbound node
   services.nodes.add({

@@ -376,8 +376,8 @@ function summarizeOptions(options: Options) {
 function getNode(name: string, graph: Graph, outbound: boolean) {
   const nodes = graph.withFriendlyName(name);
   const node =
-    nodes.withType(outbound ? NodeType.SOURCE : NodeType.SINK) ??
-    nodes.withType(NodeType.ROUTER) ??
+    nodes.withType(NodeType.PUBLIC_ENDPOINT) ??
+    nodes.withType(outbound ? NodeType.OUTBOUND : NodeType.INBOUND) ??
     graph.withKey(name);
 
   return node || fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);

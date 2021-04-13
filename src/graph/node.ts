@@ -16,9 +16,9 @@ import {RuleSpec} from '../rules';
 import {AnyRuleSpec, NodeSpec} from './types';
 
 export enum NodeType {
-  SOURCE,
-  SINK,
-  ROUTER,
+  PUBLIC_ENDPOINT,
+  INBOUND,
+  OUTBOUND,
 }
 
 const initialRangeSpec: RuleSpec = {
@@ -148,14 +148,16 @@ export class Node {
     }
   }
 
-  getType(): NodeType {
+  getType(): NodeType | undefined {
     // TODO: update this code once the Node.type field has been added.
-    if (this.key.endsWith('/outbound')) {
-      return NodeType.SOURCE;
+    if (this.key.endsWith('/endpoint')) {
+      return NodeType.PUBLIC_ENDPOINT;
+    } else if (this.key.endsWith('/outbound')) {
+      return NodeType.OUTBOUND;
     } else if (this.key.endsWith('/inbound')) {
-      return NodeType.SINK;
+      return NodeType.INBOUND;
     } else {
-      return NodeType.ROUTER;
+      return undefined;
     }
   }
 }

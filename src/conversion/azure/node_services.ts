@@ -64,6 +64,11 @@ export class NodeServices {
     return this.createKeyVariant(prefix, 'inbound');
   }
 
+  createEndpointKey(item: AzureTypedObject) {
+    const prefix = this.createKey(item);
+    return this.createKeyVariant(prefix, 'endpoint');
+  }
+
   createOutboundKey(item: AzureTypedObject) {
     const prefix = this.createKey(item);
     return this.createKeyVariant(prefix, 'outbound');
