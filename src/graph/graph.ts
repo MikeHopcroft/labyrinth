@@ -1,7 +1,7 @@
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
-import {Node} from './node';
+import {Node, NodeType} from './node';
 import {AnyRuleSpec} from './types';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -92,6 +92,8 @@ export class Graph {
   private readonly inboundTo: FlowEdge[][];
   private readonly outboundFrom: FlowEdge[][] = [];
 
+  private readonly friendlyNameToNode = new Map<string, Node[]>();
+
   constructor(
     simplifier: Simplifier<AnyRuleSpec>,
     nodes: IterableIterator<Node>
@@ -106,6 +108,14 @@ export class Graph {
         throw new TypeError(message);
       }
       this.keyToIndex.set(node.key, index);
+
+      const friendlyName = node.spec.friendlyName ?? node.key;
+      const sameFriendly = this.friendlyNameToNode.get(friendlyName);
+      if (sameFriendly) {
+        sameFriendly.push(node);
+      } else {
+        this.friendlyNameToNode.set(friendlyName, [node]);
+      }
     }
 
     // Index edges by `from` field.
@@ -453,5 +463,25 @@ export class Graph {
           steps[index - 1] !== step
       )
       .join(' => ');
+  }
+
+  *friendlyNames(): IterableIterator<string> {
+    yield* this.friendlyNameToNode.keys();
+  }
+
+  withFriendlyName(friendlyName: string) {
+    const nodes = this.friendlyNameToNode.get(friendlyName) ?? [];
+    return {
+      all: () => nodes,
+      endpoints: () => nodes.filter(node => node.isEndpoint),
+      withType: (type: NodeType): Node | undefined => {
+        for (const node of nodes) {
+          if (type === node.getType()) {
+            return node;
+          }
+        }
+        return undefined;
+      },
+    };
   }
 }

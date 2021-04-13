@@ -10,6 +10,7 @@ import {
   Graph,
   GraphBuilder,
   loadYamlGraphSpecFile,
+  NodeSpec,
 } from '../graph';
 
 import {createSimplifier} from '../setops';
@@ -271,20 +272,23 @@ function showUsage() {
 }
 
 function listEndpoints(graph: Graph, showRouters: boolean) {
-  if (showRouters) {
-    console.log('Nodes:');
-    for (const node of graph.nodes) {
-      console.log(
-        `  ${node.key}: ${node.range.format().slice(11)}${
-          node.isEndpoint ? ' (endpoint)' : ''
-        }`
-      );
-    }
-  } else {
-    console.log('Endpoints:');
-    for (const node of graph.nodes) {
-      if (node.isEndpoint) {
-        console.log(`  ${node.key}: ${node.range.format().slice(11)}`);
+  console.log(showRouters ? 'Nodes:' : 'Endpoints');
+
+  const friendlyNames = [...graph.friendlyNames()].sort();
+  for (const name of friendlyNames) {
+    const nodes = graph.withFriendlyName(name);
+    const endpointCount = nodes.endpoints().length;
+    if (showRouters || endpointCount > 0) {
+      console.log(`  ${name}`);
+
+      if (endpointCount > 0) {
+        for (const node of nodes.all()) {
+          console.log(
+            `    ${node.key}: ${node.range.format().slice(11)}${
+              node.isEndpoint ? ' (endpoint)' : ''
+            }`
+          );
+        }
       }
     }
   }
