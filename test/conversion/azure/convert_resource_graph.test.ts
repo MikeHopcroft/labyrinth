@@ -2,6 +2,10 @@ import {assert} from 'chai';
 import 'mocha';
 
 import {AnyAzureObject} from '../../../src/conversion/azure';
+import {
+  AzureBackboneFriendlyName,
+  AzureBackboneKeyName,
+} from '../../../src/conversion/azure/constants';
 import {convert} from '../../../src/conversion/azure/convert';
 
 // import {NodeSpec} from '../../../src';
@@ -20,8 +24,8 @@ export default function test() {
     it('validate default creation of internet and backbone', () => {
       const expectedNodes = [
         {
-          key: 'AzureBackbone/outbound',
-          friendlyName: 'AzureBackbone',
+          key: `${AzureBackboneKeyName}/outbound`,
+          friendlyName: AzureBackboneFriendlyName,
           routes: [
             {
               destination: 'Internet',
