@@ -7,15 +7,28 @@ import {Universe} from '../dimensions';
 
 import {
   AnyRuleSpec,
+  formatNodeName,
   Graph,
   GraphBuilder,
   loadYamlGraphSpecFile,
-  NodeSpec,
+  Node,
+  NodeType,
 } from '../graph';
 
 import {createSimplifier} from '../setops';
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
+
+interface Options {
+  backProject: boolean;
+  modelSpoofing: boolean;
+  outbound: boolean;
+  // TODO: rename shortenAndCollapse to expandPaths or equivalent
+  shortenAndCollapse: boolean;
+  showPaths: boolean;
+  showRouters: boolean;
+  verbose: boolean;
+}
 
 function main() {
   const args = minimist(process.argv.slice(2));
@@ -25,8 +38,15 @@ function main() {
     return succeed(false);
   }
 
-  if (args._.length !== 1) {
+  if (args._.length === 0) {
     return fail('Error: expected a <network.yaml> file.');
+  }
+
+  if (args._.length > 1) {
+    const extras = args._.slice(1)
+      .map(x => `"${x}"`)
+      .join(', ');
+    return fail(`Error: undexpected parameters ${extras}.`);
   }
 
   if (args.c) {
@@ -38,14 +58,14 @@ function main() {
   const modelSpoofing = !!args.s;
   const outbound = !!args.f;
   const showRouters = !!args.r;
-  const shortenAndCollapse = !!args.x;
+  const shortenAndCollapse = !args.e;
   const toNode = args.t;
   const verbose = !!args.v;
   const showPaths = backProject || verbose || !!args.p;
   const universeFile = args.u;
   const graphFile = args._[0];
 
-  const options = {
+  const options: Options = {
     backProject,
     modelSpoofing,
     outbound,
@@ -64,22 +84,31 @@ function main() {
 
     // Load network graph.
     const spec = loadYamlGraphSpecFile(graphFile);
-    const nodes = spec.nodes;
     const builder = new GraphBuilder(universe, simplifier, spec);
     const graph = builder.buildGraph();
 
-    if (fromNode) {
+    // TODO: put -t case first and include -t -f handling there so that we get
+    // back-projection by default.
+    if (!fromNode && !toNode) {
+      listEndpoints(graph, showRouters);
+      return fail('Use the -f or -t option to specify a node for analysis.');
+    } else if (fromNode) {
       /////////////////////////////////////////////////////////////////////////
       //
       // Paths originating at fromNode
       //
       /////////////////////////////////////////////////////////////////////////
-      if (!nodes.find(node => node.key === fromNode)) {
-        return fail(`Unknown start node ${fromNode}`);
+      const fNode = getNode(fromNode, graph, options.outbound);
+      const fKey = fNode.key;
+      let tNode: Node | undefined;
+      let tKey: string | undefined;
+      if (toNode) {
+        tNode = getNode(toNode, graph, options.outbound);
+        tKey = tNode.key;
       }
 
       const {cycles, flows} = graph.analyze(
-        fromNode,
+        fKey,
         options.outbound,
         modelSpoofing
       );
@@ -88,7 +117,7 @@ function main() {
       listEndpoints(graph, showRouters);
 
       if (cycles.length > 0) {
-        console.log(`Cycles reachable from ${fromNode}:`);
+        console.log(`Cycles reachable from ${formatNodeName(fNode)}:`);
         for (const cycle of cycles) {
           console.log('  ' + graph.formatCycle(cycle, verbose));
           console.log();
@@ -96,22 +125,18 @@ function main() {
         console.log();
       }
 
-      if (toNode) {
-        if (!nodes.find(node => node.key === toNode)) {
-          return fail(`Unknown end node ${toNode}`);
-        }
-      }
-
-      if (toNode) {
-        console.log(`Routes from ${fromNode} to ${toNode}:`);
+      if (tNode) {
+        console.log(
+          `Routes from ${formatNodeName(fNode)} to ${formatNodeName(tNode)}:`
+        );
       } else {
-        console.log(`Nodes reachable from ${fromNode}:`);
+        console.log(`Nodes reachable from ${formatNodeName(fNode)}:`);
       }
       console.log();
 
       for (const flow of flows) {
-        if (toNode) {
-          if (toNode === flow.node.key) {
+        if (tKey) {
+          if (tKey === flow.node.key) {
             console.log(graph.formatFlow(flow, options));
             console.log();
           }
@@ -124,18 +149,17 @@ function main() {
           console.log();
         }
       }
-    } else if (toNode) {
+    } else {
       /////////////////////////////////////////////////////////////////////////
       //
       // Paths ending at toNode
       //
       /////////////////////////////////////////////////////////////////////////
-      if (!nodes.find(node => node.key === toNode)) {
-        return fail(`Unknown end node ${toNode}`);
-      }
+      const tNode = getNode(toNode, graph, options.outbound);
+      const tKey = tNode.key;
 
       const {cycles, flows} = graph.analyze(
-        toNode,
+        tKey,
         options.outbound,
         modelSpoofing
       );
@@ -144,7 +168,7 @@ function main() {
       listEndpoints(graph, showRouters);
 
       if (cycles.length > 0) {
-        console.log(`Cycles on paths to ${toNode}:`);
+        console.log(`Cycles on paths to ${formatNodeName(tNode)}:`);
         for (const cycle of cycles) {
           console.log('  ' + graph.formatCycle(cycle));
           console.log();
@@ -152,12 +176,12 @@ function main() {
         console.log();
       }
 
-      console.log(`Nodes that can reach ${toNode}:`);
+      console.log(`Nodes that can reach ${formatNodeName(tNode)}:`);
       console.log();
 
       for (const flow of flows) {
         if (
-          toNode !== flow.node.spec.key &&
+          tKey !== flow.node.spec.key &&
           (showRouters || flow.node.isEndpoint) &&
           !flow.routes.isEmpty()
         ) {
@@ -165,8 +189,6 @@ function main() {
           console.log();
         }
       }
-    } else {
-      return fail('Use the -f or -t option to specify a node for analysis.');
     }
   } catch (e) {
     handleError(e);
@@ -264,6 +286,12 @@ function showUsage() {
           description: 'Backproject routes through NAT rewrites.',
           type: Boolean,
         },
+        {
+          name: 'expand',
+          alias: 'e',
+          description: 'Expand paths to show internal nodes.',
+          type: Boolean,
+        },
       ],
     },
   ];
@@ -295,13 +323,7 @@ function listEndpoints(graph: Graph, showRouters: boolean) {
   console.log();
 }
 
-function summarizeOptions(options: {
-  backProject: boolean;
-  modelSpoofing: boolean;
-  showPaths: boolean;
-  showRouters: boolean;
-  verbose: boolean;
-}) {
+function summarizeOptions(options: Options) {
   console.log('Options summary:');
 
   if (options.modelSpoofing) {
@@ -333,14 +355,32 @@ function summarizeOptions(options: {
   }
 
   if (options.backProject) {
-    console.log('Backprojecting paths past NAT rewrites. (-b)');
+    console.log('  Backprojecting paths past NAT rewrites. (-b)');
   } else {
     console.log(
-      'Paths are forward propagated (use -b flag to enable backprojection).'
+      '  Paths are forward propagated (use -b flag to enable backprojection).'
     );
   }
 
+  if (options.shortenAndCollapse) {
+    console.log(
+      '  Paths are not expanded (use -e flag to enable path expansion).'
+    );
+  } else {
+    console.log('  Expanding paths to show internal nodes. (-e)');
+  }
+
   console.log();
+}
+
+function getNode(name: string, graph: Graph, outbound: boolean) {
+  const nodes = graph.withFriendlyName(name);
+  const node =
+    nodes.withType(outbound ? NodeType.SOURCE : NodeType.SINK) ??
+    nodes.withType(NodeType.ROUTER) ??
+    graph.withKey(name);
+
+  return node || fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);
 }
 
 main();

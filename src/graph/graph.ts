@@ -309,9 +309,9 @@ export class Graph {
       if (step.edge) {
         const override = step.edge.edge.override;
         if (override) {
-          routes = routes.clearOverrides(override);
+          routes = routes.clearOverrides(override); // TODO: simplify on clearOverrides?
         }
-        routes = routes.intersect(step.edge.edge.routes);
+        routes = routes.intersect(step.edge.edge.routes, this.simplifier);
       }
       step = step.previous;
     }
@@ -328,6 +328,7 @@ export class Graph {
     return index;
   }
 
+  // Similar to withKey(), but throws if node is not found.
   node(key: string): Node {
     return this.nodes[this.nodeIndex(key)];
   }
@@ -399,7 +400,7 @@ export class Graph {
     }
 
     const lines: string[] = [];
-    lines.push(`${flowNode.node.key}:`);
+    lines.push(`${formatNodeName(flowNode.node)}:`);
 
     const flow = totalFlow.format({prefix: '    '});
     lines.push('  flow:');
@@ -484,5 +485,25 @@ export class Graph {
         return undefined;
       },
     };
+  }
+
+  // Similar to node(), but returns undefined if node is not found.
+  withKey(key: string): Node | undefined {
+    const index = this.keyToIndex.get(key);
+    if (index !== undefined) {
+      return this.nodes[index];
+    }
+    return undefined;
+  }
+}
+
+export function formatNodeName(node: Node): string {
+  if (
+    node.key === node.spec.friendlyName ||
+    node.spec.friendlyName === undefined
+  ) {
+    return node.key;
+  } else {
+    return `${node.spec.friendlyName} (${node.key})`;
   }
 }
