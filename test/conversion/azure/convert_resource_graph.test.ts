@@ -33,7 +33,6 @@ export default function test() {
           ],
         },
         {
-          endpoint: true,
           key: 'Internet',
           routes: [],
         },

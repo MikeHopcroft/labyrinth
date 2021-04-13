@@ -58,7 +58,6 @@ export function convertResourceGraph(services: GraphServices) {
   // Create internet node
   services.nodes.add({
     key: internetKey,
-    endpoint: true,
     routes: internetRoutes,
   });
 
