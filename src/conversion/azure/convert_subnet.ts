@@ -89,7 +89,7 @@ function buildInboundOutboundNodes(
   //
   const inboundNode: NodeSpec = {
     key: inboundKey,
-    name: spec.id + '/inbound',
+    name: spec.id,
     friendlyName: spec.name,
     routes: inboundRoutes,
   };
@@ -104,7 +104,7 @@ function buildInboundOutboundNodes(
   if (nsgRules.outboundRules.length > 0) {
     const outboundNode: NodeSpec = {
       key: outboundKey,
-      name: spec.id + '/outbound',
+      name: spec.id,
       friendlyName: spec.name,
       routes: [{destination: outboundRouteKey}],
     };

@@ -82,7 +82,7 @@ export default function test() {
         {
           key: nic1InboundKey,
           friendlyName: nic1.name,
-          name: nic1Id + '/inbound',
+          name: nic1Id,
           filters: inboundRules,
           routes: [
             {
@@ -95,7 +95,7 @@ export default function test() {
         {
           key: nic1OutboundKey,
           friendlyName: nic1.name,
-          name: nic1Id + '/outbound',
+          name: nic1Id,
           filters: outboundRules,
           routes: [
             {
@@ -115,7 +115,7 @@ export default function test() {
       const inboundNode = services.nodes.get(nic1InboundKey);
       assert.deepEqual(inboundNode, {
         key: nic1InboundKey,
-        name: `${nic1Id}/inbound`,
+        name: nic1Id,
         friendlyName: nic1.name,
         routes: [
           {

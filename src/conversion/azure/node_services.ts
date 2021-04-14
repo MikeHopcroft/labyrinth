@@ -1,6 +1,12 @@
 import {NodeSpec} from '../../graph';
 
 import {AzureTypedObject, azureTypeNames} from './azure_types';
+import {
+  SuffixEndpoint,
+  SuffixInbound,
+  SuffixOutbound,
+  SuffixRouter,
+} from './constants';
 
 export class NodeServices {
   private readonly idToKey = new Map<string, string>();
@@ -56,22 +62,22 @@ export class NodeServices {
 
   createRouterKey(item: AzureTypedObject) {
     const prefix = this.createKey(item);
-    return this.createKeyVariant(prefix, 'router');
+    return this.createKeyVariant(prefix, SuffixRouter);
   }
 
   createInboundKey(item: AzureTypedObject) {
     const prefix = this.createKey(item);
-    return this.createKeyVariant(prefix, 'inbound');
+    return this.createKeyVariant(prefix, SuffixInbound);
   }
 
   createEndpointKey(item: AzureTypedObject) {
     const prefix = this.createKey(item);
-    return this.createKeyVariant(prefix, 'endpoint');
+    return this.createKeyVariant(prefix, SuffixEndpoint);
   }
 
   createOutboundKey(item: AzureTypedObject) {
     const prefix = this.createKey(item);
-    return this.createKeyVariant(prefix, 'outbound');
+    return this.createKeyVariant(prefix, SuffixOutbound);
   }
 
   createKeyVariant(key: string, suffix: string) {

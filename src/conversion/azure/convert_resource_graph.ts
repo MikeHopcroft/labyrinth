@@ -1,7 +1,11 @@
 import {RoutingRuleSpec} from '../../graph';
 
 import {AzureVirtualNetwork} from './azure_types';
-import {AzureBackboneFriendlyName, AzureBackboneKeyName} from './constants';
+import {
+  AzureBackboneFriendlyName,
+  AzureBackboneKeyName,
+  SuffixOutbound,
+} from './constants';
 import {GraphServices} from './graph_services';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,7 +25,7 @@ export function convertResourceGraph(services: GraphServices) {
   const internetKey = services.getInternetKey();
   const backboneOutboundKey = services.nodes.createKeyVariant(
     AzureBackboneKeyName,
-    'outbound'
+    SuffixOutbound
   );
 
   //
