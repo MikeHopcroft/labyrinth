@@ -342,45 +342,6 @@ export class Graph {
     return lines.join('\n');
   }
 
-  formatFlowOld(flowNode: FlowNode, options: GraphFormattingOptions): string {
-    const outbound = !!options.outbound;
-
-    const key = flowNode.node.key;
-    const routes = flowNode.routes.format({prefix: '    '});
-
-    const lines: string[] = [];
-    lines.push(`${key}:`);
-
-    lines.push('  routes:');
-    if (routes === '') {
-      lines.push('    (no routes)');
-    } else {
-      lines.push(routes);
-    }
-
-    if (options.showPaths) {
-      lines.push('');
-      if (flowNode.paths.length === 0) {
-        lines.push('  paths:');
-        lines.push('    (no paths)');
-      } else {
-        lines.push('  paths:');
-        for (const path of flowNode.paths) {
-          lines.push(`    ${this.formatPath(path, outbound, options)}`);
-
-          if (options.backProject && outbound) {
-            const routes = this.backProjectAlongPath(path);
-            lines.push(routes.format({prefix: '      '}));
-          } else if (options.verbose) {
-            lines.push(path.routes.format({prefix: '      '}));
-          }
-        }
-      }
-    }
-
-    return lines.join('\n');
-  }
-
   formatFlow(flowNode: FlowNode, options: GraphFormattingOptions): string {
     const outbound = !!options.outbound;
 
