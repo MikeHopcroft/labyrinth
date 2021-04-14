@@ -1106,7 +1106,6 @@ describe('Graph', () => {
       const outbound = false;
 
       const traversedPath = paths(graph, 's2', 'I', {outbound});
-      console.log(traversedPath);
       assert.equal(
         traversedPath,
         trim(`
