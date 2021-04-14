@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function handleError(e: any) {
+export function handleError(e: any): never {
   // console.log('************* Error ****************');
   // console.log(JSON.stringify(e, null, 4).slice(0,5000));
 
@@ -26,7 +26,7 @@ export function handleError(e: any) {
   succeed(false);
 }
 
-export function fail(message: string) {
+export function fail(message: string): never {
   console.log(' ');
   console.log(message);
   console.log(' ');
@@ -38,7 +38,7 @@ export function fail(message: string) {
   process.exit(1);
 }
 
-export function succeed(succeeded: boolean) {
+export function succeed(succeeded: boolean): never {
   if (succeeded) {
     // eslint-disable-next-line no-process-exit
     process.exit(0);

@@ -22,6 +22,7 @@ export function convertPrivateIp(
 
   services.nodes.add({
     key: ipNodeKey,
+    friendlyName: spec.name,
     name: spec.id,
     endpoint: true,
     range: {sourceIp},

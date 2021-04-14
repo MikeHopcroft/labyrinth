@@ -1,0 +1,6 @@
+0.from.public-ip -f public-services-ip -p
+1.backtrace.public-ip -f public-services-ip -p -b
+2.to.VM1 -t vm1 -p -b 
+3.to.JumpBox -t jump-box -p -b
+4.to.public-ip -t public-services-ip -p -r
+

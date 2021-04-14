@@ -45,6 +45,7 @@ export const codecNodeSpec = t.intersection([
     routes: t.array(codecRoutingRuleSpec),
   }),
   t.partial({
+    friendlyName: t.string,
     name: t.string,
     endpoint: t.boolean,
     filters: t.array(codecRuleSpecNoId),

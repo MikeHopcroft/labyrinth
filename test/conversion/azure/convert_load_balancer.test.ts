@@ -69,6 +69,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: loadBalancerWithNatRuleKey,
+          friendlyName: loadBalancerWithNatRule.name,
           routes: [
             {
               destination: subnetKey,
@@ -101,6 +102,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: loadBalancerWithNatRuleKey,
+          friendlyName: loadBalancerWithNatRule.name,
           routes: [
             {
               destination: 'UnboundRule',
@@ -150,6 +152,7 @@ export default function test() {
       const expectedNodes: NodeSpec[] = [
         {
           key: loadBalancerWithNatRuleKey,
+          friendlyName: loadBalancerWithNatRule.name,
           routes: [
             {
               destination: subnetKey,

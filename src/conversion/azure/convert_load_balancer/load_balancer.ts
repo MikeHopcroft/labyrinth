@@ -45,6 +45,7 @@ export function convertLoadBalancer(
 
   services.nodes.add({
     key: loadBalancerKey,
+    friendlyName: spec.name,
     routes: lbRoutes,
   });
 

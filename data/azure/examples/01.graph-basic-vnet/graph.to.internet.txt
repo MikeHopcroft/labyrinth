@@ -1,0 +1,71 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+  Backprojecting paths past NAT rewrites. (-b)
+  Paths are not expanded (use -e flag to enable path expansion).
+
+Nodes:
+  AzureBackbone
+  Internet
+  default
+  vm-001
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm-001-ip
+  vm-001505
+  x-example-vnet
+
+Nodes that can reach Internet:
+
+AzureBackbone (AzureBackbone/outbound):
+  flow:
+    (universe)
+
+  paths:
+    AzureBackbone => Internet
+      (universe)
+
+vm-001505 (nic1/outbound):
+  flow:
+    destination ip: Internet
+
+  paths:
+    vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: Internet
+    vm-001505 => x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+
+vm-001-ip (publicIp1/outbound):
+  flow:
+    (universe)
+
+  paths:
+    vm-001-ip => AzureBackbone => Internet
+      (universe)
+
+vm-001 (vm1/outbound):
+  flow:
+    source ip: 172.16.0.4
+    destination ip: Internet
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: Internet
+
+x-example-vnet (vnet1/outbound):
+  flow:
+    destination ip: Internet
+
+  paths:
+    x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: Internet
+    x-example-vnet => AzureBackbone => Internet
+      source ip: except 172.16.0.4
+      destination ip: Internet
+

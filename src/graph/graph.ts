@@ -1,7 +1,7 @@
 import {Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
-import {Node} from './node';
+import {Node, NodeType} from './node';
 import {AnyRuleSpec} from './types';
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,6 +75,14 @@ export interface GraphFormattingOptions {
   // Specifies whether Graph.formatPath() should display flows (routes) for
   // each path.
   verbose?: boolean;
+
+  // Specifices whether to shorten paths and collapse paths based on their
+  // key prefix:
+  // Before
+  //  ip => vnet/router => vnet/inbound => vm/inbound
+  // Shortened
+  // ip => vnet => vm
+  shortenAndCollapse?: boolean;
 }
 
 export class Graph {
@@ -83,6 +91,8 @@ export class Graph {
   private readonly keyToIndex = new Map<string, number>();
   private readonly inboundTo: FlowEdge[][];
   private readonly outboundFrom: FlowEdge[][] = [];
+
+  private readonly friendlyNameToNode = new Map<string, Node[]>();
 
   constructor(
     simplifier: Simplifier<AnyRuleSpec>,
@@ -98,6 +108,14 @@ export class Graph {
         throw new TypeError(message);
       }
       this.keyToIndex.set(node.key, index);
+
+      const friendlyName = node.spec.friendlyName ?? node.key;
+      const sameFriendly = this.friendlyNameToNode.get(friendlyName);
+      if (sameFriendly) {
+        sameFriendly.push(node);
+      } else {
+        this.friendlyNameToNode.set(friendlyName, [node]);
+      }
     }
 
     // Index edges by `from` field.
@@ -283,16 +301,17 @@ export class Graph {
   // Compute the flow along the path, as viewed from the start of the path.
   // This flow does not have any NAT or port mapping applied.
   //
-  backPropagate(path: Path): Disjunction<AnyRuleSpec> {
+  backProjectAlongPath(path: Path): Disjunction<AnyRuleSpec> {
+    // console.log('============================= backPropagate ===========================');
     let routes = Disjunction.universe<AnyRuleSpec>();
     let step: Path | undefined = path;
     while (step) {
       if (step.edge) {
         const override = step.edge.edge.override;
         if (override) {
-          routes = routes.clearOverrides(override);
+          routes = routes.clearOverrides(override); // TODO: simplify on clearOverrides?
         }
-        routes = routes.intersect(step.edge.edge.routes);
+        routes = routes.intersect(step.edge.edge.routes, this.simplifier);
       }
       step = step.previous;
     }
@@ -309,6 +328,7 @@ export class Graph {
     return index;
   }
 
+  // Similar to withKey(), but throws if node is not found.
   node(key: string): Node {
     return this.nodes[this.nodeIndex(key)];
   }
@@ -325,17 +345,30 @@ export class Graph {
   formatFlow(flowNode: FlowNode, options: GraphFormattingOptions): string {
     const outbound = !!options.outbound;
 
-    const key = flowNode.node.key;
-    const routes = flowNode.routes.format({prefix: '    '});
+    const routesForPaths: Array<Disjunction<AnyRuleSpec>> = [];
+    let totalFlow = Disjunction.emptySet<AnyRuleSpec>();
+    if (options.backProject && outbound) {
+      for (const path of flowNode.paths) {
+        const route = this.backProjectAlongPath(path);
+        routesForPaths.push(route);
+        totalFlow = totalFlow.union(route, this.simplifier);
+      }
+    } else {
+      for (const path of flowNode.paths) {
+        routesForPaths.push(path.routes);
+      }
+      totalFlow = flowNode.routes;
+    }
 
     const lines: string[] = [];
-    lines.push(`${key}:`);
+    lines.push(`${formatNodeName(flowNode.node)}:`);
 
-    lines.push('  routes:');
-    if (routes === '') {
-      lines.push('    (no routes)');
+    const flow = totalFlow.format({prefix: '    '});
+    lines.push('  flow:');
+    if (flow === '') {
+      lines.push('    (no flow)');
     } else {
-      lines.push(routes);
+      lines.push(flow);
     }
 
     if (options.showPaths) {
@@ -345,15 +378,9 @@ export class Graph {
         lines.push('    (no paths)');
       } else {
         lines.push('  paths:');
-        for (const path of flowNode.paths) {
-          lines.push(`    ${this.formatPath(path, outbound)}`);
-
-          if (options.backProject) {
-            const routes = this.backPropagate(path);
-            lines.push(routes.format({prefix: '      '}));
-          } else if (options.verbose) {
-            lines.push(path.routes.format({prefix: '      '}));
-          }
+        for (const [i, path] of flowNode.paths.entries()) {
+          lines.push(`    ${this.formatPath(path, outbound, options)}`);
+          lines.push(routesForPaths[i].format({prefix: '      '}));
         }
       }
     }
@@ -361,7 +388,11 @@ export class Graph {
     return lines.join('\n');
   }
 
-  formatPath(path: Path, outbound: boolean): string {
+  formatPath(
+    path: Path,
+    outbound: boolean,
+    options: GraphFormattingOptions
+  ): string {
     const keys: string[] = [];
     let p: Path | undefined = path;
 
@@ -380,6 +411,60 @@ export class Graph {
         p = p.previous;
       }
     }
-    return keys.join(' => ');
+
+    return keys
+      .map(key => {
+        const node = this.node(key);
+        return options.shortenAndCollapse
+          ? node.spec.friendlyName ?? node.key
+          : node.key;
+      })
+      .filter(
+        (step, index, steps) =>
+          !options.shortenAndCollapse ||
+          index === 0 ||
+          steps[index - 1] !== step
+      )
+      .join(' => ');
+  }
+
+  *friendlyNames(): IterableIterator<string> {
+    yield* this.friendlyNameToNode.keys();
+  }
+
+  withFriendlyName(friendlyName: string) {
+    const nodes = this.friendlyNameToNode.get(friendlyName) ?? [];
+    return {
+      all: () => nodes,
+      endpoints: () => nodes.filter(node => node.isEndpoint),
+      withType: (type: NodeType): Node | undefined => {
+        for (const node of nodes) {
+          if (type === node.getType()) {
+            return node;
+          }
+        }
+        return undefined;
+      },
+    };
+  }
+
+  // Similar to node(), but returns undefined if node is not found.
+  withKey(key: string): Node | undefined {
+    const index = this.keyToIndex.get(key);
+    if (index !== undefined) {
+      return this.nodes[index];
+    }
+    return undefined;
+  }
+}
+
+export function formatNodeName(node: Node): string {
+  if (
+    node.key === node.spec.friendlyName ||
+    node.spec.friendlyName === undefined
+  ) {
+    return node.key;
+  } else {
+    return `${node.spec.friendlyName} (${node.key})`;
   }
 }

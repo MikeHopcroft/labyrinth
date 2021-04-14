@@ -1,0 +1,6 @@
+Azure resource graph input file: D:\src\Hopcroft\labyrinth\data\azure\examples\09.graph-load-balancer-outbound-rules\resource-graph.json
+Labyrinth graph output file: D:\src\Hopcroft\labyrinth\data\azure\examples\09.graph-load-balancer-outbound-rules\convert.yaml
+Conversion complete.
+Unsupported or ignored Azure resource graph types:
+  0: microsoft.compute/virtualmachinescalesets
+        /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss

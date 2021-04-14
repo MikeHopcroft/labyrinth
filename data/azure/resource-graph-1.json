@@ -58,7 +58,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/networkinterfaces",
     "zones": null
   },
@@ -118,7 +118,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/networkinterfaces",
     "zones": null
   },
@@ -178,7 +178,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/networkinterfaces",
     "zones": null
   },
@@ -413,7 +413,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/networksecuritygroups",
     "zones": null
   },
@@ -626,7 +626,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/networksecuritygroups",
     "zones": null
   },
@@ -839,7 +839,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/networksecuritygroups",
     "zones": null
   },
@@ -949,7 +949,7 @@
     "sku": null,
     "subscriptionId": "6c1f4f3b-f65f-4667-8f9e-b9c48e09cd6b",
     "tags": null,
-    "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+    "tenantId": "00000000-0000-0000-0000-000000000000",
     "type": "microsoft.network/virtualnetworks",
     "zones": null
   }

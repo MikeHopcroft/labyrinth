@@ -639,3 +639,33 @@ FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaS
 D:\git\labyrinth>node build\src\apps\fuzz.js -n=100
 
 ~~~
+
+* X Update examples to use new formatting and flags.
+  * X Figure out heruistic for friendly name look up
+* X Node.endpoint becomes Node.type enum of source/sink/router
+  *  Maybe Node.endpoint coexists with Node.type.
+  * DISCUSS: Introduce a new meta level with NodeType. Not required at the moment. 
+* x FIXED: formatFlow(): don't back-project when !outbound
+  * [mhop/path-fixes 15f9240] WIP: fixes to path rendering
+* x FIXED: backPropagate(): simplify after intersecting
+  * [mhop/path-fixes 15f9240] WIP: fixes to path rendering
+* x Consider renaming backPropagate() to backProjectAlongPath()
+* Rename Options.shortenAndCollapse to expandPaths or equivalent.
+* Process -t case before -f case. Handle -t -f inside -t to get back projection by default
+* . Make NodeSpec.friendlyName required?
+  * Or loader creates smart default?
+* Restore Node.range
+* x Function mapping from friendly name to node key
+  * x Depends on source/sink direction
+  * x First look for node with matching friendly name where Node.type === SOURCE for outbound and SINK for inbound
+  * x If not found, take matching node with Node.type === ROUTER
+  * x Should probably be a method of Graph. Entire functionality
+    * x Enumerate node groups by friendly name
+    * x Look up node by (friendly name, type pair)
+* x Modify console app to use friendly name for -f and -t
+* . Modify console app to print out node information
+  * x By friendly name
+    * x With indented full names and types
+  * With ranges
+* x Add help message for -x or perhaps remove -x
+* Track down ????? output with more

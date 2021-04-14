@@ -1,0 +1,321 @@
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints and routing nodes. (-r)
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+  Backprojecting paths past NAT rewrites. (-b)
+  Paths are not expanded (use -e flag to enable path expansion).
+
+Nodes:
+  AzureBackbone
+  Internet
+  UnboundRule
+  another
+  default
+  ilb
+  overlapped
+  public-lb
+  public-lb-ip
+  vm-001
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm-001-internet
+  vm-001505
+  vm-002
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm-002237
+  vm-2-001
+    vm6/inbound:  (endpoint)
+    vm6/outbound:  (endpoint)
+  vm-2-001-ip
+  vm-2-001449
+  vm-lb-01
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm-lb-016
+  vmss
+  vmss-0
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+  vmss-4
+    vm5/inbound:  (endpoint)
+    vm5/outbound:  (endpoint)
+  x-example-vnet
+  x-example-vnet-2
+  x-example-vnet-nic01
+
+Nodes reachable from vm-002 (vm3/outbound):
+
+AzureBackbone (AzureBackbone/outbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone
+      source ip: 172.16.0.20
+      destination ip: Internet
+
+Internet:
+  flow:
+    source ip: 172.16.0.20
+    destination ip: Internet
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet
+      source ip: 172.16.0.20
+      destination ip: Internet
+
+ilb (loadBalancer2):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+
+vm-001505 (nic1/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-001505
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.4
+
+vm-lb-016 (nic2/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-lb-016
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.5
+
+vm-002237 (nic3/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+    destination port: 3022
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another => vm-002237
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet => another => vm-002237
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.20
+
+vm-002237 (nic3/outbound):
+  flow:
+    source ip: 172.16.0.20
+
+  paths:
+    vm-002 => vm-002237
+      source ip: 172.16.0.20
+
+x-example-vnet-nic01 (nic4/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.33
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => vmss => x-example-vnet-nic01
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.33
+
+x-example-vnet-nic01 (nic5/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.34
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => vmss => x-example-vnet-nic01
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.34
+
+default (subnet1/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.0/28
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.0/28
+
+another (subnet2/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+    destination port: 3022
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.16-172.16.0.20, 172.16.0.22-172.16.0.31
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet => another
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.16-172.16.0.20, 172.16.0.22-172.16.0.31
+
+vmss (subnet3/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.32/28
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => vmss
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.32/28
+
+UnboundRule:
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+    destination port: 4000
+    protocol: TCP
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => UnboundRule
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 4000
+      protocol: TCP
+
+vm-001 (vm1/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4
+    destination port: https
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.4
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-001505 => vm-001
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.4
+      destination port: https
+      protocol: TCP
+
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.4
+
+vm-lb-01 (vm2/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.5
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.5
+
+vm-002 (vm3/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+    destination port: 3022
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+    destination port: http, 3389
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.20
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another => vm-002237 => vm-002
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet => another => vm-002237 => vm-002
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.20
+      destination port: http, 3389
+      protocol: TCP
+
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.20
+
+vmss-0 (vm4/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.33
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => vmss => x-example-vnet-nic01 => vmss-0
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.33
+
+vmss-4 (vm5/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.34
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => vmss => x-example-vnet-nic01 => vmss-4
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.34
+
+x-example-vnet (vnet1/inbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.21
+    destination port: 3022
+    protocol: TCP
+
+    source ip: 172.16.0.20
+    destination ip: 172.16.0.0-172.16.0.20, 172.16.0.22-172.16.0.255
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.21
+      destination port: 3022
+      protocol: TCP
+    vm-002 => vm-002237 => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: 172.16.0.0-172.16.0.20, 172.16.0.22-172.16.0.255
+
+x-example-vnet (vnet1/outbound):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: except 172.16.1.0-172.17.255.255
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: except 172.16.1.0-172.17.255.255
+
+x-example-vnet (vnet1/router):
+  flow:
+    source ip: 172.16.0.20
+    destination ip: vnet1
+
+  paths:
+    vm-002 => vm-002237 => x-example-vnet
+      source ip: 172.16.0.20
+      destination ip: vnet1
+

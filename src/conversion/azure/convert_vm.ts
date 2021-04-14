@@ -13,12 +13,8 @@ export function convertVM(
   const inboundKey = services.nodes.createInboundKey(spec);
   const outboundKey = services.nodes.createOutboundKey(spec);
 
-  createOrRetrieveNode(services, inboundKey, spec.id);
-  const outboundNode = createOrRetrieveNode(
-    services,
-    outboundKey,
-    `${spec.id}/outbound`
-  );
+  createOrRetrieveNode(services, spec, inboundKey);
+  const outboundNode = createOrRetrieveNode(services, spec, outboundKey);
   outboundNode.routes.push(outboundNicRoute);
 
   return {destination: inboundKey};
@@ -26,14 +22,15 @@ export function convertVM(
 
 function createOrRetrieveNode(
   services: GraphServices,
-  key: string,
-  name: string
+  spec: AzureVirtualMachine,
+  key: string
 ) {
   let node = services.nodes.get(key);
   if (!node) {
     node = {
       key,
-      name,
+      friendlyName: spec.name,
+      name: spec.id,
       endpoint: true,
       routes: [],
     };

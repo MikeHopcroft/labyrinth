@@ -60,7 +60,8 @@ export function convertNIC(
   //
   const inboundNode: NodeSpec = {
     key: inboundKey,
-    name: spec.id + '/inbound',
+    friendlyName: spec.name,
+    name: spec.id,
     routes: [routeToVM],
   };
   if (nsgRules.inboundRules.length) {
@@ -70,7 +71,8 @@ export function convertNIC(
 
   const outboundNode: NodeSpec = {
     key: outboundKey,
-    name: spec.id + '/outbound',
+    friendlyName: spec.name,
+    name: spec.id,
     routes: [{destination: outboundNodeKey}],
   };
 
