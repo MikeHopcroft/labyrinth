@@ -1,3 +1,21 @@
+* Demo/documentation bugs
+  * Why does backproject of `from public-services-ip` give the following instead of `Internet`?
+    * except 10.0.0.0-10.0.87.255, 10.0.89.0-10.0.255.255
+    * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b
+    * Answer: back-projecting code allows overwrites that can't happen
+    * Need to modify back-projecting code and forward-propagation in reverse mode (for multiple override terms)
+  * Doesn't show `public-services-ip` because `-r` flag is missing. Why doesn't it show `Internet`?
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0
+  * Nodes are sorted by key, not friendly name
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r
+  * Investigate separate paths for `http` and `https` in
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=Internet -b
+  * Identify case for superset term coalescing.
+  * Improved literal-range to symbolic expression algorithm.
+* Compare output of
+  * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b
+  * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm0 -b
+
 * Benefits
   * Users of relationships don't need to know the details of where relationships are stored in the specs and how they're encoded.
   * Prepare stage doesn't need to know the details of preparation for each spec type.
@@ -217,3 +235,44 @@
 * Should we template AzureIdReference?
 * Remove Default Service Tag creation
   * Ex. ip converter
+
+
+~~~
+node_modules/prepress/build/src/apps/prepress.js documentation\src\azure_resource_graph.src.md documentation\azure_resource_graph.md
+~~~
+
+~~~
+propagate(subnet2/inbound)
+  flow:
+    destination ip: 10.0.100.4-10.0.100.6
+    destination port: 8080
+    protocol: TCP
+  flowNode.routes:
+    destination ip: 10.0.100.4-10.0.100.6
+    destination port: 8080
+    protocol: TCP
+  edge to nic2/inbound
+    intersect:
+      source ip: AzureLoadBalancer <=== term combines with Internet term
+      destination ip: 10.0.100.4
+
+      source ip: 10.0.88.0/24
+      destination ip: 10.0.100.4
+      destination port: ssh       <=== term drops during intersection because ssh != 8080, 8443
+
+      source ip: Internet
+      destination ip: 10.0.100.4
+      destination port: 8080, 8443
+      protocol: TCP
+    with overrideFlow:
+      destination ip: 10.0.100.4-10.0.100.6
+      destination port: 8080
+      protocol: TCP
+    result routes:
+      source ip: Internet
+      destination ip: 10.0.100.4
+      destination port: 8080
+      protocol: TCP
+~~~
+
+

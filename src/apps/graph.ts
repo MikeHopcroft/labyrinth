@@ -61,7 +61,7 @@ function main() {
   const shortenAndCollapse = !args.e;
   const toNode = args.t;
   const verbose = !!args.v;
-  const showPaths = backProject || verbose || !!args.p;
+  const showPaths = verbose || !!args.p;
   const universeFile = args.u;
   const graphFile = args._[0];
 
@@ -369,6 +369,8 @@ function summarizeOptions(options: Options) {
   } else {
     console.log('  Expanding paths to show internal nodes. (-e)');
   }
+
+  console.log('  Not displaying help. (use -h flag to display help message)');
 
   console.log();
 }

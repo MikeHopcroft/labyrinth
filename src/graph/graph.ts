@@ -1,8 +1,14 @@
-import {Disjunction, Simplifier} from '../setops';
+import {Conjunction, Disjunction, Simplifier} from '../setops';
 
 import {Edge} from './edge';
 import {Node, NodeType} from './node';
 import {AnyRuleSpec} from './types';
+
+function log(verbose: boolean, message: string) {
+  if (verbose) {
+    console.log(message);
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -183,12 +189,21 @@ export class Graph {
     cycles: Path[][],
     forwardTraversal: boolean
   ) {
+    const verbose = false;
     const flowNode = flowNodes[fromIndex];
+
+    log(verbose, `propagate(${flowNode.node.key})`);
+    log(verbose, '  flow:');
+    log(verbose, flow.format({prefix: '    '}));
+
     if (path) {
       // If we're not at the start node, combine the inbound flow with existing
       // flow and add the path to the node's collection of existing paths.
       flowNode.routes = flowNode.routes.union(flow, this.simplifier);
       flowNode.paths.push(path);
+
+      log(verbose, '  flowNode.routes:');
+      log(verbose, flowNode.routes.format({prefix: '    '}));
     }
 
     if (flowNode.active) {
@@ -223,24 +238,30 @@ export class Graph {
           let overrideFlow = flow;
 
           if (!forwardTraversal && edge.edge.override) {
-            const overrides = Disjunction.create<AnyRuleSpec>([
-              edge.edge.override,
-            ]);
-
-            if (overrideFlow.intersect(overrides).isEmpty()) {
-              // If a traversal over the edge will not produce a set which
-              // intersects with our existing flow, then do not traverse
-              // this path
+            const cleared = this.clearOverrides(
+              overrideFlow,
+              edge.edge.override
+            );
+            if (cleared.isEmpty()) {
               continue;
             } else {
-              overrideFlow = overrideFlow.clearOverrides(edge.edge.override);
+              overrideFlow = cleared;
             }
           }
+
+          log(verbose, `  edge to ${edge.edge.to}`);
+          log(verbose, '    intersect:');
+          log(verbose, edge.edge.routes.format({prefix: '      '}));
+          log(verbose, '    with overrideFlow:');
+          log(verbose, overrideFlow.format({prefix: '      '}));
 
           let routes = overrideFlow.intersect(
             edge.edge.routes,
             this.simplifier
           );
+
+          log(verbose, '    result routes:');
+          log(verbose, routes.format({prefix: '      '}));
 
           if (forwardTraversal && edge.edge.override) {
             routes = routes.overrideDimensions(edge.edge.override);
@@ -302,21 +323,54 @@ export class Graph {
   // This flow does not have any NAT or port mapping applied.
   //
   backProjectAlongPath(path: Path): Disjunction<AnyRuleSpec> {
-    // console.log('============================= backPropagate ===========================');
+    const verbose = false;
+    log(
+      verbose,
+      '============================= backProjectAlongPath ==========================='
+    );
     let routes = Disjunction.universe<AnyRuleSpec>();
     let step: Path | undefined = path;
     while (step) {
       if (step.edge) {
+        log(
+          verbose,
+          `===Edge from ${step.edge.edge.from} to ${step.edge.edge.to}===`
+        );
         const override = step.edge.edge.override;
         if (override) {
-          routes = routes.clearOverrides(override); // TODO: simplify on clearOverrides?
+          log(verbose, '  override');
+          log(verbose, '    clearOverride:');
+          log(verbose, override.format({prefix: '      '}));
+          routes = this.clearOverrides(routes, override);
+          log(verbose, '  ');
+          log(verbose, '    routes:');
+          log(verbose, routes.format({prefix: '      '}));
         }
+        log(verbose, '  intersect');
+        log(verbose, '    with');
+        log(verbose, step.edge.edge.routes.format({prefix: '      '}));
         routes = routes.intersect(step.edge.edge.routes, this.simplifier);
+        log(verbose, '  ');
+        log(verbose, '    routes:');
+        log(verbose, routes.format({prefix: '      '}));
       }
       step = step.previous;
     }
 
     return routes;
+  }
+
+  private clearOverrides(
+    routes: Disjunction<AnyRuleSpec>,
+    override: Conjunction<AnyRuleSpec>
+  ): Disjunction<AnyRuleSpec> {
+    const cleared: Conjunction<AnyRuleSpec>[] = [];
+    for (const term of routes.conjunctions) {
+      if (!term.intersect(override).isEmpty()) {
+        cleared.push(term.clearOverrides(override));
+      }
+    }
+    return Disjunction.create<AnyRuleSpec>(cleared);
   }
 
   private nodeIndex(key: string): number {
