@@ -53,9 +53,26 @@ We can use the `graph.js` application with the `-f=public-services-ip` to show a
 
 The tool first displays a summary of the command-line options in effect and a list of endpoints in the graph. After this it shows the flows to the three web servers. We can see, above, that each of the three web servers is reachable from the `Internet`, with destination ports `8080` and `8443` and the `TCP` protocol.
 
+## Friendly Names
+
+We just saw that the reachability report referred to nodes with strings like `"vm0 (vm2/inbound)"`. Usually, the first part of this string, in this case `"vm0"` is the node's "friendly name", which is typically the value in the `name` field of an object in the Azure resource graph.
+The second part of the string, in this case `"(vm2/inbound)"`, displays the corresponding Labyrinth graph node key.
+
+The friendly name and the Labyrinth node key differ because the translation from the Azure Resource Graph is not a one-to-one mapping. In many cases, a single Azure concept maps to a handful of nodes in the Labyrinth graph. An example is the NSG, which is mapped, during tranlation, into `inbound` and `outbound` nodes. Labyrinth generates sequentially numbered node keys for each node type without consulting the Azure node name field. Sometimes this leads to confusing output, when the Azure-based friendly names appear similar to unrelated Labyrinth node keys.
+
+When specifying a node with the `-f` and `-t` flags, you may use either a friendly name or a Labyrinth node key. The system will first attempt to find the appropriate node, based on friendly name. If it doesn't find one, it will fall back to a search by node key.
+
+If you are interested in seeing the mapping from friendly name to node key, look at the graph summary at the top of the reachability report. The nodes are presented as a two-level outline, where the first level shows the friendly names and the second level displays the corresponding Labyrinth node keys. The second level is not displayed in cases where the node key and the friendly name are identical.
+
+We can use the `-r` flag to show the entire graph, including internal routing nodes:
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -r)
+~~~
+~~~
+
 ## Back-Projecting Network Address Translation and Port Mapping
 
-The tool correctly identified `vm0`, `vm1`, and `vm2` as the only nodes that can receive traffic from `public-services-ip`, but the traffic header details were confusing because they described the IP packet headers, as seen on arrival at the web servers. For example, `vm0` will only see packets addressed to `10.0.0.4` for ports `8080` and `8443`:
+In the [Tracing Flows _from_ a Node](#tracing-flows-from-a-node) section, we saw that the tool correctly identified `vm0`, `vm1`, and `vm2` as the only nodes that can receive traffic from `public-services-ip`, but the traffic header details were confusing because they described the IP packet headers, as seen on arrival at the web servers. For example, `vm0` will only see packets addressed to `10.0.0.4` for ports `8080` and `8443`:
 
 ~~~
 vm0 (vm2/inbound):
@@ -111,18 +128,22 @@ We can see from the output that traffic from the `Internet`, `vm0`, `vm1`, `vm2`
 ## Virtual Traceroute
 Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `vm0` to the `jump-box`:
 
-[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=vm1/inbound -p -q)
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=jump-box -p -q)
 ~~~
 ~~~
 
 The path is
-* **vm0** - trace route starts at this server
-* **vm0148** - NIC applies outbound NSG rules
-* **public-services-subnet** - subnet applies outbound NSG rules
-* **virtual-network** - routes traffic to jump-box-subnet
-* **jump-box-subnet** - subnet applies inbount NSG rules
-* **jump-box948** - NIC applies inbound NSG rules
-* **jump-box** - trace route ends here
+* **vm0** - trace route starts at this server.
+* **vm0148** - NIC applies outbound NSG rules.
+  * In this example, the NIC does not have outbound rules.
+* **public-services-subnet** - subnet applies outbound NSG rules.
+  * These rules allow outbound traffic to the internet and to other addresses in `virtual-network`.
+* **virtual-network** - routes traffic to `jump-box-subnet`.
+* **jump-box-subnet** - subnet applies inbound NSG rules.
+  * These rules restrict general access to port `22` and `TCP` protocol. A default Azure rule allows any traffic from `virtual-network`, regardless or port or protocol.
+* **jump-box948** - NIC applies inbound NSG rules.
+  * In this example, the NIC does not have inbound rules.
+* **jump-box** - trace route ends here.
 
 
 ## Other Flags
@@ -133,6 +154,7 @@ The `graph.js` tool provides a number of other features, which can be enabled by
 ~~~
 ~~~
 
+TODO
+* Describe spoofing flag.
 
-Spoofing?
 

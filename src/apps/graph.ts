@@ -53,10 +53,10 @@ function main() {
     return fail('Cycle detection not implemented.');
   }
 
-  const backProject = !!args.b;
+  const backProject = !!args.b && !args.t;
   const fromNode = args.f;
   const modelSpoofing = !!args.s;
-  const outbound = !!args.f;
+  const outbound = !args.t;
   const quietMode = !!args.q;
   const showRouters = !!args.r;
   const shortenAndCollapse = !args.e;
@@ -93,73 +93,21 @@ function main() {
     if (!fromNode && !toNode) {
       listEndpoints(graph, showRouters);
       return fail('Use the -f or -t option to specify a node for analysis.');
-    } else if (fromNode) {
-      /////////////////////////////////////////////////////////////////////////
-      //
-      // Paths originating at fromNode
-      //
-      /////////////////////////////////////////////////////////////////////////
-      const fNode = getNode(fromNode, graph, options.outbound);
-      const fKey = fNode.key;
-      let tNode: Node | undefined;
-      let tKey: string | undefined;
-      if (toNode) {
-        tNode = getNode(toNode, graph, options.outbound);
-        tKey = tNode.key;
-      }
-
-      const {cycles, flows} = graph.analyze(
-        fKey,
-        options.outbound,
-        modelSpoofing
-      );
-
-      if (!quietMode) {
-        summarizeOptions(options);
-        listEndpoints(graph, showRouters);
-      }
-
-      if (cycles.length > 0) {
-        console.log(`Cycles reachable from ${formatNodeName(fNode)}:`);
-        for (const cycle of cycles) {
-          console.log('  ' + graph.formatCycle(cycle, verbose));
-          console.log();
-        }
-        console.log();
-      }
-
-      if (tNode) {
-        console.log(
-          `Routes from ${formatNodeName(fNode)} to ${formatNodeName(tNode)}:`
-        );
-      } else {
-        console.log(`Nodes reachable from ${formatNodeName(fNode)}:`);
-      }
-      console.log();
-
-      for (const flow of flows) {
-        if (tKey) {
-          if (tKey === flow.node.key) {
-            console.log(graph.formatFlow(flow, options));
-            console.log();
-          }
-        } else if (
-          fromNode !== flow.node.spec.key &&
-          (showRouters || flow.node.isEndpoint) &&
-          !flow.routes.isEmpty()
-        ) {
-          console.log(graph.formatFlow(flow, options));
-          console.log();
-        }
-      }
-    } else {
+    } else if (toNode) {
       /////////////////////////////////////////////////////////////////////////
       //
       // Paths ending at toNode
       //
       /////////////////////////////////////////////////////////////////////////
-      const tNode = getNode(toNode, graph, options.outbound);
+      const tNode = getNode(toNode, graph, false);
       const tKey = tNode.key;
+
+      let fNode: Node | undefined;
+      let fKey: string | undefined;
+      if (fromNode) {
+        fNode = getNode(fromNode, graph, true);
+        fKey = fNode.key;
+      }
 
       const {cycles, flows} = graph.analyze(
         tKey,
@@ -181,12 +129,65 @@ function main() {
         console.log();
       }
 
-      console.log(`Nodes that can reach ${formatNodeName(tNode)}:`);
+      if (fNode) {
+        console.log(
+          `Routes from ${formatNodeName(fNode)} to ${formatNodeName(tNode)}:`
+        );
+      } else {
+        console.log(`Nodes that can reach ${formatNodeName(tNode)}:`);
+      }
+      console.log();
+
+      for (const flow of flows) {
+        if (fKey) {
+          if (fKey === flow.node.key) {
+            console.log(graph.formatFlow(flow, options));
+            console.log();
+          }
+        } else if (
+          tKey !== flow.node.spec.key &&
+          (showRouters || flow.node.isEndpoint) &&
+          !flow.routes.isEmpty()
+        ) {
+          console.log(graph.formatFlow(flow, options));
+          console.log();
+        }
+      }
+    } else {
+      /////////////////////////////////////////////////////////////////////////
+      //
+      // Paths originating at fromNode
+      //
+      /////////////////////////////////////////////////////////////////////////
+      const fNode = getNode(fromNode, graph, true);
+      const fKey = fNode.key;
+
+      const {cycles, flows} = graph.analyze(
+        fKey,
+        options.outbound,
+        modelSpoofing
+      );
+
+      if (!quietMode) {
+        summarizeOptions(options);
+        listEndpoints(graph, showRouters);
+      }
+
+      if (cycles.length > 0) {
+        console.log(`Cycles reachable from ${formatNodeName(fNode)}:`);
+        for (const cycle of cycles) {
+          console.log('  ' + graph.formatCycle(cycle, verbose));
+          console.log();
+        }
+        console.log();
+      }
+
+      console.log(`Nodes reachable from ${formatNodeName(fNode)}:`);
       console.log();
 
       for (const flow of flows) {
         if (
-          tKey !== flow.node.spec.key &&
+          fromNode !== flow.node.spec.key &&
           (showRouters || flow.node.isEndpoint) &&
           !flow.routes.isEmpty()
         ) {
@@ -296,7 +297,7 @@ function showUsage() {
         {
           name: 'back-project',
           alias: 'b',
-          description: 'Backproject routes through NAT rewrites.',
+          description: 'Backproject routes through NAT rewrites. Note that back-projecting is enabled by default when -t is used.',
           type: Boolean,
         },
         {
@@ -367,7 +368,9 @@ function summarizeOptions(options: Options) {
     console.log('  Brief mode (use -v flag to enable verbose mode).');
   }
 
-  if (options.backProject) {
+  if (!options.outbound) {
+    console.log('  Backprojecting unnecessary with -t.');
+  } else if (options.backProject) {
     console.log('  Backprojecting paths past NAT rewrites. (-b)');
   } else {
     console.log(

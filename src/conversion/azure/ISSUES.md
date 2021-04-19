@@ -2,17 +2,21 @@
   * Better friendly name to node mapping
   * x -q flag (for quiet) suppresses flag summary and node list
 
-  * `-t` should be the default for `-f -t`
+  * Azure converter architecture
+  * Azure graph algorithm
+
+  * x `-t` should be the default for `-f -t`
   * Option summary should mention that `-b` is default for `-t`.
   
   * Consider renaming vm0-vm2 to web0-web2
     * Make separate demo file for docs
+    * Rename convert.yaml to graph.yaml
   * SVG diagrams - need to be consistent about SSH, HTTP, TCP casing
 
   * Nodes are sorted by key, not friendly name
     * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r
   
-  * Identify case for superset term coalescing.
+  * Identify unit test case for superset term coalescing.
 
   * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box -p
     * Internet needs `endpoint: true`
