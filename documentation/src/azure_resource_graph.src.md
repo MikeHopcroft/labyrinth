@@ -19,7 +19,7 @@ The analysis process starts with an
 
 ## Sample Resource Graphs
 Labyrinth includes 10 sample resource graphs, which can be found in the
-[data/azure/examples](../data/azure/examples]) folder. This tutorial uses the graph in [data/azure/examples/00.demo](..data/azure/examples/00.demo/resource-graph.json). This is a fairly simple network with three web servers behind a load balancer and a jump box, which is accessible via SSH for diagnostic purposes. Network security rules allow only HTTP and HTTPS traffic from the `public-services-ip` to the web servers. The jump-box is accessible via the `jump-box-ip`, using SSH, and it can access the web servers via SSH.
+[data/azure/examples](../data/azure/examples) folder. This tutorial uses the graph in [data/azure/examples/00.demo/resource-graph.json](../data/azure/examples/00.demo/resource-graph.json). This is a fairly simple network with three web servers behind a load balancer and a jump box, which is accessible via SSH for diagnostic purposes. Network security rules allow only HTTP and HTTPS traffic from the `public-services-ip` to the web servers. The jump-box is accessible via the `jump-box-ip`, using SSH, and it can access the web servers via SSH.
 
 ![Resource Graph](src/00.demo.1.svg)
 
@@ -76,9 +76,9 @@ Labyrinth can provide a more useful analysis by `back-projecting` header flows t
 
 ![Resource Graph](src/00.demo.3.svg)
 
-We enable back-projection with the `-b` flag:
+We enable back-projection with the `-b` flag. In the following example, we also use the `-q` flag to suppress the options summary and node list.
 
-[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b)
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b -q)
 ~~~
 ~~~
 
@@ -99,19 +99,19 @@ vm0 (vm2/inbound):
 
 ![Resource Graph](src/00.demo.4.svg)
 
-We can use the `-t` flag find flows _to_ a specified node.
-**NOTE: do not need to use the `-b` flag with `-t`.**
+We can use the `-t` flag find flows _to_ a specified node. 
+Note that we don't have to use the `-b` flag with the `-t` flag, because the reverse flow analysis from the `jump-box` endpoint will produce header flows as seen from the various starting points.
 
-[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box)
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box -q)
 ~~~
 ~~~
 
-We can see from the output that traffic from the `Internet`, `vm0`, `vm1`, `vm2`, and the `jump-box` itself can reach the `jump-box`. Note that we don't have to use the `-b` flag with the `-t` flag, because the reverse flow analysis from the `jump-box` endpoint will produce header flows as seen from the various starting points.
+We can see from the output that traffic from the `Internet`, `vm0`, `vm1`, `vm2`, and the `jump-box` itself can reach the `jump-box`. 
 
 ## Virtual Traceroute
 Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `vm0` to the `jump-box`:
 
-[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=vm1/inbound -p)
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=vm1/inbound -p -q)
 ~~~
 ~~~
 
@@ -127,6 +127,7 @@ The path is
 
 ## Other Flags
 
+The `graph.js` tool provides a number of other features, which can be enabled by command-line flags. You can use the `-h` flag to display a brief summary of the available flags:
 
 [//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -h)
 ~~~

@@ -57,6 +57,7 @@ function main() {
   const fromNode = args.f;
   const modelSpoofing = !!args.s;
   const outbound = !!args.f;
+  const quietMode = !!args.q;
   const showRouters = !!args.r;
   const shortenAndCollapse = !args.e;
   const toNode = args.t;
@@ -113,8 +114,10 @@ function main() {
         modelSpoofing
       );
 
-      summarizeOptions(options);
-      listEndpoints(graph, showRouters);
+      if (!quietMode) {
+        summarizeOptions(options);
+        listEndpoints(graph, showRouters);
+      }
 
       if (cycles.length > 0) {
         console.log(`Cycles reachable from ${formatNodeName(fNode)}:`);
@@ -164,8 +167,10 @@ function main() {
         modelSpoofing
       );
 
-      summarizeOptions(options);
-      listEndpoints(graph, showRouters);
+      if (!quietMode) {
+        summarizeOptions(options);
+        listEndpoints(graph, showRouters);
+      }
 
       if (cycles.length > 0) {
         console.log(`Cycles on paths to ${formatNodeName(tNode)}:`);
@@ -256,16 +261,24 @@ function showUsage() {
           description: 'Display routes for each path.',
           type: Boolean,
         },
-        {
-          name: 'cycles',
-          alias: 'c',
-          description: 'Find all cycles in the graph.',
-          type: Boolean,
-        },
+        // TODO: advertise this feature once it has been fully implemented.
+        // {
+        //   name: 'cycles',
+        //   alias: 'c',
+        //   description: 'Find all cycles in the graph.',
+        //   type: Boolean,
+        // },
         {
           name: 'paths',
           alias: 'p',
           description: 'Displays paths for each route.',
+          type: Boolean,
+        },
+        {
+          name: 'quiet',
+          alias: 'q',
+          description:
+            "Quiet mode - don't summarize options and enumerate nodes.",
           type: Boolean,
         },
         {

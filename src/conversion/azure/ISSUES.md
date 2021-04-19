@@ -1,6 +1,6 @@
 * Demo/documentation bugs
   * Better friendly name to node mapping
-  * -q flag (for quiet) suppresses flag summary and node list
+  * x -q flag (for quiet) suppresses flag summary and node list
 
   * `-t` should be the default for `-f -t`
   * Option summary should mention that `-b` is default for `-t`.
