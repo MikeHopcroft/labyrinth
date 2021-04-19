@@ -1,424 +1,405 @@
 # Azure Resource Graphs
 
-Labyrinth provides a sample application that converts an [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.) into a Labyrinth graph, suitable for flow analysis.
+`Labyrinth` was originally designed to analyze [Azure](https://azure.microsoft.com/en-us/) networks, answering questions like
+* Which servers can receive traffic directly from the internet?
+* Can traffic from the internet reach my database?
+* Which services can my front-end web servers interact with?
+* Can my back-end web service call out to services on the internet?
+* Is the jump-box the only server that can SSH to the front-end web servers?
 
-## Exporting the Azure Resource Graph
+Currently `Labyrinth` models [OSI Layer 3](https://en.wikipedia.org/wiki/OSI_model#Layer_3:_Network_Layer) traffic in Azure networks. This means it can reason about IP packet headers fields, like the source and destination ip addresses and ports, and the protocol. The `Labyrinth` algorithm is fairly generic and capable of modeling concepts from other layers such as
+* [Layer 4](https://en.wikipedia.org/wiki/OSI_model#Layer_4:_Transport_Layer) - e.g. TCP connection state and [stateful packet inspection](https://en.wikipedia.org/wiki/Stateful_firewall).
+* [Layer 7](https://en.wikipedia.org/wiki/OSI_model#Layer_7:_Application_Layer) - e.g. [Application Gateways](https://docs.microsoft.com/en-us/azure/application-gateway/overview)
 
-You can use the `az` command to export the `Azure Resource Graph`. In the example, below, replace `"labyrinth-sample"` with the name of your resource group.
+The analysis process starts with an
+[Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.), which you can obtain from your Azure tenant. `Labyrinth` will convert your resource graph to a generic graph representation and then then perform reachability analysis. The steps are
+* Export an Azure Resource Graph from your tenant.
+* Use Labyrinth's `convert.js` tool to transform the resource graph to a Labyrinth graph.
+* Use Labytinth's `graph.js` tool to generate a reachability report.
+
+## Sample Resource Graphs
+Labyrinth includes 10 sample resource graphs, which can be found in the
+[data/azure/examples](../data/azure/examples]) folder. This tutorial uses the graph in [data/azure/examples/00.demo](..data/azure/examples/00.demo/resource-graph.json). This is a fairly simple network with three web servers behind a load balancer and a jump box, which is accessible via SSH for diagnostic purposes. Network security rules allow only HTTP and HTTPS traffic from the `public-services-ip` to the web servers. The jump-box is accessible via the `jump-box-ip`, using SSH, and it can access the web servers via SSH.
+
+![Resource Graph](src/00.demo.1.svg)
+
+## Exporting and Converting the Azure Resource Graph
+
+If you'd prefer to analyze your own resource graph, you can use the following [az](https://docs.microsoft.com/en-us/cli/azure/) command to export a copy. Just replace the `"00000000-0000-0000-0000-000000000000"` with your subscription id.
 
 ~~~
-% az graph query -q 'resources | where resourceGroup == "labyrinth-sample" | where type in~ ("Microsoft.Network/n
-etworkInterfaces", "Microsoft.Network/networkSecurityGroups", "Microsoft.Network/virtualNetworks")' > resources.json
+% az graph query --output json -q 'Resources | where subscriptionId == "00000000-0000-0000-0000-000000000000" | where type !in ("microsoft.compute/virtualmachines/extensions", "microsoft.compute/disks", "microsoft.compute/sshpublickeys", "microsoft.storage/storageaccounts")' > resource-graph.json
 ~~~
 
-## Sample Azure Resource Graph
+Once you have your resource graph, use the `convert.js` application to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/convert.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
 
-Labyrinth includes a sample Azure Resource Graph in [resource-graph-1.json](data/azure/resource-graph 1.json). This was exported from an actual Azure deployment. It has the following structure:
-
-![resource-graph-1](src/resource-graph-1.png)
-
-## Converting the Azure Resource Graph
-
-Use the `convert.js` application to generate a Labyrinth graph file:
-
-[//]: # (spawn node build/src/apps/convert.js data/azure/resource-graph-1.json data/azure/resource-graph-1.yaml)
+[//]: # (spawn node build/src/apps/convert.js data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/convert.yaml)
 ~~~
-$ node build/src/apps/convert.js data/azure/resource-graph-1.json data/azure/resource-graph-1.yaml
-Azure resource graph input file: data/azure/resource-graph-1.json
-Labyrinth graph output file: data/azure/resource-graph-1.yaml
+$ node build/src/apps/convert.js data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/convert.yaml
+Azure resource graph input file: data/azure/examples/00.demo/resource-graph.json
+Labyrinth graph output file: data/azure/examples/00.demo/convert.yaml
 Conversion complete.
+All Azure resource graph types understood.
 
 ~~~
 
-This will write the Labyrinth graph to [resource-graph-1.yaml](./data/azure/resource-graph 1.yaml):
+You are now ready to perform reachability analysis.
 
-[//]: # (file data/azure/resource-graph-1.yaml)
+## Tracing Flows _from_ a Node
+
+Suppose we're interested in tracing all of the traffic that could flow _into_ the network from the `public-services-ip` node. We expect traffic to the green nodes in the following diagram:
+
+![Resource Graph](src/00.demo.2.svg)
+
+We can use the `graph.js` application with the `-f=public-services-ip` to show all flows _from_ `public-services-ip`. The first parameter is the `Labyrinth graph` file, obtained from the Azure resource graph. 
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip)
 ~~~
-symbols:
-  - dimension: ip
-    symbol: Internet
-    range: except vnet
-  - dimension: ip
-    symbol: AzureLoadBalancer
-    range: 168.63.129.16
-  - dimension: protocol
-    symbol: Tcp
-    range: tcp
-  - dimension: ip
-    symbol: vnet
-    range: 10.0.0.0/23
-nodes:
-  - key: data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint
-    endpoint: true
-    range:
-      sourceIp: 10.0.1.4
-    rules:
-      - constraints:
-          destinationIp: backendSubnet/router
-        destination: backendSubnet/router
-  - key: frontend/default
-    endpoint: true
-    range:
-      sourceIp: 10.0.0.132
-    rules:
-      - constraints:
-          destinationIp: frontendSubnet/router
-        destination: frontendSubnet/router
-  - key: jumpbox/default
-    endpoint: true
-    range:
-      sourceIp: 10.0.0.4
-    rules:
-      - constraints:
-          destinationIp: jumpboxSubnet/router
-        destination: jumpboxSubnet/router
-  - key: jumpboxSubnet/router
-    range:
-      sourceIp: 10.0.0.0/25
-    rules:
-      - constraints:
-          destinationIp: except 10.0.0.0/25
-        destination: jumpboxSubnet/outbound
-      - destination: jumpbox/default
-        constraints:
-          destinationIp: 10.0.0.4
-  - key: jumpboxSubnet/inbound
-    filters:
-      - action: allow
-        priority: 65000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: vnet
-          sourcePort: '*'
-          destinationIp: vnet
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 65001
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: AzureLoadBalancer
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 65500
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 1000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: Internet
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '22'
-          protocol: Tcp
-      - action: allow
-        priority: 1100
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: Internet
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '443'
-          protocol: Tcp
-    rules:
-      - destination: jumpboxSubnet/router
-  - key: jumpboxSubnet/outbound
-    filters:
-      - action: allow
-        priority: 65000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: vnet
-          sourcePort: '*'
-          destinationIp: vnet
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 65001
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: Internet
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 65500
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-    range:
-      sourceIp: 10.0.0.0/25
-    rules:
-      - destination: vnet
-  - key: frontendSubnet/router
-    range:
-      sourceIp: 10.0.0.128/25
-    rules:
-      - constraints:
-          destinationIp: except 10.0.0.128/25
-        destination: frontendSubnet/outbound
-      - destination: frontend/default
-        constraints:
-          destinationIp: 10.0.0.132
-  - key: frontendSubnet/inbound
-    filters:
-      - action: allow
-        priority: 65000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: vnet
-          sourcePort: '*'
-          destinationIp: vnet
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 65001
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: AzureLoadBalancer
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 65500
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 1000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: Internet
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '80'
-          protocol: Tcp
-      - action: allow
-        priority: 1100
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: Internet
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '443'
-          protocol: Tcp
-    rules:
-      - destination: frontendSubnet/router
-  - key: frontendSubnet/outbound
-    filters:
-      - action: allow
-        priority: 65000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: vnet
-          sourcePort: '*'
-          destinationIp: vnet
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 65001
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: Internet
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 65500
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-    range:
-      sourceIp: 10.0.0.128/25
-    rules:
-      - destination: vnet
-  - key: backendSubnet/router
-    range:
-      sourceIp: 10.0.1.0/24
-    rules:
-      - constraints:
-          destinationIp: except 10.0.1.0/24
-        destination: backendSubnet/outbound
-      - destination: >-
-          data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint
-        constraints:
-          destinationIp: 10.0.1.4
-  - key: backendSubnet/inbound
-    filters:
-      - action: allow
-        priority: 65000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: vnet
-          sourcePort: '*'
-          destinationIp: vnet
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 65001
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: AzureLoadBalancer
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 65500
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 1000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: 10.0.0.0/25
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '443'
-          protocol: Tcp
-      - action: allow
-        priority: 1100
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: 10.0.0.128/25
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '443'
-          protocol: Tcp
-    rules:
-      - destination: backendSubnet/router
-  - key: backendSubnet/outbound
-    filters:
-      - action: allow
-        priority: 65000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: vnet
-          sourcePort: '*'
-          destinationIp: vnet
-          destinationPort: '*'
-          protocol: '*'
-      - action: allow
-        priority: 65001
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: Internet
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 65500
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: '*'
-          destinationPort: '*'
-          protocol: '*'
-      - action: deny
-        priority: 1000
-        id: 1
-        source: data/azure/resource-graph-1.json
-        constraints:
-          sourceIp: '*'
-          sourcePort: '*'
-          destinationIp: Internet
-          destinationPort: '*'
-          protocol: Tcp
-    range:
-      sourceIp: 10.0.1.0/24
-    rules:
-      - destination: vnet
-  - key: vnet
-    range:
-      sourceIp: 10.0.0.0/23
-    rules:
-      - destination: Internet
-        constraints:
-          destinationIp: except 10.0.0.0/23
-      - destination: jumpboxSubnet/inbound
-        constraints:
-          destinationIp: 10.0.0.0/25
-      - destination: frontendSubnet/inbound
-        constraints:
-          destinationIp: 10.0.0.128/25
-      - destination: backendSubnet/inbound
-        constraints:
-          destinationIp: 10.0.1.0/24
-  - key: Internet
-    endpoint: true
-    range:
-      sourceIp: Internet
-    rules:
-      - destination: vnet
-        constraints:
-          destinationIp: vnet
+$ node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints only (use -r flag to display routing nodes). 
+  Not displaying paths (use -s or -v flags to enable).
+  Brief mode (use -v flag to enable verbose mode).
+  Paths are forward propagated (use -b flag to enable backprojection).
+  Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
+
+Endpoints
+  Internet
+    Internet:  (endpoint)
+  jump-box
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm0
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm1
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm2
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+
+Nodes reachable from public-services-ip (publicIp2/endpoint):
+
+vm0 (vm2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 10.0.100.4
+    destination port: 8080, 8443
+    protocol: TCP
+
+vm1 (vm3/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 10.0.100.5
+    destination port: 8080, 8443
+    protocol: TCP
+
+vm2 (vm4/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 10.0.100.6
+    destination port: 8080, 8443
+    protocol: TCP
+
+
+~~~
+
+The tool first displays a summary of the command-line options in effect and a list of endpoints in the graph. After this it shows the flows to the three web servers. We can see, above, that each of the three web servers is reachable from the `Internet`, with destination ports `8080` and `8443` and the `TCP` protocol.
+
+## Back-Projecting Network Address Translation and Port Mapping
+
+The tool correctly identified `vm0`, `vm1`, and `vm2` as the only nodes that can receive traffic from `public-services-ip`, but the traffic header details were confusing because they described the IP packet headers, as seen on arrival at the web servers. For example, `vm0` will only see packets addressed to `10.0.0.4` for ports `8080` and `8443`:
+
+~~~
+vm0 (vm2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 10.0.100.4
+    destination port: 8080, 8443
+    protocol: TCP
+~~~
+
+While these are, in fact, the only packets from `public-services-ip` that `vm0` will ever see, what we really want to know is contents of the packet headers, as viewed from `public-services-ip`. From outside of the `virtual-network` we can't even see `10.0.0.4` because it is an internal IP address. All we can see are the two public IPs, `52.183.88.216` and `52.156.96.94`.
+
+In this example network, the `load-balancer` performs
+[network address translation](https://en.wikipedia.org/wiki/Network_address_translation) from the public ip address `52.183.88.216` to one of the three web server ip addresses. It also performs port mapping, translating the `http` and `https` ports to `8080` and `8443`, respectively.
+
+Labyrinth can provide a more useful analysis by `back-projecting` header flows to their starting values. In the following diagram, the headers have been labeled with their values on entry to the network at `public-services-ip`:
+
+
+![Resource Graph](src/00.demo.3.svg)
+
+We enable back-projection with the `-b` flag:
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b)
+~~~
+$ node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints only (use -r flag to display routing nodes). 
+  Not displaying paths (use -s or -v flags to enable).
+  Brief mode (use -v flag to enable verbose mode).
+  Backprojecting paths past NAT rewrites. (-b)
+  Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
+
+Endpoints
+  Internet
+    Internet:  (endpoint)
+  jump-box
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm0
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm1
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm2
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+
+Nodes reachable from public-services-ip (publicIp2/endpoint):
+
+vm0 (vm2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.183.88.218
+    destination port: http, https
+    protocol: TCP
+
+vm1 (vm3/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.183.88.218
+    destination port: http, https
+    protocol: TCP
+
+vm2 (vm4/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.183.88.218
+    destination port: http, https
+    protocol: TCP
+
+
+~~~
+
+The output now shows the updated header flows to `vm0`, `vm1`, and `vm2`, _as seen from `public-services-ip`. For example, the packets with the following headers can flow from `public-services-ip` to `vm0`:
+
+~~~
+vm0 (vm2/inbound):
+  flow:
+    source ip: Internet
+    destination ip: 52.183.88.218
+    destination port: http, https
+    protocol: TCP
+~~~
+
+## Finding Flows _to_ a Node
+
+`Labyrinth` can also find all of the packets that can reach a specified node. Suppose we want to find all of the traffic _to_ the `jump-box`:
+
+![Resource Graph](src/00.demo.4.svg)
+
+We can use the `-t` flag find flows _to_ a specified node.
+**NOTE: do not need to use the `-b` flag with `-t`.**
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box)
+~~~
+$ node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints only (use -r flag to display routing nodes). 
+  Not displaying paths (use -s or -v flags to enable).
+  Brief mode (use -v flag to enable verbose mode).
+  Paths are forward propagated (use -b flag to enable backprojection).
+  Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
+
+Endpoints
+  Internet
+    Internet:  (endpoint)
+  jump-box
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm0
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm1
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm2
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+
+Nodes that can reach jump-box (vm1/inbound):
+
+Internet:
+  flow:
+    source ip: Internet
+    destination ip: 52.156.96.94
+    destination port: ssh
+    protocol: TCP
+
+    source ip: AzureLoadBalancer
+    destination ip: 52.156.96.94
+
+jump-box (vm1/outbound):
+  flow:
+    source ip: 10.0.88.4
+    destination ip: 10.0.88.4
+    destination port: ssh
+
+vm0 (vm2/outbound):
+  flow:
+    source ip: 10.0.100.4
+    destination ip: 10.0.88.4
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 10.0.100.4
+    destination ip: 10.0.88.4
+
+vm1 (vm3/outbound):
+  flow:
+    source ip: 10.0.100.5
+    destination ip: 10.0.88.4
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 10.0.100.5
+    destination ip: 10.0.88.4
+
+vm2 (vm4/outbound):
+  flow:
+    source ip: 10.0.100.6
+    destination ip: 10.0.88.4
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 10.0.100.6
+    destination ip: 10.0.88.4
+
+
+~~~
+
+We can see from the output that traffic from the `Internet`, `vm0`, `vm1`, `vm2`, and the `jump-box` itself can reach the `jump-box`. Note that we don't have to use the `-b` flag with the `-t` flag, because the reverse flow analysis from the `jump-box` endpoint will produce header flows as seen from the various starting points.
+
+## Virtual Traceroute
+Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `vm0` to the `jump-box`:
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=vm1/inbound -p)
+~~~
+$ node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=vm1/inbound -p
+Options summary:
+  Not modeling source ip address spoofing (use -s flag to enable).
+  Displaying endpoints only (use -r flag to display routing nodes). 
+  Displaying paths (-p or -v).
+  Verbose mode (-v).
+  Paths are forward propagated (use -b flag to enable backprojection).
+  Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
+
+Endpoints
+  Internet
+    Internet:  (endpoint)
+  jump-box
+    vm1/inbound:  (endpoint)
+    vm1/outbound:  (endpoint)
+  vm0
+    vm2/inbound:  (endpoint)
+    vm2/outbound:  (endpoint)
+  vm1
+    vm3/inbound:  (endpoint)
+    vm3/outbound:  (endpoint)
+  vm2
+    vm4/inbound:  (endpoint)
+    vm4/outbound:  (endpoint)
+
+Routes from vm0 (vm2/outbound) to jump-box (vm1/inbound):
+
+jump-box (vm1/inbound):
+  flow:
+    source ip: 10.0.100.4
+    destination ip: 10.0.88.4
+    destination port: ssh
+    protocol: TCP
+
+    source ip: 10.0.100.4
+    destination ip: 10.0.88.4
+
+  paths:
+    vm0 => vm0148 => public-services-subnet => virtual-network => jump-box-subnet => jump-box948 => jump-box
+      source ip: 10.0.100.4
+      destination ip: 10.0.88.4
+      destination port: ssh
+      protocol: TCP
+
+      source ip: 10.0.100.4
+      destination ip: 10.0.88.4
+
+
+~~~
+
+The path is
+* **vm0** - trace route starts at this server
+* **vm0148** - NIC applies outbound NSG rules
+* **public-services-subnet** - subnet applies outbound NSG rules
+* **virtual-network** - routes traffic to jump-box-subnet
+* **jump-box-subnet** - subnet applies inbount NSG rules
+* **jump-box948** - NIC applies inbound NSG rules
+* **jump-box** - trace route ends here
+
+
+## Other Flags
+
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -h)
+~~~
+$ node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -h
+
+Network graph reachability analyzer
+
+  Utility for analyzing reachability in networks. 
+
+Usage
+
+  node graph.js <network.yaml> [...options] 
+
+Required Parameters
+
+  <network.yaml>   Path to a yaml file the defines the network topology and its 
+                   routing and filtering rules.                                 
+
+Options
+
+  -f, --from <node>                Find all paths in the graph that start at    
+                                   <node>.                                      
+  -t, --to <node>                  Find all paths in the graph that can reach   
+                                   <node>.                                      
+  -u, --universe <universe.yaml>   Use provided Universe specification.         
+                                   Default Universe is for firewall rules with  
+                                   - source ip                                  
+                                   - source port                                
+                                   - destination ip                             
+                                   - destination port                           
+                                   - protocol                                   
+                                                                                
+  -v, --verbose                    Display routes for each path.                
+  -c, --cycles                     Find all cycles in the graph.                
+  -p, --paths                      Displays paths for each route.               
+  -r, --routers                    Display routers along paths.                 
+  -s, --spoofing                   Model source address spoofing.               
+  -b, --back-project               Backproject routes through NAT rewrites.     
+  -e, --expand                     Expand paths to show internal nodes.         
+
 
 ~~~
 
 
-## Analyzing the Graph
-
-Use the `graph.js` application to analyze packet flows in the graph.
-
-[//]: # (spawn node build/src/apps/graph.js data/azure/resource-graph-1.yaml -f=Internet)
-~~~
-$ node build/src/apps/graph.js data/azure/resource-graph-1.yaml -f=Internet
-Error: Dimension "ip address": unknown ip address "backendSubnet/router".
-
-~~~
+Spoofing?
 

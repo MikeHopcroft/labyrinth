@@ -13,6 +13,7 @@ nodes:
         constraints:
           destinationIp: 52.183.88.218
           sourceIp: Internet
+    endpoint: true
   - key: loadBalancer1
     friendlyName: public-load-balancer
     routes:

@@ -1,16 +1,35 @@
 * Demo/documentation bugs
-  * Why does backproject of `from public-services-ip` give the following instead of `Internet`?
-    * except 10.0.0.0-10.0.87.255, 10.0.89.0-10.0.255.255
-    * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b
-    * Answer: back-projecting code allows overwrites that can't happen
-    * Need to modify back-projecting code and forward-propagation in reverse mode (for multiple override terms)
-  * Doesn't show `public-services-ip` because `-r` flag is missing. Why doesn't it show `Internet`?
-    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0
+  * Better friendly name to node mapping
+  * -q flag (for quiet) suppresses flag summary and node list
+
+  * `-t` should be the default for `-f -t`
+  * Option summary should mention that `-b` is default for `-t`.
+  
+  * Consider renaming vm0-vm2 to web0-web2
+    * Make separate demo file for docs
+  * SVG diagrams - need to be consistent about SSH, HTTP, TCP casing
+
   * Nodes are sorted by key, not friendly name
     * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r
+  
+  * Identify case for superset term coalescing.
+
+  * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box -p
+    * Internet needs `endpoint: true`
+    * Need to coalesce terms with subset relation
+    * Why does jumpbox subnet allow all traffic from vnet? This seems wrong. A fix here would be a work-around to the missing coalesce.
+  * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=Internet -t=vm0
+    * Shows no routes because vm0 maps to vm0/outbound
+  * x Why does backproject of `from public-services-ip` give the following instead of `Internet`?
+    * x except 10.0.0.0-10.0.87.255, 10.0.89.0-10.0.255.255
+    * x node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b
+    * x Answer: back-projecting code allows overwrites that can't happen
+    * x Need to modify back-projecting code and forward-propagation in reverse mode (for multiple override terms)
+  * Doesn't show `public-services-ip` because `-r` flag is missing. Why doesn't it show `Internet`?
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0
+    * convertResourceGraph() omits the `endpoint: true` property for Internet.
   * Investigate separate paths for `http` and `https` in
     * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=Internet -b
-  * Identify case for superset term coalescing.
   * Improved literal-range to symbolic expression algorithm.
 * Compare output of
   * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b

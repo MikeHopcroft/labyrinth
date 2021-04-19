@@ -63,6 +63,8 @@ export function convertResourceGraph(services: GraphServices) {
   services.nodes.add({
     key: internetKey,
     routes: internetRoutes,
+    endpoint: true  // TODO: figure out whether to make this false.
+    // Reinstated endpoint: true to make documentation build work correctly.
   });
 
   //
