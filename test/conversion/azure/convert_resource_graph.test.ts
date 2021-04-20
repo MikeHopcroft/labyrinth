@@ -28,18 +28,37 @@ export default function test() {
           friendlyName: AzureBackboneFriendlyName,
           routes: [
             {
-              destination: 'Internet',
+              destination: 'Internet-Backbone',
             },
           ],
         },
         {
+          endpoint: true,
+          friendlyName: 'Internet',
           key: 'Internet',
-          routes: [],
+          routes: [
+            {
+              destination: 'Internet-Backbone',
+            },
+          ],
+        },
+        {
+          friendlyName: 'Internet',
+          key: 'Internet-Backbone',
+          routes: [
+            {
+              destination: 'Internet',
+              constraints: {
+                destinationIp: 'Internet',
+              },
+            },
+          ],
         },
       ];
 
       const emptyGraph: AnyAzureObject[] = [];
       const result = convert(emptyGraph);
+      console.log(JSON.stringify(result.graph.nodes, null, 2));
       assert.deepEqual(result.graph.nodes, expectedNodes);
     });
   });

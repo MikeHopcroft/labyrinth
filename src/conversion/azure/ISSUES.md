@@ -1,20 +1,42 @@
 * Demo/documentation bugs
-  * Better friendly name to node mapping
-  * x -q flag (for quiet) suppresses flag summary and node list
+  * Merge mhop/bugs1 into main
 
+  * Improve top-level README.md
   * Azure converter architecture
+  * Azure converter pattern
+    * IDEA: side-by-side code and explanation like http://gitlet.maryrosecook.com/docs/gitlet.html
   * Azure graph algorithm
 
-  * x `-t` should be the default for `-f -t`
-  * Option summary should mention that `-b` is default for `-t`.
-  
   * Consider renaming vm0-vm2 to web0-web2
     * Make separate demo file for docs
     * Rename convert.yaml to graph.yaml
-  * SVG diagrams - need to be consistent about SSH, HTTP, TCP casing
+  * SVG diagrams
+    * Need to be consistent about SSH, HTTP, TCP casing
+    * Remove drop shadow from white background.
+
+  * . Internet node endpoint
+    * x InternetBackBone
+    * x Internet
+    * Private ip ranges: https://en.wikipedia.org/wiki/Private_network
+      * 10.0.0.0/8
+      * 172.16.0.0/12
+      * 192.168.0.0/16
+
+  * Node ranges
+    * Add for Internet, VNet, SubNet, PublicIp, PrivateIp
+    * Display ranges in app
 
   * Nodes are sorted by key, not friendly name
-    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r 
+    * Sort should probably be done in app and unit tests - not in graph.
+    * Rationale: tests want to sort by key, but app wants to sort by display name (friendlyName ?? key)
+
+  * . Better friendly name to node mapping
+    * May have improved with [mhop/bugs1 860366f] FIX: better friendly name lookup in src/apps/graph.ts
+  * x -q flag (for quiet) suppresses flag summary and node list
+
+  * x `-t` should be the default for `-f -t`
+  * x Option summary should mention that `-b` is default for `-t`.
   
   * Identify unit test case for superset term coalescing.
 

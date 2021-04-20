@@ -177,7 +177,7 @@ function publicIpInbound(
     destination,
     constraints: {
       destinationIp,
-      sourceIp: services.getInternetKey(),
+      sourceIp: services.getInternetServiceTag(),
     },
   };
 }

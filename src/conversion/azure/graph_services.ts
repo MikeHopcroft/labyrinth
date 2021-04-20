@@ -68,7 +68,7 @@ export class GraphServices {
   // TODO: eventually we will probably need some scope management
   // around the internet key, since it will be a different symbol,
   // depending on VNet context.
-  getInternetKey() {
+  getInternetServiceTag() {
     return 'Internet';
   }
 

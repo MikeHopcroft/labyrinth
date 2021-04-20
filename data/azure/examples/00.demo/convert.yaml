@@ -2,8 +2,14 @@ nodes:
   - key: AzureBackbone/outbound
     friendlyName: AzureBackbone
     routes:
-      - destination: Internet
-  - key: Internet
+      - destination: Internet-Backbone
+  - friendlyName: Internet
+    key: Internet
+    routes:
+      - destination: Internet-Backbone
+    endpoint: true
+  - friendlyName: Internet
+    key: Internet-Backbone
     routes:
       - destination: publicIp1/endpoint
         constraints:
@@ -13,7 +19,9 @@ nodes:
         constraints:
           destinationIp: 52.183.88.218
           sourceIp: Internet
-    endpoint: true
+      - destination: Internet
+        constraints:
+          destinationIp: Internet
   - key: loadBalancer1
     friendlyName: public-load-balancer
     routes:

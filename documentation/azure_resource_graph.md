@@ -68,6 +68,7 @@ Options summary:
 Endpoints
   Internet
     Internet:  (endpoint)
+    Internet-Backbone: 
   jump-box
     vm1/inbound:  (endpoint)
     vm1/outbound:  (endpoint)
@@ -129,6 +130,7 @@ Nodes:
   AzureBackbone
   Internet
     Internet:  (endpoint)
+    Internet-Backbone: 
   jump-box
     vm1/inbound:  (endpoint)
     vm1/outbound:  (endpoint)

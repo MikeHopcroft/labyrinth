@@ -22,7 +22,11 @@ export function convertResourceGraph(services: GraphServices) {
   // some of which are AzureVirtualNetworks.
 
   // TODO: Allocate internetNodeKey to avoid possible collisions
-  const internetKey = services.getInternetKey();
+  const internetFriendlyName = 'Internet';
+  const internetBackboneKey = 'Internet-Backbone';
+  const internetEndpointKey = 'Internet';
+  const internetServiceTag = services.getInternetServiceTag();
+
   const backboneOutboundKey = services.nodes.createKeyVariant(
     AzureBackboneKeyName,
     SuffixOutbound
@@ -43,7 +47,7 @@ export function convertResourceGraph(services: GraphServices) {
       services,
       vnet,
       backboneOutboundKey,
-      internetKey
+      internetBackboneKey
     );
     const route = vnetResult.route;
 
@@ -54,24 +58,43 @@ export function convertResourceGraph(services: GraphServices) {
     for (const route of vnetResult.publicRoutes.inbound) {
       internetRoutes.push(route);
     }
+
     for (const route of vnetResult.publicRoutes.outbound) {
       backboneOutboundRoutes.push(route);
     }
   }
 
-  // Create internet node
+  internetRoutes.push({
+    destination: internetEndpointKey,
+    constraints: {
+      destinationIp: internetServiceTag,
+    },
+  });
+
+  // Create internet backbone node
   services.nodes.add({
-    key: internetKey,
+    friendlyName: internetFriendlyName,
+    key: internetBackboneKey,
     routes: internetRoutes,
-    endpoint: true  // TODO: figure out whether to make this false.
-    // Reinstated endpoint: true to make documentation build work correctly.
+  });
+
+  // Create internet endpoint node
+  services.nodes.add({
+    friendlyName: internetFriendlyName,
+    key: internetEndpointKey,
+    routes: [
+      {
+        destination: internetBackboneKey,
+      },
+    ],
+    endpoint: true,
   });
 
   //
   // Add final default outbound route for the backbone to internet
   //
   backboneOutboundRoutes.push({
-    destination: internetKey,
+    destination: internetBackboneKey,
   });
 
   //
@@ -88,5 +111,5 @@ export function convertResourceGraph(services: GraphServices) {
   // any ip addresses not in the ranges of the VNets.
   // See https://docs.microsoft.com/en-us/azure/virtual-network/service-tags-overview
   const sourceIp = `except ${vNetNodeKeys.join(',')}`;
-  services.symbols.defineServiceTag(internetKey, sourceIp);
+  services.symbols.defineServiceTag(internetServiceTag, sourceIp);
 }
