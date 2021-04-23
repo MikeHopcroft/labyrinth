@@ -1,3 +1,4 @@
+export * from './coalesce';
 export * from './conjunction';
 export * from './create_simplifier';
 export * from './dimensioned_range';

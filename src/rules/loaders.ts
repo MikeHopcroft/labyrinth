@@ -273,11 +273,13 @@ export function parseRuleSpec(universe: Universe, spec: RuleSpec): Rule {
 
 export function parseConjunction<A>(
   universe: Universe,
+  // TODO: settle on Record<> vs Constraint
   fields: Record<string, unknown>,
   spec: A
 ): Conjunction<A> {
   let conjunction = Conjunction.create([], new Set([spec]));
 
+  // TODO: key in fields?
   for (const key of Object.getOwnPropertyNames(fields)) {
     const dimension = universe.get(key);
 

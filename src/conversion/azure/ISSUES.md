@@ -22,9 +22,20 @@
       * 172.16.0.0/12
       * 192.168.0.0/16
 
+  * Cleanup
+    * buildInboundOutboundNodes() params. Why are some optional?
+    * setops/formatting.ts
+    * writefilesync()
+
   * Node ranges
-    * Add for Internet, VNet, SubNet, PublicIp, PrivateIp
-    * Display ranges in app
+    * x Add for Internet, VNet, SubNet, PublicIp, PrivateIp
+    * x Display ranges in app
+    * Range formatting should not do symbol lookup
+    * Remove extra space before (endpoint) - appears when range is undefined.
+    * Perhaps range should be a DimensionedRange, instead of a Constraint.
+      * ISSUE: graph module should not need to know anything about the type of the Range.
+    * REVIEW: does the whole concept of spoofing (-s) and ranges make sense?
+    * REVIEW: is it useful/helpful to print out IP ranges?
 
   * Nodes are sorted by key, not friendly name
     * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r 

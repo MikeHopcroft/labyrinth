@@ -297,7 +297,8 @@ function showUsage() {
         {
           name: 'back-project',
           alias: 'b',
-          description: 'Backproject routes through NAT rewrites. Note that back-projecting is enabled by default when -t is used.',
+          description:
+            'Backproject routes through NAT rewrites. Note that back-projecting is enabled by default when -t is used.',
           type: Boolean,
         },
         {
