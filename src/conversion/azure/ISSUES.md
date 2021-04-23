@@ -1,11 +1,22 @@
 * Demo/documentation bugs
   * Merge mhop/bugs1 into main
 
+  * Create NPM cli
+    * https://developer.okta.com/blog/2019/06/18/command-line-app-with-nodejs
+    * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
+    * QUESTION: how to access demo files?
+
   * Improve top-level README.md
-  * Azure converter architecture
-  * Azure converter pattern
+  * Azure converter architecture documentation
+  * Azure converter pattern documentation
     * IDEA: side-by-side code and explanation like http://gitlet.maryrosecook.com/docs/gitlet.html
-  * Azure graph algorithm
+  * Azure graph algorithm documentation
+
+  * Remove -s spoofing option
+  * Remove Node.range
+  * Remove io folder
+  * Unit tests for graph are brittle because they are order-sensitive
+  * Remove node sort order from graph
 
   * Consider renaming vm0-vm2 to web0-web2
     * Make separate demo file for docs
@@ -49,7 +60,7 @@
   * x `-t` should be the default for `-f -t`
   * x Option summary should mention that `-b` is default for `-t`.
   
-  * Identify unit test case for superset term coalescing.
+  * x Identify unit test case for superset term coalescing.
 
   * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box -p
     * Internet needs `endpoint: true`

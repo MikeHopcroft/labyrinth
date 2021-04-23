@@ -861,10 +861,10 @@ describe('Graph', () => {
               destination ip: 10.0.0.0/8
         subnet2:
           flow:
+            destination ip: 11.0.0.0/8
+      
             destination ip: 10.0.0.0/8
             destination port: http
-        
-            destination ip: 11.0.0.0/8
         
           paths:
             internet => gateway => subnet1 => subnet2
@@ -883,11 +883,11 @@ describe('Graph', () => {
               destination port: except http
         server:
           flow:
-            destination ip: 10.0.0.0/8
-            destination port: http
+            destination ip: 11.0.0.0/8
             protocol: tcp
         
-            destination ip: 11.0.0.0/8
+            destination ip: 10.0.0.0/8
+            destination port: http
             protocol: tcp
         
           paths:
