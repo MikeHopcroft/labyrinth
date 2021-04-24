@@ -1,6 +1,6 @@
 {
   "name": "labyrinth-nsg",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Network security analysis tools",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -20,10 +20,10 @@
     "firewall"
   ],
   "bin": {
-    "analyze" : "build/src/apps/analyze.js",
-    "convert" : "build/src/apps/convert.js",
-    "graph" : "build/src/apps/graph.js",
-    "samples" : "build/src/apps/samples.js"
+    "analyze": "build/src/apps/analyze.js",
+    "convert": "build/src/apps/convert.js",
+    "graph": "build/src/apps/graph.js",
+    "samples": "build/src/apps/samples.js"
   },
   "repository": "https://github.com/MikeHopcroft/labyrinth",
   "scripts": {
