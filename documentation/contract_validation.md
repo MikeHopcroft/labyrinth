@@ -57,11 +57,11 @@ Routes in contract that are not in policy:
 
 Routes common to policy and contract:
   source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  destination port: except 445
+  destination ip: 171.64.64.0/20
 
   source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
+  destination ip: 128.30.0.0/15
+  destination port: except 445
 
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
@@ -120,11 +120,11 @@ Routes in contract that are not in policy:
 
 Routes common to policy and contract:
   source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  destination port: except 445, 593
+  destination ip: 171.64.64.0/20
 
   source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
+  destination ip: 128.30.0.0/15
+  destination port: except 445, 593
 
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
@@ -151,11 +151,11 @@ All routes in contract are also in policy.
 
 Routes common to policy and contract:
   source ip: except 10.0.0.0/8
-  destination ip: 128.30.0.0/15
-  destination port: except 445, 593
+  destination ip: 171.64.64.0/18
 
   source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/18
+  destination ip: 128.30.0.0/15
+  destination port: except 445, 593
 
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
@@ -189,16 +189,16 @@ Routes in contract that are not in policy:
   destination ip: 171.64.80.0-171.64.127.255
 
 Routes common to policy and contract:
+  policy rules: 7, 10
+  contract rules: 7, 10
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/20
+
   policy rules: 7, 13-14, 17
   contract rules: 7, 13-16, 19
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
   destination port: except 445, 593
-
-  policy rules: 7, 10
-  contract rules: 7, 10
-  source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
 
   policy rules: 7, 13-14, 17
   contract rules: 7, 13-16, 19

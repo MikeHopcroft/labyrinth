@@ -6,6 +6,14 @@
     * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
     * QUESTION: how to access demo files?
 
+  * Resource graph sanitizer
+    * Multiple subscription ids
+    * Only copies that which will likely be used
+    * Option to generate names for various fields, e.g. name, and id.
+
+  * Update prepress with option to spawn shell
+    * USe for getLabyrinth.src.md
+
   * Improve top-level README.md
   * Azure converter architecture documentation
   * Azure converter pattern documentation

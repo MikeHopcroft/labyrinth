@@ -7,15 +7,35 @@
 * Can my back-end web service call out to services on the internet?
 * Is the jump-box the only server that can SSH to the front-end web servers?
 
-Currently `Labyrinth` models [OSI Layer 3](https://en.wikipedia.org/wiki/OSI_model#Layer_3:_Network_Layer) traffic in Azure networks. This means it can reason about IP packet headers fields, like the source and destination ip addresses and ports, and the protocol. The `Labyrinth` algorithm is fairly generic and capable of modeling concepts from other layers such as
+Currently the Azure converter for `Labyrinth` models [OSI Layer 3](https://en.wikipedia.org/wiki/OSI_model#Layer_3:_Network_Layer) traffic. This means it can reason about IP packet headers fields, like the source and destination IP addresses and ports, and the protocol. The `Labyrinth` algorithm is fairly generic and capable of modeling concepts from other layers such as
 * [Layer 4](https://en.wikipedia.org/wiki/OSI_model#Layer_4:_Transport_Layer) - e.g. TCP connection state and [stateful packet inspection](https://en.wikipedia.org/wiki/Stateful_firewall).
 * [Layer 7](https://en.wikipedia.org/wiki/OSI_model#Layer_7:_Application_Layer) - e.g. [Application Gateways](https://docs.microsoft.com/en-us/azure/application-gateway/overview)
 
+Today the Azure converter provides partial support for the following Azure Resource Graph constructs:
+* Public IPs with NAT
+* Private IPs
+* Virtual networks
+* Routing tables
+* Subnets
+* Load balancers with NAT and port mapping
+* Scale sets
+* Virtual machines
+* Network interface cards
+* Network security groups
+* Azure backbone
+* Internet backbone
+
+## Graph Analysis Workflow
 The analysis process starts with an
-[Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.), which you can obtain from your Azure tenant. `Labyrinth` will convert your resource graph to a generic graph representation and then then perform reachability analysis. The steps are
-* Export an Azure Resource Graph from your tenant.
-* Use Labyrinth's `convert.js` tool to transform the resource graph to a Labyrinth graph.
-* Use Labytinth's `graph.js` tool to generate a reachability report.
+[Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.), which you can obtain from your Azure tenant. `Labyrinth` will convert your resource graph to a generic graph representation and then then perform reachability analysis.
+
+![Resource Graph](src/00.demo-workflow.svg)
+
+The steps are
+1. Export an Azure Resource Graph from your tenant, or use one of the included samples.
+2. Use Labyrinth's `convert.js` tool to transform the resource graph to a Labyrinth graph.
+3. Use Labytinth's `graph.js` tool to generate a reachability report.
+
 
 ## Sample Resource Graphs
 Labyrinth includes 10 sample resource graphs, which can be found in the
@@ -245,13 +265,13 @@ Nodes that can reach jump-box (vm1/inbound):
 
 Internet:
   flow:
+    source ip: AzureLoadBalancer
+    destination ip: 52.156.96.94
+
     source ip: Internet
     destination ip: 52.156.96.94
     destination port: ssh
     protocol: TCP
-
-    source ip: AzureLoadBalancer
-    destination ip: 52.156.96.94
 
 jump-box (vm1/outbound):
   flow:
@@ -263,29 +283,14 @@ vm0 (vm2/outbound):
   flow:
     source ip: 10.0.100.4
     destination ip: 10.0.88.4
-    destination port: ssh
-    protocol: TCP
-
-    source ip: 10.0.100.4
-    destination ip: 10.0.88.4
 
 vm1 (vm3/outbound):
   flow:
     source ip: 10.0.100.5
     destination ip: 10.0.88.4
-    destination port: ssh
-    protocol: TCP
-
-    source ip: 10.0.100.5
-    destination ip: 10.0.88.4
 
 vm2 (vm4/outbound):
   flow:
-    source ip: 10.0.100.6
-    destination ip: 10.0.88.4
-    destination port: ssh
-    protocol: TCP
-
     source ip: 10.0.100.6
     destination ip: 10.0.88.4
 
@@ -306,19 +311,9 @@ vm0 (vm2/outbound):
   flow:
     source ip: 10.0.100.4
     destination ip: 10.0.88.4
-    destination port: ssh
-    protocol: TCP
-
-    source ip: 10.0.100.4
-    destination ip: 10.0.88.4
 
   paths:
     vm0 => vm0148 => public-services-subnet => virtual-network => jump-box-subnet => jump-box948 => jump-box
-      source ip: 10.0.100.4
-      destination ip: 10.0.88.4
-      destination port: ssh
-      protocol: TCP
-
       source ip: 10.0.100.4
       destination ip: 10.0.88.4
 
