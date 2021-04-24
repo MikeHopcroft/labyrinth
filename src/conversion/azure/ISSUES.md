@@ -1,3 +1,96 @@
+* Demo/documentation bugs
+  * Merge mhop/bugs1 into main
+
+  * Create NPM cli
+    * https://developer.okta.com/blog/2019/06/18/command-line-app-with-nodejs
+    * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
+    * QUESTION: how to access demo files?
+
+  * Resource graph sanitizer
+    * Multiple subscription ids
+    * Only copies that which will likely be used
+    * Option to generate names for various fields, e.g. name, and id.
+
+  * Update prepress with option to spawn shell
+    * USe for getLabyrinth.src.md
+
+  * Improve top-level README.md
+  * Azure converter architecture documentation
+  * Azure converter pattern documentation
+    * IDEA: side-by-side code and explanation like http://gitlet.maryrosecook.com/docs/gitlet.html
+  * Azure graph algorithm documentation
+
+  * Remove -s spoofing option
+  * Remove Node.range
+  * Remove io folder
+  * Unit tests for graph are brittle because they are order-sensitive
+  * Remove node sort order from graph
+
+  * Consider renaming vm0-vm2 to web0-web2
+    * Make separate demo file for docs
+    * Rename convert.yaml to graph.yaml
+  * SVG diagrams
+    * Need to be consistent about SSH, HTTP, TCP casing
+    * Remove drop shadow from white background.
+
+  * . Internet node endpoint
+    * x InternetBackBone
+    * x Internet
+    * Private ip ranges: https://en.wikipedia.org/wiki/Private_network
+      * 10.0.0.0/8
+      * 172.16.0.0/12
+      * 192.168.0.0/16
+
+  * Cleanup
+    * buildInboundOutboundNodes() params. Why are some optional?
+    * setops/formatting.ts
+    * writefilesync()
+
+  * Node ranges
+    * x Add for Internet, VNet, SubNet, PublicIp, PrivateIp
+    * x Display ranges in app
+    * Range formatting should not do symbol lookup
+    * Remove extra space before (endpoint) - appears when range is undefined.
+    * Perhaps range should be a DimensionedRange, instead of a Constraint.
+      * ISSUE: graph module should not need to know anything about the type of the Range.
+    * REVIEW: does the whole concept of spoofing (-s) and ranges make sense?
+    * REVIEW: is it useful/helpful to print out IP ranges?
+
+  * Nodes are sorted by key, not friendly name
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0 -r 
+    * Sort should probably be done in app and unit tests - not in graph.
+    * Rationale: tests want to sort by key, but app wants to sort by display name (friendlyName ?? key)
+
+  * . Better friendly name to node mapping
+    * May have improved with [mhop/bugs1 860366f] FIX: better friendly name lookup in src/apps/graph.ts
+  * x -q flag (for quiet) suppresses flag summary and node list
+
+  * x `-t` should be the default for `-f -t`
+  * x Option summary should mention that `-b` is default for `-t`.
+  
+  * x Identify unit test case for superset term coalescing.
+
+  * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box -p
+    * Internet needs `endpoint: true`
+    * Need to coalesce terms with subset relation
+    * Why does jumpbox subnet allow all traffic from vnet? This seems wrong. A fix here would be a work-around to the missing coalesce.
+  * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=Internet -t=vm0
+    * Shows no routes because vm0 maps to vm0/outbound
+  * x Why does backproject of `from public-services-ip` give the following instead of `Internet`?
+    * x except 10.0.0.0-10.0.87.255, 10.0.89.0-10.0.255.255
+    * x node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b
+    * x Answer: back-projecting code allows overwrites that can't happen
+    * x Need to modify back-projecting code and forward-propagation in reverse mode (for multiple override terms)
+  * Doesn't show `public-services-ip` because `-r` flag is missing. Why doesn't it show `Internet`?
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=vm0
+    * convertResourceGraph() omits the `endpoint: true` property for Internet.
+  * Investigate separate paths for `http` and `https` in
+    * node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=Internet -b
+  * Improved literal-range to symbolic expression algorithm.
+* Compare output of
+  * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm2/inbound -b
+  * node d:\git\labyrinth\build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -t=vm0 -b
+
 * Benefits
   * Users of relationships don't need to know the details of where relationships are stored in the specs and how they're encoded.
   * Prepare stage doesn't need to know the details of preparation for each spec type.
@@ -217,3 +310,44 @@
 * Should we template AzureIdReference?
 * Remove Default Service Tag creation
   * Ex. ip converter
+
+
+~~~
+node_modules/prepress/build/src/apps/prepress.js documentation\src\azure_resource_graph.src.md documentation\azure_resource_graph.md
+~~~
+
+~~~
+propagate(subnet2/inbound)
+  flow:
+    destination ip: 10.0.100.4-10.0.100.6
+    destination port: 8080
+    protocol: TCP
+  flowNode.routes:
+    destination ip: 10.0.100.4-10.0.100.6
+    destination port: 8080
+    protocol: TCP
+  edge to nic2/inbound
+    intersect:
+      source ip: AzureLoadBalancer <=== term combines with Internet term
+      destination ip: 10.0.100.4
+
+      source ip: 10.0.88.0/24
+      destination ip: 10.0.100.4
+      destination port: ssh       <=== term drops during intersection because ssh != 8080, 8443
+
+      source ip: Internet
+      destination ip: 10.0.100.4
+      destination port: 8080, 8443
+      protocol: TCP
+    with overrideFlow:
+      destination ip: 10.0.100.4-10.0.100.6
+      destination port: 8080
+      protocol: TCP
+    result routes:
+      source ip: Internet
+      destination ip: 10.0.100.4
+      destination port: 8080
+      protocol: TCP
+~~~
+
+

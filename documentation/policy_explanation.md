@@ -68,15 +68,15 @@ Mode is denyOverrides.
 ============ Policy Report ============
 Allowed routes:
   source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/20
+
+  source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
   protocol: except tcp, udp
 
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
   destination port: except 445
-
-  source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
 
 
 ~~~
@@ -135,6 +135,10 @@ Mode is denyOverrides.
 
 ============ Policy Report ============
 Allowed routes:
+  policy rules: 7, 10
+  source ip: except 10.0.0.0/8
+  destination ip: 171.64.64.0/20
+
   policy rules: 7, 13-14, 17
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
@@ -144,10 +148,6 @@ Allowed routes:
   source ip: except 10.0.0.0/8
   destination ip: 128.30.0.0/15
   destination port: except 445
-
-  policy rules: 7, 10
-  source ip: except 10.0.0.0/8
-  destination ip: 171.64.64.0/20
 
 
 ~~~

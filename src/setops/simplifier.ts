@@ -4,6 +4,7 @@ import FastPriorityQueue from 'fastpriorityqueue';
 import {Dimension} from '../dimensions';
 import {combineSets} from '../utilities';
 
+import {coalesce} from './coalesce';
 import {Conjunction} from './conjunction';
 import {DimensionedRange} from './dimensioned_range';
 import {Disjunction} from './disjunction';
@@ -77,7 +78,10 @@ export function simplify<A>(
     combine(dimensions, index, queue, terms, entry);
   }
 
-  return Disjunction.create<A>([...terms.values()].map(x => x.conjunction));
+  return coalesce(
+    dimensions,
+    Disjunction.create<A>([...terms.values()].map(x => x.conjunction))
+  );
 }
 
 export function createConjunctionInfo<A>(

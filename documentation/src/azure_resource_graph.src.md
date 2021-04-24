@@ -1,150 +1,180 @@
 # Azure Resource Graphs
 
-Labyrinth provides a sample application that converts an [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.) into a Labyrinth graph, suitable for flow analysis.
+`Labyrinth` was originally designed to analyze [Azure](https://azure.microsoft.com/en-us/) networks, answering questions like
+* Which servers can receive traffic directly from the internet?
+* Can traffic from the internet reach my database?
+* Which services can my front-end web servers interact with?
+* Can my back-end web service call out to services on the internet?
+* Is the jump-box the only server that can SSH to the front-end web servers?
 
-## Exporting the Azure Resource Graph
+Currently the Azure converter for `Labyrinth` models [OSI Layer 3](https://en.wikipedia.org/wiki/OSI_model#Layer_3:_Network_Layer) traffic. This means it can reason about IP packet headers fields, like the source and destination IP addresses and ports, and the protocol. The `Labyrinth` algorithm is fairly generic and capable of modeling concepts from other layers such as
+* [Layer 4](https://en.wikipedia.org/wiki/OSI_model#Layer_4:_Transport_Layer) - e.g. TCP connection state and [stateful packet inspection](https://en.wikipedia.org/wiki/Stateful_firewall).
+* [Layer 7](https://en.wikipedia.org/wiki/OSI_model#Layer_7:_Application_Layer) - e.g. [Application Gateways](https://docs.microsoft.com/en-us/azure/application-gateway/overview)
 
-You can use the `az` command to export the `Azure Resource Graph`. In the example, below, replace `"labyrinth-sample"` with the name of your resource group.
+Today the Azure converter provides partial support for the following Azure Resource Graph constructs:
+* Public IPs with NAT
+* Private IPs
+* Virtual networks
+* Routing tables
+* Subnets
+* Load balancers with NAT and port mapping
+* Scale sets
+* Virtual machines
+* Network interface cards
+* Network security groups
+* Azure backbone
+* Internet backbone
 
-~~~
-% az graph query -q 'resources | where resourceGroup == "labyrinth-sample" | where type in~ ("Microsoft.Network/n
-etworkInterfaces", "Microsoft.Network/networkSecurityGroups", "Microsoft.Network/virtualNetworks")' > resources.json
-~~~
+## Graph Analysis Workflow
+The analysis process starts with an
+[Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.), which you can obtain from your Azure tenant. `Labyrinth` will convert your resource graph to a generic graph representation and then then perform reachability analysis.
 
-## Sample Azure Resource Graph
+![Resource Graph](src/00.demo-workflow.svg)
 
-Labyrinth includes a sample Azure Resource Graph in [resource-graph-1.json](data/azure/resource-graph 1.json). This was exported from an actual Azure deployment. It has the following structure:
+The steps are
+1. Export an Azure Resource Graph from your tenant, or use one of the included samples.
+2. Use Labyrinth's `convert.js` tool to transform the resource graph to a Labyrinth graph.
+3. Use Labytinth's `graph.js` tool to generate a reachability report.
 
-![resource-graph-1](src/resource-graph-1.png)
 
-## Converting the Azure Resource Graph
+## Sample Resource Graphs
+Labyrinth includes 10 sample resource graphs, which can be found in the
+[data/azure/examples](../data/azure/examples) folder. This tutorial uses the graph in [data/azure/examples/00.demo/resource-graph.json](../data/azure/examples/00.demo/resource-graph.json). This is a fairly simple network with three web servers behind a load balancer and a jump box, which is accessible via SSH for diagnostic purposes. Network security rules allow only HTTP and HTTPS traffic from the `public-services-ip` to the web servers. The jump-box is accessible via the `jump-box-ip`, using SSH, and it can access the web servers via SSH.
 
-Use the `convert.js` application to generate a Labyrinth graph file:
+![Resource Graph](src/00.demo.1.svg)
 
-[//]: # (spawn node build/src/apps/convert.js data/azure/resource-graph-1.json data/azure/resource-graph-1.yaml)
-~~~
-$ node build/src/apps/convert.js data/azure/resource-graph-1.json data/azure/resource-graph-1.yaml
-Azure resource graph input file: data/azure/resource-graph-1.json
-Labyrinth graph output file: data/azure/resource-graph-1.yaml
-data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a: microsoft.network/networkinterfaces
-blob-blob.privateEndpoint: Microsoft.Network/networkInterfaces/ipConfigurations
-frontend: microsoft.network/networkinterfaces
-default: Microsoft.Network/networkInterfaces/ipConfigurations
-jumpbox: microsoft.network/networkinterfaces
-default: Microsoft.Network/networkInterfaces/ipConfigurations
-backendNSG: microsoft.network/networksecuritygroups
-frontendNSG: microsoft.network/networksecuritygroups
-jumpboxNSG: microsoft.network/networksecuritygroups
-vnet: microsoft.network/virtualnetworks
-  VNet: vnet
-    address prefixes: [10.0.0.0/23]
-    Subnet: jumpboxSubnet
-      addressPrefix: 10.0.0.0/25
-      ipConfigurations:
-        jumpbox/default (10.0.0.4)
-      Network Security Group: jumpboxNSG
-        Default rules
-          AllowVnetInBound (65000)
-          AllowAzureLoadBalancerInBound (65001)
-          DenyAllInBound (65500)
-          AllowVnetOutBound (65000)
-          AllowInternetOutBound (65001)
-          DenyAllOutBound (65500)
-        Rules
-          allow_ssh (1000)
-          allow_https (1100)
-    Subnet: frontendSubnet
-      addressPrefix: 10.0.0.128/25
-      ipConfigurations:
-        frontend/default (10.0.0.132)
-      Network Security Group: frontendNSG
-        Default rules
-          AllowVnetInBound (65000)
-          AllowAzureLoadBalancerInBound (65001)
-          DenyAllInBound (65500)
-          AllowVnetOutBound (65000)
-          AllowInternetOutBound (65001)
-          DenyAllOutBound (65500)
-        Rules
-          allow_http (1000)
-          allow_https (1100)
-    Subnet: backendSubnet
-      addressPrefix: 10.0.1.0/24
-      ipConfigurations:
-        data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint (10.0.1.4)
-      Network Security Group: backendNSG
-        Default rules
-          AllowVnetInBound (65000)
-          AllowAzureLoadBalancerInBound (65001)
-          DenyAllInBound (65500)
-          AllowVnetOutBound (65000)
-          AllowInternetOutBound (65001)
-          DenyAllOutBound (65500)
-        Rules
-          allow_jumpbox (1000)
-          allow_frontend (1100)
-          block_outbound (1000)
-jumpboxSubnet: Microsoft.Network/virtualNetworks/subnets
-frontendSubnet: Microsoft.Network/virtualNetworks/subnets
-backendSubnet: Microsoft.Network/virtualNetworks/subnets
-done
-Conversion complete.
+## Exporting and Converting the Azure Resource Graph
+
+If you'd prefer to analyze your own resource graph, you can use the following [az](https://docs.microsoft.com/en-us/cli/azure/) command to export a copy. Just replace the `"00000000-0000-0000-0000-000000000000"` with your subscription id.
 
 ~~~
+% az graph query --output json -q 'Resources | where subscriptionId == "00000000-0000-0000-0000-000000000000" | where type !in ("microsoft.compute/virtualmachines/extensions", "microsoft.compute/disks", "microsoft.compute/sshpublickeys", "microsoft.storage/storageaccounts")' > resource-graph.json
+~~~
 
-This will write the Labyrinth graph to [resource-graph-1.yaml](./data/azure/resource-graph 1.yaml):
+Once you have your resource graph, use the `convert.js` application to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/convert.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
 
-[//]: # (file data/azure/resource-graph-1.yaml)
+[//]: # (spawn node build/src/apps/convert.js data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/convert.yaml)
 ~~~
 ~~~
 
+You are now ready to perform reachability analysis.
 
-## Analyzing the Graph
+## Tracing Flows _from_ a Node
 
-Use the `graph.js` application to analyze packet flows in the graph.
+Suppose we're interested in tracing all of the traffic that could flow _into_ the network from the `public-services-ip` node. We expect traffic to the green nodes in the following diagram:
 
-[//]: # (spawn node build/src/apps/graph.js data/azure/resource-graph-1.yaml -f=Internet)
+![Resource Graph](src/00.demo.2.svg)
+
+We can use the `graph.js` application with the `-f=public-services-ip` to show all flows _from_ `public-services-ip`. The first parameter is the `Labyrinth graph` file, obtained from the Azure resource graph. 
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip)
 ~~~
-$ node build/src/apps/graph.js data/azure/resource-graph-1.yaml -f=Internet
-Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
-  Displaying endpoints only (use -r flag to display routing nodes). 
-  Not displaying paths (use -s or -v flags to enable).
-  Brief mode (use -v flag to enable verbose mode).
+~~~
 
-Endpoints:
-  jumpbox/default: 10.0.0.4
-  frontend/default: 10.0.0.132
-  data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint: 10.0.1.4
-  Internet: Internet
+The tool first displays a summary of the command-line options in effect and a list of endpoints in the graph. After this it shows the flows to the three web servers. We can see, above, that each of the three web servers is reachable from the `Internet`, with destination ports `8080` and `8443` and the `TCP` protocol.
 
-Nodes reachable from Internet:
+## Friendly Names
 
-jumpbox/default:
-  routes:
-    source ip: AzureLoadBalancer
-    destination ip: 10.0.0.4
+We just saw that the reachability report referred to nodes with strings like `"vm0 (vm2/inbound)"`. Usually, the first part of this string, in this case `"vm0"` is the node's "friendly name", which is typically the value in the `name` field of an object in the Azure resource graph.
+The second part of the string, in this case `"(vm2/inbound)"`, displays the corresponding Labyrinth graph node key.
 
+The friendly name and the Labyrinth node key differ because the translation from the Azure Resource Graph is not a one-to-one mapping. In many cases, a single Azure concept maps to a handful of nodes in the Labyrinth graph. An example is the NSG, which is mapped, during tranlation, into `inbound` and `outbound` nodes. Labyrinth generates sequentially numbered node keys for each node type without consulting the Azure node name field. Sometimes this leads to confusing output, when the Azure-based friendly names appear similar to unrelated Labyrinth node keys.
+
+When specifying a node with the `-f` and `-t` flags, you may use either a friendly name or a Labyrinth node key. The system will first attempt to find the appropriate node, based on friendly name. If it doesn't find one, it will fall back to a search by node key.
+
+If you are interested in seeing the mapping from friendly name to node key, look at the graph summary at the top of the reachability report. The nodes are presented as a two-level outline, where the first level shows the friendly names and the second level displays the corresponding Labyrinth node keys. The second level is not displayed in cases where the node key and the friendly name are identical.
+
+We can use the `-r` flag to show the entire graph, including internal routing nodes:
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -r)
+~~~
+~~~
+
+## Back-Projecting Network Address Translation and Port Mapping
+
+In the [Tracing Flows _from_ a Node](#tracing-flows-from-a-node) section, we saw that the tool correctly identified `vm0`, `vm1`, and `vm2` as the only nodes that can receive traffic from `public-services-ip`, but the traffic header details were confusing because they described the IP packet headers, as seen on arrival at the web servers. For example, `vm0` will only see packets addressed to `10.0.0.4` for ports `8080` and `8443`:
+
+~~~
+vm0 (vm2/inbound):
+  flow:
     source ip: Internet
-    destination ip: 10.0.0.4
-    destination port: ssh, https
-    protocol: Tcp
+    destination ip: 10.0.100.4
+    destination port: 8080, 8443
+    protocol: TCP
+~~~
 
-frontend/default:
-  routes:
-    source ip: AzureLoadBalancer
-    destination ip: 10.0.0.132
+While these are, in fact, the only packets from `public-services-ip` that `vm0` will ever see, what we really want to know is contents of the packet headers, as viewed from `public-services-ip`. From outside of the `virtual-network` we can't even see `10.0.0.4` because it is an internal IP address. All we can see are the two public IPs, `52.183.88.216` and `52.156.96.94`.
 
+In this example network, the `load-balancer` performs
+[network address translation](https://en.wikipedia.org/wiki/Network_address_translation) from the public ip address `52.183.88.216` to one of the three web server ip addresses. It also performs port mapping, translating the `http` and `https` ports to `8080` and `8443`, respectively.
+
+Labyrinth can provide a more useful analysis by `back-projecting` header flows to their starting values. In the following diagram, the headers have been labeled with their values on entry to the network at `public-services-ip`:
+
+
+![Resource Graph](src/00.demo.3.svg)
+
+We enable back-projection with the `-b` flag. In the following example, we also use the `-q` flag to suppress the options summary and node list.
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b -q)
+~~~
+~~~
+
+The output now shows the updated header flows to `vm0`, `vm1`, and `vm2`, _as seen from `public-services-ip`. For example, the packets with the following headers can flow from `public-services-ip` to `vm0`:
+
+~~~
+vm0 (vm2/inbound):
+  flow:
     source ip: Internet
-    destination ip: 10.0.0.132
+    destination ip: 52.183.88.218
     destination port: http, https
-    protocol: Tcp
-
-data.nic.b367ee68-39d3-47ca-8592-c233fb2fee4a/blob-blob.privateEndpoint:
-  routes:
-    source ip: AzureLoadBalancer
-    destination ip: 10.0.1.4
-
-
+    protocol: TCP
 ~~~
+
+## Finding Flows _to_ a Node
+
+`Labyrinth` can also find all of the packets that can reach a specified node. Suppose we want to find all of the traffic _to_ the `jump-box`:
+
+![Resource Graph](src/00.demo.4.svg)
+
+We can use the `-t` flag find flows _to_ a specified node. 
+Note that we don't have to use the `-b` flag with the `-t` flag, because the reverse flow analysis from the `jump-box` endpoint will produce header flows as seen from the various starting points.
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -t=jump-box -q)
+~~~
+~~~
+
+We can see from the output that traffic from the `Internet`, `vm0`, `vm1`, `vm2`, and the `jump-box` itself can reach the `jump-box`. 
+
+## Virtual Traceroute
+Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `vm0` to the `jump-box`:
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -f=vm0 -t=jump-box -p -q)
+~~~
+~~~
+
+The path is
+* **vm0** - trace route starts at this server.
+* **vm0148** - NIC applies outbound NSG rules.
+  * In this example, the NIC does not have outbound rules.
+* **public-services-subnet** - subnet applies outbound NSG rules.
+  * These rules allow outbound traffic to the internet and to other addresses in `virtual-network`.
+* **virtual-network** - routes traffic to `jump-box-subnet`.
+* **jump-box-subnet** - subnet applies inbound NSG rules.
+  * These rules restrict general access to port `22` and `TCP` protocol. A default Azure rule allows any traffic from `virtual-network`, regardless or port or protocol.
+* **jump-box948** - NIC applies inbound NSG rules.
+  * In this example, the NIC does not have inbound rules.
+* **jump-box** - trace route ends here.
+
+
+## Other Flags
+
+The `graph.js` tool provides a number of other features, which can be enabled by command-line flags. You can use the `-h` flag to display a brief summary of the available flags:
+
+[//]: # (spawn node build\src\apps\graph.js data\azure\examples\00.demo\convert.yaml -h)
+~~~
+~~~
+
+TODO
+* Describe spoofing flag.
+
 

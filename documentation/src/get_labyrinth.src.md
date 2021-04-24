@@ -167,4 +167,4 @@ version: 13
 ~~~
 
 ---
-### [Next: Labyrinth CLI](./labyrinth_cli.md)
+### [Next: Analyzing Azure Resource Graphs](./azure_resource_graph.md)

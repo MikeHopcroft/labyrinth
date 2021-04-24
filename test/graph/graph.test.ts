@@ -861,10 +861,10 @@ describe('Graph', () => {
               destination ip: 10.0.0.0/8
         subnet2:
           flow:
+            destination ip: 11.0.0.0/8
+      
             destination ip: 10.0.0.0/8
             destination port: http
-        
-            destination ip: 11.0.0.0/8
         
           paths:
             internet => gateway => subnet1 => subnet2
@@ -883,11 +883,11 @@ describe('Graph', () => {
               destination port: except http
         server:
           flow:
-            destination ip: 10.0.0.0/8
-            destination port: http
+            destination ip: 11.0.0.0/8
             protocol: tcp
         
-            destination ip: 11.0.0.0/8
+            destination ip: 10.0.0.0/8
+            destination port: http
             protocol: tcp
         
           paths:
@@ -1328,6 +1328,262 @@ describe('Graph', () => {
                 destination ip: 203.0.113.1
                 destination port: http, https`)
       );
+    });
+
+    // This case catches a bug in reverse-propagation.
+    // Still need to catch equivalent bug in back-projection.
+    it('clearOverride() with impossible override', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          routes: [
+            {
+              destination: 'b',
+              constraints: {
+                sourceIp: '1.1.1.1',
+              },
+            },
+          ],
+        },
+        {
+          key: 'b',
+          routes: [
+            {
+              destination: 'c',
+              constraints: {
+                destinationPort: '1001',
+              },
+              override: {
+                destinationPort: '1',
+              },
+            },
+            {
+              destination: 'c',
+              constraints: {
+                destinationPort: '1002',
+              },
+              override: {
+                destinationPort: '2',
+              },
+            },
+          ],
+        },
+        {
+          key: 'c',
+          filters: [
+            {
+              action: ActionType.ALLOW,
+              priority: 0,
+              constraints: {destinationPort: '1'},
+            },
+            {
+              action: ActionType.ALLOW,
+              priority: 1,
+              // sourceIp 3.3.3.3 is disallows by constraint in node `a`.
+              constraints: {sourceIp: '3.3.3.3', destinationPort: '2'},
+            },
+          ],
+          routes: [
+            {
+              destination: 'd',
+            },
+          ],
+        },
+        {
+          key: 'd',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+
+      const forwardAD = paths(graph, 'a', 'd', {outbound: true});
+      assert.equal(
+        forwardAD,
+        trim(`
+          d:
+            flow:
+              source ip: 1.1.1.1
+              destination port: 1
+          
+            paths:
+              a => b => c => d
+                source ip: 1.1.1.1
+                destination port: 1`)
+      );
+
+      // console.log('================ ForwardAD ===================');
+      // console.log(forwardAD);
+      // console.log('================ End ForwardAD ===================');
+
+      const backProjectAD = paths(graph, 'a', 'd', {
+        outbound: true,
+        backProject: true,
+      });
+      assert.equal(
+        backProjectAD,
+        trim(`
+          d:
+            flow:
+              source ip: 1.1.1.1
+              destination port: 1001
+          
+            paths:
+              a => b => c => d
+                source ip: 1.1.1.1
+                destination port: 1001`)
+      );
+
+      // console.log('================ BackProjectAD ===================');
+      // console.log(backProjectAD);
+      // console.log('================ End BackProjectAD ===================');
+
+      // Should not allow sourceIp 1.1.1.1 with destinationPort 1002,
+      // even though node C only allows destinationPort 2 (mapped from 1002)
+      // with sourceIp 3.3.3.3.
+      const reversePathDA = paths(graph, 'd', 'a', {outbound: false});
+      assert.equal(
+        reversePathDA,
+        trim(`
+          a:
+            flow:
+              source ip: 1.1.1.1
+              destination port: 1001
+          
+            paths:
+              a => b => c => d
+                source ip: 1.1.1.1
+                destination port: 1001`)
+      );
+      // console.log('================ ReverseDA ===================');
+      // console.log(reversePathDA);
+      // console.log('================ End ReverseDA ===================');
+    });
+
+    it('clearOverride() bug regression', () => {
+      const nodes: NodeSpec[] = [
+        {
+          key: 'a',
+          routes: [
+            {
+              destination: 'b',
+              constraints: {
+                destinationIp: '52.183.88.218',
+                destinationPort: '80',
+              },
+              override: {
+                destinationIp: '10.0.100.4',
+                destinationPort: '8080',
+              },
+            },
+          ],
+        },
+        {
+          key: 'b',
+          filters: [
+            {
+              action: ActionType.ALLOW,
+              priority: 100,
+              constraints: {
+                sourceIp: 'except 10.0.0.0/16',
+                destinationPort: '8080',
+              },
+            },
+            {
+              action: ActionType.ALLOW,
+              priority: 200,
+              constraints: {
+                sourceIp: '10.0.88.0/24',
+                destinationIp: '10.0.0.0/16',
+                destinationPort: '22',
+              },
+            },
+          ],
+          routes: [
+            {
+              destination: 'c',
+              constraints: {
+                destinationIp: '10.0.100.4',
+              },
+            },
+          ],
+        },
+        {
+          key: 'c',
+          endpoint: true,
+          routes: [],
+        },
+      ];
+
+      const builder = graphBuilder(nodes);
+      const graph = builder.buildGraph();
+
+      const forwardAC = paths(graph, 'a', 'c', {outbound: true});
+      assert.equal(
+        forwardAC,
+        trim(`
+          c:
+            flow:
+              source ip: except 10.0.0.0/16
+              destination ip: 10.0.100.4
+              destination port: 8080
+          
+            paths:
+              a => b => c
+                source ip: except 10.0.0.0/16
+                destination ip: 10.0.100.4
+                destination port: 8080`)
+      );
+
+      // console.log('================ ForwardAC ===================');
+      // console.log(forwardAC);
+      // console.log('================ End ForwardAC ===================');
+
+      const backProjectAC = paths(graph, 'a', 'c', {
+        outbound: true,
+        backProject: true,
+      });
+      assert.equal(
+        backProjectAC,
+        trim(`
+          c:
+            flow:
+              source ip: except 10.0.0.0/16
+              destination ip: 52.183.88.218
+              destination port: http
+          
+            paths:
+              a => b => c
+                source ip: except 10.0.0.0/16
+                destination ip: 52.183.88.218
+                destination port: http`)
+      );
+
+      // console.log('================ BackProjectAC ===================');
+      // console.log(backProjectAC);
+      // console.log('================ End BackProjectAC ===================');
+
+      const reversePathCA = paths(graph, 'c', 'a', {outbound: false});
+      assert.equal(
+        reversePathCA,
+        trim(`
+          a:
+            flow:
+              source ip: except 10.0.0.0/16
+              destination ip: 52.183.88.218
+              destination port: http
+          
+            paths:
+              a => b => c
+                source ip: except 10.0.0.0/16
+                destination ip: 52.183.88.218
+                destination port: http`)
+      );
+      // console.log('================ ReverseCA ===================');
+      // console.log(reversePathCA);
+      // console.log('================ End ReverseCA ===================');
     });
   });
 
