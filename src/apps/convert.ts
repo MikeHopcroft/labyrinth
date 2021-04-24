@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import commandLineUsage from 'command-line-usage';
 import {Section} from 'command-line-usage';
 import minimist from 'minimist';

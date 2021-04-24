@@ -1,7 +1,8 @@
 * Demo/documentation bugs
-  * Merge mhop/bugs1 into main
+  * x Merge mhop/bugs1 into main
+  * Publish npm package
 
-  * Create NPM cli
+  * . Create NPM cli
     * https://developer.okta.com/blog/2019/06/18/command-line-app-with-nodejs
     * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
     * QUESTION: how to access demo files?
