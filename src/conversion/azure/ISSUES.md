@@ -1,19 +1,27 @@
 * Demo/documentation bugs
   * x Merge mhop/bugs1 into main
-  * Publish npm package
+  * x Publish npm package
 
-  * . Create NPM cli
+  * x Create NPM cli
     * https://developer.okta.com/blog/2019/06/18/command-line-app-with-nodejs
     * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
     * QUESTION: how to access demo files?
+  * labyrinth command
+    * version
+      * const VERSION = process.env.npm_package_version;
+    * graph
+    * convert -f=azure
+    * firewall
+    * anonymize
+    * remove old commands
 
   * Resource graph sanitizer
     * Multiple subscription ids
     * Only copies that which will likely be used
     * Option to generate names for various fields, e.g. name, and id.
 
-  * Update prepress with option to spawn shell
-    * USe for getLabyrinth.src.md
+  * x Update prepress with option to spawn shell
+    * x USe for getLabyrinth.src.md
 
   * Improve top-level README.md
   * Azure converter architecture documentation

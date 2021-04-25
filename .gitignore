@@ -2,6 +2,9 @@
 
 junk
 
+# samples folder is created by the tutorial
+/samples
+
 # dependencies
 /node_modules
 /.pnp

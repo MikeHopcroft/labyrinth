@@ -8,7 +8,20 @@ In order to use `labyrinth` you must have
 
 ## Installing Labyrinth from NPM
 
-NPM instructions coming soon!
+Install `labyrinth`:
+
+[//]: # (verbatim npm run test)
+~~~
+$ npm install -g labyrinth-nsg
+~~~
+
+If you plan to follow the tutorial steps, download the samples:
+
+[//]: # (script samples)
+~~~
+$ samples
+~~~
+
 
 ## Building Labyrinth from Sources
 

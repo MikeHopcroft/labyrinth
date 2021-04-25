@@ -8,7 +8,48 @@ In order to use `labyrinth` you must have
 
 ## Installing Labyrinth from NPM
 
-NPM instructions coming soon!
+Install `labyrinth`:
+
+~~~
+$ npm install -g labyrinth-nsg
+~~~
+
+This will install the `labyrinth` tool in your global npm cache.
+`labyrinth` should be on the path in your shell. To test your installation try
+
+~~~
+$ labyrinth version
+~~~
+
+If you plan to follow the tutorial steps, download the samples:
+
+[//]: # (script samples)
+~~~
+$ samples 
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/00.demo/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/00.demo/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/01.graph-basic-vnet/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/01.graph-basic-vnet/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/02.graph-multi-subnet/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/02.graph-multi-subnet/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/03.graph-internal-load-balancer/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/03.graph-internal-load-balancer/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/04.graph-load-balancers/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/04.graph-load-balancers/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/05.graph-vmss/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/05.graph-vmss/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/06.graph-internet-routing/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/06.graph-internet-routing/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/07.graph-multiple-vnet/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/07.graph-multiple-vnet/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/08.graph-overlapping-vnet/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/08.graph-overlapping-vnet/convert.yaml
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/09.graph-load-balancer-outbound-rules/resource-graph.json
+https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/09.graph-load-balancer-outbound-rules/convert.yaml
+Samples downloaded to samples.
+
+~~~
+
 
 ## Building Labyrinth from Sources
 
