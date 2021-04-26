@@ -58,7 +58,6 @@ export default function test() {
 
       const emptyGraph: AnyAzureObject[] = [];
       const result = convert(emptyGraph);
-      console.log(JSON.stringify(result.graph.nodes, null, 2));
       assert.deepEqual(result.graph.nodes, expectedNodes);
     });
   });

@@ -43,15 +43,19 @@ Labyrinth includes 10 sample resource graphs, which can be found in the
 
 ![Resource Graph](src/00.demo.1.svg)
 
-## Exporting and Converting the Azure Resource Graph
+## Exporting the Azure Resource Graph
 
-If you'd prefer to analyze your own resource graph, you can use the following [az](https://docs.microsoft.com/en-us/cli/azure/) command to export a copy. Just replace the `"00000000-0000-0000-0000-000000000000"` with your subscription id.
+If you'd prefer to analyze your own resource graph, you can use the following [az cli](https://docs.microsoft.com/en-us/cli/azure/) command to export a copy. Just replace the `"00000000-0000-0000-0000-000000000000"` with your subscription id.
 
 ~~~
 % az graph query --output json -q 'Resources | where subscriptionId == "00000000-0000-0000-0000-000000000000" | where type !in ("microsoft.compute/virtualmachines/extensions", "microsoft.compute/disks", "microsoft.compute/sshpublickeys", "microsoft.storage/storageaccounts")' > resource-graph.json
 ~~~
 
-Once you have your resource graph, use the `labyrinth convert` command to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/graph.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
+## Converting the Azure Resource Graph
+
+The `Labyrinth` samples include a _ready-to-use_ [labyrinth graph file](../data/azure/examples/00.demo/graph.yaml) that was made by converting the [sample Azure resource graph](../data/azure/examples/00.demo/resource-graph.json).
+
+If you exported your own resource graph, use the `labyrinth convert` command to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/graph.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
 
 [//]: # (script labyrinth convert data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/graph.yaml)
 ~~~

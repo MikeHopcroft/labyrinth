@@ -6,15 +6,16 @@
   * Traceroute functionality when both -t and -f are specified
     * Perhaps retarget -v flag?
 
+  * Docs: update exporting and converting resource-graph workflow
   * x Update run.cmd to use labyrinth.js
   * x Consider renaming vm0-vm2 to web0-web2
-    * Make separate demo file for docs
-    * Rename convert.yaml to graph.yaml
+  * Make separate demo file for docs
+  * x Rename convert.yaml to graph.yaml
   * SVG diagrams
     * Need to be consistent about SSH, HTTP, TCP casing
-    * Remove drop shadow from white background.
+    * x Remove drop shadow from white background.
 
-  * Update `npm run test` output in get_labyrinth.src.md
+  * x Update `npm run test` output in get_labyrinth.src.md
 
   * Resource graph sanitizer/anonymizer
     * Multiple subscription ids

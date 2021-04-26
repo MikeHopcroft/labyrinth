@@ -91,21 +91,85 @@ labyrinth version 0.0.7
 
 You can test your build by running the unit test suite:
 
+[//]: # (script npm run test)
 ~~~
 $ npm run test
 
-> labyrinth@0.0.0 pretest D:\git\labyrinth
-> npm.cmd run compile
+> labyrinth-nsg@0.0.7 pretest D:\git\labyrinth
+> npm run compile
 
 
-> labyrinth@0.0.0 compile D:\git\labyrinth
+> labyrinth-nsg@0.0.7 compile D:\git\labyrinth
 > tsc
 
 
-> labyrinth@0.0.0 test D:\git\labyrinth
-> mocha 'build/test/**/*.js'
+> labyrinth-nsg@0.0.7 test D:\git\labyrinth
+> mocha
 
 
+
+  Azure
+    Address Allocator
+      √ simple request
+      √ simple request, two ids
+      √ throw if id requested twice
+      √ throws error if same id requested for different subnets
+      √ reserved ip is not allocated
+    AzureId
+      √ Extracts Subscription Id
+      √ Extracts Resource Group
+      √ Extracts Resource Name
+      √ Level 1
+      √ Level 2
+      √ Level 3
+      √ Root
+      √ Throws on empty id
+      √ Throws not at least valid root
+    NameShortener
+      √ Unknown key
+      √ Duplicate keys
+      √ Basic shortening
+      √ Constructor param
+      √ Reverse mode
+    Walk
+      √ walkAzureTypedObjects()
+      √ walkAzureObjectBases()
+    Converters
+      √ convertPrivateIp()
+      √ Verify VNET Public IP Route
+      convertLoadBalancer()
+        √ Unconfigured return undefined
+        √ load balancer nat rule
+        √ Unbound nat rule
+        √ internal load balancer with pool rool
+      convertNIC()
+        √ NIC with NSG and two private ips
+        √ Mising VM should result in unbounded node
+      convertNsg()
+        √ Rules should be sorted in priority order
+      convertPublicIp()
+        √ support for unbound ip
+        √ publicIp with privateIp
+        √ publicIp bound to privateIp with no address
+        √ isolated publicIp
+        √ load balanced public ip
+      convertResourceGraph()
+        - simple
+        √ validate default creation of internet and backbone
+      convertSubnet()
+        √ Subnet with NSG and one NIC
+      convertVM()
+        √ VM with two NICs
+      convertVNet()
+        √ VNet with two subnets
+    Synthetics
+      √ detection of sythethetic VMSS ip config
+      √ detection of sythethetic VMSS network interface
+    Normalization
+      √ expect lower case "id"
+      √ expect lower case "type"
+      √ expect lower case "name"
+      √ expect lower case "name" on all types
 
   DimensionType
     invalid
@@ -167,6 +231,37 @@ $ npm run test
       √ symbolic protocol range
       √ protocol list
 
+  Graph
+    Errors
+      √ unknown destination
+      √ duplicate node key
+      √ unknown start point
+    Cycles
+      √ Simple cycle
+      √ Double cycle variant one
+      √ Double cycle variant two
+      √ Loopback to endpoint is not a cycle
+      √ NAT cycle exception
+    Forward propagate
+      √ Linear unidirectional
+      √ Linear bidirectional
+      √ Confluence
+      √ Upstream shadows downstream
+      √ Complex
+    Backward propagate
+      √ Linear unidirectional - Inbound
+      √ Validate overrides will intersect on TO route
+      √ Validate overrides intersection and no flow side affects
+      √ To node linear with NAT
+      √ Linear with two NATs
+      √ clearOverride() with impossible override
+      √ clearOverride() bug regression
+    Filters
+      √ Inbound
+      √ Inbound: empty filter blocks all routes
+      √ Inbound: undefined filter allows all
+      √ Inbound and outbound
+
   Rules
     Loaders
       √ loadCsvRulesString()
@@ -177,8 +272,18 @@ $ npm run test
       √ test()
       √ test2()
 
-  Conjunction
+  Coalesce
+    √ dedupe three
+    √ coalesce three terms
+    √ coalesce two and three
+    √ no coalesce
+    √ no coalesce - empty
+    √ annihilate
+
+  Setops - Conjunction
     √ intersect()
+    √ overrideDimensions()
+    √ clearOverrides()
     √ complement()
     create()
       √ parameter validation
@@ -196,7 +301,7 @@ $ npm run test
     √ union()
     √ complement()
 
-  Disjunction
+  SetOps - Disjunction
     create()
       √ X + 1 = 1
       √ X + 0 = X
@@ -216,21 +321,26 @@ $ npm run test
       √ (a+b)(a+b)
       √ chain
 
-  Utilities
+  test/shared
     √ crossProduct()
 
-
-  75 passing (68ms)
-
-
-> labyrinth@0.0.0 posttest D:\git\labyrinth
-> npm.cmd run lint
+  Utilties
+    √ removeUndefinedProperties()
 
 
-> labyrinth@0.0.0 lint D:\git\labyrinth
+  153 passing (121ms)
+  1 pending
+
+
+> labyrinth-nsg@0.0.7 posttest D:\git\labyrinth
+> npm run lint
+
+
+> labyrinth-nsg@0.0.7 lint D:\git\labyrinth
 > gts lint
 
 version: 13
+
 ~~~
 
 ---
