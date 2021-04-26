@@ -5,10 +5,13 @@ Options summary:
   Verbose mode (-v).
   Backprojecting paths past NAT rewrites. (-b)
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Nodes:
   AzureBackbone
   Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   UnboundRule
   another
   default
@@ -43,6 +46,16 @@ AzureBackbone (AzureBackbone/outbound):
       destination ip: Internet
 
 Internet:
+  flow:
+    source ip: 172.16.0.4
+    destination ip: except 52.247.250.222, 52.250.65.117, vnet1
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: except 52.247.250.222, 52.250.65.117, vnet1
+
+Internet (Internet-Backbone):
   flow:
     source ip: 172.16.0.4
     destination ip: Internet
@@ -116,12 +129,12 @@ vm-lb-016 (nic2/inbound):
 vm-002237 (nic3/inbound):
   flow:
     source ip: 172.16.0.4
+    destination ip: 172.16.0.20
+
+    source ip: 172.16.0.4
     destination ip: 172.16.0.21
     destination port: 3022
     protocol: TCP
-
-    source ip: 172.16.0.4
-    destination ip: 172.16.0.20
 
   paths:
     vm-001 => vm-001505 => x-example-vnet => ilb => x-example-vnet => another => vm-002237
@@ -189,12 +202,12 @@ default (subnet1/inbound):
 another (subnet2/inbound):
   flow:
     source ip: 172.16.0.4
+    destination ip: 172.16.0.16-172.16.0.20, 172.16.0.22-172.16.0.31
+
+    source ip: 172.16.0.4
     destination ip: 172.16.0.21
     destination port: 3022
     protocol: TCP
-
-    source ip: 172.16.0.4
-    destination ip: 172.16.0.16-172.16.0.20, 172.16.0.22-172.16.0.31
 
   paths:
     vm-001 => vm-001505 => x-example-vnet => ilb => x-example-vnet => another
@@ -233,20 +246,15 @@ UnboundRule:
 vm-001 (vm1/inbound):
   flow:
     source ip: 172.16.0.4
-    destination ip: 52.250.65.117, 172.16.0.4
+    destination ip: 172.16.0.4
+
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117
     destination port: https
     protocol: TCP
 
-    source ip: 172.16.0.4
-    destination ip: 52.250.65.117, 172.16.0.4
-
   paths:
     vm-001 => vm-001505 => x-example-vnet => default => vm-001505 => vm-001
-      source ip: 172.16.0.4
-      destination ip: 172.16.0.4
-      destination port: https
-      protocol: TCP
-
       source ip: 172.16.0.4
       destination ip: 172.16.0.4
     vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
@@ -254,9 +262,6 @@ vm-001 (vm1/inbound):
       destination ip: 52.250.65.117
       destination port: https
       protocol: TCP
-
-      source ip: 172.16.0.4
-      destination ip: 52.250.65.117
 
 vm-lb-01 (vm2/inbound):
   flow:
@@ -281,17 +286,12 @@ vm-lb-01 (vm2/inbound):
 vm-002 (vm3/inbound):
   flow:
     source ip: 172.16.0.4
+    destination ip: 172.16.0.20
+
+    source ip: 172.16.0.4
     destination ip: 172.16.0.21
     destination port: 3022
     protocol: TCP
-
-    source ip: 172.16.0.4
-    destination ip: 172.16.0.20
-    destination port: http, 3389
-    protocol: TCP
-
-    source ip: 172.16.0.4
-    destination ip: 172.16.0.20
 
   paths:
     vm-001 => vm-001505 => x-example-vnet => ilb => x-example-vnet => another => vm-002237 => vm-002
@@ -302,21 +302,16 @@ vm-002 (vm3/inbound):
     vm-001 => vm-001505 => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.4
       destination ip: 172.16.0.20
-      destination port: http, 3389
-      protocol: TCP
-
-      source ip: 172.16.0.4
-      destination ip: 172.16.0.20
 
 x-example-vnet (vnet1/inbound):
   flow:
     source ip: 172.16.0.4
+    destination ip: 52.250.65.117, 172.16.0.0-172.16.0.20, 172.16.0.22-172.16.0.255
+
+    source ip: 172.16.0.4
     destination ip: 172.16.0.21
     destination port: 3022
     protocol: TCP
-
-    source ip: 172.16.0.4
-    destination ip: 52.250.65.117, 172.16.0.0-172.16.0.20, 172.16.0.22-172.16.0.255
 
     source ip: 172.16.0.4
     destination ip: 52.247.250.222

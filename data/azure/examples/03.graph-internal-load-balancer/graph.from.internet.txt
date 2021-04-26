@@ -5,10 +5,13 @@ Options summary:
   Verbose mode (-v).
   Backprojecting paths past NAT rewrites. (-b)
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Nodes:
   AzureBackbone
   Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   UnboundRule
   another
   default
@@ -25,6 +28,14 @@ Nodes:
   x-example-vnet
 
 Nodes reachable from Internet:
+
+Internet (Internet-Backbone):
+  flow:
+    (universe)
+
+  paths:
+    Internet
+      (universe)
 
 vm-001505 (nic1/inbound):
   flow:
@@ -58,23 +69,23 @@ default (subnet1/inbound):
 
 vm-001 (vm1/inbound):
   flow:
+    source ip: AzureLoadBalancer
+    destination ip: 52.250.65.117
+
     source ip: Internet
     destination ip: 52.250.65.117
     destination port: https
     protocol: TCP
 
-    source ip: AzureLoadBalancer
-    destination ip: 52.250.65.117
-
   paths:
     Internet => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
+      source ip: AzureLoadBalancer
+      destination ip: 52.250.65.117
+
       source ip: Internet
       destination ip: 52.250.65.117
       destination port: https
       protocol: TCP
-
-      source ip: AzureLoadBalancer
-      destination ip: 52.250.65.117
 
 x-example-vnet (vnet1/inbound):
   flow:

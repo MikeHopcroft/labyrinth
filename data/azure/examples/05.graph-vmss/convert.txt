@@ -1,5 +1,5 @@
-Azure resource graph input file: D:\src\Hopcroft\labyrinth\data\azure\examples\05.graph-vmss\resource-graph.json
-Labyrinth graph output file: D:\src\Hopcroft\labyrinth\data\azure\examples\05.graph-vmss\convert.yaml
+Azure resource graph input file: D:\git\labyrinth\data\azure\examples\05.graph-vmss\resource-graph.json
+Labyrinth graph output file: D:\git\labyrinth\data\azure\examples\05.graph-vmss\convert.yaml
 Conversion complete.
 Unsupported or ignored Azure resource graph types:
   0: microsoft.compute/virtualmachinescalesets

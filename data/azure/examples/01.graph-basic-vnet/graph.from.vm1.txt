@@ -5,10 +5,13 @@ Options summary:
   Verbose mode (-v).
   Backprojecting paths past NAT rewrites. (-b)
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Nodes:
   AzureBackbone
   Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   default
   vm-001
     vm1/inbound:  (endpoint)
@@ -30,6 +33,16 @@ AzureBackbone (AzureBackbone/outbound):
       destination ip: Internet
 
 Internet:
+  flow:
+    source ip: 172.16.0.4
+    destination ip: except 52.250.65.117, vnet1
+
+  paths:
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet
+      source ip: 172.16.0.4
+      destination ip: except 52.250.65.117, vnet1
+
+Internet (Internet-Backbone):
   flow:
     source ip: 172.16.0.4
     destination ip: Internet
@@ -96,20 +109,15 @@ default (subnet1/inbound):
 vm-001 (vm1/inbound):
   flow:
     source ip: 172.16.0.4
-    destination ip: 52.250.65.117, 172.16.0.4
+    destination ip: 172.16.0.4
+
+    source ip: 172.16.0.4
+    destination ip: 52.250.65.117
     destination port: https
     protocol: TCP
 
-    source ip: 172.16.0.4
-    destination ip: 52.250.65.117, 172.16.0.4
-
   paths:
     vm-001 => vm-001505 => x-example-vnet => default => vm-001505 => vm-001
-      source ip: 172.16.0.4
-      destination ip: 172.16.0.4
-      destination port: https
-      protocol: TCP
-
       source ip: 172.16.0.4
       destination ip: 172.16.0.4
     vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
@@ -117,9 +125,6 @@ vm-001 (vm1/inbound):
       destination ip: 52.250.65.117
       destination port: https
       protocol: TCP
-
-      source ip: 172.16.0.4
-      destination ip: 52.250.65.117
 
 x-example-vnet (vnet1/inbound):
   flow:

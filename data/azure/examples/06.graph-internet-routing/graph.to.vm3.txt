@@ -3,12 +3,15 @@ Options summary:
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
-  Backprojecting paths past NAT rewrites. (-b)
+  Backprojecting unnecessary with -t.
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Nodes:
   AzureBackbone
   Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   UnboundRule
   another
   default
@@ -78,6 +81,25 @@ Internet:
       destination port: 3389
       protocol: TCP
 
+Internet (Internet-Backbone):
+  flow:
+    source ip: Internet
+    destination ip: 52.247.250.222
+    destination port: 800, 3389
+    protocol: TCP
+
+  paths:
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 800
+      protocol: TCP
+    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+      source ip: Internet
+      destination ip: 52.247.250.222
+      destination port: 3389
+      protocol: TCP
+
 public-lb (loadBalancer1):
   flow:
     destination ip: 52.247.250.222
@@ -96,13 +118,13 @@ public-lb (loadBalancer1):
 
 vm-001505 (nic1/outbound):
   flow:
+    source ip: vnet1
+    destination ip: 172.16.0.5
+
     source ip: except 172.16.0.0/30, 172.16.0.5-172.16.0.255
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    source ip: vnet1
-    destination ip: 172.16.0.5
 
   paths:
     vm-001505 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -139,12 +161,12 @@ vm-lb-016 (nic2/inbound):
 
 vm-lb-016 (nic2/outbound):
   flow:
+    destination ip: 172.16.0.5
+
     source ip: except 172.16.0.0/30, 172.16.0.5-172.16.0.255
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    destination ip: 172.16.0.5
 
   paths:
     vm-lb-016 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -172,13 +194,13 @@ vm-lb-016 (nic2/outbound):
 
 vm-002237 (nic3/outbound):
   flow:
+    source ip: vnet1
+    destination ip: 172.16.0.5
+
     source ip: except 172.16.0.0/30, 172.16.0.5-172.16.0.255
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    source ip: vnet1
-    destination ip: 172.16.0.5
 
   paths:
     vm-002237 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -207,12 +229,12 @@ vm-002237 (nic3/outbound):
 
 x-example-vnet-nic01 (nic4/outbound):
   flow:
+    destination ip: 172.16.0.5
+
     source ip: except 172.16.0.0/30, 172.16.0.5-172.16.0.255
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    destination ip: 172.16.0.5
 
   paths:
     x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -240,12 +262,12 @@ x-example-vnet-nic01 (nic4/outbound):
 
 x-example-vnet-nic01 (nic5/outbound):
   flow:
+    destination ip: 172.16.0.5
+
     source ip: except 172.16.0.0/30, 172.16.0.5-172.16.0.255
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    destination ip: 172.16.0.5
 
   paths:
     x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -314,12 +336,12 @@ default (subnet1/inbound):
 vm-001 (vm1/outbound):
   flow:
     source ip: 172.16.0.4
+    destination ip: 172.16.0.5
+
+    source ip: 172.16.0.4
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    source ip: 172.16.0.4
-    destination ip: 172.16.0.5
 
   paths:
     vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -386,12 +408,12 @@ x-example-vnet (vnet1/inbound):
 
 x-example-vnet (vnet1/outbound):
   flow:
+    destination ip: 172.16.0.5
+
     source ip: except 172.16.0.0/30, 172.16.0.5-172.16.0.255
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    destination ip: 172.16.0.5
 
   paths:
     x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
@@ -419,11 +441,11 @@ x-example-vnet (vnet1/outbound):
 
 x-example-vnet (vnet1/router):
   flow:
+    destination ip: 172.16.0.5
+
     destination ip: 52.247.250.222
     destination port: 800, 3389
     protocol: TCP
-
-    destination ip: 172.16.0.5
 
   paths:
     x-example-vnet => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01

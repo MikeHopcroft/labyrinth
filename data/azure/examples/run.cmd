@@ -35,7 +35,7 @@ GOTO :EOF
     SHIFT
     SET _ROUTE_NAME=%0
     SET _ROUTE_FLAGS=%1 %2 %3 %4 %5 %6 %7 %8 %9
-    node %_ROOT%/build/src/apps/graph.js %YAML% %_ROUTE_FLAGS% > %TXT_GRAPH%.%_ROUTE_NAME%.txt
+    node %_ROOT%/build/src/apps/labyrinth.js graph %YAML% %_ROUTE_FLAGS% > %TXT_GRAPH%.%_ROUTE_NAME%.txt
 GOTO :EOF
 
 :DEFAULT_ROUTES
@@ -54,7 +54,7 @@ GOTO :EOF
     SET TXT_CONVERT=%_DIR%\convert.txt
     SET TXT_GRAPH=%_DIR%\graph
     ECHO Processing - %_NAME%
-    node %_ROOT%/build/src/apps/convert.js %GRAPH% %YAML% > %TXT_CONVERT%
+    node %_ROOT%/build/src/apps/labyrinth.js convert %GRAPH% %YAML% > %TXT_CONVERT%
 
     IF EXIST %ROUTES% (
         FOR /F "tokens=*" %%X IN (%ROUTES%) DO (

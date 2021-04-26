@@ -2,13 +2,22 @@ nodes:
   - key: AzureBackbone/outbound
     friendlyName: AzureBackbone
     routes:
-      - destination: Internet
-  - key: Internet
+      - destination: Internet-Backbone
+  - friendlyName: Internet
+    key: Internet
+    routes:
+      - destination: Internet-Backbone
+    endpoint: true
+  - friendlyName: Internet
+    key: Internet-Backbone
     routes:
       - destination: publicIp1/endpoint
         constraints:
           destinationIp: 52.250.65.117
           sourceIp: Internet
+      - destination: Internet
+        constraints:
+          destinationIp: Internet
   - key: nic1/inbound
     friendlyName: vm-001505
     name: >-

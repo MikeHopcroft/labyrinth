@@ -3,12 +3,15 @@ Options summary:
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
-  Backprojecting paths past NAT rewrites. (-b)
+  Backprojecting unnecessary with -t.
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Nodes:
   AzureBackbone
   Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   UnboundRule
   another
   default
@@ -49,119 +52,175 @@ Nodes that can reach Internet:
 
 AzureBackbone (AzureBackbone/outbound):
   flow:
-    (universe)
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: vnet2
+    destination ip: Internet
 
   paths:
     AzureBackbone => Internet
-      (universe)
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: vnet2
+      destination ip: Internet
+
+Internet (Internet-Backbone):
+  flow:
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: vnet2
+    destination ip: Internet
+
+  paths:
+    Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: vnet2
+      destination ip: Internet
 
 vm-001505 (nic1/outbound):
   flow:
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
     destination ip: Internet
 
   paths:
     vm-001505 => x-example-vnet => AzureBackbone => Internet
       source ip: except 172.16.0.4
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
       destination ip: Internet
     vm-001505 => x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-lb-016 (nic2/outbound):
   flow:
-    destination ip: except vnet1
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+    destination ip: Internet
 
   paths:
     vm-lb-016 => x-example-vnet => AzureBackbone => Internet
       source ip: except 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+      destination ip: Internet
     vm-lb-016 => x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-002237 (nic3/outbound):
   flow:
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
     destination ip: Internet
 
   paths:
     vm-002237 => x-example-vnet => AzureBackbone => Internet
       source ip: except 172.16.0.4
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
       destination ip: Internet
     vm-002237 => x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 x-example-vnet-nic01 (nic4/outbound):
   flow:
-    destination ip: except vnet1
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+    destination ip: Internet
 
   paths:
     x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
       source ip: except 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+      destination ip: Internet
     x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 x-example-vnet-nic01 (nic5/outbound):
   flow:
-    destination ip: except vnet1
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+    destination ip: Internet
 
   paths:
     x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
       source ip: except 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+      destination ip: Internet
     x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-2-001449 (nic6/outbound):
   flow:
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
     destination ip: Internet
 
   paths:
     vm-2-001449 => x-example-vnet-2 => AzureBackbone => Internet
       source ip: except 172.16.0.4
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
       destination ip: Internet
     vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet
       source ip: 172.16.0.4
-      destination ip: Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-001-internet (publicIp1/outbound):
   flow:
-    (universe)
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
   paths:
     vm-001-internet => Internet
-      (universe)
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-2-001-ip (publicIp3/outbound):
   flow:
-    (universe)
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
   paths:
     vm-2-001-ip => Internet
-      (universe)
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-001 (vm1/outbound):
   flow:
     source ip: 172.16.0.4
-    destination ip: Internet
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
   paths:
     vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 vm-lb-01 (vm2/outbound):
   flow:
     source ip: 172.16.0.5
-    destination ip: except vnet1
+    destination ip: Internet
 
   paths:
     vm-lb-01 => vm-lb-016 => x-example-vnet => AzureBackbone => Internet
       source ip: 172.16.0.5
-      destination ip: except vnet1
+      destination ip: Internet
 
 vm-002 (vm3/outbound):
   flow:
@@ -176,54 +235,66 @@ vm-002 (vm3/outbound):
 vmss-0 (vm4/outbound):
   flow:
     source ip: 172.16.0.33
-    destination ip: except vnet1
+    destination ip: Internet
 
   paths:
     vmss-0 => x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
       source ip: 172.16.0.33
-      destination ip: except vnet1
+      destination ip: Internet
 
 vmss-4 (vm5/outbound):
   flow:
     source ip: 172.16.0.34
-    destination ip: except vnet1
+    destination ip: Internet
 
   paths:
     vmss-4 => x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet
       source ip: 172.16.0.34
-      destination ip: except vnet1
+      destination ip: Internet
 
 vm-2-001 (vm6/outbound):
   flow:
     source ip: 172.16.0.4
-    destination ip: Internet
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
   paths:
     vm-2-001 => vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet
       source ip: 172.16.0.4
-      destination ip: Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 x-example-vnet (vnet1/outbound):
   flow:
-    destination ip: except vnet1
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+    destination ip: Internet
 
   paths:
     x-example-vnet => AzureBackbone => Internet
       source ip: except 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
+      destination ip: Internet
     x-example-vnet => vm-001-internet => Internet
       source ip: 172.16.0.4
-      destination ip: except vnet1
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
 x-example-vnet-2 (vnet2/outbound):
   flow:
+    destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+    source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
     destination ip: Internet
 
   paths:
     x-example-vnet-2 => AzureBackbone => Internet
       source ip: except 172.16.0.4
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
+
+      source ip: 172.16.0.0/30, 172.16.0.5-172.17.255.255
       destination ip: Internet
     x-example-vnet-2 => vm-2-001-ip => Internet
       source ip: 172.16.0.4
-      destination ip: Internet
+      destination ip: except 20.47.120.40, 20.47.120.58, 52.247.250.222, vnet2
 
