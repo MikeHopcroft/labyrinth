@@ -1,8 +1,5 @@
-#!/usr/bin/env node
-
 import commandLineUsage, {Section} from 'command-line-usage';
 import minimist from 'minimist';
-import path from 'path';
 
 import {Universe} from '../dimensions';
 
@@ -31,11 +28,11 @@ interface Options {
   verbose: boolean;
 }
 
-function main() {
-  const args = minimist(process.argv.slice(2));
+export default function main(invocation: string, parameters: string[]) {
+  const args = minimist(parameters);
 
   if (args.h || args.help) {
-    showUsage();
+    showUsage(invocation);
     return succeed(false);
   }
 
@@ -204,9 +201,7 @@ function main() {
   return succeed(true);
 }
 
-function showUsage() {
-  const program = path.basename(process.argv[1]);
-
+function showUsage(invocation: string) {
   const usage: Section[] = [
     {
       header: 'Network graph reachability analyzer',
@@ -214,7 +209,7 @@ function showUsage() {
     },
     {
       header: 'Usage',
-      content: [`node ${program} {underline <network.yaml>} [...options]`],
+      content: [`${invocation} {underline <network.yaml>} [...options]`],
     },
     {
       header: 'Required Parameters',
@@ -402,5 +397,3 @@ function getNode(name: string, graph: Graph, outbound: boolean) {
 
   return node || fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);
 }
-
-main();

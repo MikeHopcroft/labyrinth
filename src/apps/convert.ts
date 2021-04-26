@@ -1,9 +1,5 @@
-#!/usr/bin/env node
-
-import commandLineUsage from 'command-line-usage';
-import {Section} from 'command-line-usage';
+import commandLineUsage, {Section} from 'command-line-usage';
 import minimist from 'minimist';
-import path from 'path';
 
 import {FileSystem, YAML} from '../io';
 
@@ -12,11 +8,11 @@ import {convert} from '../conversion/azure/convert';
 
 import {fail, handleError, succeed} from '../utilities';
 
-function main() {
-  const args = minimist(process.argv.slice(2));
+export default function main(invocation: string, parameters: string[]) {
+  const args = minimist(parameters);
 
   if (args.h || args.help) {
-    showUsage();
+    showUsage(invocation);
     return succeed(false);
   }
 
@@ -60,9 +56,7 @@ function printTypeUsageReport(unusedTypes: Map<string, Set<string>>) {
   }
 }
 
-function showUsage() {
-  const program = path.basename(process.argv[1]);
-
+function showUsage(invocation: string) {
   const usage: Section[] = [
     {
       header: 'Azure resource graph conversion tool',
@@ -72,7 +66,7 @@ function showUsage() {
     {
       header: 'Usage',
       content: [
-        `node ${program} {underline <azure.json>} {underline <labyrinth.yaml>} [...options]`,
+        `${invocation} {underline <azure.json>} {underline <labyrinth.yaml>} [...options]`,
       ],
     },
     {
@@ -103,5 +97,3 @@ function showUsage() {
 
   console.log(commandLineUsage(usage));
 }
-
-main();

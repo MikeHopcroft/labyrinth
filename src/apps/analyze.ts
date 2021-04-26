@@ -1,9 +1,6 @@
-#!/usr/bin/env node
-
 import commandLineUsage from 'command-line-usage';
 import {Section} from 'command-line-usage';
 import minimist from 'minimist';
-import path from 'path';
 
 import {Universe} from '../dimensions';
 
@@ -28,11 +25,11 @@ import {
 import {firewallSpec} from '../specs';
 import {fail, handleError, succeed} from '../utilities';
 
-function main() {
-  const args = minimist(process.argv.slice(2));
+export default function main(invocation: string, parameters: string[]) {
+  const args = minimist(parameters);
 
   if (args.h || args.help) {
-    showUsage();
+    showUsage(invocation);
     return succeed(false);
   }
 
@@ -140,9 +137,7 @@ function main() {
   return succeed(true);
 }
 
-function showUsage() {
-  const program = path.basename(process.argv[1]);
-
+function showUsage(invocation: string) {
   const usage: Section[] = [
     {
       header: 'Network rule analysis tool',
@@ -150,7 +145,7 @@ function showUsage() {
     },
     {
       header: 'Usage',
-      content: [`node ${program} {underline <rules>} [...options]`],
+      content: [`node ${invocation} {underline <rules>} [...options]`],
     },
     {
       header: 'Required Parameters',
@@ -223,5 +218,3 @@ function showUsage() {
 
   console.log(commandLineUsage(usage));
 }
-
-main();

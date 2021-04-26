@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import commandLineUsage, {Section} from 'command-line-usage';
 import download from 'download';
 import minimist from 'minimist';
@@ -8,11 +6,11 @@ import asyncPool from 'tiny-async-pool';
 
 import {fail, handleError, succeed} from '../utilities';
 
-async function main() {
-  const args = minimist(process.argv.slice(2));
+export default async function main(invocation: string, parameters: string[]) {
+  const args = minimist(parameters);
 
   if (args.h || args.help) {
-    showUsage();
+    showUsage(invocation);
     return succeed(false);
   }
 
@@ -33,9 +31,7 @@ async function main() {
   return succeed(true);
 }
 
-function showUsage() {
-  const program = path.basename(process.argv[1]);
-
+function showUsage(invocation: string) {
   const usage: Section[] = [
     {
       header: 'Labyrinth Sample Downloader',
@@ -44,7 +40,7 @@ function showUsage() {
     },
     {
       header: 'Usage',
-      content: [`node ${program} [{underline <folder>}]`],
+      content: [`node ${invocation} [{underline <folder>}]`],
     },
     {
       header: 'Parameter',
@@ -77,17 +73,21 @@ async function downloadSamples(folder: string) {
     '08.graph-overlapping-vnet',
     '09.graph-load-balancer-outbound-rules',
   ];
-  const files: {url: string; path: string}[] = [];
+  const files: {url: string; dest: string; file: string}[] = [];
   for (const name of examples) {
     files.push({
       url: `https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/${name}/resource-graph.json`,
-      path: path.join(folder, `data/azure/examples/${name}`),
+      dest: path.join(folder, `data/azure/examples/${name}`),
+      file: 'resource-graph',
     });
     files.push({
       url: `https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/${name}/convert.yaml`,
-      path: path.join(folder, `data/azure/examples/${name}`),
+      dest: path.join(folder, `data/azure/examples/${name}`),
+      file: 'convert.yaml',
     });
   }
+
+  console.log('Downloading samples');
 
   try {
     await asyncPool(10, files, downloadOne);
@@ -98,10 +98,8 @@ async function downloadSamples(folder: string) {
   console.log(`Samples downloaded to ${folder}.`);
 }
 
-function downloadOne(entry: {url: string; path: string}) {
-  const {url, path} = entry;
-  console.log(url);
-  return download(url, path);
+function downloadOne(entry: {url: string; dest: string; file: string}) {
+  const {url, dest, file} = entry;
+  console.log('  ' + path.join(dest, file));
+  return download(url, dest);
 }
-
-main();

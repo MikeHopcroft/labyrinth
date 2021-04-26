@@ -17,13 +17,14 @@
     "analysis",
     "analyzer",
     "router",
-    "firewall"
+    "firewall",
+    "formal",
+    "verification",
+    "azure",
+    "nsg"
   ],
   "bin": {
-    "analyze": "build/src/apps/analyze.js",
-    "convert": "build/src/apps/convert.js",
-    "graph": "build/src/apps/graph.js",
-    "samples": "build/src/apps/samples.js"
+    "labyrinth": "build/src/apps/labyrinth.js"
   },
   "repository": "https://github.com/MikeHopcroft/labyrinth",
   "scripts": {
