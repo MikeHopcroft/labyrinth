@@ -23,5 +23,5 @@ This converter models [OSI Layer 3](https://en.wikipedia.org/wiki/OSI_model#Laye
 
 ## How Labyrinth Works
 If you are interested in learning more about how `Labyrinth` works, please read the
-[labyrinth architectural concepts](documentation/architectural_concepts.md).
+[Labyrinth Architectural Concepts](documentation/architectural_concepts.md).
 

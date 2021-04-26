@@ -123,7 +123,7 @@ We enable back-projection with the `-b` flag. In the following example, we also 
 ~~~
 ~~~
 
-The output now shows the updated header flows to `web0`, `web1`, and `web2`, _as seen from_ `public-services-ip`. 
+The output now shows the updated header flows to `web0`, `web1`, and `web2`, _as seen from_ `public-services-ip`. The main difference is that `destinationIp` is now equal to `52.183.88.218` instead of one of the internal `10.0.100.0/24` addresses.
 
 ## Finding Flows _to_ a Node
 

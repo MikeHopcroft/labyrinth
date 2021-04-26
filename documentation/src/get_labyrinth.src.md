@@ -34,7 +34,7 @@ labyrinth version 0.0.6
 ~~~
 
 ## Sample Files
-This tutorial makes use of a number of sample graph files which reside in the [data](https://github.com/MikeHopcroft/labyrinth/tree/main/data) folder of the the [labyrinth repo](https://github.com/MikeHopcroft/labyrinth/). If you installed [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) directly from npm, you can use the `samples` sub-command to download these files:
+This tutorial makes use of a number of sample graph files which reside in the [data](https://github.com/MikeHopcroft/labyrinth/tree/main/data) folder of the the [labyrinth repo](https://github.com/MikeHopcroft/labyrinth/). If you installed [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) directly from npm, you can use the `labyrinth samples` command to download these files:
 
 [//]: # (verbatim labyrinth samples)
 ~~~

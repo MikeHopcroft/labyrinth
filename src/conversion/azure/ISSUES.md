@@ -6,6 +6,19 @@
   * Traceroute functionality when both -t and -f are specified
     * Perhaps retarget -v flag?
 
+  * defining_universes.md
+    * Broken link to https://github.com/MikeHopcroft/labyrinth/build/src/specs/firewall.js
+  * policy_explanation.ts
+    * Broken link to https://github.com/MikeHopcroft/labyrinth/blob/main/build/src/specs/firewall.js)
+  * samples command
+    * bring in firewall samples.
+    * put in same directory as repo
+  * Update tutorial for firewall samples.
+
+  * Prepress
+    * Blank lines at end of blocks
+    * Better documentation
+    * Define command
   * Docs: update exporting and converting resource-graph workflow
   * x Update run.cmd to use labyrinth.js
   * x Consider renaming vm0-vm2 to web0-web2
