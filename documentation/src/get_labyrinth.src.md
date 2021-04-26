@@ -4,9 +4,15 @@
 written in [TypeScript](https://www.typescriptlang.org/).
 In order to use `labyrinth` you must have
 [Node](https://nodejs.org/en/download/) installed on your machine.
-`Labyrinth` has been tested with Node version [13.7.0](https://nodejs.org/download/release/v13.7.0/).
+`Labyrinth` has been tested with Node version [13.7.0](https://nodejs.org/download/release/v13.7.0/). Here's how to verify that Node is installed:
 
-You can either install the [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) package from [npm](https://www.npmjs.com) or you can clone and build the [github repo](https://github.com/MikeHopcroft/labyrinth/). Instructions for both methods follow.
+[//]: # (spawn node --version)
+~~~
+$ node --version
+v13.7.0
+~~~
+
+Once you have Node, you can either install the [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) package directly from [npm](https://www.npmjs.com), or you can clone and build the [github repo](https://github.com/MikeHopcroft/labyrinth/). Instructions for both methods follow.
 
 ## Installing Labyrinth from NPM
 
@@ -20,14 +26,15 @@ $ npm install -g labyrinth-nsg
 This will install the `labyrinth` tool in your global npm cache and add
 `labyrinth` the path in your shell. To test your installation try
 
-[//]: # (varbatim labyrinth version)
+[//]: # (script labyrinth version)
 ~~~
 $ labyrinth version
 labyrinth version 0.0.6
 
 ~~~
 
-The github repo contains a number of sample graph files. If you plan to follow the [tutorial steps](../tutorial.md), use the `samples` sub-command to download the samples:
+## Sample Files
+This tutorial makes use of a number of sample graph files which reside in the [data](https://github.com/MikeHopcroft/labyrinth/tree/main/data) folder of the the [labyrinth repo](https://github.com/MikeHopcroft/labyrinth/). If you installed [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) directly from npm, you can use the `samples` sub-command to download these files:
 
 [//]: # (verbatim labyrinth samples)
 ~~~
@@ -60,13 +67,26 @@ Samples downloaded to samples.
 
 ## Building Labyrinth from Sources
 
-Follow these steps to clone and build `labyrinth` from sources:
+You may also clone and build `labyrinth` from sources. Please be aware that the `labyrinth` command is configured on package installation. Since the build process doesn't install the package, the `labyrinth` command won't be configured. To run `labyrinth` from your build, simply type
 
 ~~~
-% git clone git@github.com:MikeHopcroft/labyrinth.git
-% cd labyrinth
-% npm install
-% npm run compile
+$ node build/src/apps/labyrinth.js
+~~~
+
+Here are the steps for cloning and building `labyrinth` from sources:
+~~~
+$ git clone git@github.com:MikeHopcroft/labyrinth.git
+$ cd labyrinth
+$ npm install
+$ npm run compile
+~~~
+
+You can verify your build by running the following command:
+
+[//]: # (spawn node build/src/apps/labyrinth.js version)
+~~~
+labyrinth version 0.0.7
+
 ~~~
 
 You can test your build by running the unit test suite:

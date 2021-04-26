@@ -4,7 +4,7 @@ Often times it is useful to determine whether a certain `policy` satisfies a `co
 
 Let's compare `data/policy.txt` with itself:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\policy.txt)
+[//]: # (script labyrinth firewall data\policy.txt -c=data\policy.txt)
 ~~~
 $ node build\src\apps\analyze.js data\policy.txt -c=data\policy.txt
 Mode is denyOverrides.
@@ -25,7 +25,7 @@ Now consider the contract in `data/contract1.txt`:
 
 This contract differs from the policy in that the CIDR block on line 10 has been broadened from `171.64.64.0/20` to `171.64.64.0/18`. So the contract allows more routes than that policy:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\contract1.txt)
+[//]: # (script labyrinth firewall data\policy.txt -c=data\contract1.txt)
 ~~~
 ~~~
 
@@ -41,13 +41,13 @@ Here's the updated contract file:
 
 We expect that `data/contract2.txt` will exclude some of the routes that were allowed in `data/policy.txt`:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt)
+[//]: # (script labyrinth firewall data\policy.txt -c=data\contract2.txt)
 ~~~
 ~~~
 
 We can also compare the first contract with the second:
 
-[//]: # (spawn node build\src\apps\analyze.js data\contract1.txt -c=data\contract2.txt)
+[//]: # (script labyrinth firewall data\contract1.txt -c=data\contract2.txt)
 ~~~
 ~~~
 
@@ -55,7 +55,7 @@ We can also compare the first contract with the second:
 
 You can use the `-a` or `--attribution` option with contract validation:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -c=data\contract2.txt -a)
+[//]: # (script labyrinth firewall data\policy.txt -c=data\contract2.txt -a)
 ~~~
 ~~~
 

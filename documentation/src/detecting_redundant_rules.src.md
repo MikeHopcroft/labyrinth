@@ -32,7 +32,7 @@ This file was made by adding two redundant rules to `data/policy.txt`:
 
 We can use the `-r` or `--redundant` flag to produce a `Redundant Rules Report`:
 
-[//]: # (spawn node build\src\apps\analyze.js data\redundant.txt -r)
+[//]: # (script labyrinth firewall data\redundant.txt -r)
 ~~~
 Mode is denyOverrides.
 
@@ -60,7 +60,7 @@ Note that one cannot necessarily erase all redundant rules and preserve policy s
 
 Note that, for `data/redundant.txt`, we get a different answer, when we use `First-Applicable` convention:
 
-[//]: # (spawn node build\src\apps\analyze.js data\redundant.txt -r -m=f)
+[//]: # (script labyrinth firewall data\redundant.txt -r -m=f)
 ~~~
 Mode is firstApplicable.
 

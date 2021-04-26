@@ -60,7 +60,7 @@ Let's examine `data/policy.txt` with the `Deny-Overrides` convention.
 This is the default convention, but we can specify it explicitly with
 `-m=d` or `-m=denyOverrides`:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -m=d)
+[//]: # (script labyrinth firewall data\policy.txt -m=d)
 ~~~
 % node build/src/apps/analyze.js data\sample1.txt
 Mode is denyOverrides.
@@ -93,7 +93,7 @@ In the `First-Applicable` convention, routes are checked against each rule in tu
 
 We can examine the same `data/policy.txt` file with the `First-Applicable` convention, by specifying `-m=f` or `-m=firstApplicable`:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -m=f)
+[//]: # (script labyrinth firewall data\policy.txt -m=f)
 ~~~
 % node build/src/apps/analyze.js data\sample1.txt -m=f
 Mode is firstApplicable.
@@ -121,7 +121,7 @@ Notice how the allowed routes differ from those in the previous example:
 
 It is often helpful to know which rules let to a certain conjunction in the `Policy Report`. We can use the `-a` or `--attribution` flag to turn on rule attribution:
 
-[//]: # (spawn node build\src\apps\analyze.js data\policy.txt -a)
+[//]: # (script labyrinth firewall data\policy.txt -a)
 ~~~
 node build\src\apps\analyze.js data\policy.txt -a
 Mode is denyOverrides.

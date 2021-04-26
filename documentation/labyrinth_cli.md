@@ -1,10 +1,10 @@
-# Labyrinth CLI
+# Labyrinth Firewall Command
 
-The `Labyrinth` network analyzer is based on a rules engine that evaluates packet filtering and routing rules at each node in the graph. Most of this node-level functionality is available in the `analyze.js` command-line tool. You can run this tool with the `-h` flag to get help:
+The `Labyrinth` network analyzer is based on a rules engine that evaluates packet filtering and routing rules at each node in the graph. Most of this node-level functionality is available in the `labyrinth firewall` command. You can run this tool with the `-h` flag to get help:
 
-[//]: # (spawn node build\src\apps\analyze.js -h)
+[//]: # (script labyrinth firewall -h)
 ~~~
-$ node build\src\apps\analyze.js -h
+$ labyrinth firewall -h
 
 Network rule analysis tool
 
@@ -12,7 +12,7 @@ Network rule analysis tool
 
 Usage
 
-  node analyze.js <rules> [...options] 
+  node labyrinth firewall <rules> [...options] 
 
 Required Parameters
 

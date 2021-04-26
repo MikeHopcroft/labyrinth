@@ -10,7 +10,7 @@
 * Can my back-end web service call out to services on the internet?
 * Is the jump-box the only server that can SSH to the front-end web servers?
 
-The `Labyrinth` graph algorithms are network agnostic and capable of analyzing a wide variety of networking concepts and appliances. `Labyrinth` makes use of `converters` to transform specific network configuration descriptions into a `Labyrinth` graphs.
+The `Labyrinth` graph algorithms are network agnostic and capable of analyzing a wide variety of networking concepts and appliances. `Labyrinth` makes use of `converters` to transform vendor-specific network configuration descriptions into `Labyrinth` graphs, suitable for analysis.
 
 Currenly, `Labyrinth` includes a converter for [Azure Resource Graphs](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview#:~:text=Azure%20Resource%20Graph%20is%20a,can%20effectively%20govern%20your%20environment.).
 This converter models [OSI Layer 3](https://en.wikipedia.org/wiki/OSI_model#Layer_3:_Network_Layer) traffic. This means it can reason about IP packet headers fields, like the source and destination IP addresses and ports, and the protocol. The `Labyrinth` algorithm is fairly generic and capable of modeling concepts from other layers such as
