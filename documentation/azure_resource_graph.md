@@ -51,13 +51,13 @@ If you'd prefer to analyze your own resource graph, you can use the following [a
 % az graph query --output json -q 'Resources | where subscriptionId == "00000000-0000-0000-0000-000000000000" | where type !in ("microsoft.compute/virtualmachines/extensions", "microsoft.compute/disks", "microsoft.compute/sshpublickeys", "microsoft.storage/storageaccounts")' > resource-graph.json
 ~~~
 
-Once you have your resource graph, use the `labyrinth convert` command to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/convert.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
+Once you have your resource graph, use the `labyrinth convert` command to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/graph.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
 
-[//]: # (script labyrinth convert data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/convert.yaml)
+[//]: # (script labyrinth convert data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/graph.yaml)
 ~~~
-$ labyrinth convert data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/convert.yaml
+$ labyrinth convert data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/graph.yaml
 Azure resource graph input file: data/azure/examples/00.demo/resource-graph.json
-Labyrinth graph output file: data/azure/examples/00.demo/convert.yaml
+Labyrinth graph output file: data/azure/examples/00.demo/graph.yaml
 Conversion complete.
 All Azure resource graph types understood.
 
@@ -73,9 +73,9 @@ Suppose we're interested in tracing all of the traffic that could flow _into_ th
 
 We can use the `labyrinth graph` command with the `-f=public-services-ip` to show all flows _from_ `public-services-ip`. The first parameter is the `Labyrinth graph` file, obtained from the Azure resource graph. 
 
-[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -f=public-services-ip)
+[//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip)
 ~~~
-$ labyrinth graph data\azure\examples\00.demo\convert.yaml -f=public-services-ip
+$ labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip
 Options summary:
   Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints only (use -r flag to display routing nodes). 
@@ -143,9 +143,9 @@ If you are interested in seeing the mapping from friendly name to node key, look
 
 We can use the `-r` flag to show the entire graph, including internal routing nodes:
 
-[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -r)
+[//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -r)
 ~~~
-$ labyrinth graph data\azure\examples\00.demo\convert.yaml -r
+$ labyrinth graph data\azure\examples\00.demo\graph.yaml -r
 Nodes:
   AzureBackbone
   Internet
@@ -209,9 +209,9 @@ Labyrinth can provide a more useful analysis by `back-projecting` header flows t
 
 We enable back-projection with the `-b` flag. In the following example, we also use the `-q` flag to suppress the options summary and node list.
 
-[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b -q)
+[//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip -b -q)
 ~~~
-$ labyrinth graph data\azure\examples\00.demo\convert.yaml -f=public-services-ip -b -q
+$ labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip -b -q
 Nodes reachable from public-services-ip (publicIp2/endpoint):
 
 web0 (vm2/inbound):
@@ -249,9 +249,9 @@ The output now shows the updated header flows to `web0`, `web1`, and `web2`, _as
 We can use the `-t` flag find flows _to_ a specified node. 
 Note that we don't have to use the `-b` flag with the `-t` flag, because the reverse flow analysis from the `jump-box` endpoint will produce header flows as seen from the various starting points.
 
-[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -t=jump-box -q)
+[//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -t=jump-box -q)
 ~~~
-$ labyrinth graph data\azure\examples\00.demo\convert.yaml -t=jump-box -q
+$ labyrinth graph data\azure\examples\00.demo\graph.yaml -t=jump-box -q
 Nodes that can reach jump-box (vm1/inbound):
 
 Internet:
@@ -293,9 +293,9 @@ We can see from the output that traffic from the `Internet`, `web0`, `web1`, `we
 ## Virtual Traceroute
 Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `web0` to the `jump-box`:
 
-[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -f=web0 -t=jump-box -p -q)
+[//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -f=web0 -t=jump-box -p -q)
 ~~~
-$ labyrinth graph data\azure\examples\00.demo\convert.yaml -f=web0 -t=jump-box -p -q
+$ labyrinth graph data\azure\examples\00.demo\graph.yaml -f=web0 -t=jump-box -p -q
 Routes from web0 (vm2/outbound) to jump-box (vm1/inbound):
 
 web0 (vm2/outbound):
