@@ -1,4 +1,4 @@
 Azure resource graph input file: D:\git\labyrinth\data\azure\examples\01.graph-basic-vnet\resource-graph.json
-Labyrinth graph output file: D:\git\labyrinth\data\azure\examples\01.graph-basic-vnet\convert.yaml
+Labyrinth graph output file: D:\git\labyrinth\data\azure\examples\01.graph-basic-vnet\graph.yaml
 Conversion complete.
 All Azure resource graph types understood.

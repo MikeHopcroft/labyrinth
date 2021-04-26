@@ -50,7 +50,7 @@ GOTO :EOF
     SET _NAME=%2
     SET ROUTES=%_DIR%\_ROUTES
     SET GRAPH=%_DIR%\resource-graph.json
-    SET YAML=%_DIR%\convert.yaml
+    SET YAML=%_DIR%\graph.yaml
     SET TXT_CONVERT=%_DIR%\convert.txt
     SET TXT_GRAPH=%_DIR%\graph
     ECHO Processing - %_NAME%
