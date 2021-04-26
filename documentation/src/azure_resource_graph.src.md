@@ -51,7 +51,7 @@ If you'd prefer to analyze your own resource graph, you can use the following [a
 % az graph query --output json -q 'Resources | where subscriptionId == "00000000-0000-0000-0000-000000000000" | where type !in ("microsoft.compute/virtualmachines/extensions", "microsoft.compute/disks", "microsoft.compute/sshpublickeys", "microsoft.storage/storageaccounts")' > resource-graph.json
 ~~~
 
-Once you have your resource graph, use the `convert.js` application to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/convert.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
+Once you have your resource graph, use the `labyrinth convert` command to transform it into a [Labyrinth graph file](../data/azure/examples/00.demo/convert.yaml). The first parameter is the path to the resource graph. The second parameter is the path to write the Labyrinth graph file.
 
 [//]: # (script labyrinth convert data/azure/examples/00.demo/resource-graph.json data/azure/examples/00.demo/convert.yaml)
 ~~~
@@ -65,7 +65,7 @@ Suppose we're interested in tracing all of the traffic that could flow _into_ th
 
 ![Resource Graph](src/00.demo.2.svg)
 
-We can use the `graph.js` application with the `-f=public-services-ip` to show all flows _from_ `public-services-ip`. The first parameter is the `Labyrinth graph` file, obtained from the Azure resource graph. 
+We can use the `labyrinth graph` command with the `-f=public-services-ip` to show all flows _from_ `public-services-ip`. The first parameter is the `Labyrinth graph` file, obtained from the Azure resource graph. 
 
 [//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -f=public-services-ip)
 ~~~
@@ -75,7 +75,7 @@ The tool first displays a summary of the command-line options in effect and a li
 
 ## Friendly Names
 
-We just saw that the reachability report referred to nodes with strings like `"vm0 (vm2/inbound)"`. Usually, the first part of this string, in this case `"vm0"` is the node's "friendly name", which is typically the value in the `name` field of an object in the Azure resource graph.
+We just saw that the reachability report referred to nodes with strings like `"web0 (vm2/inbound)"`. Usually, the first part of this string, in this case `"web0"` is the node's "friendly name", which is typically the value in the `name` field of an object in the Azure resource graph.
 The second part of the string, in this case `"(vm2/inbound)"`, displays the corresponding Labyrinth graph node key.
 
 The friendly name and the Labyrinth node key differ because the translation from the Azure Resource Graph is not a one-to-one mapping. In many cases, a single Azure concept maps to a handful of nodes in the Labyrinth graph. An example is the NSG, which is mapped, during tranlation, into `inbound` and `outbound` nodes. Labyrinth generates sequentially numbered node keys for each node type without consulting the Azure node name field. Sometimes this leads to confusing output, when the Azure-based friendly names appear similar to unrelated Labyrinth node keys.
@@ -92,10 +92,10 @@ We can use the `-r` flag to show the entire graph, including internal routing no
 
 ## Back-Projecting Network Address Translation and Port Mapping
 
-In the [Tracing Flows _from_ a Node](#tracing-flows-from-a-node) section, we saw that the tool correctly identified `vm0`, `vm1`, and `vm2` as the only nodes that can receive traffic from `public-services-ip`, but the traffic header details were confusing because they described the IP packet headers, as seen on arrival at the web servers. For example, `vm0` will only see packets addressed to `10.0.0.4` for ports `8080` and `8443`:
+In the [Tracing Flows _from_ a Node](#tracing-flows-from-a-node) section, we saw that the tool correctly identified `web0`, `web1`, and `web2` as the only nodes that can receive traffic from `public-services-ip`, but the traffic header details were confusing because they described the IP packet headers, as seen on arrival at the web servers. For example, `web0` will only see packets addressed to `10.0.0.4` for ports `8080` and `8443`:
 
 ~~~
-vm0 (vm2/inbound):
+web0 (vm2/inbound):
   flow:
     source ip: Internet
     destination ip: 10.0.100.4
@@ -103,7 +103,7 @@ vm0 (vm2/inbound):
     protocol: TCP
 ~~~
 
-While these are, in fact, the only packets from `public-services-ip` that `vm0` will ever see, what we really want to know is contents of the packet headers, as viewed from `public-services-ip`. From outside of the `virtual-network` we can't even see `10.0.0.4` because it is an internal IP address. All we can see are the two public IPs, `52.183.88.216` and `52.156.96.94`.
+While these are, in fact, the only packets from `public-services-ip` that `web0` will ever see, what we really want to know is contents of the packet headers, as viewed from `public-services-ip`. From outside of the `virtual-network` we can't even see `10.0.0.4` because it is an internal IP address. All we can see are the two public IPs, `52.183.88.216` and `52.156.96.94`.
 
 In this example network, the `load-balancer` performs
 [network address translation](https://en.wikipedia.org/wiki/Network_address_translation) from the public ip address `52.183.88.216` to one of the three web server ip addresses. It also performs port mapping, translating the `http` and `https` ports to `8080` and `8443`, respectively.
@@ -119,7 +119,7 @@ We enable back-projection with the `-b` flag. In the following example, we also 
 ~~~
 ~~~
 
-The output now shows the updated header flows to `vm0`, `vm1`, and `vm2`, _as seen from_ `public-services-ip`. 
+The output now shows the updated header flows to `web0`, `web1`, and `web2`, _as seen from_ `public-services-ip`. 
 
 ## Finding Flows _to_ a Node
 
@@ -134,17 +134,17 @@ Note that we don't have to use the `-b` flag with the `-t` flag, because the rev
 ~~~
 ~~~
 
-We can see from the output that traffic from the `Internet`, `vm0`, `vm1`, `vm2`, and the `jump-box` itself can reach the `jump-box`. 
+We can see from the output that traffic from the `Internet`, `web0`, `web1`, `web2`, and the `jump-box` itself can reach the `jump-box`. 
 
 ## Virtual Traceroute
-Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `vm0` to the `jump-box`:
+Sometimes we'd like to know the actual path the IP packets traverse on the way to their destination. We can use the `-p` flag to display paths. In the following example, we trace the route from `web0` to the `jump-box`:
 
-[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -f=vm0 -t=jump-box -p -q)
+[//]: # (script labyrinth graph data\azure\examples\00.demo\convert.yaml -f=web0 -t=jump-box -p -q)
 ~~~
 ~~~
 
 The path is
-* **vm0** - trace route starts at this server.
+* **web0** - trace route starts at this server.
 * **vm0148** - NIC applies outbound NSG rules.
   * In this example, the NIC does not have outbound rules.
 * **public-services-subnet** - subnet applies outbound NSG rules.
@@ -159,7 +159,7 @@ The path is
 
 ## Other Flags
 
-The `graph.js` tool provides a number of other features, which can be enabled by command-line flags. You can use the `-h` flag to display a brief summary of the available flags:
+The `labyrinth graph` command provides a number of other features, which can be enabled by command-line flags. You can use the `-h` flag to display a brief summary of the available flags:
 
 [//]: # (script labyrinth graph -h)
 ~~~

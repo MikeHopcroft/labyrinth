@@ -3,12 +3,15 @@ Options summary:
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
-  Paths are forward propagated (use -b flag to enable backprojection).
+  Backprojecting unnecessary with -t.
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Nodes:
   AzureBackbone
   Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   jump-box
     vm1/inbound:  (endpoint)
     vm1/outbound:  (endpoint)
@@ -19,18 +22,18 @@ Nodes:
   public-services-ip
   public-services-subnet
   virtual-network
-  vm0
+  vm0148
+  vm1318
+  vm2400
+  web0
     vm2/inbound:  (endpoint)
     vm2/outbound:  (endpoint)
-  vm0148
-  vm1
+  web1
     vm3/inbound:  (endpoint)
     vm3/outbound:  (endpoint)
-  vm1318
-  vm2
+  web2
     vm4/inbound:  (endpoint)
     vm4/outbound:  (endpoint)
-  vm2400
 
 Nodes that can reach public-services-ip (publicIp2/endpoint):
 
@@ -45,6 +48,16 @@ AzureBackbone (AzureBackbone/outbound):
       destination ip: 52.183.88.218
 
 Internet:
+  flow:
+    source ip: Internet
+    destination ip: 52.183.88.218
+
+  paths:
+    Internet => public-services-ip
+      source ip: Internet
+      destination ip: 52.183.88.218
+
+Internet (Internet-Backbone):
   flow:
     source ip: Internet
     destination ip: 52.183.88.218

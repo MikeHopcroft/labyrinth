@@ -37,7 +37,7 @@ The route `(0x0a000002, 49152, 0xab404002, 443, 6)` represents a packet
 
 ### Rules 
 Rules in `labyrinth` consist of assertions of membership in sets associated with each dimension in the `Universe`.
-Consider the following rule with three assertion:
+Consider the following rule with three assertions:
 ~~~
 soureIp: except 10.0.0.0/8
 destinationIp: 171.64.64.0/18

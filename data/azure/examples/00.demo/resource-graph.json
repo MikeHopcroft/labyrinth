@@ -6,7 +6,7 @@
     "kind": "",
     "location": "westus2",
     "managedBy": "",
-    "name": "VM0",
+    "name": "WEB0",
     "plan": null,
     "properties": {
       "diagnosticsProfile": {
@@ -91,7 +91,7 @@
     "kind": "",
     "location": "westus2",
     "managedBy": "",
-    "name": "VM1",
+    "name": "WEB1",
     "plan": null,
     "properties": {
       "diagnosticsProfile": {
@@ -177,7 +177,7 @@
     "kind": "",
     "location": "westus2",
     "managedBy": "",
-    "name": "VM2",
+    "name": "WEB2",
     "plan": null,
     "properties": {
       "diagnosticsProfile": {

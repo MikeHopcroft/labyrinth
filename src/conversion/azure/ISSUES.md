@@ -1,27 +1,25 @@
 * Demo/documentation bugs
-  * x Merge mhop/bugs1 into main
-  * x Publish npm package
+  * Move demo files
+  * Debug outbound routes to AzureBackbone and public ips
+    * labyrinth graph 00.demo\convert.yaml -f=vm0 -t=publicIp1/endpoint
+    * labyrinth graph 00.demo\convert.yaml -q -f=vm0 -t=vm2 -p -e
+  * Traceroute functionality when both -t and -f are specified
+    * Perhaps retarget -v flag?
 
-  * x Create NPM cli
-    * https://developer.okta.com/blog/2019/06/18/command-line-app-with-nodejs
-    * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
-    * QUESTION: how to access demo files?
-  * labyrinth command
-    * version
-      * const VERSION = process.env.npm_package_version;
-    * graph
-    * convert -f=azure
-    * firewall
-    * anonymize
-    * remove old commands
+  * x Update run.cmd to use labyrinth.js
+  * x Consider renaming vm0-vm2 to web0-web2
+    * Make separate demo file for docs
+    * Rename convert.yaml to graph.yaml
+  * SVG diagrams
+    * Need to be consistent about SSH, HTTP, TCP casing
+    * Remove drop shadow from white background.
 
-  * Resource graph sanitizer
+  * Update `npm run test` output in get_labyrinth.src.md
+
+  * Resource graph sanitizer/anonymizer
     * Multiple subscription ids
     * Only copies that which will likely be used
     * Option to generate names for various fields, e.g. name, and id.
-
-  * x Update prepress with option to spawn shell
-    * x USe for getLabyrinth.src.md
 
   * Improve top-level README.md
   * Azure converter architecture documentation
@@ -35,12 +33,25 @@
   * Unit tests for graph are brittle because they are order-sensitive
   * Remove node sort order from graph
 
-  * Consider renaming vm0-vm2 to web0-web2
-    * Make separate demo file for docs
-    * Rename convert.yaml to graph.yaml
-  * SVG diagrams
-    * Need to be consistent about SSH, HTTP, TCP casing
-    * Remove drop shadow from white background.
+  * x Merge mhop/bugs1 into main
+  * x Publish npm package
+
+  * x Create NPM cli
+    * https://developer.okta.com/blog/2019/06/18/command-line-app-with-nodejs
+    * https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
+    * QUESTION: how to access demo files?
+  * labyrinth command
+    * x version
+      * x const VERSION = process.env.npm_package_version;
+    * x graph
+    * x convert -f=azure
+    * x firewall
+    * x anonymize
+    * x remove old commands
+    * Update Eric's demo convert script
+
+  * x Update prepress with option to spawn shell
+    * x USe for getLabyrinth.src.md
 
   * . Internet node endpoint
     * x InternetBackBone

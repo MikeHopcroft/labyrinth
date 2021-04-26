@@ -5,24 +5,28 @@ Options summary:
   Verbose mode (-v).
   Paths are forward propagated (use -b flag to enable backprojection).
   Paths are not expanded (use -e flag to enable path expansion).
+  Not displaying help. (use -h flag to display help message)
 
 Endpoints
+  Internet
+    Internet:  (endpoint)
+    Internet-Backbone: 
   jump-box
     vm1/inbound:  (endpoint)
     vm1/outbound:  (endpoint)
-  vm0
+  web0
     vm2/inbound:  (endpoint)
     vm2/outbound:  (endpoint)
-  vm1
+  web1
     vm3/inbound:  (endpoint)
     vm3/outbound:  (endpoint)
-  vm2
+  web2
     vm4/inbound:  (endpoint)
     vm4/outbound:  (endpoint)
 
 Nodes reachable from public-services-ip (publicIp2/endpoint):
 
-vm0 (vm2/inbound):
+web0 (vm2/inbound):
   flow:
     source ip: Internet
     destination ip: 10.0.100.4
@@ -30,18 +34,18 @@ vm0 (vm2/inbound):
     protocol: TCP
 
   paths:
-    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => vm0
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => web0
       source ip: Internet
       destination ip: 10.0.100.4
       destination port: 8080
       protocol: TCP
-    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => vm0
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm0148 => web0
       source ip: Internet
       destination ip: 10.0.100.4
       destination port: 8443
       protocol: TCP
 
-vm1 (vm3/inbound):
+web1 (vm3/inbound):
   flow:
     source ip: Internet
     destination ip: 10.0.100.5
@@ -49,18 +53,18 @@ vm1 (vm3/inbound):
     protocol: TCP
 
   paths:
-    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => vm1
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => web1
       source ip: Internet
       destination ip: 10.0.100.5
       destination port: 8080
       protocol: TCP
-    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => vm1
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm1318 => web1
       source ip: Internet
       destination ip: 10.0.100.5
       destination port: 8443
       protocol: TCP
 
-vm2 (vm4/inbound):
+web2 (vm4/inbound):
   flow:
     source ip: Internet
     destination ip: 10.0.100.6
@@ -68,12 +72,12 @@ vm2 (vm4/inbound):
     protocol: TCP
 
   paths:
-    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm2400 => vm2
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm2400 => web2
       source ip: Internet
       destination ip: 10.0.100.6
       destination port: 8080
       protocol: TCP
-    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm2400 => vm2
+    public-services-ip => public-load-balancer => virtual-network => public-services-subnet => vm2400 => web2
       source ip: Internet
       destination ip: 10.0.100.6
       destination port: 8443

@@ -349,13 +349,13 @@ nodes:
         constraints:
           sourceIp: 10.0.88.4
   - key: vm2/inbound
-    friendlyName: vm0
+    friendlyName: web0
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.compute/virtualmachines/vm0
     endpoint: true
     routes: []
   - key: vm2/outbound
-    friendlyName: vm0
+    friendlyName: web0
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.compute/virtualmachines/vm0
     endpoint: true
@@ -364,13 +364,13 @@ nodes:
         constraints:
           sourceIp: 10.0.100.4
   - key: vm3/inbound
-    friendlyName: vm1
+    friendlyName: web1
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.compute/virtualmachines/vm1
     endpoint: true
     routes: []
   - key: vm3/outbound
-    friendlyName: vm1
+    friendlyName: web1
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.compute/virtualmachines/vm1
     endpoint: true
@@ -379,13 +379,13 @@ nodes:
         constraints:
           sourceIp: 10.0.100.5
   - key: vm4/inbound
-    friendlyName: vm2
+    friendlyName: web2
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.compute/virtualmachines/vm2
     endpoint: true
     routes: []
   - key: vm4/outbound
-    friendlyName: vm2
+    friendlyName: web2
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.compute/virtualmachines/vm2
     endpoint: true
