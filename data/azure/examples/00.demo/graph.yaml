@@ -1,5 +1,6 @@
 nodes:
-  - key: AzureBackbone/outbound
+  - internal: true
+    key: AzureBackbone/outbound
     friendlyName: AzureBackbone
     routes:
       - destination: Internet-Backbone
@@ -9,6 +10,7 @@ nodes:
       - destination: Internet-Backbone
     endpoint: true
   - friendlyName: Internet
+    internal: true
     key: Internet-Backbone
     routes:
       - destination: publicIp1/endpoint
@@ -22,7 +24,8 @@ nodes:
       - destination: Internet
         constraints:
           destinationIp: Internet
-  - key: loadBalancer1
+  - internal: true
+    key: loadBalancer1
     friendlyName: public-load-balancer
     routes:
       - destination: vnet1/inbound
@@ -43,48 +46,56 @@ nodes:
           destinationPort: '8443'
   - key: nic1/inbound
     friendlyName: jump-box948
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/jump-box948
     routes:
       - destination: vm1/inbound
   - key: nic1/outbound
     friendlyName: jump-box948
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/jump-box948
     routes:
       - destination: subnet1/outbound
   - key: nic2/inbound
     friendlyName: vm0148
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm0148
     routes:
       - destination: vm2/inbound
   - key: nic2/outbound
     friendlyName: vm0148
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm0148
     routes:
       - destination: subnet2/outbound
   - key: nic3/inbound
     friendlyName: vm1318
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm1318
     routes:
       - destination: vm3/inbound
   - key: nic3/outbound
     friendlyName: vm1318
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm1318
     routes:
       - destination: subnet2/outbound
   - key: nic4/inbound
     friendlyName: vm2400
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm2400
     routes:
       - destination: vm4/inbound
   - key: nic4/outbound
     friendlyName: vm2400
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm2400
     routes:
@@ -105,7 +116,8 @@ nodes:
     friendlyName: public-services-ip
     routes:
       - destination: loadBalancer1
-  - key: subnet1/inbound
+  - internal: true
+    key: subnet1/inbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network/subnets/jump-box
     friendlyName: jump-box-subnet
@@ -154,7 +166,8 @@ nodes:
           destinationIp: '*'
           destinationPort: '*'
           protocol: '*'
-  - key: subnet1/outbound
+  - internal: true
+    key: subnet1/outbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network/subnets/jump-box
     friendlyName: jump-box-subnet
@@ -211,7 +224,8 @@ nodes:
           destinationIp: '*'
           destinationPort: '*'
           protocol: '*'
-  - key: subnet2/inbound
+  - internal: true
+    key: subnet2/inbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network/subnets/public-services
     friendlyName: public-services-subnet
@@ -296,7 +310,8 @@ nodes:
           destinationIp: '*'
           destinationPort: '*'
           protocol: '*'
-  - key: subnet2/outbound
+  - internal: true
+    key: subnet2/outbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network/subnets/public-services
     friendlyName: public-services-subnet
@@ -395,6 +410,7 @@ nodes:
           sourceIp: 10.0.100.6
   - key: vnet1/inbound
     friendlyName: virtual-network
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network
     routes:
@@ -406,6 +422,7 @@ nodes:
           destinationIp: 10.0.100.0/24
   - key: vnet1/outbound
     friendlyName: virtual-network
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network
     routes:
@@ -418,6 +435,7 @@ nodes:
       - destination: AzureBackbone/outbound
   - key: vnet1/router
     friendlyName: virtual-network
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network
     range:

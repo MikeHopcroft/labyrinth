@@ -1,3 +1,4 @@
+export * from './dump';
 export * from './edge';
 export * from './graph';
 export * from './graph_builder';

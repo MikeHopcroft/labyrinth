@@ -8,23 +8,37 @@ Options summary:
   Not displaying help. (use -h flag to display help message)
 
 Nodes:
-  AzureBackbone
+  AzureBackbone*
+    AzureBackbone/outbound*
   Internet
-    Internet:  (endpoint)
-    Internet-Backbone: 
-  another
-  default
+    Internet
+    Internet-Backbone*
+  another*
+    subnet2/inbound*
+  default*
+    subnet1/inbound*
   vm-001
-    vm1/inbound:  (endpoint)
-    vm1/outbound:  (endpoint)
+    vm1/inbound
+    vm1/outbound
   vm-001-ip
-  vm-001505
+    publicIp1/endpoint
+    publicIp1/outbound
+  vm-001505*
+    nic1/inbound*
+    nic1/outbound*
   vm-002
-    vm2/inbound:  (endpoint)
-    vm2/outbound:  (endpoint)
+    vm2/inbound
+    vm2/outbound
   vm-002-ip
-  vm-002237
-  x-example-vnet
+    publicIp2/endpoint
+    publicIp2/outbound
+  vm-002237*
+    nic2/inbound*
+    nic2/outbound*
+  x-example-vnet*
+    vnet1/inbound*
+    vnet1/outbound*
+    vnet1/router*
 
 Nodes reachable from vm-001 (vm1/outbound):
 

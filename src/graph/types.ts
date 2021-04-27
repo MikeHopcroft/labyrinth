@@ -48,6 +48,7 @@ export const codecNodeSpec = t.intersection([
     friendlyName: t.string,
     name: t.string,
     endpoint: t.boolean,
+    internal: t.boolean,
     filters: t.array(codecRuleSpecNoId),
     pool: t.array(codecPoolRuleSpec),
     range: codecConstraint,

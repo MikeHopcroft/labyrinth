@@ -1,10 +1,12 @@
 import commandLineUsage, {Section} from 'command-line-usage';
+import fs from 'fs';
 import minimist from 'minimist';
 
 import {Universe} from '../dimensions';
 
 import {
   AnyRuleSpec,
+  dumpGraphAsYamlText,
   formatNodeName,
   Graph,
   GraphBuilder,
@@ -113,6 +115,14 @@ export default function main(invocation: string, parameters: string[]) {
         modelSpoofing
       );
 
+      if (args.d) {
+        fs.writeFileSync(
+          'debug.yaml',
+          dumpGraphAsYamlText({cycles, flows}),
+          'utf8'
+        );
+      }
+
       if (!quietMode) {
         summarizeOptions(options);
         listEndpoints(graph, showRouters);
@@ -165,6 +175,14 @@ export default function main(invocation: string, parameters: string[]) {
         options.outbound,
         modelSpoofing
       );
+
+      if (args.d) {
+        fs.writeFileSync(
+          'debug.yaml',
+          dumpGraphAsYamlText({cycles, flows}),
+          'utf8'
+        );
+      }
 
       if (!quietMode) {
         summarizeOptions(options);
@@ -311,23 +329,16 @@ function showUsage(invocation: string) {
 }
 
 function listEndpoints(graph: Graph, showRouters: boolean) {
-  console.log(showRouters ? 'Nodes:' : 'Endpoints');
+  console.log('Nodes:');
 
   const friendlyNames = [...graph.friendlyNames()].sort();
   for (const name of friendlyNames) {
     const nodes = graph.withFriendlyName(name);
-    const endpointCount = nodes.endpoints().length;
-    if (showRouters || endpointCount > 0) {
-      console.log(`  ${name}`);
+    if (showRouters || nodes.notInternal()) {
+      console.log(`  ${name}${nodes.notInternal() ? '' : '*'}`);
 
-      if (endpointCount > 0) {
-        for (const node of nodes.all()) {
-          console.log(
-            `    ${node.key}: ${node.range.format().slice(11)}${
-              node.isEndpoint ? ' (endpoint)' : ''
-            }`
-          );
-        }
+      for (const node of nodes.all()) {
+        console.log(`    ${node.key}${node.spec.internal ? '*' : ''}`);
       }
     }
   }

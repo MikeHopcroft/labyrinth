@@ -97,6 +97,7 @@ export function convertVNet(
   services.nodes.add({
     key: vNetRouterKey,
     friendlyName: spec.name,
+    internal: true,
     name: spec.id,
     range: {sourceIp: destinationIp},
     routes: routerRoutes,
@@ -105,6 +106,7 @@ export function convertVNet(
   services.nodes.add({
     key: vNetInboundKey,
     friendlyName: spec.name,
+    internal: true,
     name: spec.id,
     routes: inboundRoutes,
   });
@@ -112,6 +114,7 @@ export function convertVNet(
   services.nodes.add({
     key: vNetOutboundKey,
     friendlyName: spec.name,
+    internal: true,
     name: spec.id,
     routes: outboundRoutes,
   });

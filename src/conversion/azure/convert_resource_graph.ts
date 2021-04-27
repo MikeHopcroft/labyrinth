@@ -74,6 +74,7 @@ export function convertResourceGraph(services: GraphServices) {
   // Create internet backbone node
   services.nodes.add({
     friendlyName: internetFriendlyName,
+    internal: true,
     key: internetBackboneKey,
     routes: internetRoutes,
   });
@@ -101,6 +102,7 @@ export function convertResourceGraph(services: GraphServices) {
   // Create outbound backbone node
   //
   services.nodes.add({
+    internal: true,
     key: backboneOutboundKey,
     friendlyName: AzureBackboneFriendlyName,
     routes: backboneOutboundRoutes,

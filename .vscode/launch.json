@@ -54,10 +54,11 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/build/src/apps/graph.js",
+      "program": "${workspaceFolder}/build/src/apps/labyrinth.js",
       // "args": ["junk/resource-graph.yaml", "-f=Internet"],
       // "args": ["junk/resource-graph.yaml", "-f=jumpbox/default", "-t=data.nic/blob-blob.privateEndpoint"],
-      "args": ["junk/foo2.yaml", "-f=a", "-r", "-s", "-v"],
+      // "args": ["junk/foo2.yaml", "-f=a", "-r", "-s", "-v"],
+      "args": ["graph", "data/azure/examples/00.demo/graph.yaml", "-f=public-load-balancer"],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"

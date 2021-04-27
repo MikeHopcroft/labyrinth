@@ -61,7 +61,7 @@ export type Cycle = Path[];
 
 // Graph.analyze() returns a collection of FlowNodes (Nodes grouped with their
 // flows and paths) and a set of Cycles.
-interface FlowAnalysis {
+export interface FlowAnalysis {
   cycles: Cycle[];
   flows: FlowNode[];
 }
@@ -187,11 +187,13 @@ export class Graph {
     flowNodes: FlowNode[],
     flowEdges: FlowEdge[][],
     cycles: Path[][],
-    forwardTraversal: boolean
+    forwardTraversal: boolean,
+    depth = 0
   ) {
     const verbose = false;
     const flowNode = flowNodes[fromIndex];
 
+    log(verbose, `depth ${depth}`);
     log(verbose, `propagate(${flowNode.node.key})`);
     log(verbose, '  flow:');
     log(verbose, flow.format({prefix: '    '}));
@@ -279,7 +281,8 @@ export class Graph {
               flowNodes,
               flowEdges,
               cycles,
-              forwardTraversal
+              forwardTraversal,
+              depth + 1
             );
           }
         }
@@ -447,6 +450,10 @@ export class Graph {
     outbound: boolean,
     options: GraphFormattingOptions
   ): string {
+    // if (options.verbose) {
+    //   return this.tracePath(path, outbound, options);
+    // }
+
     const keys: string[] = [];
     let p: Path | undefined = path;
 
@@ -482,6 +489,51 @@ export class Graph {
       .join(' => ');
   }
 
+  tracePath(
+    path: Path,
+    outbound: boolean,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options: GraphFormattingOptions
+  ): string {
+    // const keys: string[] = [];
+    const steps: {
+      from: string;
+      routes: Disjunction<AnyRuleSpec>;
+      to: string;
+    }[] = [];
+    let p: Path | undefined = path;
+
+    if (outbound) {
+      while (p) {
+        steps.unshift({
+          from: p.edge.edge.from,
+          routes: p.routes,
+          to: p.edge.edge.to,
+        });
+        p = p.previous;
+      }
+    } else {
+      while (p) {
+        steps.push({
+          from: p.edge.edge.from,
+          routes: p.routes,
+          to: p.edge.edge.to,
+        });
+        p = p.previous;
+      }
+    }
+
+    const lines: string[] = [''];
+    for (const {from, routes, to} of steps) {
+      lines.push(`${from} => ${to}`);
+      lines.push(routes.format({prefix: '  '}));
+      lines.push('');
+    }
+    lines.push('====================================');
+
+    return lines.join('\n');
+  }
+
   *friendlyNames(): IterableIterator<string> {
     yield* this.friendlyNameToNode.keys();
   }
@@ -491,6 +543,14 @@ export class Graph {
     return {
       all: () => nodes,
       endpoints: () => nodes.filter(node => node.isEndpoint),
+      notInternal: () => {
+        for (const node of nodes) {
+          if (!node.spec.internal) {
+            return true;
+          }
+        }
+        return false;
+      },
       withType: (type: NodeType): Node | undefined => {
         for (const node of nodes) {
           if (type === node.getType()) {

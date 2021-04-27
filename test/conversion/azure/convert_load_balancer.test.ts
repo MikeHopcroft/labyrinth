@@ -70,6 +70,7 @@ export default function test() {
         {
           key: loadBalancerWithNatRuleKey,
           friendlyName: loadBalancerWithNatRule.name,
+          internal: true,
           routes: [
             {
               destination: subnetKey,
@@ -103,6 +104,7 @@ export default function test() {
         {
           key: loadBalancerWithNatRuleKey,
           friendlyName: loadBalancerWithNatRule.name,
+          internal: true,
           routes: [
             {
               destination: 'UnboundRule',
@@ -153,6 +155,7 @@ export default function test() {
         {
           key: loadBalancerWithNatRuleKey,
           friendlyName: loadBalancerWithNatRule.name,
+          internal: true,
           routes: [
             {
               destination: subnetKey,

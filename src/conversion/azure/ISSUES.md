@@ -1,11 +1,67 @@
 * Demo/documentation bugs
   * Move demo files
   * Debug outbound routes to AzureBackbone and public ips
-    * labyrinth graph 00.demo\convert.yaml -f=vm0 -t=publicIp1/endpoint
-    * labyrinth graph 00.demo\convert.yaml -q -f=vm0 -t=vm2 -p -e
+    * COMPARE
+      * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -t=publicIp2/endpoint
+      * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -p -e
+      * Why does the first have a path to publicIp2/endpoint and the second doesn't?
+      * Because publicIp2/endpoint is not an endpoint. Need the -r flag.
+    * WHY NO FLOW?
+      * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -r -t=web1
+    * WHY UNKNOWN END NODE public-load-balancer
+      * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -t=public-load-balancer
+    * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -p -e
+      * Why does vnet1/outbound have a route to 
+    * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -t=publicIp1/endpoint
+    * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -t=web2 -p -e
   * Traceroute functionality when both -t and -f are specified
     * Perhaps retarget -v flag?
 
+  * Concept of internal nodes
+    * Scenarios
+      * Not displayed by default. Need -r flag.
+      * Mapping friendly name to nodes. For -f, -t flags.
+    * Review uses of
+      * createKeyVariant()
+      * createEndpointKey()
+      * createRouterKey()
+      * createKey()
+      * suffixOutbound
+    * Review use of endpoint keys
+      * getNode(): nodes.withType(NodeType.PUBLIC_ENDPOINT)
+      * Node.getType()
+      * NodeType.PUBLIC_ENDPOINT - only use seems to be Node.getType.
+      * Overlap between NodeType and SuffixInbound and SuffixOutbound.
+    * Inventory node structures. Do they all have inbound and outbound variants?
+      * loadBalancer - bad
+        * Where does camelCasing come from? azureTypeNames
+      * nic - ok
+      * privateIp - bad
+      * publicIp - bad
+        * endpoint key
+      * resourceGraph - bad
+        * internetKey
+        * internetBackboneKey
+        * azureBackboneKeyName
+      * subnet - ok
+      * vm - ok
+      * vnet - ok + router
+  
+  * Concept of endpoints
+    * Used to suppress cycles
+    * May not be necessary if all structures have inbound and outbound variants
+    * Remove endpoint formatting
+  * Propagate from inbound and outbound variants
+  * Review partial fields on NodeSpec - can some be required?
+    * Some facilitate writing of unit tests. Consider helper function to add these fields?
+  * Review azure/constants - are these needed?
+  * Review createUnboundNicAndReturnRoute() - why is this in graph_services?
+  * Review createUnboundRuleAndReturnKey() - why is this in graph_services?
+  * Move load_balancer.ts up one level.
+  * Rename Internet key to Internet-endpoint
+  * Finish up Graph.tracePath(), enabled by -v flag.
+
+  * move labyrinth sub-commands to a folder.
   * defining_universes.md
     * Broken link to https://github.com/MikeHopcroft/labyrinth/build/src/specs/firewall.js
   * policy_explanation.ts

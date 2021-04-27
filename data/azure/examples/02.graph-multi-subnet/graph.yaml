@@ -1,5 +1,6 @@
 nodes:
-  - key: AzureBackbone/outbound
+  - internal: true
+    key: AzureBackbone/outbound
     friendlyName: AzureBackbone
     routes:
       - destination: Internet-Backbone
@@ -9,6 +10,7 @@ nodes:
       - destination: Internet-Backbone
     endpoint: true
   - friendlyName: Internet
+    internal: true
     key: Internet-Backbone
     routes:
       - destination: publicIp1/endpoint
@@ -24,6 +26,7 @@ nodes:
           destinationIp: Internet
   - key: nic1/inbound
     friendlyName: vm-001505
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-001505
     routes:
@@ -71,6 +74,7 @@ nodes:
           protocol: '*'
   - key: nic1/outbound
     friendlyName: vm-001505
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-001505
     routes:
@@ -108,6 +112,7 @@ nodes:
           protocol: '*'
   - key: nic2/inbound
     friendlyName: vm-002237
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-002237
     routes:
@@ -165,6 +170,7 @@ nodes:
           protocol: '*'
   - key: nic2/outbound
     friendlyName: vm-002237
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/networkinterfaces/vm-002237
     routes:
@@ -224,7 +230,8 @@ nodes:
       - destination: AzureBackbone/outbound
         override:
           sourceIp: 51.141.166.15
-  - key: subnet1/inbound
+  - internal: true
+    key: subnet1/inbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet/subnets/default
     friendlyName: default
@@ -232,7 +239,8 @@ nodes:
       - destination: nic1/inbound
         constraints:
           destinationIp: 172.16.0.4
-  - key: subnet2/inbound
+  - internal: true
+    key: subnet2/inbound
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet/subnets/another
     friendlyName: another
@@ -272,6 +280,7 @@ nodes:
           sourceIp: 172.16.0.20
   - key: vnet1/inbound
     friendlyName: x-example-vnet
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
     routes:
@@ -283,6 +292,7 @@ nodes:
           destinationIp: 172.16.0.16/28
   - key: vnet1/outbound
     friendlyName: x-example-vnet
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
     routes:
@@ -298,6 +308,7 @@ nodes:
       - destination: AzureBackbone/outbound
   - key: vnet1/router
     friendlyName: x-example-vnet
+    internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
     range:

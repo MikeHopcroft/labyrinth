@@ -84,6 +84,7 @@ export default function test() {
           friendlyName: nic1.name,
           name: nic1Id,
           filters: inboundRules,
+          internal: true,
           routes: [
             {
               destination: vm1InboundKey,
@@ -97,6 +98,7 @@ export default function test() {
           friendlyName: nic1.name,
           name: nic1Id,
           filters: outboundRules,
+          internal: true,
           routes: [
             {
               destination: subnet1OutboundKey,
@@ -117,6 +119,7 @@ export default function test() {
         key: nic1InboundKey,
         name: nic1Id,
         friendlyName: nic1.name,
+        internal: true,
         routes: [
           {
             destination: 'UnboundNetworkInterface',

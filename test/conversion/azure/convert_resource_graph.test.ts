@@ -26,6 +26,7 @@ export default function test() {
         {
           key: `${AzureBackboneKeyName}/outbound`,
           friendlyName: AzureBackboneFriendlyName,
+          internal: true,
           routes: [
             {
               destination: 'Internet-Backbone',
@@ -44,6 +45,7 @@ export default function test() {
         },
         {
           friendlyName: 'Internet',
+          internal: true,
           key: 'Internet-Backbone',
           routes: [
             {

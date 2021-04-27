@@ -88,6 +88,7 @@ function buildInboundOutboundNodes(
   // Construct inbound node
   //
   const inboundNode: NodeSpec = {
+    internal: true,
     key: inboundKey,
     name: spec.id,
     friendlyName: spec.name,
@@ -103,6 +104,7 @@ function buildInboundOutboundNodes(
   //
   if (nsgRules.outboundRules.length > 0) {
     const outboundNode: NodeSpec = {
+      internal: true,
       key: outboundKey,
       name: spec.id,
       friendlyName: spec.name,

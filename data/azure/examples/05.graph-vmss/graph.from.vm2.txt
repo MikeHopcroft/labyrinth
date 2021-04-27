@@ -8,41 +8,66 @@ Options summary:
   Not displaying help. (use -h flag to display help message)
 
 Nodes:
-  AzureBackbone
+  AzureBackbone*
+    AzureBackbone/outbound*
   Internet
-    Internet:  (endpoint)
-    Internet-Backbone: 
+    Internet
+    Internet-Backbone*
   UnboundRule
-  another
-  default
-  ilb
-  public-lb
+    UnboundRule
+  another*
+    subnet2/inbound*
+  default*
+    subnet1/inbound*
+  ilb*
+    loadBalancer2*
+  public-lb*
+    loadBalancer1*
   public-lb-ip
+    publicIp2/endpoint
   vm-001
-    vm1/inbound:  (endpoint)
-    vm1/outbound:  (endpoint)
+    vm1/inbound
+    vm1/outbound
   vm-001-ip
-  vm-001505
+    publicIp1/endpoint
+    publicIp1/outbound
+  vm-001505*
+    nic1/inbound*
+    nic1/outbound*
   vm-002
-    vm3/inbound:  (endpoint)
-    vm3/outbound:  (endpoint)
-  vm-002237
+    vm3/inbound
+    vm3/outbound
+  vm-002237*
+    nic3/inbound*
+    nic3/outbound*
   vm-lb-01
-    vm2/inbound:  (endpoint)
-    vm2/outbound:  (endpoint)
-  vm-lb-016
-  vmss
+    vm2/inbound
+    vm2/outbound
+  vm-lb-016*
+    nic2/inbound*
+    nic2/outbound*
+  vmss*
+    subnet3/inbound*
   vmss-0
-    vm4/inbound:  (endpoint)
-    vm4/outbound:  (endpoint)
+    vm4/inbound
+    vm4/outbound
   vmss-2
-    vm5/inbound:  (endpoint)
-    vm5/outbound:  (endpoint)
+    vm5/inbound
+    vm5/outbound
   vmss-4
-    vm6/inbound:  (endpoint)
-    vm6/outbound:  (endpoint)
-  x-example-vnet
-  x-example-vnet-nic01
+    vm6/inbound
+    vm6/outbound
+  x-example-vnet*
+    vnet1/inbound*
+    vnet1/outbound*
+    vnet1/router*
+  x-example-vnet-nic01*
+    nic4/inbound*
+    nic4/outbound*
+    nic5/inbound*
+    nic5/outbound*
+    nic6/inbound*
+    nic6/outbound*
 
 Nodes reachable from vm-002 (vm3/outbound):
 

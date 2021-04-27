@@ -7,22 +7,27 @@ Options summary:
   Paths are not expanded (use -e flag to enable path expansion).
   Not displaying help. (use -h flag to display help message)
 
-Endpoints
+Nodes:
   Internet
-    Internet:  (endpoint)
-    Internet-Backbone: 
+    Internet
+    Internet-Backbone*
   jump-box
-    vm1/inbound:  (endpoint)
-    vm1/outbound:  (endpoint)
+    vm1/inbound
+    vm1/outbound
+  jump-box-ip
+    publicIp1/endpoint
+    publicIp1/outbound
+  public-services-ip
+    publicIp2/endpoint
   web0
-    vm2/inbound:  (endpoint)
-    vm2/outbound:  (endpoint)
+    vm2/inbound
+    vm2/outbound
   web1
-    vm3/inbound:  (endpoint)
-    vm3/outbound:  (endpoint)
+    vm3/inbound
+    vm3/outbound
   web2
-    vm4/inbound:  (endpoint)
-    vm4/outbound:  (endpoint)
+    vm4/inbound
+    vm4/outbound
 
 Nodes reachable from public-services-ip (publicIp2/endpoint):
 
