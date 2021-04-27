@@ -25,7 +25,6 @@ export function convertPrivateIp(
     friendlyName: spec.name,
     name: spec.id,
     endpoint: true,
-    range: {sourceIp},
     routes,
   });
 

@@ -97,8 +97,8 @@
     * IDEA: side-by-side code and explanation like http://gitlet.maryrosecook.com/docs/gitlet.html
   * Azure graph algorithm documentation
 
-  * Remove -s spoofing option
-  * Remove Node.range
+  * x Remove -s spoofing option
+  * x Remove Node.range
   * Remove io folder
   * Unit tests for graph are brittle because they are order-sensitive
   * Remove node sort order from graph

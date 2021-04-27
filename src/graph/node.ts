@@ -1,11 +1,6 @@
 import {Universe} from '../dimensions';
 
-import {
-  ActionType,
-  denyOverrides,
-  parseConjunction,
-  parseRuleSpec,
-} from '../rules';
+import {denyOverrides, parseRuleSpec} from '../rules';
 
 import {Disjunction, Simplifier} from '../setops';
 
@@ -20,20 +15,6 @@ export enum NodeType {
   INBOUND,
   OUTBOUND,
 }
-
-const initialRangeSpec: RuleSpec = {
-  action: ActionType.ALLOW,
-  priority: 0,
-
-  // TODO: pick an id that won't conflict with other ids.
-  id: 0,
-
-  // TODO: pick a source that won't conflict with other sources.
-  source: '(graph)',
-
-  // TODO: ALTERNATIVE: allow `spec` parameter of parseConjunction to be optional.
-  // Then we won't need a spec. Does code rely on set being non-empty?
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -59,13 +40,7 @@ export class Node {
     this.key = spec.key;
     this.isEndpoint = !!spec.endpoint;
 
-    if (spec.range) {
-      this.range = Disjunction.create<RuleSpec>([
-        parseConjunction<RuleSpec>(universe, spec.range, initialRangeSpec),
-      ]);
-    } else {
-      this.range = Disjunction.universe<RuleSpec>();
-    }
+    this.range = Disjunction.universe<RuleSpec>();
 
     let filters: Disjunction<RuleSpec>;
     if (this.spec.filters) {

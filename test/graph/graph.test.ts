@@ -1183,9 +1183,6 @@ describe('Graph', () => {
         {
           key: 'client',
           endpoint: true,
-          range: {
-            sourceIp: '192.0.2.53',
-          },
           routes: [
             {
               destination: 'publicIp',
@@ -1272,17 +1269,11 @@ describe('Graph', () => {
         },
         {
           key: 'serverA',
-          range: {
-            sourceIp: '20.0.0.1',
-          },
           endpoint: true,
           routes: [],
         },
         {
           key: 'serverB',
-          range: {
-            sourceIp: '20.0.0.2',
-          },
           endpoint: true,
           routes: [],
         },

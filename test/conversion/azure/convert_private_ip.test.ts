@@ -41,7 +41,6 @@ export default function test() {
         name: privateIp1Id,
         friendlyName: privateIp1.name,
         endpoint: true,
-        range: {sourceIp: privateIp1SourceIp},
         routes: [
           {
             destination: nic1OutboundKey,

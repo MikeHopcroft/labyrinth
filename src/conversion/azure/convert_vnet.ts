@@ -99,7 +99,6 @@ export function convertVNet(
     friendlyName: spec.name,
     internal: true,
     name: spec.id,
-    range: {sourceIp: destinationIp},
     routes: routerRoutes,
   });
 

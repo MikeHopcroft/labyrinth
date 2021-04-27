@@ -134,9 +134,6 @@ export default function test() {
           friendlyName: vnet1.name,
           internal: true,
           name: vnet1.id,
-          range: {
-            sourceIp: vnet1SourceIps,
-          },
           routes: [
             {
               destination: vnet1InboundKey,
