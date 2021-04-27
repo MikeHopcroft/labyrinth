@@ -146,11 +146,7 @@ export class Graph {
     }
   }
 
-  analyze(
-    startKey: string,
-    outbound: boolean,
-    modelSpoofing = false
-  ): FlowAnalysis {
+  analyze(startKey: string, outbound: boolean): FlowAnalysis {
     const flowNodes: FlowNode[] = this.nodes.map(node => ({
       node,
       paths: [],
@@ -159,9 +155,7 @@ export class Graph {
     }));
 
     const index = this.nodeIndex(startKey);
-    const initialFlow = modelSpoofing
-      ? Disjunction.universe<AnyRuleSpec>()
-      : this.nodes[index].range;
+    const initialFlow = Disjunction.universe<AnyRuleSpec>();
 
     const initialPath = undefined;
     const flowEdges = outbound ? this.outboundFrom : this.inboundTo;
@@ -495,7 +489,6 @@ export class Graph {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     options: GraphFormattingOptions
   ): string {
-    // const keys: string[] = [];
     const steps: {
       from: string;
       routes: Disjunction<AnyRuleSpec>;

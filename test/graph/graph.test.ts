@@ -27,7 +27,7 @@ function paths(
   to: string,
   options: GraphFormattingOptions
 ) {
-  const {flows} = graph.analyze(from, !!options.outbound, true);
+  const {flows} = graph.analyze(from, !!options.outbound);
   const filtered = flows.filter(flow => flow.node.key === to);
   return filtered
     .map(flow =>

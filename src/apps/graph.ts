@@ -21,7 +21,6 @@ import {fail, handleError, succeed} from '../utilities';
 
 interface Options {
   backProject: boolean;
-  modelSpoofing: boolean;
   outbound: boolean;
   // TODO: rename shortenAndCollapse to expandPaths or equivalent
   shortenAndCollapse: boolean;
@@ -55,7 +54,6 @@ export default function main(invocation: string, parameters: string[]) {
 
   const backProject = !!args.b && !args.t;
   const fromNode = args.f;
-  const modelSpoofing = !!args.s;
   const outbound = !args.t;
   const quietMode = !!args.q;
   const showRouters = !!args.r;
@@ -68,7 +66,6 @@ export default function main(invocation: string, parameters: string[]) {
 
   const options: Options = {
     backProject,
-    modelSpoofing,
     outbound,
     showPaths,
     showRouters,
@@ -109,11 +106,7 @@ export default function main(invocation: string, parameters: string[]) {
         fKey = fNode.key;
       }
 
-      const {cycles, flows} = graph.analyze(
-        tKey,
-        options.outbound,
-        modelSpoofing
-      );
+      const {cycles, flows} = graph.analyze(tKey, options.outbound);
 
       if (args.d) {
         fs.writeFileSync(
@@ -170,11 +163,7 @@ export default function main(invocation: string, parameters: string[]) {
       const fNode = getNode(fromNode, graph, true);
       const fKey = fNode.key;
 
-      const {cycles, flows} = graph.analyze(
-        fKey,
-        options.outbound,
-        modelSpoofing
-      );
+      const {cycles, flows} = graph.analyze(fKey, options.outbound);
 
       if (args.d) {
         fs.writeFileSync(
@@ -303,12 +292,6 @@ function showUsage(invocation: string) {
           type: Boolean,
         },
         {
-          name: 'spoofing',
-          alias: 's',
-          description: 'Model source address spoofing.',
-          type: Boolean,
-        },
-        {
           name: 'back-project',
           alias: 'b',
           description:
@@ -347,14 +330,6 @@ function listEndpoints(graph: Graph, showRouters: boolean) {
 
 function summarizeOptions(options: Options) {
   console.log('Options summary:');
-
-  if (options.modelSpoofing) {
-    console.log('  Modeling source ip address spoofing (-s).');
-  } else {
-    console.log(
-      '  Not modeling source ip address spoofing (use -s flag to enable).'
-    );
-  }
 
   if (options.showRouters) {
     console.log('  Displaying endpoints and routing nodes. (-r)');
