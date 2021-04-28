@@ -81,9 +81,9 @@ async function downloadSamples(folder: string) {
       file: 'resource-graph',
     });
     files.push({
-      url: `https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/${name}/convert.yaml`,
+      url: `https://raw.githubusercontent.com/MikeHopcroft/labyrinth/main/data/azure/examples/${name}/graph.yaml`,
       dest: path.join(folder, `data/azure/examples/${name}`),
-      file: 'convert.yaml',
+      file: 'graph.yaml',
     });
   }
 
