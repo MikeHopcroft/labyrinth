@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,6 +11,7 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   UnboundRule
     UnboundRule
@@ -24,13 +24,13 @@ Nodes:
   public-lb*
     loadBalancer1*
   public-lb-ip
-    publicIp2/endpoint
+    publicIp2/inbound
   vm-001
     vm1/inbound
     vm1/outbound
   vm-001-internet
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   vm-001505*
     nic1/inbound*
     nic1/outbound*
@@ -64,7 +64,7 @@ Nodes:
     nic5/inbound*
     nic5/outbound*
 
-Nodes that can reach vm-001 (vm1/inbound):
+Nodes that can reach vm-001:
 
 AzureBackbone (AzureBackbone/outbound):
   flow:
@@ -77,7 +77,7 @@ AzureBackbone (AzureBackbone/outbound):
     protocol: TCP
 
   paths:
-    AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -97,7 +97,7 @@ Internet:
     protocol: TCP
 
   paths:
-    Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    Internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -106,7 +106,7 @@ Internet:
       destination port: https
       protocol: TCP
 
-Internet (Internet-Backbone):
+Internet-Backbone:
   flow:
     source ip: AzureLoadBalancer
     destination ip: 20.47.120.40
@@ -117,7 +117,7 @@ Internet (Internet-Backbone):
     protocol: TCP
 
   paths:
-    Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -160,7 +160,7 @@ vm-001505 (nic1/outbound):
     protocol: TCP
 
   paths:
-    vm-001505 => x-example-vnet => AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-001505 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -168,7 +168,7 @@ vm-001505 (nic1/outbound):
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
-    vm-001505 => x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-001505 => x-example-vnet => vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: 172.16.0.4
       destination ip: 20.47.120.40
       destination port: https
@@ -195,7 +195,7 @@ vm-lb-016 (nic2/outbound):
     protocol: TCP
 
   paths:
-    vm-lb-016 => x-example-vnet => AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-lb-016 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -203,7 +203,7 @@ vm-lb-016 (nic2/outbound):
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
-    vm-lb-016 => x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-lb-016 => x-example-vnet => vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: 172.16.0.4
       destination ip: 20.47.120.40
       destination port: https
@@ -230,7 +230,7 @@ vm-002237 (nic3/outbound):
     protocol: TCP
 
   paths:
-    vm-002237 => x-example-vnet => AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-002237 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -238,7 +238,7 @@ vm-002237 (nic3/outbound):
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
-    vm-002237 => x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-002237 => x-example-vnet => vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: 172.16.0.4
       destination ip: 20.47.120.40
       destination port: https
@@ -265,7 +265,7 @@ x-example-vnet-nic01 (nic4/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -273,7 +273,7 @@ x-example-vnet-nic01 (nic4/outbound):
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: 172.16.0.4
       destination ip: 20.47.120.40
       destination port: https
@@ -304,7 +304,7 @@ x-example-vnet-nic01 (nic5/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -312,7 +312,7 @@ x-example-vnet-nic01 (nic5/outbound):
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: 172.16.0.4
       destination ip: 20.47.120.40
       destination port: https
@@ -325,7 +325,7 @@ x-example-vnet-nic01 (nic5/outbound):
       destination port: https
       protocol: TCP
 
-vm-001-internet (publicIp1/endpoint):
+vm-001-internet (publicIp1/inbound):
   flow:
     source ip: AzureLoadBalancer, vnet1
 
@@ -346,7 +346,7 @@ vm-001-internet (publicIp1/outbound):
     protocol: TCP
 
   paths:
-    vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
@@ -368,26 +368,6 @@ default (subnet1/inbound):
       destination ip: 172.16.0.4
       destination port: https
       protocol: TCP
-
-vm-001 (vm1/outbound):
-  flow:
-    source ip: 172.16.0.4
-    destination ip: 172.16.0.4
-
-    source ip: 172.16.0.4
-    destination ip: 20.47.120.40
-    destination port: https
-    protocol: TCP
-
-  paths:
-    vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
-      source ip: 172.16.0.4
-      destination ip: 20.47.120.40
-      destination port: https
-      protocol: TCP
-    vm-001 => vm-001505 => x-example-vnet => default => vm-001505 => vm-001
-      source ip: 172.16.0.4
-      destination ip: 172.16.0.4
 
 vm-lb-01 (vm2/outbound):
   flow:
@@ -465,7 +445,7 @@ x-example-vnet (vnet1/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet => AzureBackbone => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    x-example-vnet => AzureBackbone => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 20.47.120.40
 
@@ -473,7 +453,7 @@ x-example-vnet (vnet1/outbound):
       destination ip: 20.47.120.40
       destination port: https
       protocol: TCP
-    x-example-vnet => vm-001-internet => Internet => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
+    x-example-vnet => vm-001-internet => Internet-Backbone => vm-001-internet => x-example-vnet => default => vm-001505 => vm-001
       source ip: 172.16.0.4
       destination ip: 20.47.120.40
       destination port: https

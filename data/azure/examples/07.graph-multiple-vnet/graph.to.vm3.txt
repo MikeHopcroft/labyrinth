@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,6 +11,7 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   UnboundRule
     UnboundRule
@@ -25,13 +25,13 @@ Nodes:
   public-lb*
     loadBalancer1*
   public-lb-ip
-    publicIp2/endpoint
+    publicIp2/inbound
   vm-001
     vm1/inbound
     vm1/outbound
   vm-001-internet
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   vm-001505*
     nic1/inbound*
     nic1/outbound*
@@ -45,8 +45,8 @@ Nodes:
     vm6/inbound
     vm6/outbound
   vm-2-001-ip
-    publicIp3/endpoint
-    publicIp3/outbound
+    publicIp3/inbound
+    publicIp3/outbound*
   vm-2-001449*
     nic6/inbound*
     nic6/outbound*
@@ -78,7 +78,7 @@ Nodes:
     nic5/inbound*
     nic5/outbound*
 
-Nodes that can reach vm-lb-01 (vm2/inbound):
+Nodes that can reach vm-lb-01:
 
 AzureBackbone (AzureBackbone/outbound):
   flow:
@@ -88,12 +88,12 @@ AzureBackbone (AzureBackbone/outbound):
     protocol: TCP
 
   paths:
-    AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
@@ -107,18 +107,18 @@ Internet:
     protocol: TCP
 
   paths:
-    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    Internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    Internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
 
-Internet (Internet-Backbone):
+Internet-Backbone:
   flow:
     source ip: Internet
     destination ip: 52.247.250.222
@@ -126,12 +126,12 @@ Internet (Internet-Backbone):
     protocol: TCP
 
   paths:
-    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
@@ -164,22 +164,22 @@ vm-001505 (nic1/outbound):
     protocol: TCP
 
   paths:
-    vm-001505 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001505 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-001505 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001505 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-001505 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001505 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    vm-001505 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001505 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -206,22 +206,22 @@ vm-lb-016 (nic2/outbound):
     protocol: TCP
 
   paths:
-    vm-lb-016 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-lb-016 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-lb-016 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-lb-016 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-lb-016 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-lb-016 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    vm-lb-016 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-lb-016 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -240,22 +240,22 @@ vm-002237 (nic3/outbound):
     protocol: TCP
 
   paths:
-    vm-002237 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-002237 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-002237 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-002237 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-002237 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-002237 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    vm-002237 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-002237 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -274,22 +274,22 @@ x-example-vnet-nic01 (nic4/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -307,22 +307,22 @@ x-example-vnet-nic01 (nic5/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-nic01 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -338,22 +338,22 @@ vm-2-001449 (nic6/outbound):
     protocol: TCP
 
   paths:
-    vm-2-001449 => x-example-vnet-2 => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001449 => x-example-vnet-2 => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.17.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-2-001449 => x-example-vnet-2 => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001449 => x-example-vnet-2 => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.17.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -366,16 +366,16 @@ vm-001-internet (publicIp1/outbound):
     protocol: TCP
 
   paths:
-    vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
 
-public-lb-ip (publicIp2/endpoint):
+public-lb-ip (publicIp2/inbound):
   flow:
     destination ip: 52.247.250.222
     destination port: 800, 3389
@@ -398,11 +398,11 @@ vm-2-001-ip (publicIp3/outbound):
     protocol: TCP
 
   paths:
-    vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
@@ -426,28 +426,18 @@ vm-001 (vm1/outbound):
     protocol: TCP
 
   paths:
-    vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-001 => vm-001505 => x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
     vm-001 => vm-001505 => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
-      destination ip: 172.16.0.5
-
-vm-lb-01 (vm2/outbound):
-  flow:
-    source ip: 172.16.0.5
-    destination ip: 172.16.0.5
-
-  paths:
-    vm-lb-01 => vm-lb-016 => x-example-vnet => default => vm-lb-016 => vm-lb-01
-      source ip: 172.16.0.5
       destination ip: 172.16.0.5
 
 vm-002 (vm3/outbound):
@@ -488,12 +478,12 @@ vm-2-001 (vm6/outbound):
     protocol: TCP
 
   paths:
-    vm-2-001 => vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001 => vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.17.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    vm-2-001 => vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    vm-2-001 => vm-2-001449 => x-example-vnet-2 => vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.17.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -517,22 +507,22 @@ x-example-vnet (vnet1/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    x-example-vnet => vm-001-internet => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet => vm-001-internet => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.16.0.4
       destination ip: 52.247.250.222
       destination port: 3389
@@ -568,22 +558,22 @@ x-example-vnet-2 (vnet2/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet-2 => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-2 => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet-2 => vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-2 => vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.17.0.4
       destination ip: 52.247.250.222
       destination port: 800
       protocol: TCP
-    x-example-vnet-2 => AzureBackbone => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-2 => AzureBackbone => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: Internet
       destination ip: 52.247.250.222
       destination port: 3389
       protocol: TCP
-    x-example-vnet-2 => vm-2-001-ip => Internet => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
+    x-example-vnet-2 => vm-2-001-ip => Internet-Backbone => public-lb-ip => public-lb => x-example-vnet => default => vm-lb-016 => vm-lb-01
       source ip: 172.17.0.4
       destination ip: 52.247.250.222
       destination port: 3389

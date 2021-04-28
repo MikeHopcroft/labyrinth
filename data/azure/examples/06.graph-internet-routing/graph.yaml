@@ -9,15 +9,15 @@ nodes:
     routes:
       - destination: Internet-Backbone
     endpoint: true
-  - friendlyName: Internet
+  - friendlyName: Internet-Backbone
     internal: true
     key: Internet-Backbone
     routes:
-      - destination: publicIp1/endpoint
+      - destination: publicIp1/inbound
         constraints:
           destinationIp: 20.47.120.40
           sourceIp: Internet
-      - destination: publicIp2/endpoint
+      - destination: publicIp2/inbound
         constraints:
           destinationIp: 52.247.250.222
           sourceIp: Internet
@@ -292,19 +292,20 @@ nodes:
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.compute/virtualmachinescalesets/vmss/virtualmachines/4/networkinterfaces/x-example-vnet-nic01
     routes:
       - destination: vnet1/outbound
-  - key: publicIp1/endpoint
+  - key: publicIp1/inbound
     friendlyName: vm-001-internet
     routes:
       - destination: vnet1/router
         override:
           destinationIp: 172.16.0.4
   - key: publicIp1/outbound
+    internal: true
     friendlyName: vm-001-internet
     routes:
       - destination: Internet-Backbone
         override:
           sourceIp: 20.47.120.40
-  - key: publicIp2/endpoint
+  - key: publicIp2/inbound
     friendlyName: public-lb-ip
     routes:
       - destination: loadBalancer1
@@ -451,8 +452,6 @@ nodes:
     internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
-    range:
-      sourceIp: 172.16.0.0/24
     routes:
       - destination: loadBalancer2
         constraints:

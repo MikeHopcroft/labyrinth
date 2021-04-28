@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,6 +11,7 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   another*
     subnet2/inbound*
@@ -21,8 +21,8 @@ Nodes:
     vm1/inbound
     vm1/outbound
   vm-001-ip
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   vm-001505*
     nic1/inbound*
     nic1/outbound*
@@ -30,8 +30,8 @@ Nodes:
     vm2/inbound
     vm2/outbound
   vm-002-ip
-    publicIp2/endpoint
-    publicIp2/outbound
+    publicIp2/inbound
+    publicIp2/outbound*
   vm-002237*
     nic2/inbound*
     nic2/outbound*
@@ -42,12 +42,12 @@ Nodes:
 
 Nodes reachable from Internet:
 
-Internet (Internet-Backbone):
+Internet-Backbone:
   flow:
     (universe)
 
   paths:
-    Internet
+    Internet => Internet-Backbone
       (universe)
 
 vm-001505 (nic1/inbound):
@@ -56,7 +56,7 @@ vm-001505 (nic1/inbound):
     destination ip: 52.250.65.117
 
   paths:
-    Internet => vm-001-ip => x-example-vnet => default => vm-001505
+    Internet => Internet-Backbone => vm-001-ip => x-example-vnet => default => vm-001505
       source ip: Internet
       destination ip: 52.250.65.117
 
@@ -66,27 +66,27 @@ vm-002237 (nic2/inbound):
     destination ip: 51.141.166.15
 
   paths:
-    Internet => vm-002-ip => x-example-vnet => another => vm-002237
+    Internet => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237
       source ip: Internet
       destination ip: 51.141.166.15
 
-vm-001-ip (publicIp1/endpoint):
+vm-001-ip (publicIp1/inbound):
   flow:
     source ip: Internet
     destination ip: 52.250.65.117
 
   paths:
-    Internet => vm-001-ip
+    Internet => Internet-Backbone => vm-001-ip
       source ip: Internet
       destination ip: 52.250.65.117
 
-vm-002-ip (publicIp2/endpoint):
+vm-002-ip (publicIp2/inbound):
   flow:
     source ip: Internet
     destination ip: 51.141.166.15
 
   paths:
-    Internet => vm-002-ip
+    Internet => Internet-Backbone => vm-002-ip
       source ip: Internet
       destination ip: 51.141.166.15
 
@@ -96,7 +96,7 @@ default (subnet1/inbound):
     destination ip: 52.250.65.117
 
   paths:
-    Internet => vm-001-ip => x-example-vnet => default
+    Internet => Internet-Backbone => vm-001-ip => x-example-vnet => default
       source ip: Internet
       destination ip: 52.250.65.117
 
@@ -106,7 +106,7 @@ another (subnet2/inbound):
     destination ip: 51.141.166.15
 
   paths:
-    Internet => vm-002-ip => x-example-vnet => another
+    Internet => Internet-Backbone => vm-002-ip => x-example-vnet => another
       source ip: Internet
       destination ip: 51.141.166.15
 
@@ -121,7 +121,7 @@ vm-001 (vm1/inbound):
     protocol: TCP
 
   paths:
-    Internet => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
+    Internet => Internet-Backbone => vm-001-ip => x-example-vnet => default => vm-001505 => vm-001
       source ip: AzureLoadBalancer
       destination ip: 52.250.65.117
 
@@ -141,7 +141,7 @@ vm-002 (vm2/inbound):
     protocol: TCP
 
   paths:
-    Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    Internet => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 
@@ -156,10 +156,10 @@ x-example-vnet (vnet1/inbound):
     destination ip: 51.141.166.15, 52.250.65.117
 
   paths:
-    Internet => vm-001-ip => x-example-vnet
+    Internet => Internet-Backbone => vm-001-ip => x-example-vnet
       source ip: Internet
       destination ip: 52.250.65.117
-    Internet => vm-002-ip => x-example-vnet
+    Internet => Internet-Backbone => vm-002-ip => x-example-vnet
       source ip: Internet
       destination ip: 51.141.166.15
 
@@ -169,10 +169,10 @@ x-example-vnet (vnet1/router):
     destination ip: 51.141.166.15, 52.250.65.117
 
   paths:
-    Internet => vm-001-ip => x-example-vnet
+    Internet => Internet-Backbone => vm-001-ip => x-example-vnet
       source ip: Internet
       destination ip: 52.250.65.117
-    Internet => vm-002-ip => x-example-vnet
+    Internet => Internet-Backbone => vm-002-ip => x-example-vnet
       source ip: Internet
       destination ip: 51.141.166.15
 

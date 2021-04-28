@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,6 +11,7 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   UnboundRule
     UnboundRule
@@ -24,13 +24,13 @@ Nodes:
   public-lb*
     loadBalancer1*
   public-lb-ip
-    publicIp2/endpoint
+    publicIp2/inbound
   vm-001
     vm1/inbound
     vm1/outbound
   vm-001-ip
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   vm-001505*
     nic1/inbound*
     nic1/outbound*
@@ -51,7 +51,7 @@ Nodes:
     vnet1/outbound*
     vnet1/router*
 
-Nodes that can reach vm-002 (vm3/inbound):
+Nodes that can reach vm-002:
 
 ilb (loadBalancer2):
   flow:
@@ -211,26 +211,6 @@ vm-lb-01 (vm2/outbound):
       protocol: TCP
     vm-lb-01 => vm-lb-016 => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.5
-      destination ip: 172.16.0.20
-
-vm-002 (vm3/outbound):
-  flow:
-    source ip: 172.16.0.20
-    destination ip: 172.16.0.20
-
-    source ip: 172.16.0.20
-    destination ip: 172.16.0.21
-    destination port: 3022
-    protocol: TCP
-
-  paths:
-    vm-002 => vm-002237 => x-example-vnet => ilb => x-example-vnet => another => vm-002237 => vm-002
-      source ip: 172.16.0.20
-      destination ip: 172.16.0.21
-      destination port: 3022
-      protocol: TCP
-    vm-002 => vm-002237 => x-example-vnet => another => vm-002237 => vm-002
-      source ip: 172.16.0.20
       destination ip: 172.16.0.20
 
 x-example-vnet (vnet1/inbound):

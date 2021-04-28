@@ -16,9 +16,11 @@ nodes:
       - destination: publicIp1/inbound
         constraints:
           destinationIp: 52.156.96.94
+          sourceIp: Internet
       - destination: publicIp2/inbound
         constraints:
           destinationIp: 52.183.88.218
+          sourceIp: Internet
       - destination: Internet
         constraints:
           destinationIp: Internet
