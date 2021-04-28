@@ -44,7 +44,7 @@ export default function test() {
           ],
         },
         {
-          friendlyName: 'Internet',
+          friendlyName: 'Internet-Backbone',
           internal: true,
           key: 'Internet-Backbone',
           routes: [

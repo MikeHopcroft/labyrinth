@@ -73,7 +73,7 @@ export function convertResourceGraph(services: GraphServices) {
 
   // Create internet backbone node
   services.nodes.add({
-    friendlyName: internetFriendlyName,
+    friendlyName: internetBackboneKey,
     internal: true,
     key: internetBackboneKey,
     routes: internetRoutes,

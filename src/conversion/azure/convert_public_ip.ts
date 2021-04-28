@@ -69,7 +69,7 @@ function publicIpWithPrivateIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(privateIpSpec);
 
-  const inboundKey = services.nodes.createEndpointKey(publicIpSpec);
+  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
   const outboundKey = services.nodes.createOutboundKey(publicIpSpec);
 
   const vnetId = services.index.getParentId(privateIpSpec.properties.subnet);
@@ -93,6 +93,7 @@ function publicIpWithPrivateIp(
   // Create outbound node
   services.nodes.add({
     key: outboundKey,
+    internal: true,
     friendlyName: publicIpSpec.name,
     routes: [
       {
@@ -126,7 +127,7 @@ function loadBalancedPublicIp(
 ): PublicIpRoutes {
   services.nodes.markTypeAsUsed(lbIpSpec);
 
-  const inboundKey = services.nodes.createEndpointKey(publicIpSpec);
+  const inboundKey = services.nodes.createInboundKey(publicIpSpec);
   const lbRef = services.index.getParentId(lbIpSpec);
   const lbSpec = services.index.dereference<AzureLoadBalancer>(lbRef);
   const lbKey = services.nodes.createKey(lbSpec);
@@ -177,6 +178,8 @@ function publicIpInbound(
     destination,
     constraints: {
       destinationIp,
+      // TODO: REVIEW: do we want to restrict inbound traffic to Internet?
+      // What about traffic coming from inside of Azure?
       sourceIp: services.getInternetServiceTag(),
     },
   };

@@ -238,7 +238,7 @@ export const publicWithPrivateMissingAddress: AzurePublicIP = {
   properties: {},
 };
 
-export const publicIpWithPrivateEndpointKey = nodeServices.createEndpointKey(
+export const publicIpWithPrivateEndpointKey = nodeServices.createInboundKey(
   publicIpWithPrivate
 );
 export const publicIpWithPrivateOutboundKey = nodeServices.createOutboundKey(
@@ -268,7 +268,7 @@ export const publicIpToFrontEndLoadBalancer: AzurePublicIP = {
     ipConfiguration: reference(frontEndIp1Id),
   },
 };
-export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createEndpointKey(
+export const publicIpToFrontEndLoadBalancerInboundKey = nodeServices.createInboundKey(
   publicIpToFrontEndLoadBalancer
 );
 

@@ -27,7 +27,7 @@ function paths(
   to: string,
   options: GraphFormattingOptions
 ) {
-  const {flows} = graph.analyze(from, !!options.outbound);
+  const {flows} = graph.analyze([from], !!options.outbound);
   const filtered = flows.filter(flow => flow.node.key === to);
   return filtered
     .map(flow =>
@@ -117,7 +117,7 @@ describe('Graph', () => {
       const graph = builder.buildGraph();
 
       assert.throws(() => {
-        graph.analyze('bad_key', true);
+        graph.analyze(['bad_key'], true);
       }, 'Unknown node "bad_key".');
     });
   });
@@ -164,7 +164,7 @@ describe('Graph', () => {
       ];
       const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
-      const {cycles} = graph.analyze('internet', true);
+      const {cycles} = graph.analyze(['internet'], true);
       assert.equal(cycles.length, 1);
       const c = graph.formatCycle(cycles[0]);
       assert.equal(c, 'a => b => c => a');
@@ -249,7 +249,7 @@ describe('Graph', () => {
 
       const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
-      const {cycles} = graph.analyze('main1', true);
+      const {cycles} = graph.analyze(['main1'], true);
       assert.equal(cycles.length, 2);
       const c0 = graph.formatCycle(cycles[0], true);
       assert.equal(
@@ -347,7 +347,7 @@ describe('Graph', () => {
 
       const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
-      const {cycles} = graph.analyze('main1', true);
+      const {cycles} = graph.analyze(['main1'], true);
       // for (const c of cycles) {
       //   console.log(graph.formatCycle(c, true));
       // }
@@ -409,7 +409,7 @@ describe('Graph', () => {
       ];
       const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
-      const {cycles} = graph.analyze('internet', true);
+      const {cycles} = graph.analyze(['internet'], true);
       assert.equal(cycles.length, 0);
     });
 
@@ -462,7 +462,7 @@ describe('Graph', () => {
         a => b => c => a
           destination port: 0`);
       assert.throws(() => {
-        graph.analyze('internet', true);
+        graph.analyze(['internet'], true);
       }, message);
     });
   });
@@ -830,7 +830,7 @@ describe('Graph', () => {
       const builder = graphBuilder(nodes);
       const graph = builder.buildGraph();
       const outbound = true;
-      const {cycles, flows} = graph.analyze('internet', outbound);
+      const {cycles, flows} = graph.analyze(['internet'], outbound);
 
       assert.equal(cycles.length, 0);
 
