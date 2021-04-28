@@ -146,7 +146,7 @@ export class Graph {
     }
   }
 
-  analyze(startKey: string, outbound: boolean): FlowAnalysis {
+  analyze(startKeys: string[], outbound: boolean): FlowAnalysis {
     const flowNodes: FlowNode[] = this.nodes.map(node => ({
       node,
       paths: [],
@@ -154,22 +154,23 @@ export class Graph {
       active: false,
     }));
 
-    const index = this.nodeIndex(startKey);
     const initialFlow = Disjunction.universe<AnyRuleSpec>();
-
     const initialPath = undefined;
     const flowEdges = outbound ? this.outboundFrom : this.inboundTo;
     const cycles: Cycle[] = [];
 
-    this.propagate(
-      index,
-      initialFlow,
-      initialPath,
-      flowNodes,
-      flowEdges,
-      cycles,
-      outbound
-    );
+    for (const startKey of startKeys) {
+      const index = this.nodeIndex(startKey);
+      this.propagate(
+        index,
+        initialFlow,
+        initialPath,
+        flowNodes,
+        flowEdges,
+        cycles,
+        outbound
+      );
+    }
 
     return {cycles, flows: flowNodes};
   }

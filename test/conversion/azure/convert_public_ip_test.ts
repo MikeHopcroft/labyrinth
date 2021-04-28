@@ -109,6 +109,7 @@ export default function test() {
         {
           key: publicIpWithPrivateOutboundKey,
           friendlyName: publicIpWithPrivate.name,
+          internal: true,
           routes: [
             {
               destination: backboneKey,

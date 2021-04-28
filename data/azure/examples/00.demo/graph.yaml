@@ -9,18 +9,16 @@ nodes:
     routes:
       - destination: Internet-Backbone
     endpoint: true
-  - friendlyName: Internet
+  - friendlyName: Internet-Backbone
     internal: true
     key: Internet-Backbone
     routes:
-      - destination: publicIp1/endpoint
+      - destination: publicIp1/inbound
         constraints:
           destinationIp: 52.156.96.94
-          sourceIp: Internet
-      - destination: publicIp2/endpoint
+      - destination: publicIp2/inbound
         constraints:
           destinationIp: 52.183.88.218
-          sourceIp: Internet
       - destination: Internet
         constraints:
           destinationIp: Internet
@@ -100,19 +98,20 @@ nodes:
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/networkinterfaces/vm2400
     routes:
       - destination: subnet2/outbound
-  - key: publicIp1/endpoint
+  - key: publicIp1/inbound
     friendlyName: jump-box-ip
     routes:
       - destination: vnet1/router
         override:
           destinationIp: 10.0.88.4
   - key: publicIp1/outbound
+    internal: true
     friendlyName: jump-box-ip
     routes:
       - destination: AzureBackbone/outbound
         override:
           sourceIp: 52.156.96.94
-  - key: publicIp2/endpoint
+  - key: publicIp2/inbound
     friendlyName: public-services-ip
     routes:
       - destination: loadBalancer1
@@ -438,8 +437,6 @@ nodes:
     internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-example/providers/microsoft.network/virtualnetworks/virtual-network
-    range:
-      sourceIp: 10.0.0.0/16
     routes:
       - destination: loadBalancer1
         constraints:

@@ -7,12 +7,13 @@ import {Universe} from '../dimensions';
 import {
   AnyRuleSpec,
   dumpGraphAsYamlText,
-  formatNodeName,
+  // formatNodeName,
   Graph,
   GraphBuilder,
   loadYamlGraphSpecFile,
   Node,
-  NodeType,
+  NodeSpec,
+  // NodeType,
 } from '../graph';
 
 import {createSimplifier} from '../setops';
@@ -96,17 +97,21 @@ export default function main(invocation: string, parameters: string[]) {
       // Paths ending at toNode
       //
       /////////////////////////////////////////////////////////////////////////
-      const tNode = getNode(toNode, graph, false);
-      const tKey = tNode.key;
+      // const tNode = getNode(toNode, graph, false);
+      // const tKey = tNode.key;
+      const tNodes = getKeys(toNode, graph, false);
+      const tKeys = tNodes.map(x => x.key);
 
-      let fNode: Node | undefined;
-      let fKey: string | undefined;
+      // let fNode: Node | undefined;
+      // let fKey: string | undefined;
+      let fNodes: Node[] | undefined;
+      let fKeys: string[] | undefined;
       if (fromNode) {
-        fNode = getNode(fromNode, graph, true);
-        fKey = fNode.key;
+        fNodes = getKeys(fromNode, graph, true);
+        fKeys = fNodes.map(x => x.key);
       }
 
-      const {cycles, flows} = graph.analyze(tKey, options.outbound);
+      const {cycles, flows} = graph.analyze(tKeys, options.outbound);
 
       if (args.d) {
         fs.writeFileSync(
@@ -122,7 +127,7 @@ export default function main(invocation: string, parameters: string[]) {
       }
 
       if (cycles.length > 0) {
-        console.log(`Cycles on paths to ${formatNodeName(tNode)}:`);
+        console.log(`Cycles on paths to ${toNode}:`);
         for (const cycle of cycles) {
           console.log('  ' + graph.formatCycle(cycle));
           console.log();
@@ -130,24 +135,23 @@ export default function main(invocation: string, parameters: string[]) {
         console.log();
       }
 
-      if (fNode) {
-        console.log(
-          `Routes from ${formatNodeName(fNode)} to ${formatNodeName(tNode)}:`
-        );
+      if (fNodes) {
+        console.log(`Routes from ${fromNode} to ${toNode}:`);
       } else {
-        console.log(`Nodes that can reach ${formatNodeName(tNode)}:`);
+        console.log(`Nodes that can reach ${toNode}:`);
       }
       console.log();
 
       for (const flow of flows) {
-        if (fKey) {
-          if (fKey === flow.node.key) {
+        if (fKeys) {
+          if (matchesName(flow.node.spec, fromNode)) {
             console.log(graph.formatFlow(flow, options));
             console.log();
           }
         } else if (
-          tKey !== flow.node.spec.key &&
-          (showRouters || flow.node.isEndpoint) &&
+          !matchesName(flow.node.spec, toNode) &&
+          //          tKey !== flow.node.spec.key &&
+          (showRouters || !flow.node.spec.internal) &&
           !flow.routes.isEmpty()
         ) {
           console.log(graph.formatFlow(flow, options));
@@ -160,10 +164,12 @@ export default function main(invocation: string, parameters: string[]) {
       // Paths originating at fromNode
       //
       /////////////////////////////////////////////////////////////////////////
-      const fNode = getNode(fromNode, graph, true);
-      const fKey = fNode.key;
+      // const fNode = getNode(fromNode, graph, true);
+      // const fKey = fNode.key;
+      const fNodes = getKeys(fromNode, graph, false);
+      const fKeys = fNodes.map(x => x.key);
 
-      const {cycles, flows} = graph.analyze(fKey, options.outbound);
+      const {cycles, flows} = graph.analyze(fKeys, options.outbound);
 
       if (args.d) {
         fs.writeFileSync(
@@ -179,7 +185,7 @@ export default function main(invocation: string, parameters: string[]) {
       }
 
       if (cycles.length > 0) {
-        console.log(`Cycles reachable from ${formatNodeName(fNode)}:`);
+        console.log(`Cycles reachable from ${fromNode}:`);
         for (const cycle of cycles) {
           console.log('  ' + graph.formatCycle(cycle, verbose));
           console.log();
@@ -187,13 +193,13 @@ export default function main(invocation: string, parameters: string[]) {
         console.log();
       }
 
-      console.log(`Nodes reachable from ${formatNodeName(fNode)}:`);
+      console.log(`Nodes reachable from ${fromNode}:`);
       console.log();
 
       for (const flow of flows) {
         if (
           fromNode !== flow.node.spec.key &&
-          (showRouters || flow.node.isEndpoint) &&
+          (showRouters || !flow.node.spec.internal) &&
           !flow.routes.isEmpty()
         ) {
           console.log(graph.formatFlow(flow, options));
@@ -374,12 +380,30 @@ function summarizeOptions(options: Options) {
   console.log();
 }
 
-function getNode(name: string, graph: Graph, outbound: boolean) {
-  const nodes = graph.withFriendlyName(name);
-  const node =
-    nodes.withType(NodeType.PUBLIC_ENDPOINT) ??
-    nodes.withType(outbound ? NodeType.OUTBOUND : NodeType.INBOUND) ??
-    graph.withKey(name);
+// function getNode(name: string, graph: Graph, outbound: boolean) {
+//   const nodes = graph.withFriendlyName(name);
+//   const node =
+//     nodes.withType(NodeType.PUBLIC_ENDPOINT) ??
+//     nodes.withType(outbound ? NodeType.OUTBOUND : NodeType.INBOUND) ??
+//     graph.withKey(name);
 
-  return node || fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);
+//   return node || fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);
+// }
+
+function getKeys(name: string, graph: Graph, outbound: boolean): Node[] {
+  const nodes = graph.withFriendlyName(name).all();
+  if (nodes.length > 0) {
+    return nodes;
+  }
+
+  const node = graph.withKey(name);
+  if (node) {
+    return [node];
+  }
+
+  fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);
+}
+
+function matchesName(spec: NodeSpec, name: string): boolean {
+  return spec.friendlyName === name || spec.key === name;
 }

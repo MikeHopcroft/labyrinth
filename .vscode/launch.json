@@ -58,7 +58,8 @@
       // "args": ["junk/resource-graph.yaml", "-f=Internet"],
       // "args": ["junk/resource-graph.yaml", "-f=jumpbox/default", "-t=data.nic/blob-blob.privateEndpoint"],
       // "args": ["junk/foo2.yaml", "-f=a", "-r", "-s", "-v"],
-      "args": ["graph", "data/azure/examples/00.demo/graph.yaml", "-f=public-load-balancer"],
+      // "args": ["graph", "data/azure/examples/00.demo/graph.yaml", "-f=public-load-balancer"],
+      "args": ["explore", "data/azure/examples/00.demo/graph.yaml"],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"

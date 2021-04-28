@@ -1,5 +1,17 @@
 * Demo/documentation bugs
   * Move demo files
+  * NEW DEBUG
+    * Should publicIpInbound() restrict sourceIp to Internet? What about traffic from within Azure?
+    * Why can't web2 get to web0?
+      * Is it that web2 can't get to the internet?
+        * Rather, only destination ip: except vnet1, 52.156.96.94, 52.183.88.218
+      * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web2
+    * Probably want to make public ip outbound nodes internal
+      * Seems weird to see traffic from jump-box-ip (publicIp1/outbound)
+        * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -t=web2
+      * But the following example wants to show the vm outbound
+        * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -t=AzureBackbone -p
+        * Only summarize nodes with flow. Summarize friendly name if no nodes with flow.
   * Debug outbound routes to AzureBackbone and public ips
     * COMPARE
       * labyrinth graph data\azure\examples\00.demo\graph.yaml -q -f=web0 -t=publicIp2/endpoint
