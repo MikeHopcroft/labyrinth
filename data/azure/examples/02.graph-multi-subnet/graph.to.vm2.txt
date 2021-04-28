@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,6 +11,7 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   another*
     subnet2/inbound*
@@ -21,8 +21,8 @@ Nodes:
     vm1/inbound
     vm1/outbound
   vm-001-ip
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   vm-001505*
     nic1/inbound*
     nic1/outbound*
@@ -30,8 +30,8 @@ Nodes:
     vm2/inbound
     vm2/outbound
   vm-002-ip
-    publicIp2/endpoint
-    publicIp2/outbound
+    publicIp2/inbound
+    publicIp2/outbound*
   vm-002237*
     nic2/inbound*
     nic2/outbound*
@@ -40,7 +40,7 @@ Nodes:
     vnet1/outbound*
     vnet1/router*
 
-Nodes that can reach vm-002 (vm2/inbound):
+Nodes that can reach vm-002:
 
 AzureBackbone (AzureBackbone/outbound):
   flow:
@@ -53,7 +53,7 @@ AzureBackbone (AzureBackbone/outbound):
     protocol: TCP
 
   paths:
-    AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 
@@ -73,7 +73,7 @@ Internet:
     protocol: TCP
 
   paths:
-    Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    Internet => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 
@@ -82,7 +82,7 @@ Internet:
       destination port: http, 3389
       protocol: TCP
 
-Internet (Internet-Backbone):
+Internet-Backbone:
   flow:
     source ip: AzureLoadBalancer
     destination ip: 51.141.166.15
@@ -93,7 +93,7 @@ Internet (Internet-Backbone):
     protocol: TCP
 
   paths:
-    Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 
@@ -116,17 +116,17 @@ vm-001505 (nic1/outbound):
     protocol: TCP
 
   paths:
-    vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.4
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
-    vm-001505 => x-example-vnet => vm-002-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-001505 => x-example-vnet => vm-002-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.20
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
-    vm-001505 => x-example-vnet => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-001505 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 
@@ -172,17 +172,17 @@ vm-002237 (nic2/outbound):
     protocol: TCP
 
   paths:
-    vm-002237 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-002237 => x-example-vnet => vm-001-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.4
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
-    vm-002237 => x-example-vnet => vm-002-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-002237 => x-example-vnet => vm-002-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.20
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
-    vm-002237 => x-example-vnet => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-002237 => x-example-vnet => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 
@@ -201,12 +201,12 @@ vm-001-ip (publicIp1/outbound):
     protocol: TCP
 
   paths:
-    vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-001-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
 
-vm-002-ip (publicIp2/endpoint):
+vm-002-ip (publicIp2/inbound):
   flow:
     source ip: AzureLoadBalancer, vnet1
 
@@ -227,7 +227,7 @@ vm-002-ip (publicIp2/outbound):
     protocol: TCP
 
   paths:
-    vm-002-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-002-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
@@ -261,33 +261,13 @@ vm-001 (vm1/outbound):
     protocol: TCP
 
   paths:
-    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    vm-001 => vm-001505 => x-example-vnet => vm-001-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.4
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
     vm-001 => vm-001505 => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.4
-      destination ip: 172.16.0.20
-
-vm-002 (vm2/outbound):
-  flow:
-    source ip: 172.16.0.20
-    destination ip: 172.16.0.20
-
-    source ip: 172.16.0.20
-    destination ip: 51.141.166.15
-    destination port: http, 3389
-    protocol: TCP
-
-  paths:
-    vm-002 => vm-002237 => x-example-vnet => vm-002-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
-      source ip: 172.16.0.20
-      destination ip: 51.141.166.15
-      destination port: http, 3389
-      protocol: TCP
-    vm-002 => vm-002237 => x-example-vnet => another => vm-002237 => vm-002
-      source ip: 172.16.0.20
       destination ip: 172.16.0.20
 
 x-example-vnet (vnet1/inbound):
@@ -326,17 +306,17 @@ x-example-vnet (vnet1/outbound):
     protocol: TCP
 
   paths:
-    x-example-vnet => vm-001-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    x-example-vnet => vm-001-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.4
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
-    x-example-vnet => vm-002-ip => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    x-example-vnet => vm-002-ip => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: 172.16.0.20
       destination ip: 51.141.166.15
       destination port: http, 3389
       protocol: TCP
-    x-example-vnet => AzureBackbone => Internet => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
+    x-example-vnet => AzureBackbone => Internet-Backbone => vm-002-ip => x-example-vnet => another => vm-002237 => vm-002
       source ip: AzureLoadBalancer
       destination ip: 51.141.166.15
 

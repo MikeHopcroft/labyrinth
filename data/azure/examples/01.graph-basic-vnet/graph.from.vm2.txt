@@ -1,5 +1,5 @@
  
-Unknown start node vm-002
+Unknown end node vm-002
  
 Use the -h flag for help.
  

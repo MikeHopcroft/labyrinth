@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints only (use -r flag to display routing nodes). 
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -10,15 +9,14 @@ Options summary:
 Nodes:
   Internet
     Internet
-    Internet-Backbone*
   jump-box
     vm1/inbound
     vm1/outbound
   jump-box-ip
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   public-services-ip
-    publicIp2/endpoint
+    publicIp2/inbound
   web0
     vm2/inbound
     vm2/outbound
@@ -29,7 +27,7 @@ Nodes:
     vm4/inbound
     vm4/outbound
 
-Nodes that can reach jump-box (vm1/inbound):
+Nodes that can reach jump-box:
 
 Internet:
   flow:
@@ -42,7 +40,7 @@ Internet:
     protocol: TCP
 
   paths:
-    Internet => jump-box-ip => virtual-network => jump-box-subnet => jump-box948 => jump-box
+    Internet => Internet-Backbone => jump-box-ip => virtual-network => jump-box-subnet => jump-box948 => jump-box
       source ip: AzureLoadBalancer
       destination ip: 52.156.96.94
 
@@ -51,17 +49,19 @@ Internet:
       destination port: ssh
       protocol: TCP
 
-jump-box (vm1/outbound):
+jump-box-ip (publicIp1/inbound):
   flow:
-    source ip: 10.0.88.4
-    destination ip: 10.0.88.4
+    source ip: vnet1, AzureLoadBalancer
+
     destination port: ssh
+    protocol: TCP
 
   paths:
-    jump-box => jump-box948 => jump-box-subnet => virtual-network => jump-box-subnet => jump-box948 => jump-box
-      source ip: 10.0.88.4
-      destination ip: 10.0.88.4
+    jump-box-ip => virtual-network => jump-box-subnet => jump-box948 => jump-box
+      source ip: vnet1, AzureLoadBalancer
+
       destination port: ssh
+      protocol: TCP
 
 web0 (vm2/outbound):
   flow:

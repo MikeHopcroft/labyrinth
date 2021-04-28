@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,6 +11,7 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   UnboundRule
     UnboundRule
@@ -24,13 +24,13 @@ Nodes:
   public-lb*
     loadBalancer1*
   public-lb-ip
-    publicIp2/endpoint
+    publicIp2/inbound
   vm-001
     vm1/inbound
     vm1/outbound
   vm-001-ip
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   vm-001505*
     nic1/inbound*
     nic1/outbound*
@@ -69,7 +69,7 @@ Nodes:
     nic6/inbound*
     nic6/outbound*
 
-Nodes reachable from vm-002 (vm3/outbound):
+Nodes reachable from vm-002:
 
 AzureBackbone (AzureBackbone/outbound):
   flow:
@@ -87,17 +87,17 @@ Internet:
     destination ip: Internet
 
   paths:
-    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet-Backbone => Internet
       source ip: 172.16.0.20
       destination ip: Internet
 
-Internet (Internet-Backbone):
+Internet-Backbone:
   flow:
     source ip: 172.16.0.20
     destination ip: Internet
 
   paths:
-    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet
+    vm-002 => vm-002237 => x-example-vnet => AzureBackbone => Internet-Backbone
       source ip: 172.16.0.20
       destination ip: Internet
 

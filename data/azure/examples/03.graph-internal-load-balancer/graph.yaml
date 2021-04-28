@@ -9,11 +9,11 @@ nodes:
     routes:
       - destination: Internet-Backbone
     endpoint: true
-  - friendlyName: Internet
+  - friendlyName: Internet-Backbone
     internal: true
     key: Internet-Backbone
     routes:
-      - destination: publicIp1/endpoint
+      - destination: publicIp1/inbound
         constraints:
           destinationIp: 52.250.65.117
           sourceIp: Internet
@@ -219,13 +219,14 @@ nodes:
           destinationIp: '*'
           destinationPort: '*'
           protocol: '*'
-  - key: publicIp1/endpoint
+  - key: publicIp1/inbound
     friendlyName: vm-001-ip
     routes:
       - destination: vnet1/router
         override:
           destinationIp: 172.16.0.4
   - key: publicIp1/outbound
+    internal: true
     friendlyName: vm-001-ip
     routes:
       - destination: AzureBackbone/outbound
@@ -311,8 +312,6 @@ nodes:
     internal: true
     name: >-
       /subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/x-vnet-examples/providers/microsoft.network/virtualnetworks/x-example-vnet
-    range:
-      sourceIp: 172.16.0.0/24
     routes:
       - destination: loadBalancer1
         constraints:

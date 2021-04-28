@@ -1,5 +1,4 @@
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints and routing nodes. (-r)
   Displaying paths (-p or -v).
   Verbose mode (-v).
@@ -12,13 +11,14 @@ Nodes:
     AzureBackbone/outbound*
   Internet
     Internet
+  Internet-Backbone*
     Internet-Backbone*
   jump-box
     vm1/inbound
     vm1/outbound
   jump-box-ip
-    publicIp1/endpoint
-    publicIp1/outbound
+    publicIp1/inbound
+    publicIp1/outbound*
   jump-box-subnet*
     subnet1/inbound*
     subnet1/outbound*
@@ -28,7 +28,7 @@ Nodes:
   public-load-balancer*
     loadBalancer1*
   public-services-ip
-    publicIp2/endpoint
+    publicIp2/inbound
   public-services-subnet*
     subnet2/inbound*
     subnet2/outbound*
@@ -55,7 +55,7 @@ Nodes:
     vm4/inbound
     vm4/outbound
 
-Nodes that can reach public-services-ip (publicIp2/endpoint):
+Nodes that can reach public-services-ip:
 
 AzureBackbone (AzureBackbone/outbound):
   flow:
@@ -63,7 +63,7 @@ AzureBackbone (AzureBackbone/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    AzureBackbone => Internet => public-services-ip
+    AzureBackbone => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
@@ -73,17 +73,17 @@ Internet:
     destination ip: 52.183.88.218
 
   paths:
-    Internet => public-services-ip
+    Internet => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
-Internet (Internet-Backbone):
+Internet-Backbone:
   flow:
     source ip: Internet
     destination ip: 52.183.88.218
 
   paths:
-    Internet => public-services-ip
+    Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
@@ -93,10 +93,10 @@ vm0148 (nic2/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    vm0148 => public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet => public-services-ip
+    vm0148 => public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: 10.0.88.4
       destination ip: 52.183.88.218
-    vm0148 => public-services-subnet => virtual-network => AzureBackbone => Internet => public-services-ip
+    vm0148 => public-services-subnet => virtual-network => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
@@ -106,10 +106,10 @@ vm1318 (nic3/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    vm1318 => public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet => public-services-ip
+    vm1318 => public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: 10.0.88.4
       destination ip: 52.183.88.218
-    vm1318 => public-services-subnet => virtual-network => AzureBackbone => Internet => public-services-ip
+    vm1318 => public-services-subnet => virtual-network => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
@@ -119,10 +119,10 @@ vm2400 (nic4/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    vm2400 => public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet => public-services-ip
+    vm2400 => public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: 10.0.88.4
       destination ip: 52.183.88.218
-    vm2400 => public-services-subnet => virtual-network => AzureBackbone => Internet => public-services-ip
+    vm2400 => public-services-subnet => virtual-network => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
@@ -131,7 +131,7 @@ jump-box-ip (publicIp1/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    jump-box-ip => AzureBackbone => Internet => public-services-ip
+    jump-box-ip => AzureBackbone => Internet-Backbone => public-services-ip
       destination ip: 52.183.88.218
 
 public-services-subnet (subnet2/outbound):
@@ -140,10 +140,10 @@ public-services-subnet (subnet2/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet => public-services-ip
+    public-services-subnet => virtual-network => jump-box-ip => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: 10.0.88.4
       destination ip: 52.183.88.218
-    public-services-subnet => virtual-network => AzureBackbone => Internet => public-services-ip
+    public-services-subnet => virtual-network => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
@@ -153,10 +153,10 @@ virtual-network (vnet1/outbound):
     destination ip: 52.183.88.218
 
   paths:
-    virtual-network => jump-box-ip => AzureBackbone => Internet => public-services-ip
+    virtual-network => jump-box-ip => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: 10.0.88.4
       destination ip: 52.183.88.218
-    virtual-network => AzureBackbone => Internet => public-services-ip
+    virtual-network => AzureBackbone => Internet-Backbone => public-services-ip
       source ip: Internet
       destination ip: 52.183.88.218
 
