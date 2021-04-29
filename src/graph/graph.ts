@@ -175,10 +175,34 @@ export class Graph {
     return {cycles, flows: flowNodes};
   }
 
+  start(startKey: string, forwardTraversal: boolean): Path[] {
+    const flowEdges = forwardTraversal ? this.outboundFrom : this.inboundTo;
+    const index = this.nodeIndex(startKey);
+    const initialFlow = Disjunction.universe<AnyRuleSpec>();
+    return this.getPaths(
+      index,
+      initialFlow,
+      undefined,
+      flowEdges,
+      forwardTraversal
+    );
+  }
+
+  step(path: Path, forwardTraversal: boolean): Path[] {
+    const flowEdges = forwardTraversal ? this.outboundFrom : this.inboundTo;
+    return this.getPaths(
+      path.edge.to,
+      path.routes,
+      path,
+      flowEdges,
+      forwardTraversal
+    );
+  }
+
   private propagate(
     fromIndex: number,
     flow: Disjunction<AnyRuleSpec>,
-    path: Path | undefined,
+    previous: Path | undefined,
     flowNodes: FlowNode[],
     flowEdges: FlowEdge[][],
     cycles: Path[][],
@@ -193,11 +217,11 @@ export class Graph {
     log(verbose, '  flow:');
     log(verbose, flow.format({prefix: '    '}));
 
-    if (path) {
+    if (previous) {
       // If we're not at the start node, combine the inbound flow with existing
       // flow and add the path to the node's collection of existing paths.
       flowNode.routes = flowNode.routes.union(flow, this.simplifier);
-      flowNode.paths.push(path);
+      flowNode.paths.push(previous);
 
       log(verbose, '  flowNode.routes:');
       log(verbose, flowNode.routes.format({prefix: '    '}));
@@ -215,7 +239,7 @@ export class Graph {
         // Consider marking the path object as a cycle
         // as an alternative to returning cycles.
         // NOTE: `path` cannot be undefined when flowNode.active.
-        const cycle = this.extractCycle(path!, flow);
+        const cycle = this.extractCycle(previous!, flow);
         if (this.isNATCycle(cycle)) {
           const message = `Encountered NAT cycle:\n${this.formatCycle(
             cycle,
@@ -228,51 +252,24 @@ export class Graph {
     } else {
       // If we're not at an endpoint or we're at the first node,
       // visit adjacent nodes.
-      if (!flowNode.node.isEndpoint || !path) {
+      if (!flowNode.node.isEndpoint || !previous) {
         flowNode.active = true;
 
-        for (const edge of flowEdges[fromIndex]) {
-          let overrideFlow = flow;
+        const paths = this.getPaths(
+          fromIndex,
+          flow,
+          previous,
+          flowEdges,
+          forwardTraversal
+        );
 
-          if (!forwardTraversal && edge.edge.override) {
-            const cleared = this.clearOverrides(
-              overrideFlow,
-              edge.edge.override
-            );
-            if (cleared.isEmpty()) {
-              continue;
-            } else {
-              overrideFlow = cleared;
-            }
-          }
-
-          log(verbose, `  edge to ${edge.edge.to}`);
-          log(verbose, '    intersect:');
-          log(verbose, edge.edge.routes.format({prefix: '      '}));
-          log(verbose, '    with overrideFlow:');
-          log(verbose, overrideFlow.format({prefix: '      '}));
-
-          let routes = overrideFlow.intersect(
-            edge.edge.routes,
-            this.simplifier
-          );
-
-          log(verbose, '    result routes:');
-          log(verbose, routes.format({prefix: '      '}));
-
-          if (forwardTraversal && edge.edge.override) {
-            routes = routes.overrideDimensions(edge.edge.override);
-          }
-
-          if (!routes.isEmpty()) {
+        // Propagate each path with non-empty flow.
+        for (const path of paths) {
+          if (!path.routes.isEmpty()) {
             this.propagate(
-              edge.to,
-              routes,
-              {
-                edge,
-                previous: path,
-                routes,
-              },
+              path.edge.to,
+              path.routes,
+              path,
               flowNodes,
               flowEdges,
               cycles,
@@ -281,9 +278,71 @@ export class Graph {
             );
           }
         }
+
         flowNode.active = false;
       }
     }
+  }
+
+  private getPaths(
+    fromIndex: number,
+    flow: Disjunction<AnyRuleSpec>,
+    previous: Path | undefined,
+    flowEdges: FlowEdge[][],
+    forwardTraversal: boolean
+  ): Path[] {
+    const verbose = false;
+    const paths: Path[] = [];
+
+    for (const edge of flowEdges[fromIndex]) {
+      let flow2 = flow;
+
+      // If we're traversing edges backwards and we traverse across an
+      // override
+      if (!forwardTraversal && edge.edge.override) {
+        // Check to see if this override could have produced the flow we've
+        // backwards propagated so far.
+        const cleared = this.clearOverrides(flow, edge.edge.override);
+        if (cleared.isEmpty()) {
+          // This override could not have produced the flow we're backwards
+          // propagated so far. Skip this edge.
+          continue;
+        } else {
+          // Otherwise, clear the overridden fields to get the pre-override
+          // flow.
+          flow2 = cleared;
+        }
+      }
+
+      // If we got this far, we're going to traverse the edge.
+      log(verbose, `  edge to ${edge.edge.to}`);
+      log(verbose, '    intersect:');
+      log(verbose, edge.edge.routes.format({prefix: '      '}));
+      log(verbose, '    with overrideFlow:');
+      log(verbose, flow2.format({prefix: '      '}));
+
+      // Intersect with edge constraint.
+      const flow3 = flow2.intersect(edge.edge.routes, this.simplifier);
+
+      log(verbose, '    result routes:');
+      log(verbose, flow3.format({prefix: '      '}));
+
+      // If we're traversing forwards and there is an override, apply it.
+      let routes = flow3;
+      if (forwardTraversal && edge.edge.override) {
+        routes = flow3.overrideDimensions(edge.edge.override);
+      }
+
+      if (!routes.isEmpty()) {
+        paths.push({
+          edge,
+          previous,
+          routes,
+        });
+      }
+    }
+
+    return paths;
   }
 
   private extractCycle(path: Path, routes: Disjunction<AnyRuleSpec>): Path[] {

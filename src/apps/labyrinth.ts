@@ -8,6 +8,7 @@ import {succeed} from '../utilities';
 import analyze from './analyze';
 import anonymize from './anonymize';
 import convert from './convert';
+import explore from './explore';
 import graph from './graph';
 import samples from './samples';
 import version from './version';
@@ -17,8 +18,9 @@ const commands: [
   (command: string, args: string[]) => Promise<void>
 ][] = [
   [['anonymize'], anonymize],
-  [['firewall'], analyze],
   [['convert'], convert],
+  [['explore'], explore],
+  [['firewall'], analyze],
   [['graph'], graph],
   [['samples'], samples],
   [['version'], version],
@@ -104,7 +106,7 @@ function showUsage() {
         },
         {
           name: 'samples',
-          summary: 'Download samples graphs',
+          summary: 'Download sample graphs',
         },
         {
           name: 'version',
