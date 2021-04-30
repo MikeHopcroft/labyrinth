@@ -1,3 +1,5 @@
+import yaml from 'js-yaml';
+
 import {Universe} from '../../dimensions';
 import {
   AnyRuleSpec,
@@ -54,6 +56,35 @@ export class World {
     this.stack = [this.graph.start(key, this.forawardTraversal)];
     this.indexes = [];
     this.summarize();
+  }
+
+  inspect(key: string | undefined) {
+    if (key === undefined) {
+      if (this.stack.length > 1) {
+        const edge = this.stack[1][0].edge;
+        // DESIGN NOTE: the `to` and `from` fields are not reversed in
+        // the following line. We're looking for the endpoint of the
+        // edge on the traversal. This is the current node.
+        key = this.forawardTraversal ? edge.edge.to : edge.edge.from;
+      } else {
+        key = this.startKey;
+      }
+    }
+
+    if (key === undefined) {
+      console.log(
+        "No current node. Either specify the node with 'inspect <node>' " +
+          "or use the 'from <node>' or 'to <node>' commands to start a new traversal."
+      );
+    } else {
+      const node = this.graph.node(key);
+      const spec = node.spec;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {name, ...filteredSpec} = spec;
+      const text = yaml.safeDump(filteredSpec);
+      console.log('\t');
+      console.log(text);
+    }
   }
 
   keys() {
