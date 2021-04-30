@@ -3,10 +3,11 @@ import readline from 'readline';
 // Shell commands are implemented as CommandEntryPoints.
 // The return value is the standard bash shell return code.
 export type CommandEntryPoint<WORLD> = (args: string[], world: WORLD) => void;
+export type LineProcessor<WORLD> = (line: string, world: WORLD) => boolean;
 
 export class Shell<WORLD> {
   private world: WORLD;
-  private stepCommand: CommandEntryPoint<WORLD>;
+  private fallbackProcessor: LineProcessor<WORLD>;
 
   // Map of shell commands (e.g. from, to, back, etc.)
   private commands = new Map<string, CommandEntryPoint<WORLD>>();
@@ -18,10 +19,10 @@ export class Shell<WORLD> {
   constructor(
     world: WORLD,
     commands: [string, CommandEntryPoint<WORLD>][],
-    stepCommand: CommandEntryPoint<WORLD>
+    fallbackProcessor: LineProcessor<WORLD>
   ) {
     this.world = world;
-    this.stepCommand = stepCommand;
+    this.fallbackProcessor = fallbackProcessor;
 
     // Register shell commands.
     for (const c of commands) {
@@ -79,24 +80,23 @@ export class Shell<WORLD> {
     if (line.length > 0 && !line.startsWith('#')) {
       // TODO: better arg splitter that handles quotes.
       const args = line.trim().split(/\s+/);
-      if (isNaN(Number(args[0]))) {
-        const command = this.commands.get(args[0]);
-        if (command === undefined) {
+      const command = this.commands.get(args[0]);
+      if (command === undefined) {
+        if (!this.fallbackProcessor(line, this.world)) {
           console.log(`${args[0]}: command not found`);
-        } else {
-          try {
-            command(args, this.world);
-          } catch (e) {
-            if (e instanceof TypeError) {
-              console.log(e.message);
-            } else {
-              throw e;
-            }
-          }
         }
       } else {
-        this.stepCommand(args, this.world);
+        try {
+          command(args, this.world);
+        } catch (e) {
+          if (e instanceof TypeError) {
+            console.log(e.message);
+          } else {
+            throw e;
+          }
+        }
       }
+
       console.log();
     }
   }

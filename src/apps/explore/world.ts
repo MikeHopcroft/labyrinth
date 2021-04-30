@@ -31,7 +31,7 @@ export class World {
     this.graph = builder.buildGraph();
   }
 
-  back() {
+  back(toFork: boolean) {
     if (this.stack.length === 0) {
       console.log('No current path.');
       console.log('Use `from` or `to` command to specify start node.');
@@ -40,6 +40,11 @@ export class World {
     } else {
       this.stack.shift();
       this.indexes.shift();
+
+      while (toFork && this.stack.length > 1 && this.stack[0].length === 1) {
+        this.stack.shift();
+        this.indexes.shift();
+      }
       this.summarize();
     }
   }
@@ -58,7 +63,8 @@ export class World {
     }
   }
 
-  step(index: number) {
+  step(index: number, toFork: boolean) {
+    console.log(`step(${index},${toFork})`);
     if (this.stack.length === 0) {
       console.log('No current path to step along.');
       console.log('Use `from` or `to` command to specify start node.');
@@ -68,8 +74,25 @@ export class World {
         console.log(`Bad step ${index}.`);
         console.log(`Legal values: ${[...this.stack[0].keys()].join(', ')}.`);
       } else {
+        // Follow path one step.
         this.stack.unshift(this.graph.step(path, this.forawardTraversal));
         this.indexes.unshift(index);
+
+        // If toFork, then keep following as long as there is only one path to
+        // follow.
+        const visited = new Set<string>([path.edge.edge.to]);
+        while (toFork && this.stack[0].length === 1) {
+          const path = this.stack[0][0];
+          const to = path.edge.edge.to;
+          if (visited.has(to)) {
+            console.log(`Cycle detected to node ${to}.`);
+          } else {
+            visited.add(to);
+            this.stack.unshift(this.graph.step(path, this.forawardTraversal));
+            this.indexes.unshift(0);
+          }
+        }
+
         this.summarize();
       }
     }
@@ -108,9 +131,11 @@ export class World {
       if (this.stack[0].length > 0) {
         console.log('Next steps:');
         for (const [index, path] of this.stack[0].entries()) {
-          console.log(
-            `  ${index}: ${path.edge.edge.from} => ${path.edge.edge.to}`
-          );
+          const next = this.forawardTraversal
+            ? path.edge.edge.to
+            : path.edge.edge.from;
+          console.log(`  ${index}: ${next}`);
+          // `  ${index}: ${path.edge.edge.from} => ${path.edge.edge.to}`
         }
       } else {
         console.log('Path terminates here.');
