@@ -25,7 +25,6 @@ export class World {
     const simplifier = createSimplifier<AnyRuleSpec>(universe);
 
     // Load network graph.
-    console.log(`Loading ${graphFile}`);
     const spec = loadYamlGraphSpecFile(graphFile);
     const builder = new GraphBuilder(universe, simplifier, spec);
     this.graph = builder.buildGraph();

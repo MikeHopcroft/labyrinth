@@ -4,12 +4,13 @@
 written in [TypeScript](https://www.typescriptlang.org/).
 In order to use `labyrinth` you must have
 [Node](https://nodejs.org/en/download/) installed on your machine.
-`Labyrinth` has been tested with Node version [13.7.0](https://nodejs.org/download/release/v13.7.0/). Here's how to verify that Node is installed:
+`Labyrinth` has been tested with Node version [16.0.0](https://nodejs.org/download/release/v16.0.0/). Most functionality will likely work with version as low as [13.7.0](https://nodejs.org/download/release/v13.7.0/).
+Here's how to verify that Node is installed:
 
 [//]: # (spawn node --version)
 ~~~
 $ node --version
-v13.7.0
+v16.0.0
 
 ~~~
 
@@ -34,7 +35,7 @@ labyrinth version 0.0.7
 ~~~
 
 ## Sample Files
-This tutorial makes use of a number of sample graph files which reside in the [data](https://github.com/MikeHopcroft/labyrinth/tree/main/data) folder of the the [labyrinth repo](https://github.com/MikeHopcroft/labyrinth/). If you installed [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) directly from npm, you can use the `samples` sub-command to download these files:
+This tutorial makes use of a number of sample graph files which reside in the [data](https://github.com/MikeHopcroft/labyrinth/tree/main/data) folder of the the [labyrinth repo](https://github.com/MikeHopcroft/labyrinth/). If you installed [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) directly from npm, you can use the `labyrinth samples` command to download these files:
 
 ~~~
 $ labyrinth samples
@@ -91,7 +92,6 @@ labyrinth version 0.0.7
 
 You can test your build by running the unit test suite:
 
-[//]: # (script npm run test)
 ~~~
 $ npm run test
 
@@ -342,6 +342,7 @@ $ npm run test
 version: 13
 
 ~~~
+
 
 ---
 ### [Next: Analyzing Azure Resource Graphs](./azure_resource_graph.md)

@@ -2,6 +2,9 @@
 
 junk
 
+# Command history for `labyrinth explore`
+.explorer_history
+
 # samples folder is created by the tutorial
 /samples
 
