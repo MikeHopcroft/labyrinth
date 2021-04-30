@@ -4,12 +4,13 @@
 written in [TypeScript](https://www.typescriptlang.org/).
 In order to use `labyrinth` you must have
 [Node](https://nodejs.org/en/download/) installed on your machine.
-`Labyrinth` has been tested with Node version [13.7.0](https://nodejs.org/download/release/v13.7.0/). Here's how to verify that Node is installed:
+`Labyrinth` has been tested with Node version [16.0.0](https://nodejs.org/download/release/v16.0.0/). Most functionality will likely work with version as low as [13.7.0](https://nodejs.org/download/release/v13.7.0/).
+Here's how to verify that Node is installed:
 
 [//]: # (spawn node --version)
 ~~~
 $ node --version
-v13.7.0
+v16.0.0
 ~~~
 
 Once you have Node, you can either install the [labyrinth-nsg](https://www.npmjs.com/package/labyrinth-nsg) package directly from [npm](https://www.npmjs.com), or you can clone and build the [github repo](https://github.com/MikeHopcroft/labyrinth/). Instructions for both methods follow.

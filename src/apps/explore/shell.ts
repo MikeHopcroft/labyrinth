@@ -1,9 +1,15 @@
+import compareVersions from 'compare-versions';
+import fs from 'fs';
+import {ReadLineOptions} from 'node:readline';
 import readline from 'readline';
 
 // Shell commands are implemented as CommandEntryPoints.
 // The return value is the standard bash shell return code.
 export type CommandEntryPoint<WORLD> = (args: string[], world: WORLD) => void;
 export type LineProcessor<WORLD> = (line: string, world: WORLD) => boolean;
+
+const maxHistorySteps = 1000;
+const historyFile = '.explorer_history';
 
 export class Shell<WORLD> {
   private world: WORLD;
@@ -13,6 +19,8 @@ export class Shell<WORLD> {
   // Map of shell commands (e.g. from, to, back, etc.)
   private commands = new Map<string, CommandEntryPoint<WORLD>>();
   private completions: string[] = [];
+
+  private history: string[] = [];
 
   private rl: readline.Interface;
   private finishedPromise: Promise<void>;
@@ -33,12 +41,33 @@ export class Shell<WORLD> {
       this.registerCommand(...c);
     }
 
+    //
     // Start up the REPL.
-    const rl = (this.rl = readline.createInterface({
+    //
+
+    // Load REPL history from file.
+    if (fs.existsSync(historyFile)) {
+      const text = fs.readFileSync(historyFile).toString();
+      this.history = text.split(/\r?\n/g);
+    }
+    const options: ReadLineOptions = {
       input: process.stdin,
       output: process.stdout,
       completer: this.completer,
-    }));
+      historySize: maxHistorySteps,
+    };
+    // NOTE: these options should only work for node versions 16.0.0 and higher.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const node_16_0_1_Options: any = {
+      ...options,
+      history: this.history,
+    };
+    const rl = (this.rl = readline.createInterface(node_16_0_1_Options));
+
+    // NOTE: this event should only work for node versions 16.0.0 and higher.
+    rl.on('history', (history: string[]) => {
+      this.history = history;
+    });
 
     // Register line input handler.
     rl.on('line', async (line: string) => {
@@ -58,6 +87,7 @@ export class Shell<WORLD> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.finishedPromise = new Promise<void>((resolve, reject) => {
       rl.on('close', () => {
+        fs.writeFileSync(historyFile, this.history.join('\n'));
         console.log();
         console.log('bye');
         resolve();
@@ -78,6 +108,17 @@ export class Shell<WORLD> {
   // Returns a promise that resolves when the interactive shell exits.
   finished(): Promise<unknown> {
     return this.finishedPromise;
+  }
+
+  static versionWarning(): string | undefined {
+    const minVersion = '16.0.0';
+    if (compareVersions(process.version, minVersion) < 0) {
+      return (
+        `WARNING: Detected node version ${process.version}. ` +
+        `Some interactive functionality, such as command history, requires node version ${minVersion}, or higher.`
+      );
+    }
+    return undefined;
   }
 
   private processLine(line: string) {

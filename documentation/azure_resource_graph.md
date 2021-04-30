@@ -81,7 +81,6 @@ We can use the `labyrinth graph` command with the `-f=public-services-ip` to sho
 ~~~
 $ labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip
 Options summary:
-  Not modeling source ip address spoofing (use -s flag to enable).
   Displaying endpoints only (use -r flag to display routing nodes). 
   Not displaying paths (use -s or -v flags to enable).
   Brief mode (use -v flag to enable verbose mode).
@@ -89,24 +88,28 @@ Options summary:
   Paths are not expanded (use -e flag to enable path expansion).
   Not displaying help. (use -h flag to display help message)
 
-Endpoints
+Nodes:
   Internet
-    Internet:  (endpoint)
-    Internet-Backbone: 
+    Internet
   jump-box
-    vm1/inbound:  (endpoint)
-    vm1/outbound:  (endpoint)
+    vm1/inbound
+    vm1/outbound
+  jump-box-ip
+    publicIp1/inbound
+    publicIp1/outbound*
+  public-services-ip
+    publicIp2/inbound
   web0
-    vm2/inbound:  (endpoint)
-    vm2/outbound:  (endpoint)
+    vm2/inbound
+    vm2/outbound
   web1
-    vm3/inbound:  (endpoint)
-    vm3/outbound:  (endpoint)
+    vm3/inbound
+    vm3/outbound
   web2
-    vm4/inbound:  (endpoint)
-    vm4/outbound:  (endpoint)
+    vm4/inbound
+    vm4/outbound
 
-Nodes reachable from public-services-ip (publicIp2/endpoint):
+Nodes reachable from public-services-ip:
 
 web0 (vm2/inbound):
   flow:
@@ -151,32 +154,53 @@ We can use the `-r` flag to show the entire graph, including internal routing no
 ~~~
 $ labyrinth graph data\azure\examples\00.demo\graph.yaml -r
 Nodes:
-  AzureBackbone
+  AzureBackbone*
+    AzureBackbone/outbound*
   Internet
-    Internet:  (endpoint)
-    Internet-Backbone: 
+    Internet
+  Internet-Backbone*
+    Internet-Backbone*
   jump-box
-    vm1/inbound:  (endpoint)
-    vm1/outbound:  (endpoint)
+    vm1/inbound
+    vm1/outbound
   jump-box-ip
-  jump-box-subnet
-  jump-box948
-  public-load-balancer
+    publicIp1/inbound
+    publicIp1/outbound*
+  jump-box-subnet*
+    subnet1/inbound*
+    subnet1/outbound*
+  jump-box948*
+    nic1/inbound*
+    nic1/outbound*
+  public-load-balancer*
+    loadBalancer1*
   public-services-ip
-  public-services-subnet
-  virtual-network
-  vm0148
-  vm1318
-  vm2400
+    publicIp2/inbound
+  public-services-subnet*
+    subnet2/inbound*
+    subnet2/outbound*
+  virtual-network*
+    vnet1/inbound*
+    vnet1/outbound*
+    vnet1/router*
+  vm0148*
+    nic2/inbound*
+    nic2/outbound*
+  vm1318*
+    nic3/inbound*
+    nic3/outbound*
+  vm2400*
+    nic4/inbound*
+    nic4/outbound*
   web0
-    vm2/inbound:  (endpoint)
-    vm2/outbound:  (endpoint)
+    vm2/inbound
+    vm2/outbound
   web1
-    vm3/inbound:  (endpoint)
-    vm3/outbound:  (endpoint)
+    vm3/inbound
+    vm3/outbound
   web2
-    vm4/inbound:  (endpoint)
-    vm4/outbound:  (endpoint)
+    vm4/inbound
+    vm4/outbound
 
  
 Use the -f or -t option to specify a node for analysis.
@@ -216,7 +240,7 @@ We enable back-projection with the `-b` flag. In the following example, we also 
 [//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip -b -q)
 ~~~
 $ labyrinth graph data\azure\examples\00.demo\graph.yaml -f=public-services-ip -b -q
-Nodes reachable from public-services-ip (publicIp2/endpoint):
+Nodes reachable from public-services-ip:
 
 web0 (vm2/inbound):
   flow:
@@ -242,7 +266,7 @@ web2 (vm4/inbound):
 
 ~~~
 
-The output now shows the updated header flows to `web0`, `web1`, and `web2`, _as seen from_ `public-services-ip`. 
+The output now shows the updated header flows to `web0`, `web1`, and `web2`, _as seen from_ `public-services-ip`. The main difference is that `destinationIp` is now equal to `52.183.88.218` instead of one of the internal `10.0.100.0/24` addresses.
 
 ## Finding Flows _to_ a Node
 
@@ -256,7 +280,7 @@ Note that we don't have to use the `-b` flag with the `-t` flag, because the rev
 [//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -t=jump-box -q)
 ~~~
 $ labyrinth graph data\azure\examples\00.demo\graph.yaml -t=jump-box -q
-Nodes that can reach jump-box (vm1/inbound):
+Nodes that can reach jump-box:
 
 Internet:
   flow:
@@ -268,11 +292,12 @@ Internet:
     destination port: ssh
     protocol: TCP
 
-jump-box (vm1/outbound):
+jump-box-ip (publicIp1/inbound):
   flow:
-    source ip: 10.0.88.4
-    destination ip: 10.0.88.4
+    source ip: vnet1, AzureLoadBalancer
+
     destination port: ssh
+    protocol: TCP
 
 web0 (vm2/outbound):
   flow:
@@ -300,7 +325,14 @@ Sometimes we'd like to know the actual path the IP packets traverse on the way t
 [//]: # (script labyrinth graph data\azure\examples\00.demo\graph.yaml -f=web0 -t=jump-box -p -q)
 ~~~
 $ labyrinth graph data\azure\examples\00.demo\graph.yaml -f=web0 -t=jump-box -p -q
-Routes from web0 (vm2/outbound) to jump-box (vm1/inbound):
+Routes from web0 to jump-box:
+
+web0 (vm2/inbound):
+  flow:
+    (no flow)
+
+  paths:
+    (no paths)
 
 web0 (vm2/outbound):
   flow:
@@ -369,7 +401,6 @@ Options
   -q, --quiet                      Quiet mode - don't summarize options and     
                                    enumerate nodes.                             
   -r, --routers                    Display routers along paths.                 
-  -s, --spoofing                   Model source address spoofing.               
   -b, --back-project               Backproject routes through NAT rewrites.     
                                    Note that back-projecting is enabled by      
                                    default when -t is used.                     

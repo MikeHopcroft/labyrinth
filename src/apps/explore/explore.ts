@@ -10,7 +10,10 @@ import {World} from './world';
 /*
 TODO:
   x auto-complete node names
-  save/restore history + .gitignore
+  x save/restore history + .gitignore
+    x upgrade to node 16.0.0
+    x version check
+    x update docs to mention new version
   organize node list by friendly name
   x WIP: commit
   x usage message
@@ -136,9 +139,15 @@ async function explore(graphFile: string) {
   console.log('Welcome to the Labyrinth interactive graph explorer.');
   console.log('Type commands below.');
   console.log();
-  console.log('Type "exit" to end the session.');
+  console.log('Type "exit" or "CTRL-D" to end the session.');
   console.log('Type "help" for information on commands.');
   console.log();
+
+  const warning = Shell.versionWarning();
+  if (warning) {
+    console.log(warning);
+    console.log('\t');
+  }
 
   console.log(`Analyzing ${graphFile}.`);
 
@@ -161,6 +170,7 @@ async function explore(graphFile: string) {
       fallbackProcessor,
       parameterCompleter(world)
     );
+
     await shell.finished();
   } catch (e) {
     handleError(e);
