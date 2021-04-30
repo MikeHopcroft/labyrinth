@@ -87,13 +87,20 @@ export class World {
     }
   }
 
+  // Used for readline.Completer.
   keys() {
     return this.graph.nodes.map(x => x.key);
   }
 
   printNodes() {
-    for (const node of this.graph.nodes) {
-      console.log(node.key);
+    const friendlyNames = [...this.graph.friendlyNames()].sort();
+    for (const name of friendlyNames) {
+      const nodes = this.graph.withFriendlyName(name);
+      console.log(name);
+
+      for (const node of nodes.all()) {
+        console.log(`  ${node.key}`);
+      }
     }
   }
 
