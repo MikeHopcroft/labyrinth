@@ -57,7 +57,11 @@ export class World {
     this.summarize();
   }
 
-  nodes() {
+  keys() {
+    return this.graph.nodes.map(x => x.key);
+  }
+
+  printNodes() {
     for (const node of this.graph.nodes) {
       console.log(node.key);
     }
@@ -135,7 +139,6 @@ export class World {
             ? path.edge.edge.to
             : path.edge.edge.from;
           console.log(`  ${index}: ${next}`);
-          // `  ${index}: ${path.edge.edge.from} => ${path.edge.edge.to}`
         }
       } else {
         console.log('Path terminates here.');

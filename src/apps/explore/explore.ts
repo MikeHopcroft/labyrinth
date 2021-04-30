@@ -1,5 +1,6 @@
 import commandLineUsage, {Section} from 'command-line-usage';
 import minimist from 'minimist';
+import readline from 'readline';
 
 import {fail, handleError, succeed} from '../../utilities';
 
@@ -8,19 +9,21 @@ import {World} from './world';
 
 /*
 TODO:
+  x auto-complete node names
+  save/restore history + .gitignore
+  organize node list by friendly name
   x WIP: commit
   x usage message
-  auto-complete node names
   x follow to fork (1 vs 1!)
     x need to suppress cycles
     x need back!
   x break into separate files for shell, explorer, world
   universe file parameter
-  save/restore history + .gitignore
-  organize node list by friendly name
   inspect command
   look into using attribution
   tutorial page
+  Graph.nodes() shouldn't sort on every call
+    It doesn't sort. Where does sort happen?
   shell
     x template on world
     x make third argument the unknown handler
@@ -141,9 +144,6 @@ async function explore(graphFile: string) {
 
   try {
     const world = new World(graphFile);
-    // world.from('Internet');
-    // world.step(0, false);
-    // world.step(1, true);
     const commands: [string, CommandEntryPoint<World>][] = [
       ['b', backCommand],
       ['back', backCommand],
@@ -155,7 +155,12 @@ async function explore(graphFile: string) {
       ['nodes', nodesCommand],
       ['to', toCommand],
     ];
-    const shell = new Shell(world, commands, fallbackProcessor);
+    const shell = new Shell(
+      world,
+      commands,
+      fallbackProcessor,
+      parameterCompleter(world)
+    );
     await shell.finished();
   } catch (e) {
     handleError(e);
@@ -214,7 +219,7 @@ export function nodesCommand(args: string[], world: World): void {
   if (args.length !== 1) {
     console.log('Unexpected parameter.');
   } else {
-    world.nodes();
+    world.printNodes();
   }
 }
 
@@ -226,4 +231,25 @@ export function toCommand(args: string[], world: World): void {
   } else {
     world.to(args[1]);
   }
+}
+
+function parameterCompleter(world: World): readline.Completer {
+  return (line: string): readline.CompleterResult => {
+    const hits: string[] = [];
+
+    // NOTE: don't trim() trailing spaces to we can detect trailing space that
+    // indicates start of second term complation.
+    const parts = line.trimStart().split(/\s+/);
+    if (parts.length === 2 && (parts[0] === 'from' || parts[0] === 'to')) {
+      const command = parts[0];
+      const node = parts[1].trim();
+      const keys = world.keys();
+      for (const key of keys) {
+        if (key.startsWith(node)) {
+          hits.push(command + ' ' + key);
+        }
+      }
+    }
+    return [hits, line];
+  };
 }

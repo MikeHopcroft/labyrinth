@@ -8,6 +8,7 @@ export type LineProcessor<WORLD> = (line: string, world: WORLD) => boolean;
 export class Shell<WORLD> {
   private world: WORLD;
   private fallbackProcessor: LineProcessor<WORLD>;
+  private parameterCompleter: readline.Completer;
 
   // Map of shell commands (e.g. from, to, back, etc.)
   private commands = new Map<string, CommandEntryPoint<WORLD>>();
@@ -19,10 +20,13 @@ export class Shell<WORLD> {
   constructor(
     world: WORLD,
     commands: [string, CommandEntryPoint<WORLD>][],
-    fallbackProcessor: LineProcessor<WORLD>
+    fallbackProcessor: LineProcessor<WORLD>,
+    parameterCompleter: readline.Completer
   ) {
     this.world = world;
     this.fallbackProcessor = fallbackProcessor;
+    this.parameterCompleter = parameterCompleter;
+    this.completer = this.completer.bind(this);
 
     // Register shell commands.
     for (const c of commands) {
@@ -101,8 +105,15 @@ export class Shell<WORLD> {
     }
   }
 
-  private completer = (line: string) => {
-    const hits = this.completions.filter(c => c.startsWith(line));
-    return [hits, line];
-  };
+  private completer(line: string): readline.CompleterResult {
+    // NOTE: don't trim() trailing spaces to we can detect trailing space that
+    // indicates start of second term complation.
+    const parts = line.trimStart().split(/\s+/);
+    if (parts.length === 2) {
+      return this.parameterCompleter(line);
+    } else {
+      const hits = this.completions.filter(c => c.startsWith(line));
+      return [hits, line];
+    }
+  }
 }
