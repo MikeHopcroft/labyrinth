@@ -9,11 +9,11 @@ import {World} from './world';
 /*
 TODO:
   x WIP: commit
-  usage message
+  x usage message
   auto-complete node names
-  follow to fork (1 vs 1!)
-    need to suppress cycles
-    need back!
+  x follow to fork (1 vs 1!)
+    x need to suppress cycles
+    x need back!
   x break into separate files for shell, explorer, world
   universe file parameter
   save/restore history + .gitignore
@@ -23,8 +23,8 @@ TODO:
   tutorial page
   shell
     x template on world
-    make third argument the unknown handler
-      how to do error handling? shell.printusage()?
+    x make third argument the unknown handler
+      x how to do error handling? shell.printusage()?
     x move commands outside
 */
 
@@ -56,7 +56,9 @@ const commandsSection = {
   content: [
     {
       name: 'back',
-      description: 'Go back to previous node on the path.',
+      description:
+        'Go back to previous node on the path. ' +
+        'Note that back! will retreat multiple steps to the first fork.',
     },
     {
       name: 'from <node>',
@@ -139,27 +141,54 @@ async function explore(graphFile: string) {
 
   try {
     const world = new World(graphFile);
+    // world.from('Internet');
+    // world.step(0, false);
+    // world.step(1, true);
     const commands: [string, CommandEntryPoint<World>][] = [
       ['b', backCommand],
       ['back', backCommand],
+      ['b!', backToForkCommand],
+      ['back!', backToForkCommand],
       ['from', fromCommand],
       ['help', helpCommand],
       ['inspect', inspectCommand],
       ['nodes', nodesCommand],
       ['to', toCommand],
     ];
-    const shell = new Shell(world, commands, stepCommand);
+    const shell = new Shell(world, commands, fallbackProcessor);
     await shell.finished();
   } catch (e) {
     handleError(e);
   }
 }
 
+export function fallbackProcessor(line: string, world: World): boolean {
+  const args = line.trim().split(/\s+/);
+  if (args.length === 1) {
+    const match = args[0].match(/\s*(\d+)(!?)\s*$/);
+    if (match) {
+      const index = Number(match[1]);
+      world.step(index, match[2] === '!');
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function backCommand(args: string[], world: World): void {
   if (args.length !== 1) {
     console.log('Unexpected parameter.');
   } else {
-    world.back();
+    world.back(false);
+  }
+}
+
+export function backToForkCommand(args: string[], world: World): void {
+  if (args.length !== 1) {
+    console.log('Unexpected parameter.');
+  } else {
+    world.back(true);
   }
 }
 
@@ -181,19 +210,6 @@ export function inspectCommand(args: string[]): void {
   console.log(`inspect(${args[1]})`);
 }
 
-export function stepCommand(args: string[], world: World): void {
-  if (args.length > 1) {
-    console.log('Unexpected parameter.');
-  } else {
-    const index = Number(args[0]);
-    if (isNaN(index)) {
-      console.log('Expected a path number.');
-    } else {
-      world.step(index);
-    }
-  }
-}
-
 export function nodesCommand(args: string[], world: World): void {
   if (args.length !== 1) {
     console.log('Unexpected parameter.');
@@ -204,7 +220,7 @@ export function nodesCommand(args: string[], world: World): void {
 
 export function toCommand(args: string[], world: World): void {
   if (args.length < 2) {
-    console.log('No start node specified.');
+    console.log('No end node specified.');
   } else if (args.length > 2) {
     console.log('Unexpected parameter after start node.');
   } else {
