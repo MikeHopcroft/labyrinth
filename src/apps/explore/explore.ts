@@ -9,13 +9,15 @@ import {World} from './world';
 
 /*
 TODO:
-  organize node list by friendly name
-  universe file parameter
-  x inspect command
+  package.json required node version
+    https://stackoverflow.com/questions/29349684/how-can-i-specify-the-required-node-js-version-in-package-json
   look into using attribution
   tutorial page
   Graph.nodes() shouldn't sort on every call
     It doesn't sort. Where does sort happen?
+  x organize node list by friendly name
+  universe file parameter
+  x inspect command
   x auto-complete node names
   x save/restore history + .gitignore
     x upgrade to node 16.0.0
@@ -80,15 +82,15 @@ const commandsSection = {
     },
     {
       name: 'nodes',
-      description: 'Display a list all of the nodes in the graph',
+      description: 'Display a list all of the nodes in the graph.',
     },
     {
       name: 'summarize',
-      description: 'Display current traversal status',
+      description: 'Display current traversal status.',
     },
     {
       name: 'to <node>',
-      description: 'Set end node for backwards traversal',
+      description: 'Set end node for backwards traversal.',
     },
     {
       name: '<number>',

@@ -380,16 +380,6 @@ function summarizeOptions(options: Options) {
   console.log();
 }
 
-// function getNode(name: string, graph: Graph, outbound: boolean) {
-//   const nodes = graph.withFriendlyName(name);
-//   const node =
-//     nodes.withType(NodeType.PUBLIC_ENDPOINT) ??
-//     nodes.withType(outbound ? NodeType.OUTBOUND : NodeType.INBOUND) ??
-//     graph.withKey(name);
-
-//   return node || fail(`Unknown ${outbound ? 'start' : 'end'} node ${name}`);
-// }
-
 function getKeys(name: string, graph: Graph, outbound: boolean): Node[] {
   const nodes = graph.withFriendlyName(name).all();
   if (nodes.length > 0) {
