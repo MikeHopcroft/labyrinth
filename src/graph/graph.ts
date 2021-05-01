@@ -146,6 +146,12 @@ export class Graph {
     }
   }
 
+  flowEdges(key: string, forwardTraversal: boolean): FlowEdge[] {
+    const index = this.nodeIndex(key);
+    const edges = forwardTraversal ? this.outboundFrom : this.inboundTo;
+    return edges[index];
+  }
+
   analyze(startKeys: string[], outbound: boolean): FlowAnalysis {
     const flowNodes: FlowNode[] = this.nodes.map(node => ({
       node,

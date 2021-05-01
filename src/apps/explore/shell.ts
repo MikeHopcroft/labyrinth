@@ -20,7 +20,7 @@ export class Shell<WORLD> {
   private commands = new Map<string, CommandEntryPoint<WORLD>>();
   private completions: string[] = [];
 
-  private history: string[] = [];
+  history: string[] = [];
 
   private rl: readline.Interface;
   private finishedPromise: Promise<void>;
