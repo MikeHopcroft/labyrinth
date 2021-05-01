@@ -50,6 +50,42 @@ export class World {
     }
   }
 
+  edges(key: string | undefined) {
+    if (key === undefined) {
+      if (this.stack.length > 1) {
+        const edge = this.stack[1][0].edge;
+        // DESIGN NOTE: the `to` and `from` fields are not reversed in
+        // the following line. We're looking for the endpoint of the
+        // edge on the traversal. This is the current node.
+        key = this.forawardTraversal ? edge.edge.to : edge.edge.from;
+      } else {
+        key = this.startKey;
+      }
+    }
+
+    if (key === undefined) {
+      console.log(
+        "No current node. Either specify the node with 'inspect <node>' " +
+          "or use the 'from <node>' or 'to <node>' commands to start a new traversal."
+      );
+    } else {
+      const flowEdges = this.graph.flowEdges(key, this.forawardTraversal);
+      for (const flowEdge of flowEdges) {
+        const edge = flowEdge.edge;
+        console.log('\t');
+        console.log(`${edge.from} => ${edge.to}`);
+
+        console.log('  routes:');
+        console.log(edge.routes.format({prefix: '    '}));
+
+        if (edge.override) {
+          console.log('  override:');
+          console.log(edge.override.format({prefix: '    '}));
+        }
+      }
+    }
+  }
+
   from(key: string) {
     this.forawardTraversal = true;
     this.startKey = key;
@@ -105,7 +141,6 @@ export class World {
   }
 
   step(index: number, toFork: boolean) {
-    console.log(`step(${index},${toFork})`);
     if (this.stack.length === 0) {
       console.log('No current path to step along.');
       console.log('Use `from` or `to` command to specify start node.');

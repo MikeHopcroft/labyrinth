@@ -9,6 +9,8 @@ import {World} from './world';
 
 /*
 TODO:
+  x edges command
+  x history command
   package.json required node version
     https://stackoverflow.com/questions/29349684/how-can-i-specify-the-required-node-js-version-in-package-json
   look into using attribution
@@ -35,6 +37,7 @@ TODO:
       x how to do error handling? shell.printusage()?
     x move commands outside
 */
+const defaultHistoryCommandSteps = 20;
 
 export default async function main(invocation: string, parameters: string[]) {
   const args = minimist(parameters);
@@ -72,8 +75,16 @@ const commandsSection = {
         'Go back to previous node on the path and continue retreating until encountering a fork in the path.',
     },
     {
+      name: 'edges',
+      description: 'Display edges from current node.',
+    },
+    {
       name: 'from <node>',
       description: 'Set initial node for a forward traversal.',
+    },
+    {
+      name: 'history [<n>]',
+      description: `Display last <n> steps of command history. <n> defaults to ${defaultHistoryCommandSteps}.`,
     },
     {
       name: 'inspect [<node>]',
@@ -171,6 +182,7 @@ async function explore(graphFile: string) {
     const commands: [string, CommandEntryPoint<World>][] = [
       ['back', backCommand],
       ['back!', backToForkCommand],
+      ['edges', edgesCommand],
       ['from', fromCommand],
       ['help', helpCommand],
       ['inspect', inspectCommand],
@@ -184,6 +196,7 @@ async function explore(graphFile: string) {
       fallbackProcessor,
       parameterCompleter(world)
     );
+    shell.registerCommand('history', historyCommand(shell));
 
     await shell.finished();
   } catch (e) {
@@ -221,6 +234,14 @@ export function backToForkCommand(args: string[], world: World): void {
   }
 }
 
+export function edgesCommand(args: string[], world: World): void {
+  if (args.length > 2) {
+    console.log('Unexpected parameter.');
+  } else {
+    world.edges(args[1]);
+  }
+}
+
 export function fromCommand(args: string[], world: World): void {
   if (args.length < 2) {
     console.log('No start node specified.');
@@ -233,6 +254,32 @@ export function fromCommand(args: string[], world: World): void {
 
 export function helpCommand(): void {
   console.log(commandLineUsage([commandsSection]));
+}
+
+export function historyCommand(shell: Shell<World>) {
+  return (args: string[]): void => {
+    if (args.length > 2) {
+      console.log('Unexpected parameter.');
+    } else {
+      let steps = defaultHistoryCommandSteps;
+      if (args[1] !== undefined) {
+        steps = Number(args[1]);
+      }
+      if (isNaN(steps)) {
+        console.log('Expect numeric history step count.');
+      }
+      if (steps < 0) {
+        console.log('Expect positive history step count.');
+      } else {
+        if (steps > shell.history.length) {
+          steps = shell.history.length;
+        }
+        for (let i = steps - 1; i >= 0; --i) {
+          console.log(`${shell.history.length - i}: ${shell.history[i]}`);
+        }
+      }
+    }
+  };
 }
 
 export function inspectCommand(args: string[], world: World): void {
@@ -278,7 +325,10 @@ function parameterCompleter(world: World): readline.Completer {
     const parts = line.trimStart().split(/\s+/);
     if (
       parts.length === 2 &&
-      (parts[0] === 'from' || parts[0] === 'to' || parts[0] === 'inspect')
+      (parts[0] === 'edges' ||
+        parts[0] === 'from' ||
+        parts[0] === 'to' ||
+        parts[0] === 'inspect')
     ) {
       const command = parts[0];
       const node = parts[1].trim();
