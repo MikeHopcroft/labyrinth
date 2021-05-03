@@ -9,7 +9,8 @@ import {World} from './world';
 
 /*
 TODO:
-  rename 'summarize' to 'path'
+  x rename 'summarize' to 'path'
+  x rename 'inspect' to 'spec'
   tags/symbols command
     should not hard-code dimension names
     formatting should do symbol lookup
@@ -92,17 +93,17 @@ const commandsSection = {
       description: `Display last <n> steps of command history. <n> defaults to ${defaultHistoryCommandSteps}.`,
     },
     {
-      name: 'inspect [<node>]',
-      description:
-        'Print out the specification for a node. Defaults to current node.',
-    },
-    {
       name: 'nodes',
       description: 'Display a list all of the nodes in the graph.',
     },
     {
-      name: 'summarize',
-      description: 'Display current traversal status.',
+      name: 'path',
+      description: 'Display current traversal path and headers.',
+    },
+    {
+      name: 'spec [<node>]',
+      description:
+        'Print out the specification for a node. Defaults to current node.',
     },
     {
       name: 'symbols [<name>]',
@@ -194,9 +195,9 @@ async function explore(graphFile: string) {
       ['edges', edgesCommand],
       ['from', fromCommand],
       ['help', helpCommand],
-      ['inspect', inspectCommand],
       ['nodes', nodesCommand],
-      ['summarize', summarizeCommand],
+      ['path', pathCommand],
+      ['spec', specCommand],
       ['symbols', symbolsCommand],
       ['to', toCommand],
     ];
@@ -292,11 +293,11 @@ export function historyCommand(shell: Shell<World>) {
   };
 }
 
-export function inspectCommand(args: string[], world: World): void {
+export function specCommand(args: string[], world: World): void {
   if (args.length > 2) {
     console.log('Unexpected parameter.');
   } else {
-    world.inspect(args[1]);
+    world.spec(args[1]);
   }
 }
 
@@ -308,11 +309,11 @@ export function nodesCommand(args: string[], world: World): void {
   }
 }
 
-export function summarizeCommand(args: string[], world: World): void {
+export function pathCommand(args: string[], world: World): void {
   if (args.length > 1) {
     console.log('Unexpected parameter.');
   } else {
-    world.summarize();
+    world.showPath();
   }
 }
 

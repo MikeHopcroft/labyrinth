@@ -4,6 +4,7 @@
 * Formatting infrastructure should propagate an option to suppress symbol lookup.
 * Should Universe has static methods for fromYamlFile(), fromYamlString()?
   * Issue is web dependencies.
+* Policy verification that sets return code.
 
 * Demo/documentation bugs
   * Move demo files
