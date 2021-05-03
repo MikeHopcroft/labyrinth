@@ -50,7 +50,7 @@ export class World {
         this.stack.shift();
         this.indexes.shift();
       }
-      this.summarize();
+      this.showPath();
     }
   }
 
@@ -92,10 +92,27 @@ export class World {
     this.startKey = key;
     this.stack = [this.graph.start(key, this.forawardTraversal)];
     this.indexes = [];
-    this.summarize();
+    this.showPath();
   }
 
-  inspect(key: string | undefined) {
+  // Used for readline.Completer.
+  keys() {
+    return this.graph.nodes.map(x => x.key);
+  }
+
+  printNodes() {
+    const friendlyNames = [...this.graph.friendlyNames()].sort();
+    for (const name of friendlyNames) {
+      const nodes = this.graph.withFriendlyName(name);
+      console.log(name);
+
+      for (const node of nodes.all()) {
+        console.log(`  ${node.key}`);
+      }
+    }
+  }
+
+  spec(key: string | undefined) {
     if (key === undefined) {
       if (this.stack.length > 1) {
         const edge = this.stack[1][0].edge;
@@ -124,73 +141,7 @@ export class World {
     }
   }
 
-  // Used for readline.Completer.
-  keys() {
-    return this.graph.nodes.map(x => x.key);
-  }
-
-  printNodes() {
-    const friendlyNames = [...this.graph.friendlyNames()].sort();
-    for (const name of friendlyNames) {
-      const nodes = this.graph.withFriendlyName(name);
-      console.log(name);
-
-      for (const node of nodes.all()) {
-        console.log(`  ${node.key}`);
-      }
-    }
-  }
-
-  step(index: number, toFork: boolean) {
-    if (this.stack.length === 0) {
-      console.log('No current path to step along.');
-      console.log('Use `from` or `to` command to specify start node.');
-    } else {
-      const path = this.stack[0][index];
-      if (path === undefined) {
-        console.log(`Bad step ${index}.`);
-        console.log(`Legal values: ${[...this.stack[0].keys()].join(', ')}.`);
-      } else {
-        // Follow path one step.
-        this.stack.unshift(this.graph.step(path, this.forawardTraversal));
-        this.indexes.unshift(index);
-
-        // If toFork, then keep following as long as there is only one path to
-        // follow.
-        const visited = new Set<string>([path.edge.edge.to]);
-        while (toFork && this.stack[0].length === 1) {
-          const path = this.stack[0][0];
-          const to = path.edge.edge.to;
-          if (visited.has(to)) {
-            console.log(`Cycle detected to node ${to}.`);
-          } else {
-            visited.add(to);
-            this.stack.unshift(this.graph.step(path, this.forawardTraversal));
-            this.indexes.unshift(0);
-          }
-        }
-
-        this.summarize();
-      }
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  symbols(name: string | undefined) {
-    const formatter = createFormatter(
-      createIpFormatter(new Map<string, string>())
-    );
-    for (const dimension of this.universe.dimensionTypes()) {
-      if (dimension.key === 'ip') {
-        console.log(dimension.key);
-        for (const [symbol, range] of dimension.symbolToRange.entries()) {
-          console.log(`  ${symbol}: ${formatter(range)}`);
-        }
-      }
-    }
-  }
-
-  summarize() {
+  showPath() {
     const outbound = this.forawardTraversal;
     if (this.stack.length === 0) {
       console.log('No start node specified.');
@@ -230,11 +181,61 @@ export class World {
     }
   }
 
+  step(index: number, toFork: boolean) {
+    if (this.stack.length === 0) {
+      console.log('No current path to step along.');
+      console.log('Use `from` or `to` command to specify start node.');
+    } else {
+      const path = this.stack[0][index];
+      if (path === undefined) {
+        console.log(`Bad step ${index}.`);
+        console.log(`Legal values: ${[...this.stack[0].keys()].join(', ')}.`);
+      } else {
+        // Follow path one step.
+        this.stack.unshift(this.graph.step(path, this.forawardTraversal));
+        this.indexes.unshift(index);
+
+        // If toFork, then keep following as long as there is only one path to
+        // follow.
+        const visited = new Set<string>([path.edge.edge.to]);
+        while (toFork && this.stack[0].length === 1) {
+          const path = this.stack[0][0];
+          const to = path.edge.edge.to;
+          if (visited.has(to)) {
+            console.log(`Cycle detected to node ${to}.\n`);
+            break;
+          } else {
+            visited.add(to);
+            this.stack.unshift(this.graph.step(path, this.forawardTraversal));
+            this.indexes.unshift(0);
+          }
+        }
+
+        this.showPath();
+      }
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  symbols(name: string | undefined) {
+    const formatter = createFormatter(
+      createIpFormatter(new Map<string, string>())
+    );
+    for (const dimension of this.universe.dimensionTypes()) {
+      if (dimension.key === 'ip') {
+        console.log(dimension.key);
+        for (const [symbol, range] of dimension.symbolToRange.entries()) {
+          console.log(`  ${symbol}: ${formatter(range)}`);
+        }
+      }
+    }
+  }
+
   to(key: string) {
     this.forawardTraversal = false;
     this.startKey = key;
     this.stack = [this.graph.start(key, this.forawardTraversal)];
     this.indexes = [];
-    this.summarize();
+    this.showPath();
   }
 }
