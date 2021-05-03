@@ -1,3 +1,10 @@
+* GraphServices.getLabyrinthGraphSpec() should not sort.
+* DimensionedRange.format() should handle empty set.
+* parseDRange() should handle empty set.
+* Formatting infrastructure should propagate an option to suppress symbol lookup.
+* Should Universe has static methods for fromYamlFile(), fromYamlString()?
+  * Issue is web dependencies.
+
 * Demo/documentation bugs
   * Move demo files
   * NEW DEBUG

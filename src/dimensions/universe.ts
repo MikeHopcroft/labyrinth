@@ -94,4 +94,8 @@ export class Universe {
       dimensionType.indexSymbol(symbol);
     }
   }
+
+  dimensionTypes(): DimensionType[] {
+    return [...this.keyToDimensionType.values()];
+  }
 }

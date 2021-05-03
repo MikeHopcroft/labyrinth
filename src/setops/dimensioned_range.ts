@@ -81,8 +81,12 @@ export class DimensionedRange {
 
     // TODO: 7 is equal to the length of 'except '. Figure out a less
     // brittle way to do this length check.
-    if (value.length < complement.length + 7) {
-      return `${prefix}${name}: ${value}`;
+    if (complement.length === 0 || value.length < complement.length + 7) {
+      if (value.length === 0) {
+        return `${prefix}${name}: (none)`;
+      } else {
+        return `${prefix}${name}: ${value}`;
+      }
     } else {
       return `${prefix}${name}: except ${complement}`;
     }

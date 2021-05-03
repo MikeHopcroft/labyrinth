@@ -27,6 +27,9 @@ export class GraphServices {
   }
 
   getLabyrinthGraphSpec(): GraphSpec {
+    // TODO: we shouldn't sort here.
+    // Assuming sort is to make unit tests less brittle.
+    // Try using an order-independent equality assert.
     return {
       nodes: [...this.nodes.nodes()].sort(this.sortByKey),
       symbols: this.symbols.getAllSymbolSpecs(),
