@@ -56,10 +56,19 @@ export class World {
 
   edges(key: string | undefined) {
     if (key === undefined) {
-      if (this.stack.length > 0) {
+      if (this.stack[0].length > 0) {
+        // There are forward edges from the current node.
         const edge = this.stack[0][0].edge;
         key = this.forawardTraversal ? edge.edge.from : edge.edge.to;
+      } else if (this.stack.length > 1) {
+        // There are no forward edges from the current node.
+        // Get key from previous step. NOTE that the order of edge.to
+        // and edge.from in the ternary expression is intentional for
+        // this case, since we're looking at the previous step.
+        const edge = this.stack[1][0].edge;
+        key = this.forawardTraversal ? edge.edge.to : edge.edge.from;
       } else {
+        // We're at the first node and there are no forward edges.
         key = this.startKey;
       }
     }
@@ -71,18 +80,22 @@ export class World {
       );
     } else {
       const flowEdges = this.graph.flowEdges(key, this.forawardTraversal);
-      for (const flowEdge of flowEdges) {
-        const edge = flowEdge.edge;
-        console.log('\t');
-        console.log(`${edge.from} => ${edge.to}`);
+      if (flowEdges.length > 0) {
+        for (const flowEdge of flowEdges) {
+          const edge = flowEdge.edge;
+          console.log('\t');
+          console.log(`${edge.from} => ${edge.to}`);
 
-        console.log('  routes:');
-        console.log(edge.routes.format({prefix: '    '}));
+          console.log('  routes:');
+          console.log(edge.routes.format({prefix: '    '}));
 
-        if (edge.override) {
-          console.log('  override:');
-          console.log(edge.override.format({prefix: '    '}));
+          if (edge.override) {
+            console.log('  override:');
+            console.log(edge.override.format({prefix: '    '}));
+          }
         }
+      } else {
+        console.log(`Node '${key}' has no outbound edges.`);
       }
     }
   }

@@ -9,6 +9,8 @@ import {World} from './world';
 
 /*
 TODO:
+  x Update labyrinth help message - add explore
+  x BUG: Cannot read property 'edge' of undefined
   x rename 'summarize' to 'path'
   x rename 'inspect' to 'spec'
   tags/symbols command
