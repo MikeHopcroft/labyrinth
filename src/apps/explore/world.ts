@@ -19,7 +19,7 @@ export class World {
 
   private stack: Path[][] = [];
   private forawardTraversal = true;
-  private startKey = '';
+  private startKey: string | undefined = undefined;
   private indexes: number[] = [];
 
   constructor(graphFile: string) {
@@ -56,12 +56,9 @@ export class World {
 
   edges(key: string | undefined) {
     if (key === undefined) {
-      if (this.stack.length > 1) {
-        const edge = this.stack[1][0].edge;
-        // DESIGN NOTE: the `to` and `from` fields are not reversed in
-        // the following line. We're looking for the endpoint of the
-        // edge on the traversal. This is the current node.
-        key = this.forawardTraversal ? edge.edge.to : edge.edge.from;
+      if (this.stack.length > 0) {
+        const edge = this.stack[0][0].edge;
+        key = this.forawardTraversal ? edge.edge.from : edge.edge.to;
       } else {
         key = this.startKey;
       }
@@ -197,7 +194,9 @@ export class World {
     const outbound = this.forawardTraversal;
     if (this.stack.length === 0) {
       console.log('No start node specified.');
-      console.log('Use `from` or `to` command to specify start node.');
+      console.log(
+        'Use `from <node>` or `to <node>` command to specify start node.'
+      );
     } else {
       if (this.indexes[0] !== undefined) {
         const path = this.stack[1][this.indexes[0]];
@@ -216,7 +215,9 @@ export class World {
 
       console.log('\t');
       if (this.stack[0].length > 0) {
-        console.log('Next steps:');
+        console.log(
+          `Next step ${this.forawardTraversal ? 'forward' : 'backward'}:`
+        );
         for (const [index, path] of this.stack[0].entries()) {
           const next = this.forawardTraversal
             ? path.edge.edge.to
