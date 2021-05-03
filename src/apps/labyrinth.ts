@@ -93,6 +93,10 @@ function showUsage() {
           summary: 'Convert an Azure resource graph for Labyrinth analysis',
         },
         {
+          name: 'explore',
+          summary: 'Interactive graph explorer',
+        },
+        {
           name: 'firewall',
           summary: 'Analyze firewall rules',
         },
