@@ -1,6 +1,7 @@
 import yaml from 'js-yaml';
 
-import {Universe} from '../../dimensions';
+import {createFormatter, createIpFormatter, Universe} from '../../dimensions';
+
 import {
   AnyRuleSpec,
   Graph,
@@ -8,27 +9,30 @@ import {
   loadYamlGraphSpecFile,
   Path,
 } from '../../graph';
+
 import {createSimplifier} from '../../setops';
 import {firewallSpec} from '../../specs';
 
 export class World {
-  private graph: Graph;
-  stack: Path[][] = [];
-  forawardTraversal = true;
-  startKey = '';
-  indexes: number[] = [];
+  private readonly universe: Universe;
+  private readonly graph: Graph;
+
+  private stack: Path[][] = [];
+  private forawardTraversal = true;
+  private startKey = '';
+  private indexes: number[] = [];
 
   constructor(graphFile: string) {
     // Initialize universe.
     const universeFile = undefined;
-    const universe = universeFile
+    this.universe = universeFile
       ? Universe.fromYamlFile(universeFile)!
       : new Universe(firewallSpec);
-    const simplifier = createSimplifier<AnyRuleSpec>(universe);
+    const simplifier = createSimplifier<AnyRuleSpec>(this.universe);
 
     // Load network graph.
     const spec = loadYamlGraphSpecFile(graphFile);
-    const builder = new GraphBuilder(universe, simplifier, spec);
+    const builder = new GraphBuilder(this.universe, simplifier, spec);
     this.graph = builder.buildGraph();
   }
 
@@ -174,12 +178,19 @@ export class World {
     }
   }
 
-  to(key: string) {
-    this.forawardTraversal = false;
-    this.startKey = key;
-    this.stack = [this.graph.start(key, this.forawardTraversal)];
-    this.indexes = [];
-    this.summarize();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  symbols(name: string | undefined) {
+    const formatter = createFormatter(
+      createIpFormatter(new Map<string, string>())
+    );
+    for (const dimension of this.universe.dimensionTypes()) {
+      if (dimension.key === 'ip') {
+        console.log(dimension.key);
+        for (const [symbol, range] of dimension.symbolToRange.entries()) {
+          console.log(`  ${symbol}: ${formatter(range)}`);
+        }
+      }
+    }
   }
 
   summarize() {
@@ -216,5 +227,13 @@ export class World {
         console.log('Path terminates here.');
       }
     }
+  }
+
+  to(key: string) {
+    this.forawardTraversal = false;
+    this.startKey = key;
+    this.stack = [this.graph.start(key, this.forawardTraversal)];
+    this.indexes = [];
+    this.summarize();
   }
 }

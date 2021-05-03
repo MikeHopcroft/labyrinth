@@ -9,14 +9,18 @@ import {World} from './world';
 
 /*
 TODO:
+  tags/symbols command
+    should not hard-code dimension names
+    formatting should do symbol lookup
+    formatting should consider complement
   x edges command
   x history command
+  tutorial page
   package.json required node version
     https://stackoverflow.com/questions/29349684/how-can-i-specify-the-required-node-js-version-in-package-json
   look into using attribution
-  tutorial page
-  Graph.nodes() shouldn't sort on every call
-    It doesn't sort. Where does sort happen?
+  x Graph.nodes() shouldn't sort on every call
+    x It doesn't sort. Where does sort happen?
   x organize node list by friendly name
   universe file parameter
   x inspect command
@@ -98,6 +102,10 @@ const commandsSection = {
     {
       name: 'summarize',
       description: 'Display current traversal status.',
+    },
+    {
+      name: 'symbols [<name>]',
+      description: 'Display symbol table entry.',
     },
     {
       name: 'to <node>',
@@ -188,6 +196,7 @@ async function explore(graphFile: string) {
       ['inspect', inspectCommand],
       ['nodes', nodesCommand],
       ['summarize', summarizeCommand],
+      ['symbols', symbolsCommand],
       ['to', toCommand],
     ];
     const shell = new Shell(
@@ -303,6 +312,16 @@ export function summarizeCommand(args: string[], world: World): void {
     console.log('Unexpected parameter.');
   } else {
     world.summarize();
+  }
+}
+
+export function symbolsCommand(args: string[], world: World): void {
+  if (args.length === 2) {
+    console.log('Lookup of individual symbols not yet implemented.');
+  } else if (args.length > 2) {
+    console.log('Unexpected parameter.');
+  } else {
+    world.symbols(args[1]);
   }
 }
 
