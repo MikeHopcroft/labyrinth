@@ -9,6 +9,7 @@ import {World} from './world';
 
 /*
 TODO:
+  rename 'summarize' to 'path'
   tags/symbols command
     should not hard-code dimension names
     formatting should do symbol lookup
