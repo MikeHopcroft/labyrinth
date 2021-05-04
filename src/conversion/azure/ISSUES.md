@@ -423,7 +423,7 @@
 
 
 ~~~
-node_modules/prepress/build/src/apps/prepress.js documentation\src\azure_resource_graph.src.md documentation\azure_resource_graph.md
+node node_modules/prepress/build/src/apps/prepress.js documentation\src\azure_resource_graph.src.md documentation\azure_resource_graph.md
 ~~~
 
 ~~~
