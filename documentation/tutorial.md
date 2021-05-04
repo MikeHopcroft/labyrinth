@@ -5,6 +5,7 @@ This tutorial shows how to install `labyrinth` and then walks through examples o
 * [Get Labyrinth](./get_labyrinth.md)
 * Network Graph Analysis
   * [Analyzing Azure Resource Graphs](./azure_resource_graph.md)
+  * [Interactive Graph Exploration](./explore.md)
 * Node-level Rule Analysis
   * [Labyrinth Firewall Command](./labyrinth_cli.md)
   * [Policy Explanation](./policy_explanation.md)

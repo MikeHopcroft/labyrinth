@@ -9,6 +9,9 @@ import {World} from './world';
 
 /*
 TODO:
+  BUG: readline history doesn't seem to save duplicates
+    Seems to be by design
+    https://github.com/nodejs/node/blob/54dfdbcccf1f2844974bdcdedbfa1f45d75c55d5/lib/readline.js
   x Update labyrinth help message - add explore
   x BUG: Cannot read property 'edge' of undefined
   x rename 'summarize' to 'path'
