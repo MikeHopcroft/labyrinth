@@ -1,3 +1,9 @@
+~~~
+az graph query --output json --subscriptions 00000000-0000-0000-0000-000000000000 --first 5000 -q 'Resources | where id contains "abcdef" and type !in ("microsoft.compute/virtualmachines/extensions", "microsoft.compute/disks", "microsoft.compute/sshpublickeys", "microsoft.storage/storageaccounts")' > resource-graph.json
+~~~
+
+
+* Fix link on README.md build status badge
 * GraphServices.getLabyrinthGraphSpec() should not sort.
 * DimensionedRange.format() should handle empty set.
 * parseDRange() should handle empty set.
