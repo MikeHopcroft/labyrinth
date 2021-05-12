@@ -234,7 +234,7 @@ Next step forward:
 
 ~~~
 
-Note that when we step out of `subnet1\outbound`, the packet flow is constrained further, to packets with `destinationIp` in the `vnet` and `destination port` to the `ssh` port. This constraint on the `destinationIp` is probably the reason that packets aren't getting to the `Internet`. Let's step forward to `vnet1/router` to see if this is the case:
+Note that when we step out of `subnet1\outbound`, the packet flow is constrained further, to packets with `destinationIp` in the `vnet` and `destination port` targetting the `ssh` port. This constraint on the `destinationIp` is probably the reason that packets aren't getting to the `Internet`. Let's step forward to `vnet1/router` to see if this is the case:
 
 [//]: # (interactive one > node.exe -i build/src/apps/labyrinth.js explore data/azure/examples/00.demo/graph.yaml)
 ~~~
@@ -331,7 +331,7 @@ Internet-Backbone => Internet
 
 ~~~
 
-We can see that `AzureBackbone/outbound` has routes to `Internet-Backbone` which has routes to `Internet`. So the question is, why did the current node, `vnet1/outbound` disallow traffic to `AzureBackbone/outbound`? The reason is that the first edge, the one to `vnet1/router` diverted all traffic with `destinationIp` targetting addresses in `vnet1`.
+We can see that `AzureBackbone/outbound` has routes to `Internet-Backbone` which has routes to `Internet`. So the question is, why did the current node, `vnet1/outbound`, disallow traffic to `AzureBackbone/outbound`? The reason is that the first edge, the one to `vnet1/router`, diverted all traffic with `destinationIp` targetting addresses in `vnet1`.
 
 We saw that the `destinationIp` constraint was introduced when we stepped out of `subnet1/outbound`. Let's step back and take a look:
 
@@ -421,4 +421,4 @@ filters:
 
 ~~~
 
-Here we see, under `routes`, that there is a route to `vnet1/outbound`. The route doesn't have any constraints, but node has a set of five `filters`. The first filter allows `ssh` traffic with `destinationIp` in `vnet1` and the second rule disallows all other traffic. It is the combination of these two rules the prevent traffic to the `Internet`.
+Here we see, under `routes`, that there is, in fact, a route to `vnet1/outbound`. The route doesn't have any constraints, but node also has a set of five `filters`. The first filter allows `ssh` traffic with `destinationIp` in `vnet1` and the second rule disallows all other traffic. It is the combination of these two rules the prevent traffic from reaching the `Internet`.
