@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - $default-branch
+      - tabarlow/test-coverage
       - main
   pull_request:
     branches: 
@@ -30,8 +31,10 @@ jobs:
     - run: npm run test-coverage
 
     - name: Publish Code Coverage Results
-      uses: coverallsapp/github-action@master
+      uses: codecov/codecov-action@v1
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./build/.coverage-report/lcov.info
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./coverage-report/lcov.info
+        fail_ci_if_error: true
+        verbose: true
       
