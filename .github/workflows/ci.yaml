@@ -31,6 +31,8 @@ jobs:
     - run: npm run test-coverage
 
     - name: Publish Code Coverage Results
+      # Only run code coverage publishing once
+      if: ${{ matrix.node-version == '15.x' }}
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
