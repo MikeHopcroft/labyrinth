@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - $default-branch
-      - tabarlow/test-coverage
       - main
   pull_request:
     branches: 

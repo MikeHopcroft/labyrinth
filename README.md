@@ -1,7 +1,7 @@
 # Labyrinth NSG
 
 ![Node.js CI](https://github.com/MikeHopcroft/labyrinth/workflows/Node.js%20CI/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/MikeHopcroft/labyrinth/badge.svg?branch=main)](https://coveralls.io/github/MikeHopcroft/labyrinth?branch=main)
+[![codecov](https://codecov.io/gh/MikeHopcroft/labyrinth/branch/main/graph/badge.svg)](https://codecov.io/gh/MikeHopcroft/labyrinth)
 
 `Labyrinth` is an experimental tool for performing packet flow analysis in computer networks. Given a description of a network configuration, `Labyrinth` can answer questions like:
 * Which servers can receive traffic directly from the internet?
