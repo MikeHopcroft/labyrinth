@@ -15,6 +15,10 @@ junk
 
 # testing
 /coverage
+/coverage-report
+/coverage-temp
+
+/.nyc_output
 
 # next.js
 /.next/
